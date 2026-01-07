@@ -44,7 +44,7 @@ Then open `http://localhost:8000` in your browser.
 
 To deploy this site to GitHub Pages:
 
-1. **Create the repository**: Create a new GitHub repository named `alexdavydov.github.io` (must match your GitHub username exactly).
+1. **Create the repository**: Create a new GitHub repository. For a user/organization page, name it `username.github.io` (must match your GitHub username exactly). For a project page, use any repository name.
 
 2. **Push the code**: Push all files to the `main` branch of the repository.
 
@@ -55,7 +55,11 @@ To deploy this site to GitHub Pages:
    - Choose `main` branch and `/ (root)` folder
    - Click "Save"
 
-4. **Access your site**: After a few minutes, your site will be available at `https://alexdavydov.github.io`
+4. **Access your site**: 
+   - For user/organization pages: `https://username.github.io`
+   - For project pages: `https://username.github.io/repository-name`
+   
+   This site is deployed as a project page at `https://yzotop.github.io/alexdavydov.github.io/`
 
 ## Structure
 
@@ -94,6 +98,19 @@ alexdavydov.github.io/
 - Паттернам калькуляторов и графиков
 - Семантике цветов (зелёный/красный/серый)
 - Sanity-checks и критериям готовности
+
+## Design Patterns
+
+Все новые калькуляторы и интерактивные страницы должны следовать установленным дизайн-паттернам для обеспечения единообразия и предсказуемости интерфейса.
+
+См. [`DESIGN_PATTERNS.md`](./DESIGN_PATTERNS.md) для описания паттернов:
+- Общая структура страницы-калькулятора (две колонки)
+- Паттерн «Главная метрика»
+- Паттерн «Текст-интерпретация»
+- Паттерн «Сколько стоит +1 шаг»
+- Паттерн «Контроль vs тест»
+- Паттерн «Сравнение сценариев»
+- Паттерн «Детали расчёта»
 
 ## Публикация на GitHub Pages — чеклист
 
