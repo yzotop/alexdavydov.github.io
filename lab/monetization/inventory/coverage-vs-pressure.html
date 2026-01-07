@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coverage vs Pressure</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .axes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .axes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .axis-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .axis-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .axis-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .axis-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .axis-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .axis-card-list {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .axis-card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .control-value {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .control-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-checkbox input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .control-checkbox label {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .output-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-conclusion {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .cannibalization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .cannibalization-table th,
+        .cannibalization-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .cannibalization-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .cannibalization-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e8e8e8;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Coverage vs Pressure</h1>
+        <p class="subtitle">Coverage отвечает за доступность. Pressure — за стоимость внимания.</p>
+
+        <div class="intro">
+            <p>
+                Coverage: сколько возможностей реально превращается в show. Это мера доступности инвентаря — доля opportunities, которые дошли до фактического показа. Coverage можно улучшить через delivery, оптимизацию воронки, снижение потерь на шагах.
+            </p>
+            <p>
+                Pressure: как часто и насколько плотно система "касается" пользователя рекламой. Это частота показов, плотность размещения, конкуренция форматов за внимание. Pressure растёт, когда мы "дожимаем" инвентарь — показываем больше, чаще, в более плотных контекстах.
+            </p>
+            <p>
+                Ошибка: оптимизировать coverage, игнорируя цену давления. Рост coverage можно получить ценой роста pressure — и это убивает качество. Система может показывать больше, но в контекстах с низким вниманием, слишком часто, в условиях конкуренции. Результат: coverage↑, quality↓, revenue↔ или ↓.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Две оси управления</div>
+            <div class="axes-grid">
+                <div class="axis-card">
+                    <div class="axis-card-title">Coverage</div>
+                    <div class="axis-card-item">
+                        <strong>Как мерить:</strong> Доля opportunities, дошедших до show. Coverage = shows / opportunities. Можно мерить по сегментам, форматам, платформам.
+                    </div>
+                    <div class="axis-card-item">
+                        <strong>Быстрые причины падения:</strong>
+                        <ul class="axis-card-list">
+                            <li>Delivery: проблемы в воронке requests → responses → shows</li>
+                            <li>Competition: конкуренция форматов/мест за внимание</li>
+                            <li>Saturation: система упирается в потолок возможностей</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="axis-card">
+                    <div class="axis-card-title">Pressure</div>
+                    <div class="axis-card-item">
+                        <strong>Как мерить:</strong> Frequency proxy (частота касаний рекламой), saturation proxy (рост показов без роста эффекта), плотность размещения. Pressure = частота × плотность × конкуренция.
+                    </div>
+                    <div class="axis-card-item">
+                        <strong>Быстрые причины роста:</strong>
+                        <ul class="axis-card-list">
+                            <li>Дожим: попытка показать больше opportunities любой ценой</li>
+                            <li>Повторение: рост частоты показов одному пользователю</li>
+                            <li>Crowding: несколько форматов конкурируют за одно внимание</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Кривая полезности давления</div>
+            <div class="chart-container">
+                <svg id="utilityChart"></svg>
+                <p class="chart-caption">Оптимум давления — внутренний параметр системы, а не цель.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Coverage растёт, качество падает</div>
+            <div class="chart-container">
+                <svg id="coverageChart"></svg>
+                <p class="chart-caption">Вы улучшили доставку, но подорожало внимание.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Сегменты реагируют по-разному</div>
+            <div class="chart-container">
+                <svg id="segmentsChart"></svg>
+                <p class="chart-caption">Давление ломает сначала 'горячих' пользователей.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Подкрути рычаг дожима</div>
+            <div class="interactive-panel">
+                <div class="controls-group">
+                    <div class="control-group">
+                        <label class="control-label">Дожим coverage</label>
+                        <input type="range" id="coverageSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="coverageValue">30</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Ограничение частоты</label>
+                        <input type="range" id="frequencySlider" class="control-slider" min="0" max="100" value="50">
+                        <div class="control-value" id="frequencyValue">50</div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-checkbox">
+                            <input type="checkbox" id="protectTails" checked>
+                            <label for="protectTails">Защитить хвосты (p10)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="output-panel" id="outputPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Признаки каннибализации</div>
+            <table class="cannibalization-table">
+                <thead>
+                    <tr>
+                        <th>Что видите</th>
+                        <th>Что это значит</th>
+                        <th>Что проверить дальше</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Coverage↑, revenue↔</td>
+                        <td>Рост показов без роста выручки — компенсация или каннибализация</td>
+                        <td>Проверить quality proxy, pressure, хвосты распределения</td>
+                    </tr>
+                    <tr>
+                        <td>Pressure↑, CTR↔</td>
+                        <td>Рост давления без роста внимания — усталость или насыщение</td>
+                        <td>Проверить frequency proxy, saturation proxy, сегменты</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, quality↓</td>
+                        <td>Рост цены маскирует падение качества — компенсация</td>
+                        <td>Проверить attention proxy, effective shows share, composition shift</td>
+                    </tr>
+                    <tr>
+                        <td>Variance↑</td>
+                        <td>Рост дисперсии — система становится хрупкой</td>
+                        <td>Проверить хвосты (p10/p90), сегменты, края распределения</td>
+                    </tr>
+                    <tr>
+                        <td>High сегмент↓</td>
+                        <td>High-pressure сегмент деградирует первым — насыщение</td>
+                        <td>Проверить pressure по сегментам, saturation proxy, frequency</td>
+                    </tr>
+                    <tr>
+                        <td>Лаг усилился</td>
+                        <td>Время между механикой и деньгами растёт — качество падает</td>
+                        <td>Проверить delayed revenue response, окно наблюдения, ранние сигналы</td>
+                    </tr>
+                    <tr>
+                        <td>ShowConv↓ при coverage↑</td>
+                        <td>Рост opportunities, но падение конверсии — насыщение</td>
+                        <td>Проверить saturation proxy, pressure, quality mix</td>
+                    </tr>
+                    <tr>
+                        <td>Attention proxy↓</td>
+                        <td>Падение внимания к контексту — низкокачественный инвентарь</td>
+                        <td>Проверить composition shift, crowding proxy, effective shows share</td>
+                    </tr>
+                    <tr>
+                        <td>Cannibalization↑</td>
+                        <td>Один формат отнимает внимание у другого — конкуренция</td>
+                        <td>Проверить composition share, crowding proxy, variance by segments</td>
+                    </tr>
+                    <tr>
+                        <td>Среднее ок, хвосты↓</td>
+                        <td>Средняя метрика стабильна, но нижний дециль падает — скрытая деградация</td>
+                        <td>Проверить p10/p90, variance, сегменты отдельно</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Как безопасно улучшать coverage</div>
+            <ul class="checklist">
+                <li>Улучшать delivery без роста frequency — оптимизировать воронку, не увеличивать частоту показов</li>
+                <li>Смотреть tails и сегменты — не маскирует ли среднее проблемы в отдельных сегментах</li>
+                <li>Фиксировать окна и лаг — не слишком ли короткое окно скрывает проблемы через лаг</li>
+                <li>Вводить guardrails по pressure/quality — установить пороги для pressure и quality, не превышать их</li>
+                <li>Останавливаться при росте дисперсии — рост variance — сигнал хрупкости системы</li>
+                <li>Не оптимизировать по одному KPI — coverage без учёта pressure и quality ведёт к каннибализации</li>
+                <li>Мониторить ранние сигналы — attention proxy, showConv, хвосты — они реагируют раньше денег</li>
+                <li>Проверять компенсацию — не маскирует ли рост CPM падение качества</li>
+                <li>Защищать хвосты — p10 деградирует раньше среднего, нужна защита</li>
+                <li>Оценивать долгосрочный эффект — на окне лагов, не на коротком окне</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./hidden-inventory.html" class="next-card">
+                    <div class="next-card-title">Скрытый инвентарь →</div>
+                    <div class="next-card-text">Возможности, которые не превращаются в показы.</div>
+                </a>
+                <a href="./inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Усталость инвентаря →</div>
+                    <div class="next-card-text">Как повторение снижает эффективность возможностей.</div>
+                </a>
+                <a href="../operating/signals.html" class="next-card">
+                    <div class="next-card-title">Operating: Signals →</div>
+                    <div class="next-card-text">Ранние сигналы деградации монетизации.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Инвентарю</a>
+            <p class="footer-note">Coverage отвечает за доступность. Pressure — за стоимость внимания.</p>
+        </div>
+    </div>
+
+    <script>
+        // Utility curve chart
+        function generateUtilityChart() {
+            const container = d3.select('#utilityChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#utilityChart').selectAll('*').remove();
+
+            const svg = d3.select('#utilityChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: inverted U curve
+            const n = 50;
+            const data = [];
+            for (let i = 0; i <= n; i++) {
+                const pressure = i / n;
+                // Inverted U: a*pressure - b*pressure^2 with slight asymmetry
+                const revenue = 0.3 + 1.2 * pressure - 1.5 * pressure * pressure - 0.1 * pressure * pressure * pressure;
+                data.push({ pressure, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Threshold line (optimum around 0.4)
+            const threshold = 0.4;
+            g.append('line')
+                .attr('x1', x(threshold))
+                .attr('x2', x(threshold))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(threshold))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('порог');
+
+            g.append('text')
+                .attr('x', x(threshold) + 30)
+                .attr('y', height / 2)
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('дальше начинается каннибализация');
+
+            // Line
+            const line = d3.line()
+                .x(d => x(d.pressure))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('pressure proxy');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('revenue_per_user index');
+        }
+
+        // Coverage chart
+        function generateCoverageChart() {
+            const container = d3.select('#coverageChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#coverageChart').selectAll('*').remove();
+
+            const svg = d3.select('#coverageChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const growthStart = 80;
+            const squeezeStart = 90;
+            const squeezeEnd = 140;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Coverage: grows after growthStart
+                const coverageGrowth = t > growthStart ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - growthStart) / 8))) : 0;
+                const coverage = 0.65 + coverageGrowth;
+
+                // Pressure: grows with coverage
+                const pressure = 0.40 + coverageGrowth * 0.6;
+
+                // Quality: drops with pressure
+                const qualityDrop = t > growthStart ? 0.20 * (1 - 1 / (1 + Math.exp(-(t - growthStart) / 10))) : 0;
+                const quality = 0.75 - qualityDrop;
+
+                data.push({ t, coverage, pressure, quality });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.3, 1.0])
+                .range([height, 0]);
+
+            // Shaded region for "squeeze"
+            g.append('rect')
+                .attr('x', x(squeezeStart))
+                .attr('y', 0)
+                .attr('width', x(squeezeEnd) - x(squeezeStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(squeezeStart) + x(squeezeEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('дожим');
+
+            // Lines
+            const lineCoverage = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.coverage))
+                .curve(d3.curveMonotoneX);
+
+            const linePressure = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.pressure))
+                .curve(d3.curveMonotoneX);
+
+            const lineQuality = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.quality))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineCoverage);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', linePressure);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#aaa')
+                .attr('stroke-width', 2)
+                .attr('d', lineQuality);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].coverage) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('coverage');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].pressure) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('pressure');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].quality) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#aaa')
+                .text('attention/quality proxy');
+        }
+
+        // Segments chart
+        function generateSegmentsChart() {
+            const container = d3.select('#segmentsChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#segmentsChart').selectAll('*').remove();
+
+            const svg = d3.select('#segmentsChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const degradationStart = 85;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Low pressure: degrades later and less
+                const lowDrop = t > degradationStart + 15 ? 0.10 * (1 - 1 / (1 + Math.exp(-(t - degradationStart - 15) / 12))) : 0;
+                const low = 0.75 - lowDrop;
+
+                // Mid pressure: degrades in the middle
+                const midDrop = t > degradationStart + 5 ? 0.15 * (1 - 1 / (1 + Math.exp(-(t - degradationStart - 5) / 10))) : 0;
+                const mid = 0.70 - midDrop;
+
+                // High pressure: degrades earlier and stronger
+                const highDrop = t > degradationStart ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - degradationStart) / 8))) : 0;
+                const high = 0.80 - highDrop;
+
+                data.push({ t, low, mid, high });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.45, 0.85])
+                .range([height, 0]);
+
+            // Lines
+            const lineLow = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.low))
+                .curve(d3.curveMonotoneX);
+
+            const lineMid = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.mid))
+                .curve(d3.curveMonotoneX);
+
+            const lineHigh = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.high))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineLow);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#777')
+                .attr('stroke-width', 2)
+                .attr('d', lineMid);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineHigh);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].low) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('low pressure users');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].mid) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#777')
+                .text('mid pressure users');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].high) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('high pressure users');
+        }
+
+        // Interactive calculator
+        function updateCalculator() {
+            const coverageSqueeze = parseInt(document.getElementById('coverageSlider').value);
+            const frequencyLimit = parseInt(document.getElementById('frequencySlider').value);
+            const protectTails = document.getElementById('protectTails').checked;
+
+            // Deterministic formulas
+            const coverageBase = 0.65;
+            const coverageIndex = coverageBase + (coverageSqueeze / 100) * 0.25;
+
+            const pressureBase = 0.40;
+            const pressureFromSqueeze = (coverageSqueeze / 100) * 0.4;
+            const pressureFromFrequency = (1 - frequencyLimit / 100) * 0.3;
+            const pressureIndex = Math.min(1.0, pressureBase + pressureFromSqueeze - pressureFromFrequency * 0.5);
+
+            const qualityBase = 0.75;
+            const qualityDropFromPressure = pressureIndex * 0.25;
+            const qualityDropFromTails = protectTails ? 0 : 0.08;
+            const qualityIndex = Math.max(0.3, qualityBase - qualityDropFromPressure - qualityDropFromTails);
+
+            // Revenue: coverage * quality with inverted-U effect
+            const revenueBase = coverageIndex * qualityIndex;
+            const pressurePenalty = pressureIndex > 0.4 ? (pressureIndex - 0.4) * 0.3 : 0;
+            const revenueIndex = Math.max(0.4, revenueBase - pressurePenalty);
+
+            // Conclusion
+            let conclusion = '';
+            if (pressureIndex < 0.35 && qualityIndex > 0.65) {
+                conclusion = 'Сейчас вы в безопасной зоне. Coverage можно улучшать дальше, но следите за pressure и quality.';
+            } else if (pressureIndex < 0.5 && qualityIndex > 0.55) {
+                conclusion = 'Вы на пороге. Pressure растёт, quality начинает падать. Остановите рост дожима, защитите хвосты.';
+            } else {
+                conclusion = 'Вы в зоне каннибализации. Pressure слишком высок, quality падает. Уменьшите дожим, увеличьте ограничение частоты, защитите хвосты.';
+            }
+
+            document.getElementById('outputPanel').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">Coverage index</div>
+                        <div class="output-metric-value">${(coverageIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Pressure index</div>
+                        <div class="output-metric-value">${(pressureIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Quality index</div>
+                        <div class="output-metric-value">${(qualityIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Revenue index</div>
+                        <div class="output-metric-value">${(revenueIndex * 100).toFixed(0)}</div>
+                    </div>
+                </div>
+                <div class="output-conclusion">${conclusion}</div>
+            `;
+        }
+
+        document.getElementById('coverageSlider').addEventListener('input', (e) => {
+            document.getElementById('coverageValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('frequencySlider').addEventListener('input', (e) => {
+            document.getElementById('frequencyValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('protectTails').addEventListener('change', updateCalculator);
+
+        // Initial render
+        generateUtilityChart();
+        generateCoverageChart();
+        generateSegmentsChart();
+        updateCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateUtilityChart();
+                generateCoverageChart();
+                generateSegmentsChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

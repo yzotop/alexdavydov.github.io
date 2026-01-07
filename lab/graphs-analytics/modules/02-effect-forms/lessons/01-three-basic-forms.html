@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Три базовые формы эффекта: step, ramp, bounce — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .core-idea {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+            max-width: 700px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .visual-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .form-visual {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .form-visual:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-visual-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .explanation-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .form-explanation {
+            margin-bottom: 3rem;
+        }
+
+        .form-explanation:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-explanation h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .form-explanation p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .mistake-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .mistake-box strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .mistake-box p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .mistake-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .decision-item h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .decision-item p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .decision-item p:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .right-question {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-question strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-question p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-question p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../02-effect-forms.html" class="back-to-module">← К модулю</a>
+
+        <header>
+            <div class="kicker">Урок 1 / Модуль 2</div>
+            <h1>Три формы эффекта, которые читают как аргумент</h1>
+        </header>
+
+        <main>
+            <div class="core-idea">
+                Форма эффекта определяет решение: один и тот же числовой результат может означать устойчивое изменение, временный всплеск или нарастающий тренд — и каждое требует разного действия.
+            </div>
+
+            <section class="visual-section">
+                <h2>Формы эффектов</h2>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Step change (резкий сдвиг)</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="150" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="200" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Step up -->
+                            <line x1="200" y1="100" x2="200" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- New level -->
+                            <line x1="200" y1="50" x2="350" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="50" y="115" font-size="12" fill="#666">До</text>
+                            <text x="200" y="115" font-size="12" fill="#666">Изменение</text>
+                            <text x="350" y="35" font-size="12" fill="#1a1a1a">После</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Ramp (постепенный рост)</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="150" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="150" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Gradual rise -->
+                            <path d="M 150 100 Q 225 75 300 50" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                            <!-- Stabilization -->
+                            <line x1="300" y1="50" x2="350" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="50" y="115" font-size="12" fill="#666">До</text>
+                            <text x="225" y="80" font-size="12" fill="#1a1a1a">Нарастание</text>
+                            <text x="350" y="35" font-size="12" fill="#1a1a1a">Стабилизация</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Bounce (эффект новизны)</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="150" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="150" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Spike up -->
+                            <path d="M 150 100 Q 200 30 250 100" stroke="#1a1a1a" stroke-width="3" fill="none"/>
+                            <!-- Return to baseline -->
+                            <line x1="250" y1="100" x2="350" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="50" y="115" font-size="12" fill="#666">До</text>
+                            <text x="200" y="25" font-size="12" fill="#1a1a1a">Всплеск</text>
+                            <text x="350" y="115" font-size="12" fill="#666">Откат</text>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <section class="explanation-section">
+                <h2>Где появляется в аналитике</h2>
+
+                <div class="form-explanation">
+                    <h3>Step change (резкий сдвиг)</h3>
+                    <p>
+                        Появляется, когда изменение вступает в силу мгновенно и стабилизируется на новом уровне. Типичные случаи: изменение цены, переключение алгоритма, изменение правил показа. Эффект виден сразу и не меняется со временем.
+                    </p>
+                    <div class="mistake-box">
+                        <p><strong>Типичная ошибка:</strong> Считать среднюю дельту за весь период, включая дни до изменения. Это размывает эффект и скрывает его истинную величину.</p>
+                    </div>
+                </div>
+
+                <div class="form-explanation">
+                    <h3>Ramp (постепенный рост)</h3>
+                    <p>
+                        Появляется, когда эффект нарастает постепенно: пользователи адаптируются к новому интерфейсу, алгоритм обучается на новых данных, инвентарь раскрывается постепенно. Эффект не виден сразу, но становится заметнее со временем.
+                    </p>
+                    <div class="mistake-box">
+                        <p><strong>Типичная ошибка:</strong> Останавливать эксперимент на ранних днях, когда эффект ещё не проявился. Или наоборот — считать среднюю дельту, не замечая, что эффект нарастает.</p>
+                    </div>
+                </div>
+
+                <div class="form-explanation">
+                    <h3>Bounce (эффект новизны)</h3>
+                    <p>
+                        Появляется, когда изменение вызывает кратковременный всплеск интереса, который затем исчезает. Типичные случаи: новый дизайн, новая функция, рекламная кампания. Пользователи реагируют на новизну, но эффект не устойчив.
+                    </p>
+                    <div class="mistake-box">
+                        <p><strong>Типичная ошибка:</strong> Принимать решение на основе первых дней, когда эффект максимален. Или не замечать откат и считать, что эффект сохранится.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+
+                <div class="decision-item">
+                    <h3>Step change</h3>
+                    <p>
+                        Когда эффект выглядит как резкий сдвиг уровня, решение можно принимать быстро: эффект стабилен, механизм понятен, дальнейших изменений не ожидается.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Катить изменение на основе среднего эффекта, не проверив стабильность на новом уровне. Или наоборот — не катить, потому что "эффект слишком большой, наверное ошибка".</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Стабилен ли новый уровень? Нет ли отката в последующие дни? Сохраняется ли эффект при разных условиях (дни недели, сегменты)?</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <h3>Ramp</h3>
+                    <p>
+                        Когда эффект нарастает постепенно, решение нужно отложить: эффект ещё не стабилизировался, его истинная величина неизвестна, механизм может быть неполным.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Катить изменение на основе ранних дней, когда эффект ещё мал. Или наоборот — не катить, потому что "эффект нестабилен", не понимая, что он нарастает.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Нарастает ли эффект стабильно? Есть ли признаки стабилизации? Какой эффект будет при полном раскрытии механизма?</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <h3>Bounce</h3>
+                    <p>
+                        Когда эффект выглядит как всплеск с откатом, решение должно быть отрицательным: эффект не устойчив, механизм основан на новизне, который исчезает.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Катить изменение на основе пика эффекта, не замечая откат. Или продлевать эксперимент в надежде, что эффект вернётся.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Есть ли откат после всплеска? Вернулась ли метрика к исходному уровню? Это эффект новизны или реальное улучшение?</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

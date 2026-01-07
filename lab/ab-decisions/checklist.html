@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-лист: принятие решения по A/B-тесту</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .practice-link-block {
+            max-width: 700px;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .practice-link-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .practice-link-block a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #1a1a1a;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-link-block a:hover {
+            border-color: #666;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+            border-left: 3px solid #1a1a1a;
+        }
+
+        .checklist-block h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .red-flags {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fff5f5;
+            border-radius: 4px;
+            border-left: 3px solid #c00;
+        }
+
+        .red-flags h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #c00;
+        }
+
+        .red-flags ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .red-flags li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .red-flags li:before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            color: #c00;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-bottom a.button {
+            padding: 0.5rem 1rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .nav-bottom a.button:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html" class="active">Чеклист</a>
+            <a href="./practice/index.html">Практика</a>
+        </div>
+
+        <h1>Чек-лист: принятие решения по A/B-тесту</h1>
+        <p class="subtitle">Быстрая проверка перед принятием решения: готов ли эксперимент к выкату или нужно доработать. Структурирован по 4 типам решений.</p>
+
+        <div class="practice-link-block">
+            <p><strong>Практика курса:</strong> <a href="./practice/index.html">Практика A/B-тестирования на графиках</a></p>
+        </div>
+
+        <div class="intro">
+            <p>
+                Используйте этот чек-лист перед принятием решения по эксперименту. Если хотя бы один пункт не выполнен — эксперимент может привести к неверным решениям или ухудшению системы.
+            </p>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Тип решения 1: Можно ли верить эффекту?</h3>
+            <ul>
+                <li>Есть ли реальное изменение или это флуктуации? Смотри на форму кривой, а не только на среднюю дельту.</li>
+                <li>Статистическая значимость ≠ практическая значимость — проверено?</li>
+                <li>Есть ли measurable бизнес-эффект (revenue/RPM вырос на значимую величину)?</li>
+                <li>Достаточна ли мощность теста для обнаружения минимальной полезной дельты (MDE)?</li>
+                <li>Устойчив ли эффект по времени (ранние дни vs хвост эксперимента)?</li>
+                <li>Учтены ли лаги эффекта при выборе окна оценки?</li>
+                <li>Как выбор окна влияет на вывод (не меняет ли знак дельты)?</li>
+                <li>Определены ли окно оценки и stop rules до просмотра данных?</li>
+                <li>Не является ли эффект временной адаптацией, которая потом вернётся к исходному состоянию?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Тип решения 2: Что именно дало эффект?</h3>
+            <ul>
+                <li>Сформулирована ли гипотеза как механизм, а не как "выросло / не выросло"?</li>
+                <li>Понятно ли, какой механизм эффекта ожидается (цена / объём / микс / воронка / давление)?</li>
+                <li>Видно ли механизм эффекта на графике без дополнительных вычислений?</li>
+                <li>Как разложить деньги на рычаги для диагностики механизма?</li>
+                <li>Что происходит с объёмом (shows/coverage) и воронкой (fill/show)?</li>
+                <li>Какой механизм эффекта: цена / объём / микс / воронка / давление?</li>
+                <li>Если CPM вырос, не упал ли объём показов сильнее?</li>
+                <li>Если выручка выросла без роста CPM, за счёт чего (show rate, fill, coverage)?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Тип решения 3: Можно ли масштабировать?</h3>
+            <ul>
+                <li>Есть ли риск смещения состава между контроль и тест?</li>
+                <li>Видно ли эффект в каждом сегменте за 10 секунд?</li>
+                <li>Нужен ли reweight для корректного сравнения (Simpson's paradox)?</li>
+                <li>Не маскирует ли агрегат эффекты (разнонаправленные эффекты в сегментах)?</li>
+                <li>Проверены ли разрезы по девайсам, гео, плейсментам?</li>
+                <li>Локальная победа или системный проигрыш? Формат выиграл, но total упал?</li>
+                <li>Не произошёл ли mix shift, который маскирует деградацию?</li>
+                <li>Решение по total revenue/RPM, не по локальным метрикам?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Тип решения 4: Что делать с неудачным экспериментом?</h3>
+            <ul>
+                <li>Не ухудшились ли guardrails (quality, retention, complaints, latency)?</li>
+                <li>Согласованы ли Primary / Diagnostic / Guardrails метрики между собой?</li>
+                <li>Можно ли принять решение на основе графика за 10 секунд?</li>
+                <li>Понятно ли, какое действие требуется (запускать, откатывать, итерация)?</li>
+                <li>Что мониторим после выката (метрики, сегменты, временные окна)?</li>
+                <li>Есть ли план отката при ухудшении guardrails?</li>
+                <li>Зафиксировано ли решение и условия, при которых стоит вернуться к гипотезе?</li>
+                <li>Определены ли Primary / Diagnostic / Guardrails метрики до запуска?</li>
+            </ul>
+        </div>
+
+        <div class="red-flags">
+            <h3>Красные флаги</h3>
+            <ul>
+                <li><strong>Simpson's paradox:</strong> Агрегат показывает плюс, но каждый сегмент в минусе (или наоборот)</li>
+                <li><strong>Peeking:</strong> Окно оценки выбирается после просмотра данных (cherry-picking)</li>
+                <li><strong>Mix shift:</strong> Эффект вызван сменой состава, а не изменением механики</li>
+                <li><strong>SRM (Sample Ratio Mismatch):</strong> Доли сегментов в тесте и контроле различаются</li>
+                <li><strong>Окно меняет вывод:</strong> Раннее окно показывает минус, позднее — плюс (или наоборот) без объяснения механизма</li>
+                <li><strong>Локальная оптимизация без total:</strong> Формат/сегмент вырос, но Total упал (каннибализация)</li>
+                <li><strong>Stat sig без бизнес-эффекта:</strong> Primary метрика статистически значима, но revenue/RPM не изменилась</li>
+                <li><strong>Эффект только в агрегате:</strong> После reweight эффект исчезает или меняет знак</li>
+                <li><strong>Guardrails ухудшились:</strong> Quality, retention, complaints упали, даже если primary вырос</li>
+                <li><strong>Эффект не устойчив:</strong> Первые дни показывают один результат, хвост — другой, без объяснения механизма</li>
+            </ul>
+        </div>
+
+        <div class="nav-bottom">
+            <a href="./syllabus.html">← Назад к программе</a>
+            <a href="./practice/scenarios/001-cpm-up-rev-down.html" class="button">Начать курс заново</a>
+        </div>
+    </div>
+</body>
+</html>
+

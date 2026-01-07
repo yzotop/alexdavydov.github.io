@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адаптивное давление по сегментам</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Адаптивное давление по сегментам</h1>
+        <p class="subtitle">Рост выручки за счёт оптимизации рекламного давления для разных сегментов пользователей.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-2" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли масштабировать</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Внедрили адаптивное рекламное давление в тестовой группе: интенсивность рекламы меняется в зависимости от сегмента пользователя (высокодоходные, среднедоходные, низкодоходные).
+            </p>
+            <p>
+                Эксперимент длился 13 дней. Трафик стабильный, сезонных эффектов не наблюдалось. Контрольная группа без изменений — стандартное давление для всех пользователей.
+            </p>
+            <p>
+                В тестовой группе выручка выросла на 8–10% на мобильных платформах, на десктопе эффект нейтральный (~0%). В агрегате выручка выросла на 4–5%. Заметны разные эффекты по сегментам: высокодоходные пользователи дают основной вклад в рост.
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart-tabs-nav">
+                <button id="tab-total" onclick="switchTab('total')" class="active">Total</button>
+                <button id="tab-high" onclick="switchTab('high')">High</button>
+                <button id="tab-medium" onclick="switchTab('medium')">Medium</button>
+                <button id="tab-low" onclick="switchTab('low')">Low</button>
+            </div>
+
+            <div id="tab-content-total" class="chart-tab-content active">
+                <div class="chart" id="chart-total"></div>
+            </div>
+
+            <div id="tab-content-high" class="chart-tab-content">
+                <div class="chart" id="chart-high"></div>
+            </div>
+
+            <div id="tab-content-medium" class="chart-tab-content">
+                <div class="chart" id="chart-medium"></div>
+            </div>
+
+            <div id="tab-content-low" class="chart-tab-content">
+                <div class="chart" id="chart-low"></div>
+            </div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Есть ли эффект и когда он начинается?</li>
+                <li>Почему эффект разный по сегментам?</li>
+                <li>Почему агрегат показывает меньший эффект, чем отдельные сегменты?</li>
+                <li>Как сегментация влияет на интерпретацию результатов?</li>
+                <li>Можно ли катить в прод? На какие платформы?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+
+                <p>
+                    На графике видно, что эффект различается по сегментам: высокодоходные пользователи дают основной вклад в рост выручки, средне- и низкодоходные показывают меньший или нейтральный эффект. В агрегате эффект меньше, чем в отдельных сегментах.
+                </p>
+
+                <p>
+                    <strong>Механизм эффекта:</strong> Адаптивное давление оптимизирует монетизацию для разных сегментов пользователей:
+                </p>
+                <ul>
+                    <li><strong>Высокодоходные пользователи:</strong> Могут переносить более высокое рекламное давление без ухудшения продуктовых метрик. Рост давления для них даёт рост выручки.</li>
+                    <li><strong>Средне- и низкодоходные пользователи:</strong> Чувствительнее к давлению, но не реагируют на небольшие изменения. Оптимизация давления для них даёт меньший или нейтральный эффект.</li>
+                    <li><strong>Агрегат маскирует эффект:</strong> В агрегате эффект меньше, потому что разные сегменты имеют разные веса и эффекты разнонаправлены или разной величины.</li>
+                </ul>
+
+                <p>
+                    <strong>Почему агрегат показывает меньший эффект:</strong> Это классический пример того, как агрегат может маскировать эффекты. Если высокодоходные пользователи дают +15% выручки, но их доля в трафике 20%, а средне- и низкодоходные дают +2% и 0% соответственно, то в агрегате эффект будет меньше, чем в сегменте высокодоходных.
+                </p>
+
+                <p>
+                    <strong>Почему эффект разный по платформам:</strong> На мобильных платформах пользователи более чувствительны к давлению, и адаптация даёт больший эффект. На десктопе эффект может быть нейтральным из-за других паттернов потребления контента.
+                </p>
+
+                <p>
+                    <strong>Важность сегментации:</strong> Без сегментации можно было бы сделать неправильный вывод, что эффект небольшой или нейтральный. С сегментацией видно, что механизм работает для определённых сегментов, и это важный инсайт для дальнейшей оптимизации.
+                </p>
+
+                <p>
+                    <strong>Порядок проверки:</strong>
+                </p>
+                <ol>
+                    <li>Revenue в агрегате — есть ли общий эффект?</li>
+                    <li>Revenue по сегментам — какие сегменты дают основной вклад?</li>
+                    <li>Mix shift — не изменились ли веса сегментов (нужен reweight)?</li>
+                    <li>Guardrails по сегментам — не ухудшились ли продуктовые метрики в отдельных сегментах?</li>
+                    <li>Разрезы по платформам — эффект может отличаться на разных устройствах.</li>
+                </ol>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «В агрегате эффект небольшой (+4%), значит механизм не работает. Нельзя катить в прод.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Адаптивное давление даёт рост выручки на 8–10% на мобильных платформах, в агрегате — на 4–5%. Основной вклад дают высокодоходные пользователи, которые могут переносить более высокое давление. Агрегат маскирует эффект из-за разных весов сегментов. Это рабочий механизм роста выручки через сегментацию. Можно катить в прод на мобильные платформы, на десктопе требуется дополнительная настройка или наблюдение.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что «агрегат всегда прав» — важно проверять сегменты, чтобы не пропустить эффекты. Нельзя утверждать, что «эффект будет одинаковым на всех платформах» — на разных устройствах эффект может отличаться. Нельзя утверждать, что «сегментация всегда нужна» — важно понимать, когда она критична для интерпретации.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../monetization/pressure/index.html">Рекламное давление: сегментация и адаптивность</a></li>
+                <li><a href="../lessons/03-aggregates-lie.html">Lesson 3: Агрегаты врут — важность сегментации</a></li>
+                <li><a href="./005-segment-conflict-simpson.html">Сценарий 005: Сегменты спорят (Simpson)</a></li>
+                <li><a href="../../experiments/metrics-for-reading.html">Метрики для чтения: primary vs diagnostic</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./010-more-shows-less-revenue.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./012-engagement-no-revenue.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 011: Adaptive pressure segments
+        // Synthetic data: 13 days, baseline = 100
+        // Total: Control ~100, Test grows to ~105 (5% increase)
+        // High: Control ~100, Test grows to ~115 (15% increase)
+        // Medium: Control ~100, Test grows to ~102 (2% increase)
+        // Low: Control ~100, Test ~100 (neutral)
+
+        let currentMode = 'annotated';
+        let currentTab = 'total';
+
+        function generateData() {
+            const days = Array.from({length: 14}, (_, i) => i);
+            
+            // Total: Moderate growth
+            const totalControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const totalTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.38; // ~5% over 13 days
+                const noise = (Math.random() - 0.5) * 0.5;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // High segment: Strong growth
+            const highControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const highTest = days.map(d => {
+                const base = 100;
+                const growth = d * 1.15; // ~15% over 13 days
+                const noise = (Math.random() - 0.5) * 0.5;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Medium segment: Small growth
+            const mediumControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const mediumTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.15; // ~2% over 13 days
+                const noise = (Math.random() - 0.5) * 0.5;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Low segment: Neutral
+            const lowControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const lowTest = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+
+            return { totalControl, totalTest, highControl, highTest, mediumControl, mediumTest, lowControl, lowTest };
+        }
+
+        function renderCharts() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Total chart
+            ABCharts.render({
+                el: '#chart-total',
+                series: [
+                    { name: 'Control', values: data.totalControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.totalTest, color: ABCharts.colors.test }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Выручка (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 13, y: data.totalTest[13].y + 5, text: '+5% Total', color: ABCharts.colors.test, textAnchor: 'end', dy: -5 }
+                    ]
+                }
+            });
+
+            // High segment chart
+            ABCharts.render({
+                el: '#chart-high',
+                series: [
+                    { name: 'Control', values: data.highControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.highTest, color: ABCharts.colors.test }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Выручка (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 13, y: data.highTest[13].y + 5, text: '+15% High', color: ABCharts.colors.test, textAnchor: 'end', dy: -5 }
+                    ]
+                }
+            });
+
+            // Medium segment chart
+            ABCharts.render({
+                el: '#chart-medium',
+                series: [
+                    { name: 'Control', values: data.mediumControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.mediumTest, color: ABCharts.colors.test }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Выручка (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 13, y: data.mediumTest[13].y + 5, text: '+2% Medium', color: ABCharts.colors.test, textAnchor: 'end', dy: -5 }
+                    ]
+                }
+            });
+
+            // Low segment chart
+            ABCharts.render({
+                el: '#chart-low',
+                series: [
+                    { name: 'Control', values: data.lowControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.lowTest, color: ABCharts.colors.test }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Выручка (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 13, y: 100, text: '0% Low', color: '#999', textAnchor: 'end', dy: -5 }
+                    ]
+                }
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.remove('active');
+            document.getElementById('mode-annotated').classList.remove('active');
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            renderCharts();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            ['total', 'high', 'medium', 'low'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('active');
+                document.getElementById(`tab-content-${t}`).classList.remove('active');
+            });
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`tab-content-${tab}`).classList.add('active');
+        }
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCharts();
+            switchTab(currentTab);
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Итоговая таблица A/B-теста: как из чисел сделать решение — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-course {
+            display: inline-block;
+            margin-left: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-course:hover {
+            color: #1a1a1a;
+        }
+
+        .module-badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .table-container {
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        table.before-table {
+            border: 1px solid #e8e8e8;
+        }
+
+        table.after-table {
+            border: 1px solid #1a1a1a;
+        }
+
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: 1px solid #e8e8e8;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        table.after-table th {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        table.after-table th.group-header {
+            background: #333;
+        }
+
+        td {
+            color: #1a1a1a;
+        }
+
+        .delta-positive {
+            color: #060;
+            font-weight: 500;
+        }
+
+        .delta-negative {
+            color: #c00;
+            font-weight: 500;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .lesson-nav {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lesson-nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .lesson-nav a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <a href="../../../../index.html" class="back-to-home">← На главную</a>
+            <a href="../../index.html" class="back-to-course">← Назад к курсу</a>
+        </div>
+
+        <div class="module-badge">Модуль 1 · Урок 1.1</div>
+
+        <header>
+            <div class="kicker">Урок 1.1 / Модуль 1</div>
+            <h1>Как итоговая таблица A/B-теста подсказывает решение</h1>
+            <p class="subtitle">Таблица — это не вывод данных. Таблица — это визуальный аргумент, который либо поддерживает решение, либо блокирует его.</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    A/B-тест завершён. Эксперимент длился 14 дней, трафик стабильный. В тестовой группе изменили механику показа рекламы. Нужно принять решение: запускать в прод, откатывать или дорабатывать.
+                </p>
+                <p>
+                    Есть метрики: выручка, конверсия, удержание, RPM, CPM, объём показов. Все расчёты корректны, качество данных не вызывает вопросов. Проблема не в вычислениях — проблема в ясности решения.
+                </p>
+                <p>
+                    Таблица с результатами экспортирована из системы аналитики. Все числа на месте. Но решение неочевидно.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: слабая таблица</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Типичная широкая аналитическая таблица</div>
+                    <div class="table-container">
+                        <table class="before-table">
+                            <thead>
+                                <tr>
+                                    <th>Метрика</th>
+                                    <th>Control Revenue</th>
+                                    <th>Test Revenue</th>
+                                    <th>Revenue Delta</th>
+                                    <th>Control RPM</th>
+                                    <th>Test RPM</th>
+                                    <th>RPM Delta</th>
+                                    <th>Control Retention</th>
+                                    <th>Test Retention</th>
+                                    <th>Retention Delta</th>
+                                    <th>Control Conversion</th>
+                                    <th>Test Conversion</th>
+                                    <th>Conversion Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Day 1-7</td>
+                                    <td>125000</td>
+                                    <td>128500</td>
+                                    <td>+2.8%</td>
+                                    <td>2.85</td>
+                                    <td>2.91</td>
+                                    <td>+2.1%</td>
+                                    <td>0.72</td>
+                                    <td>0.71</td>
+                                    <td>-1.4%</td>
+                                    <td>0.045</td>
+                                    <td>0.046</td>
+                                    <td>+2.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Day 8-14</td>
+                                    <td>127000</td>
+                                    <td>130200</td>
+                                    <td>+2.5%</td>
+                                    <td>2.88</td>
+                                    <td>2.94</td>
+                                    <td>+2.1%</td>
+                                    <td>0.73</td>
+                                    <td>0.72</td>
+                                    <td>-1.4%</td>
+                                    <td>0.046</td>
+                                    <td>0.047</td>
+                                    <td>+2.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>252000</td>
+                                    <td>258700</td>
+                                    <td>+2.7%</td>
+                                    <td>2.865</td>
+                                    <td>2.925</td>
+                                    <td>+2.1%</td>
+                                    <td>0.725</td>
+                                    <td>0.715</td>
+                                    <td>-1.4%</td>
+                                    <td>0.0455</td>
+                                    <td>0.0465</td>
+                                    <td>+2.2%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="visual-block-caption">
+                        Пример типичной таблицы: метрики перемешаны, структура неочевидна, сравнение затруднено.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Типичная широкая аналитическая таблица: много столбцов, метрики перемешаны, контроль и тест не визуально разделены, все числа имеют одинаковый визуальный вес. Такая таблица обычно получается при экспорте из системы аналитики или электронной таблицы. Столбцы идут в том порядке, в котором они были в запросе или датасете.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Сравнение требует сканирования</h3>
+                        <p>
+                            Чтобы сравнить контроль и тест по одной метрике, нужно найти соответствующие столбцы, которые могут быть далеко друг от друга. Глаз вынужден прыгать по таблице, теряя контекст. Каждое сравнение требует когнитивной нагрузки на поиск и сопоставление. Невозможно быстро оценить общую картину: сколько метрик улучшилось, сколько ухудшилось, каков масштаб изменений.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Дельты теряются в шуме</h3>
+                        <p>
+                            Дельта находится в отдельном столбце, но визуально не выделена. Положительные и отрицательные изменения выглядят одинаково. Невозможно быстро определить, какие метрики важны для решения, какие изменения значимы, а какие находятся в пределах шума. Таблица показывает все числа, но не структурирует их так, чтобы ответ на вопрос решения был виден сразу.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Таблица не отвечает на вопрос решения</h3>
+                        <p>
+                            Решение требует понимания: есть ли эффект, какой он по знаку и величине, согласованы ли метрики между собой. Таблица показывает все числа, но не структурирует их так, чтобы ответ на вопрос решения был виден сразу. Нужно мысленно перегруппировать данные, что замедляет и увеличивает риск ошибки. Таблица блокирует принятие решения, даже если все расчёты корректны.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: таблица как аргумент</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Переструктурированная таблица</div>
+                    <div class="table-container">
+                        <table class="after-table">
+                            <thead>
+                                <tr>
+                                    <th class="group-header" colspan="3">Primary</th>
+                                    <th class="group-header" colspan="3">Guardrails</th>
+                                    <th class="group-header" colspan="3">Diagnostic</th>
+                                </tr>
+                                <tr>
+                                    <th>Метрика</th>
+                                    <th>Control</th>
+                                    <th>Test</th>
+                                    <th>Метрика</th>
+                                    <th>Control</th>
+                                    <th>Test</th>
+                                    <th>Метрика</th>
+                                    <th>Control</th>
+                                    <th>Test</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Revenue</strong></td>
+                                    <td>252,000</td>
+                                    <td>258,700</td>
+                                    <td><strong>Retention</strong></td>
+                                    <td>0.725</td>
+                                    <td>0.715</td>
+                                    <td>RPM</td>
+                                    <td>2.865</td>
+                                    <td>2.925</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="2" class="delta-positive" style="text-align: center; font-weight: 500;">+2.7%</td>
+                                    <td></td>
+                                    <td colspan="2" class="delta-negative" style="text-align: center; font-weight: 500;">-1.4%</td>
+                                    <td></td>
+                                    <td colspan="2" class="delta-positive" style="text-align: center; font-weight: 500;">+2.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>Conversion</td>
+                                    <td>0.0455</td>
+                                    <td>0.0465</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Shows</td>
+                                    <td>88,200</td>
+                                    <td>88,700</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="2" class="delta-positive" style="text-align: center; font-weight: 500;">+2.2%</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2" class="delta-positive" style="text-align: center; font-weight: 500;">+0.6%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="visual-block-caption">
+                        Переструктурированная таблица: метрики сгруппированы по роли, дельты выделены, решение видно сразу.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Переструктурированная таблица: метрики логически сгруппированы, контроль и тест визуально разделены, направление и величина изменения выделены, решение видно с первого взгляда. Используются: порядок строк (группировка по типам метрик), визуальное разделение (контроль и тест рядом), минимальное выделение (дельты с цветом знака), выравнивание (числа выровнены для сравнения).
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Замедление принятия решения из-за необходимости сканировать таблицу и мысленно перегруппировать данные. Риск ошибки интерпретации из-за потери контекста при сравнении далеко расположенных столбцов. Блокировка решения из-за неочевидности структуры и невозможности быстро оценить общую картину.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Быстрое принятие решения за один взгляд благодаря логической группировке метрик и визуальному выделению дельт. Снижение риска ошибки благодаря явной структуре, которая отражает логику решения. Уверенность в решении благодаря очевидности эффекта и согласованности метрик.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Итоговая таблица A/B-теста работает, когда она отвечает на вопрос решения за один взгляд. Метрики сгруппированы по роли (primary, guardrails, diagnostic), контроль и тест визуально сопоставимы, дельты выделены по знаку и величине. Таблица не просто показывает числа — она структурирует их так, чтобы решение было очевидным. Итоговая таблица A/B-теста не работает, когда она требует мысленной перегруппировки данных. Если нужно сканировать таблицу, чтобы найти сравнение, если дельты теряются среди абсолютных значений, если структура не отражает логику решения — таблица блокирует принятие решения, даже если все расчёты корректны.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Можно ли принять решение за 10 секунд?</li>
+                    <li>Видна ли дельта сразу, без поиска по таблице?</li>
+                    <li>Понятно ли, какие метрики важны для решения?</li>
+                </ul>
+            </section>
+        </main>
+
+        <nav class="lesson-nav">
+            <span></span>
+            <a href="./02-colored-table.html">Следующий урок →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

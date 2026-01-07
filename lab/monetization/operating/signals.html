@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ранние сигналы</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .signals-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .signals-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .signals-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .signal-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .signal-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .signal-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .signal-card-list {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .signal-card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 768px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .symptom-select {
+            padding: 0.75rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .hypothesis-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .hypothesis-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .hypothesis-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .checks-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .checks-list {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .checks-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .antipattern {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #666;
+            font-style: italic;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .antipattern strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .checklist {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .checklist-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .checklist-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .checklist-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .line-mechanism {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-segment {
+            stroke-width: 1.5;
+            opacity: 0.7;
+        }
+
+        .line-segment-low {
+            stroke: #999;
+        }
+
+        .line-segment-mid {
+            stroke: #666;
+        }
+
+        .line-segment-high {
+            stroke: #999;
+            stroke-dasharray: 2, 2;
+        }
+
+        .line-average {
+            stroke: #1f2a37;
+            stroke-width: 2.5;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .legend {
+            font-size: 10px;
+            fill: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Ранние сигналы деградации</h1>
+        <p class="subtitle">Деньги запаздывают. Механика ломается раньше.</p>
+
+        <div class="intro">
+            <p>
+                Ровная выручка не означает стабильную систему. Пока деньги держатся, механизм может деградировать: конверсии падают, доступность сжимается, давление растёт, распределения меняются.
+            </p>
+            <p>
+                Ранние сигналы живут в конверсиях, доступности, давлении и распределениях. Они появляются до того, как итоговые метрики начинают реагировать.
+            </p>
+            <p>
+                Система предупреждает раньше, чем падают деньги. Если вы умеете читать эти сигналы, вы приходите к проблеме до порога, а не после.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Карта сигналов</div>
+            <div class="signals-grid">
+                <div class="signal-card">
+                    <div class="signal-card-title">Show rate ↓ при стабильных requests</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Запросы приходят, но конверсия в показ падает.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Давление или насыщение снижают доступность инвентаря.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>requests → responses → shows (воронка)</li>
+                            <li>Частота и плотность показов</li>
+                            <li>Конкуренция форматов и плейсментов</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-card-title">Fill rate ↓ / coverage ↓ при стабильной видимости</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Спрос или ответы становятся недоступными.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Истощение инвентаря или сжатие доступности.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>Доступность ответов по сегментам</li>
+                            <li>Распределение по площадкам</li>
+                            <li>Динамика coverage во времени</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-card-title">CPM ↑ при падающем show rate</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Цена растёт, объём падает — компенсация.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Сжатие предложения поднимает цену, скрывая деградацию.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>Show rate и объём показов</li>
+                            <li>CPM и его динамика</li>
+                            <li>Выручка = объём × цена (не только цена)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-card-title">Pressure/ad load ↑ при плоском revenue</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Давление растёт, но выручка не реагирует — насыщение.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Система достигла предела отдачи, дальнейший рост давления не даёт результата.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>Прокси-давление: частота, плотность</li>
+                            <li>Show rate при росте давления</li>
+                            <li>Траектория во времени (сегодня vs потом)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-card-title">CTR "стабилен", но меняется mix форматов</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Средний CTR держится, но состав форматов сдвигается.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Композиционный сдвиг маскирует деградацию отдельных форматов.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>CTR по форматам и плейсментам</li>
+                            <li>Доля каждого формата в общем объёме</li>
+                            <li>Распределение внимания между форматами</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-card-title">Рост дисперсии при среднем "ок"</div>
+                    <div class="signal-card-item">
+                        <strong>Что это значит:</strong> Среднее выглядит стабильным, но разброс растёт.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Типичный механизм:</strong> Система становится хрупкой: отдельные сегменты деградируют, среднее компенсируется.
+                    </div>
+                    <div class="signal-card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="signal-card-list">
+                            <li>Дисперсия по сегментам и площадкам</li>
+                            <li>Хвосты распределения</li>
+                            <li>Квантили и экстремумы</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Метрика держится, механизм падает</div>
+            <div class="chart-container">
+                <svg id="chart1"></svg>
+                <p class="chart-caption">
+                    Если смотреть только на деньги — вы всегда приходите после порога.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Система ломается на краю распределения</div>
+            <div class="chart-container">
+                <svg id="chart2"></svg>
+                <p class="chart-caption">
+                    Среднее скрывает риск. Смотрите на сегменты.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Симптом → гипотеза → что проверить</div>
+            <div class="interactive-panel">
+                <div>
+                    <label for="symptomSelect" style="display: block; font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Выберите симптом:</label>
+                    <select id="symptomSelect" class="symptom-select">
+                        <option value="show-rate">Show rate ↓ при стабильных requests</option>
+                        <option value="fill-rate">Fill rate ↓ / coverage ↓</option>
+                        <option value="cpm-up">CPM ↑ при падающем show rate</option>
+                        <option value="pressure-up">Pressure ↑ при плоском revenue</option>
+                        <option value="ctr-mix">CTR стабилен, но меняется mix</option>
+                        <option value="variance">Рост дисперсии при среднем "ок"</option>
+                    </select>
+                </div>
+                <div class="hypothesis-panel" id="hypothesisPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Чеклист на каждый день</div>
+            <div class="checklist">
+                <div class="checklist-title">Ежедневные проверки</div>
+                <ul class="checklist-list">
+                    <li>Проверить воронку: requests → responses → shows → clicks</li>
+                    <li>Сравнить show rate и fill rate с вчерашним днём</li>
+                    <li>Проверить прокси-давление: частота, плотность, конкуренция</li>
+                    <li>Сравнить механику (showConv) и итог (revenue) — есть ли лаг</li>
+                    <li>Проверить mix форматов и плейсментов — не сдвинулся ли</li>
+                    <li>Посмотреть на дисперсию по сегментам — не растёт ли разброс</li>
+                    <li>Проверить, что рост CPM не маскирует падение объёма</li>
+                    <li>Контролировать окно наблюдения — не читаете ли тишину</li>
+                    <li>Фиксировать baseline и guardrails — не вышли ли за границы</li>
+                    <li>Мониторить хвосты распределения — где риск</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Ранние сигналы — это не предсказание. Это диагностика.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Механика важнее метрики.</p>
+        </div>
+    </div>
+
+    <script>
+        // Symptom map
+        const symptomMap = {
+            'show-rate': {
+                hypothesis: 'Давление или насыщение снижают доступность инвентаря. Система получает запросы, но не может конвертировать их в показы из-за ограничений или конкуренции.',
+                checks: [
+                    'Проверить воронку requests → responses → shows по сегментам',
+                    'Сравнить частоту и плотность показов с предыдущим периодом',
+                    'Оценить конкуренцию форматов и плейсментов',
+                    'Проверить доступность инвентаря и coverage',
+                    'Посмотреть на динамику showConv во времени',
+                    'Сравнить давление (прокси) с show rate'
+                ],
+                antipattern: 'Не оптимизировать только CPM — это может скрыть падение объёма.'
+            },
+            'fill-rate': {
+                hypothesis: 'Истощение инвентаря или сжатие доступности ответов. Спрос есть, но ответы становятся недоступными из-за ограничений системы или рынка.',
+                checks: [
+                    'Проверить доступность ответов по сегментам и площадкам',
+                    'Сравнить fill rate и coverage с предыдущим периодом',
+                    'Оценить распределение по источникам спроса',
+                    'Проверить динамику coverage во времени',
+                    'Посмотреть на лаг между запросами и ответами',
+                    'Сравнить fill rate с show rate — где теряется конверсия'
+                ],
+                antipattern: 'Не считать fill rate "нормальным" только потому, что он стабилен — проверьте сегменты.'
+            },
+            'cpm-up': {
+                hypothesis: 'Сжатие предложения поднимает цену, компенсируя падение объёма. Это создаёт иллюзию стабильности, показывая рост CPM при деградации механизма.',
+                checks: [
+                    'Проверить show rate и объём показов — падают ли они',
+                    'Сравнить CPM с динамикой объёма — компенсация ли это',
+                    'Оценить выручку как объём × цена, а не только цену',
+                    'Проверить механику (showConv) — не деградирует ли',
+                    'Посмотреть на траекторию во времени — не скрытое ли насыщение',
+                    'Сравнить с предыдущим периодом — не маскирует ли цена проблему'
+                ],
+                antipattern: 'Не радоваться росту CPM, если падает show rate — это компенсация, не успех.'
+            },
+            'pressure-up': {
+                hypothesis: 'Система достигла предела отдачи. Дальнейший рост давления не даёт результата, потому что механизм насыщен и начинает деградировать.',
+                checks: [
+                    'Проверить прокси-давление: частота, плотность, конкуренция',
+                    'Сравнить show rate при росте давления — не падает ли',
+                    'Оценить траекторию во времени: сегодня vs потом',
+                    'Проверить, не скрытое ли это насыщение',
+                    'Посмотреть на пороги — не перешли ли за границу',
+                    'Сравнить давление с механикой — где связь'
+                ],
+                antipattern: 'Не дожимать давление дальше — это может сломать систему.'
+            },
+            'ctr-mix': {
+                hypothesis: 'Композиционный сдвиг маскирует деградацию отдельных форматов. Средний CTR держится, потому что доля лучших форматов растёт, скрывая падение остальных.',
+                checks: [
+                    'Проверить CTR по каждому формату и плейсменту отдельно',
+                    'Сравнить долю каждого формата в общем объёме',
+                    'Оценить распределение внимания между форматами',
+                    'Проверить динамику mix во времени — не сдвинулся ли',
+                    'Посмотреть на сегменты — не компенсирует ли один другой',
+                    'Сравнить средний CTR с взвешенным — не скрывает ли композиция'
+                ],
+                antipattern: 'Не смотреть только на средний CTR — проверьте каждый формат отдельно.'
+            },
+            'variance': {
+                hypothesis: 'Система становится хрупкой: отдельные сегменты деградируют, но среднее компенсируется за счёт других. Разброс растёт, показывая накопление риска.',
+                checks: [
+                    'Проверить дисперсию по сегментам, площадкам, форматам',
+                    'Сравнить хвосты распределения — не растут ли экстремумы',
+                    'Оценить квантили — не сдвигаются ли',
+                    'Проверить, какие сегменты деградируют — не маскирует ли среднее',
+                    'Посмотреть на траектории сегментов во времени',
+                    'Сравнить среднее с медианой — не скрывает ли выбросы'
+                ],
+                antipattern: 'Не успокаиваться средним — проверьте сегменты и хвосты.'
+            }
+        };
+
+        // Update hypothesis panel
+        function updateHypothesis() {
+            const select = document.getElementById('symptomSelect');
+            const panel = document.getElementById('hypothesisPanel');
+            const data = symptomMap[select.value];
+
+            panel.innerHTML = `
+                <div class="hypothesis-title">Гипотеза механизма</div>
+                <div class="hypothesis-text">${data.hypothesis}</div>
+                <div class="checks-title">Проверки</div>
+                <ul class="checks-list">
+                    ${data.checks.map(check => `<li>${check}</li>`).join('')}
+                </ul>
+                <div class="antipattern">
+                    <strong>Антипаттерн:</strong> ${data.antipattern}
+                </div>
+            `;
+        }
+
+        document.getElementById('symptomSelect').addEventListener('change', updateHypothesis);
+        updateHypothesis();
+
+        // Chart 1: Revenue vs Mechanism
+        function generateChart1() {
+            const data = [];
+            for (let t = 1; t <= 120; t++) {
+                // Mechanism starts declining earlier
+                const mechBase = 0.88;
+                const mechDecline = 0.15 * (1 / (1 + Math.exp(-(t - 40) / 8)));
+                const mechWave = 0.02 * Math.sin(t / 15);
+                const mechanism = Math.max(0.65, mechBase - mechDecline + mechWave);
+
+                // Revenue stays flat longer, then declines
+                const revBase = 0.95;
+                const revDecline = 0.12 * (1 / (1 + Math.exp(-(t - 70) / 6)));
+                const revWave = 0.015 * Math.sin(t / 18);
+                const revenue = Math.max(0.75, revBase - revDecline + revWave);
+
+                data.push({ t, mechanism, revenue });
+            }
+
+            const margin = { top: 30, right: 100, bottom: 40, left: 50 };
+            const container = d3.select('#chart1').node().parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart1').selectAll('*').remove();
+
+            const svg = d3.select('#chart1')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleLinear()
+                .domain([1, 120])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0.6, 1.0])
+                .range([height, 0]);
+
+            // Event line at t=70
+            g.append('line')
+                .attr('class', 'event-line')
+                .attr('x1', xScale(70))
+                .attr('x2', xScale(70))
+                .attr('y1', 0)
+                .attr('y2', height);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(70) + 3)
+                .attr('y', 12)
+                .text('момент, когда деньги начинают реагировать');
+
+            // Lines
+            const line = d3.line()
+                .x(d => xScale(d.t))
+                .y(d => yScale(d.value))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.revenue })))
+                .attr('class', 'line line-revenue')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.mechanism })))
+                .attr('class', 'line line-mechanism')
+                .attr('d', line);
+
+            // Labels
+            const last = data[data.length - 1];
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.revenue) - 5)
+                .text('выручка');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.mechanism) - 5)
+                .text('механика');
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(6)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('t');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('нормализованная шкала');
+        }
+
+        // Chart 2: Segmentation stress
+        function generateChart2() {
+            const data = [];
+            for (let t = 1; t <= 120; t++) {
+                // Low pressure segment - stable
+                const lowBase = 0.85;
+                const lowWave = 0.02 * Math.sin(t / 20);
+                const low = lowBase + lowWave;
+
+                // Mid pressure segment - slight decline
+                const midBase = 0.82;
+                const midDecline = 0.05 * (1 / (1 + Math.exp(-(t - 60) / 10)));
+                const midWave = 0.015 * Math.sin(t / 18);
+                const mid = Math.max(0.75, midBase - midDecline + midWave);
+
+                // High pressure segment - sharp decline
+                const highBase = 0.80;
+                const highDecline = 0.20 * (1 / (1 + Math.exp(-(t - 45) / 6)));
+                const highWave = 0.01 * Math.sin(t / 15);
+                const high = Math.max(0.55, highBase - highDecline + highWave);
+
+                // Average (weighted)
+                const avg = (low * 0.4 + mid * 0.4 + high * 0.2);
+
+                data.push({ t, low, mid, high, avg });
+            }
+
+            const margin = { top: 30, right: 120, bottom: 40, left: 50 };
+            const container = d3.select('#chart2').node().parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart2').selectAll('*').remove();
+
+            const svg = d3.select('#chart2')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleLinear()
+                .domain([1, 120])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0.5, 0.9])
+                .range([height, 0]);
+
+            const line = d3.line()
+                .x(d => xScale(d.t))
+                .y(d => yScale(d.value))
+                .curve(d3.curveMonotoneX);
+
+            // Segment lines
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.low })))
+                .attr('class', 'line line-segment line-segment-low')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.mid })))
+                .attr('class', 'line line-segment line-segment-mid')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.high })))
+                .attr('class', 'line line-segment line-segment-high')
+                .attr('d', line);
+
+            // Average line
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.avg })))
+                .attr('class', 'line line-average')
+                .attr('d', line);
+
+            // Legend
+            const legendY = 20;
+            const legendX = width + 20;
+            const legendItems = [
+                { label: 'low pressure', class: 'line-segment-low', y: legendY },
+                { label: 'mid pressure', class: 'line-segment-mid', y: legendY + 15 },
+                { label: 'high pressure', class: 'line-segment-high', y: legendY + 30 },
+                { label: 'среднее', class: 'line-average', y: legendY + 45 }
+            ];
+
+            legendItems.forEach((item, i) => {
+                g.append('line')
+                    .attr('x1', legendX)
+                    .attr('x2', legendX + 20)
+                    .attr('y1', item.y)
+                    .attr('y2', item.y)
+                    .attr('class', `line ${item.class}`)
+                    .style('stroke-width', item.class === 'line-average' ? 2.5 : 1.5);
+
+                g.append('text')
+                    .attr('class', 'legend')
+                    .attr('x', legendX + 25)
+                    .attr('y', item.y + 4)
+                    .text(item.label);
+            });
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(6)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('t');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('show rate (индекс)');
+        }
+
+        // Initial render
+        generateChart1();
+        generateChart2();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateChart1();
+                generateChart2();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

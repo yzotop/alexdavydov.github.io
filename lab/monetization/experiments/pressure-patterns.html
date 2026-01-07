@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Давление: паттерны</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .lead p {
+            margin-bottom: 1rem;
+        }
+
+        .info-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .info-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .info-panel p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .calculator-card {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .calculator-explanation {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .readout {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .readout-item {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .readout-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .readout-item.muted {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mode-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 3px;
+        }
+
+        .mode-button:hover {
+            border-color: #999;
+        }
+
+        .mode-button.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .decomposition-bars {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .bar-container {
+            margin-bottom: 1rem;
+        }
+
+        .bar-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar {
+            flex: 1;
+            height: 24px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: #666;
+            transition: width 0.3s ease;
+        }
+
+        .bar-value {
+            font-size: 0.85rem;
+            color: #1a1a1a;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-mechanism {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .marker-current {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .marker-threshold {
+            stroke: #666;
+            stroke-width: 1;
+            stroke-dasharray: 4, 4;
+            opacity: 0.8;
+        }
+
+        .marker-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .patterns-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .pattern-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .pattern-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-item {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .pattern-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Давление: паттерны</h1>
+        <p class="subtitle">Дожимать можно. Ломать — быстро.</p>
+
+        <div class="lead">
+            <p>
+                Давление в монетизации — это интенсивность попыток монетизировать внимание, а не просто "больше рекламы". Это сила, которая меняет поведение пользователей, конверсию в показ и доступность инвентаря.
+            </p>
+            <p>
+                Повторяющиеся исходы: насыщение (убывающая отдача), пороги (резкая смена режима), скрытое насыщение (когда выручка растёт, а механика деградирует).
+            </p>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-panel-title">Что здесь важно</div>
+            <p>Выручка — производная нескольких факторов.</p>
+            <p>Оптимизация по одному фактору может ломать другой.</p>
+            <p>Насыщение проявляется раньше в механике, чем в деньгах.</p>
+            <p>Калькуляторы ниже показывают форму, а не цифры.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 1: декомпозиция выручки</div>
+            <div class="calculator-card">
+                <p class="calculator-explanation">
+                    Выручка = Показы × CPM (в индексной форме). Изменение выручки можно разложить на вклад показов и вклад цены.
+                </p>
+                <div class="control-group">
+                    <label class="control-label">Показы (Shows)</label>
+                    <div class="slider-container">
+                        <input type="range" id="showsSlider" class="slider" min="60" max="140" step="1" value="100">
+                        <span class="slider-value" id="showsValue">100</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">CPM (Цена)</label>
+                    <div class="slider-container">
+                        <input type="range" id="cpmSlider" class="slider" min="60" max="140" step="1" value="100">
+                        <span class="slider-value" id="cpmValue">100</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item">
+                        <strong>Выручка (индекс):</strong> <span id="revenueValue">100.0</span> = Shows × CPM / 100
+                    </div>
+                    <div class="readout-item muted" id="shareNote"></div>
+                </div>
+                <div class="decomposition-bars">
+                    <div class="bar-container">
+                        <div class="bar-label">Вклад показов</div>
+                        <div class="bar-wrapper">
+                            <div class="bar">
+                                <div class="bar-fill" id="showsBar" style="width: 0%"></div>
+                            </div>
+                            <div class="bar-value" id="showsContribution">0%</div>
+                        </div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-label">Вклад цены</div>
+                        <div class="bar-wrapper">
+                            <div class="bar">
+                                <div class="bar-fill" id="cpmBar" style="width: 0%"></div>
+                            </div>
+                            <div class="bar-value" id="cpmContribution">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 2: насыщение и порог</div>
+            <div class="calculator-card">
+                <div class="control-group">
+                    <label class="control-label">Давление (D)</label>
+                    <div class="slider-container">
+                        <input type="range" id="pressureSlider" class="slider" min="0.20" max="1.20" step="0.01" value="0.78">
+                        <span class="slider-value" id="pressureValue">0.78</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Порог (T)</label>
+                    <div class="slider-container">
+                        <input type="range" id="thresholdSlider" class="slider" min="0.55" max="1.05" step="0.01" value="0.82">
+                        <span class="slider-value" id="thresholdValue">0.82</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Резкость (K)</label>
+                    <div class="slider-container">
+                        <input type="range" id="sharpnessSlider" class="slider" min="4" max="20" step="1" value="12">
+                        <span class="slider-value" id="sharpnessValue">12</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Режим</label>
+                    <div class="mode-toggle">
+                        <button class="mode-button" data-mode="smooth">Плавно</button>
+                        <button class="mode-button active" data-mode="threshold">Порогово</button>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item muted">
+                        <strong>Механика (showConv):</strong> <span id="showConvValue">0.000</span>
+                    </div>
+                    <div class="readout-item muted">
+                        <strong>CPM (цена):</strong> <span id="cpmCalcValue">0.0</span>
+                    </div>
+                    <div class="readout-item muted">
+                        <strong>Выручка (индекс):</strong> <span id="revenueCalcValue">0.0</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <svg id="chart"></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Повторяющиеся паттерны</div>
+            <div class="patterns-grid">
+                <div class="pattern-card">
+                    <div class="pattern-title">Hidden saturation</div>
+                    <div class="pattern-item">
+                        <strong>Сначала ломается:</strong> showConv, конверсия в показ
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> выручка, RPM
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> читать только выручку, игнорировать механику
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Threshold</div>
+                    <div class="pattern-item">
+                        <strong>Сначала ломается:</strong> распределение, стабильность
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> выручка, метрики качества
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> дожимать давление после порога
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Pressure without attention</div>
+                    <div class="pattern-item">
+                        <strong>Сначала ломается:</strong> хвосты распределения, конкуренция форматов
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> выручка, долгосрочная траектория
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> увеличивать давление без расширения инвентаря
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Давление полезно, пока система остаётся в области устойчивости.
+        </p>
+
+        <p class="interpretation">
+            Если вы видите, что механика падает, а деньги ещё держатся — это не победа, а лаг.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к экспериментам</a>
+            <p class="footer-note">Лечите механизм, а не отчёт.</p>
+        </div>
+    </div>
+
+    <script>
+        // Model functions
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function showConv(D, mode, T, K) {
+            const base = 0.86 - 0.08 * (D - 0.20);
+            if (mode === "smooth") {
+                const sc = base - 0.03 * (D - 0.20) * (D - 0.20);
+                return clamp(sc, 0.55, 0.90);
+            } else {
+                const step = 0.20 * (1 / (1 + Math.exp(-(D - T) * K)));
+                const sc = base - 0.02 * (D - 0.20) * (D - 0.20) - step;
+                return clamp(sc, 0.55, 0.90);
+            }
+        }
+
+        function cpm(D) {
+            const c = 150 + 20 * (D - 0.20) + 8 * Math.sin((D - 0.20) * 6);
+            return clamp(c, 120, 220);
+        }
+
+        function inventory(D) {
+            const inv = 1.0 - 0.10 * (1 / (1 + Math.exp(-(D - 0.85) * 10)));
+            return clamp(inv, 0.85, 1.0);
+        }
+
+        function revenueToday(D, mode, T, K) {
+            const sc = showConv(D, mode, T, K);
+            const inv = inventory(D);
+            const shows = 1200 * inv * sc;
+            const cpmVal = cpm(D);
+
+            let sat;
+            if (mode === "smooth") {
+                sat = 1 - 0.10 * (D - 0.20);
+            } else {
+                sat = 1 - 0.14 * (D - 0.20) - 0.22 * (1 / (1 + Math.exp(-(D - T) * K)));
+            }
+
+            const rev = (shows / 1000) * cpmVal * clamp(sat, 0.45, 1.0);
+            return rev;
+        }
+
+        // Calculator 1: Revenue decomposition
+        function updateCalculator1() {
+            const shows = parseInt(document.getElementById("showsSlider").value);
+            const cpm = parseInt(document.getElementById("cpmSlider").value);
+            
+            document.getElementById("showsValue").textContent = shows;
+            document.getElementById("cpmValue").textContent = cpm;
+
+            const revenue = (shows * cpm) / 100;
+            document.getElementById("revenueValue").textContent = revenue.toFixed(1);
+
+            // Log decomposition
+            const base = 100;
+            const newR = revenue;
+            const logChange = Math.log(newR / base);
+            
+            const contribShows = Math.log(shows / base);
+            const contribCpm = Math.log(cpm / base);
+            const totalContrib = contribShows + contribCpm;
+
+            let showsPct = 0;
+            let cpmPct = 0;
+            if (Math.abs(totalContrib) > 0.001) {
+                showsPct = (contribShows / totalContrib) * 100;
+                cpmPct = (contribCpm / totalContrib) * 100;
+            }
+
+            document.getElementById("showsContribution").textContent = showsPct.toFixed(1) + "%";
+            document.getElementById("cpmContribution").textContent = cpmPct.toFixed(1) + "%";
+            
+            document.getElementById("showsBar").style.width = Math.abs(showsPct) + "%";
+            document.getElementById("cpmBar").style.width = Math.abs(cpmPct) + "%";
+
+            if (revenue !== base) {
+                document.getElementById("shareNote").textContent = 
+                    "Если выручка изменилась, проверьте: что внесло вклад — показы или цена?";
+            } else {
+                document.getElementById("shareNote").textContent = "";
+            }
+        }
+
+        // Calculator 2: Saturation
+        let currentPressure = 0.78;
+        let currentThreshold = 0.82;
+        let currentSharpness = 12;
+        let currentMode = 'threshold';
+
+        function updateCalculator2() {
+            const sc = showConv(currentPressure, currentMode, currentThreshold, currentSharpness);
+            const cpmVal = cpm(currentPressure);
+            const rev = revenueToday(currentPressure, currentMode, currentThreshold, currentSharpness);
+            const rev0 = revenueToday(0.20, currentMode, currentThreshold, currentSharpness);
+            const revIdx = 100 * rev / rev0;
+
+            document.getElementById("showConvValue").textContent = sc.toFixed(3);
+            document.getElementById("cpmCalcValue").textContent = cpmVal.toFixed(1);
+            document.getElementById("revenueCalcValue").textContent = revIdx.toFixed(1);
+
+            updateChart();
+        }
+
+        function generateCurveData(mode, T, K) {
+            const data = [];
+            const sc0 = showConv(0.20, mode, T, K);
+            const rev0 = revenueToday(0.20, mode, T, K);
+            
+            for (let i = 0; i <= 100; i++) {
+                const D = 0.20 + (i / 100) * 1.00;
+                const sc = showConv(D, mode, T, K);
+                const rev = revenueToday(D, mode, T, K);
+                const scIdx = 100 * sc / sc0;
+                const revIdx = 100 * rev / rev0;
+                
+                data.push({ D, scIdx, revIdx });
+            }
+            
+            return data;
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 300 - margin.top - margin.bottom;
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0.20, 1.20])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([60, 140])
+            .range([height, 0]);
+
+        // Line generators
+        const line1 = d3.line()
+            .x(d => xScale(d.D))
+            .y(d => yScale(d.scIdx))
+            .curve(d3.curveMonotoneX);
+
+        const line2 = d3.line()
+            .x(d => xScale(d.D))
+            .y(d => yScale(d.revIdx))
+            .curve(d3.curveMonotoneX);
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Initialize axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(4)
+            .tickValues([0.2, 0.5, 0.8, 1.1])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(3)
+            .tickValues([60, 100, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("Давление (D)");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Индекс");
+
+        function updateChart() {
+            const curveData = generateCurveData(currentMode, currentThreshold, currentSharpness);
+            const currentSc = showConv(currentPressure, currentMode, currentThreshold, currentSharpness);
+            const sc0 = showConv(0.20, currentMode, currentThreshold, currentSharpness);
+            const currentScIdx = 100 * currentSc / sc0;
+            const currentRev = revenueToday(currentPressure, currentMode, currentThreshold, currentSharpness);
+            const rev0 = revenueToday(0.20, currentMode, currentThreshold, currentSharpness);
+            const currentRevIdx = 100 * currentRev / rev0;
+
+            // Update lines
+            const path1 = g.selectAll(".mechanism-curve")
+                .data([curveData]);
+
+            const path1Enter = path1.enter()
+                .append("path")
+                .attr("class", "mechanism-curve line line-mechanism")
+                .attr("d", line1);
+
+            path1.merge(path1Enter)
+                .transition()
+                .duration(450)
+                .attr("d", line1);
+
+            const path2 = g.selectAll(".revenue-curve")
+                .data([curveData]);
+
+            const path2Enter = path2.enter()
+                .append("path")
+                .attr("class", "revenue-curve line line-revenue")
+                .attr("d", line2);
+
+            path2.merge(path2Enter)
+                .transition()
+                .duration(450)
+                .attr("d", line2);
+
+            // Update labels
+            const last = curveData[curveData.length - 1];
+            const label1 = g.selectAll(".mechanism-label")
+                .data([last]);
+
+            const label1Enter = label1.enter()
+                .append("text")
+                .attr("class", "axis-label mechanism-label")
+                .attr("x", d => xScale(d.D) + 5)
+                .attr("y", d => yScale(d.scIdx) - 5)
+                .text("механика");
+
+            label1.merge(label1Enter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.D) + 5)
+                .attr("y", d => yScale(d.scIdx) - 5);
+
+            const label2 = g.selectAll(".revenue-label")
+                .data([last]);
+
+            const label2Enter = label2.enter()
+                .append("text")
+                .attr("class", "axis-label revenue-label")
+                .attr("x", d => xScale(d.D) + 5)
+                .attr("y", d => yScale(d.revIdx) + 15)
+                .text("выручка");
+
+            label2.merge(label2Enter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.D) + 5)
+                .attr("y", d => yScale(d.revIdx) + 15);
+
+            // Update markers
+            const marker1 = g.selectAll(".marker-current")
+                .data([currentPressure]);
+
+            const marker1Enter = marker1.enter()
+                .append("line")
+                .attr("class", "marker-current")
+                .attr("x1", xScale)
+                .attr("x2", xScale)
+                .attr("y1", 0)
+                .attr("y2", height);
+
+            marker1.merge(marker1Enter)
+                .transition()
+                .duration(200)
+                .attr("x1", xScale)
+                .attr("x2", xScale);
+
+            if (currentMode === 'threshold') {
+                const marker2 = g.selectAll(".marker-threshold")
+                    .data([currentThreshold]);
+
+                const marker2Enter = marker2.enter()
+                    .append("line")
+                    .attr("class", "marker-threshold")
+                    .attr("x1", xScale)
+                    .attr("x2", xScale)
+                    .attr("y1", 0)
+                    .attr("y2", height);
+
+                marker2.merge(marker2Enter)
+                    .transition()
+                    .duration(450)
+                    .attr("x1", xScale)
+                    .attr("x2", xScale);
+
+                const label2 = g.selectAll(".threshold-label")
+                    .data([currentThreshold]);
+
+                const label2Enter = label2.enter()
+                    .append("text")
+                    .attr("class", "marker-label threshold-label")
+                    .attr("x", d => xScale(d) + 3)
+                    .attr("y", 12)
+                    .text("порог");
+
+                label2.merge(label2Enter)
+                    .transition()
+                    .duration(450)
+                    .attr("x", d => xScale(d) + 3);
+            } else {
+                g.selectAll(".marker-threshold").remove();
+                g.selectAll(".threshold-label").remove();
+            }
+        }
+
+        // Calculator 1 sliders
+        document.getElementById("showsSlider").addEventListener("input", function() {
+            updateCalculator1();
+        });
+
+        document.getElementById("cpmSlider").addEventListener("input", function() {
+            updateCalculator1();
+        });
+
+        // Calculator 2 sliders
+        document.getElementById("pressureSlider").addEventListener("input", function() {
+            currentPressure = parseFloat(this.value);
+            document.getElementById("pressureValue").textContent = currentPressure.toFixed(2);
+            updateCalculator2();
+        });
+
+        document.getElementById("thresholdSlider").addEventListener("input", function() {
+            currentThreshold = parseFloat(this.value);
+            document.getElementById("thresholdValue").textContent = currentThreshold.toFixed(2);
+            updateCalculator2();
+        });
+
+        document.getElementById("sharpnessSlider").addEventListener("input", function() {
+            currentSharpness = parseInt(this.value);
+            document.getElementById("sharpnessValue").textContent = currentSharpness;
+            updateCalculator2();
+        });
+
+        // Mode toggle
+        d3.selectAll(".mode-button").on("click", function() {
+            currentMode = this.getAttribute("data-mode");
+            d3.selectAll(".mode-button")
+                .classed("active", false);
+            d3.select(this)
+                .classed("active", true);
+            updateCalculator2();
+        });
+
+        // Initial render
+        updateCalculator1();
+        updateCalculator2();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

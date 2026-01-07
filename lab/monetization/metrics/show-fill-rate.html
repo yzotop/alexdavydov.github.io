@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show rate & Fill rate</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .mini-chart-container {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-fill {
+            stroke: #1f2a37;
+        }
+
+        .line-show {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+            opacity: 0.8;
+        }
+
+        .line-pressure {
+            stroke: #ccc;
+            stroke-width: 1;
+            opacity: 0.6;
+        }
+
+        .line-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .reference-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.5;
+        }
+
+        .reference-label {
+            font-size: 9px;
+            fill: #aaa;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Show rate & Fill rate</h1>
+        <p class="subtitle">Где система перестаёт монетизироваться.</p>
+        <p class="insight">Show rate и fill rate — ранние индикаторы давления и доступности спроса.</p>
+
+        <p class="explanation">
+            Fill rate показывает, есть ли ответ на запрос, доступен ли спрос. Show rate показывает, доходит ли ответ до монетизируемого показа. Это не метрики "хорошо/плохо" сами по себе — они описывают режимы работы системы.
+        </p>
+
+        <p class="thesis">
+            <strong>Выручка часто запаздывает. Show rate ломается раньше.</strong>
+        </p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+            <div class="mini-chart-container">
+                <svg id="mini-chart"></svg>
+            </div>
+        </div>
+
+        <p class="chart-caption">
+            Давление меняет show rate раньше, чем меняются деньги.
+        </p>
+
+        <p class="interpretation">
+            Если падает fill rate — исчезает спрос или ответы. Если падает show rate при стабильном fill rate — система упирается в давление и насыщение.
+        </p>
+
+        <p class="interpretation">
+            Эти метрики полезны не как KPI, а как датчики режима. Они показывают, где вы начинаете платить будущим за текущую выручку.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Сначала ломается конверсия в показ. Потом — деньги.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к метрикам</a>
+            <p class="footer-note">Ранние сигналы важнее итогов.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic data
+        const T = 120;
+        const data = [];
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function pressure(t) {
+            let base = 0.35;
+            if (t >= 55) base = 0.55;
+            if (t >= 80) base = 0.75;
+            return base + Math.sin(t / 8) * 0.02;
+        }
+
+        function fillRate(t) {
+            const base = 0.88 - 0.0006 * t;
+            const seasonal = 0.015 * Math.sin(t / 10);
+            return clamp(base + seasonal, 0.78, 0.92);
+        }
+
+        function showRate(t) {
+            const p = pressure(t);
+            const base = 0.82 - 0.0008 * t;
+            const pressureEffect = 0.10 * (p - 0.35);
+            const thresholdEffect = 0.06 * (1 / (1 + Math.exp(-(t - 80) / 3)));
+            const recovery = 0.03 * (1 / (1 + Math.exp(-(t - 100) / 4)));
+            let show = clamp(base - pressureEffect - thresholdEffect + recovery, 0.55, 0.86);
+            // Ensure show <= fill - 0.02
+            const fill = fillRate(t);
+            show = Math.min(show, fill - 0.02);
+            return show;
+        }
+
+        for (let t = 1; t <= T; t++) {
+            data.push({
+                t,
+                fill: fillRate(t),
+                show: showRate(t),
+                pressure: pressure(t)
+            });
+        }
+
+        // Main chart dimensions
+        const margin = { top: 40, right: 60, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 360 - margin.top - margin.bottom;
+
+        // Create main SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, T])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0.6, 1.0])
+            .range([height, 0]);
+
+        // Line generators
+        const line = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.fill))
+            .curve(d3.curveMonotoneX);
+
+        const showLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.show))
+            .curve(d3.curveMonotoneX);
+
+        // Draw reference lines
+        const pressure1X = xScale(55);
+        g.append("line")
+            .attr("class", "reference-line")
+            .attr("x1", pressure1X)
+            .attr("x2", pressure1X)
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        g.append("text")
+            .attr("class", "reference-label")
+            .attr("x", pressure1X)
+            .attr("y", height + 8)
+            .attr("text-anchor", "middle")
+            .text("рост давления");
+
+        const thresholdX = xScale(80);
+        g.append("line")
+            .attr("class", "reference-line")
+            .attr("x1", thresholdX)
+            .attr("x2", thresholdX)
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        g.append("text")
+            .attr("class", "reference-label")
+            .attr("x", thresholdX)
+            .attr("y", height + 8)
+            .attr("text-anchor", "middle")
+            .text("порог");
+
+        // Draw lines
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-fill")
+            .attr("d", line);
+
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-show")
+            .attr("d", showLine);
+
+        // Add labels
+        const lastT = T;
+        const labelX = xScale(lastT) - 5;
+        const lastFill = data[data.length - 1].fill;
+        const lastShow = data[data.length - 1].show;
+
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", labelX)
+            .attr("y", yScale(lastFill) - 5)
+            .attr("text-anchor", "end")
+            .text("fill rate");
+
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", labelX)
+            .attr("y", yScale(lastShow) + 5)
+            .attr("text-anchor", "end")
+            .text("show rate");
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(4)
+            .tickValues([1, 30, 60, 90, 120])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        // Y-axis
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(3)
+            .tickValues([0.6, 0.8, 1.0])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        // Axis labels
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("время");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("коэффициент");
+
+        // Mini chart for pressure
+        const miniMargin = { top: 10, right: 60, bottom: 20, left: 50 };
+        const miniHeight = 80;
+        const miniWidth = width;
+
+        const miniSvg = d3.select("#mini-chart")
+            .attr("width", miniWidth + miniMargin.left + miniMargin.right)
+            .attr("height", miniHeight + miniMargin.top + miniMargin.bottom);
+
+        const miniG = miniSvg.append("g")
+            .attr("transform", `translate(${miniMargin.left},${miniMargin.top})`);
+
+        const miniYScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([miniHeight, 0]);
+
+        const pressureLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => miniYScale(d.pressure))
+            .curve(d3.curveMonotoneX);
+
+        miniG.append("path")
+            .datum(data)
+            .attr("class", "line line-pressure")
+            .attr("d", pressureLine);
+
+        miniG.append("text")
+            .attr("class", "line-label")
+            .attr("x", xScale(T) - 5)
+            .attr("y", miniYScale(0.5) - 5)
+            .attr("text-anchor", "end")
+            .text("pressure index");
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

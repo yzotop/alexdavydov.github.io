@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ничего не произошло — и это результат</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul, .analysis ol {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+        <h1>Ничего не произошло — и это результат</h1>
+        <p class="subtitle">Как корректно "закрывать" эксперимент без эффекта и не выдумывать выводы.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-3" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли верить эффекту?</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                В тестовой группе изменили механику показа/плейсмент/частоту. Цель — рост выручки (или guardrail: не уронить retention при росте давления).
+            </p>
+            <p>
+                Тест шёл 14 дней, трафик стабильный. Контрольная группа без изменений.
+            </p>
+            <p>
+                По основным метрикам (Revenue/RPM/CTR/ShowRate) дельты около 0%. Никаких явных просадок guardrails не видно.
+            </p>
+            <p>
+                Вопрос: это действительно "нет эффекта" или тест не имел мощности для обнаружения эффекта?
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart" id="chart-main"></div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Это действительно "нет эффекта" или тест не имел мощности (power)?</li>
+                <li>Какая минимальная полезная дельта (practical significance) нужна бизнесу?</li>
+                <li>Какие красные флаги могут прятаться за "нулём" (лаги, сегменты, каннибализация)?</li>
+                <li>Нужно ли повторять тест? Если да — что меняем (дизайн, окно, сегменты, воздействие)?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что обе метрики (Revenue и Primary) остаются практически неизменными в тестовой группе по сравнению с контролем. Разница близка к нулю на протяжении всего эксперимента.
+                </p>
+
+                <p>
+                    <strong>Три разные ситуации, которые часто путают:</strong>
+                </p>
+                <ol>
+                    <li><strong>Эффекта нет (true zero / near-zero):</strong> Изменение действительно не влияет на систему. Механика не работает, гипотеза не подтвердилась. Это валидный результат, если тест имел достаточную мощность для обнаружения эффекта.</li>
+                    <li><strong>Эффект есть, но тест слабый (low power / high variance):</strong> Эффект существует, но тест не смог его обнаружить из-за недостаточной мощности (мало данных, высокая дисперсия, короткое окно). Нужно повторить с большей мощностью или более длинным окном.</li>
+                    <li><strong>Эффект разный по сегментам и взаимно компенсируется (masking / Simpson):</strong> В одних сегментах эффект положительный, в других — отрицательный. В агрегате получается ноль. Нужно проверить сегменты отдельно.</li>
+                </ol>
+
+                <p>
+                    <strong>Минимальный протокол закрытия теста:</strong>
+                </p>
+                <ol>
+                    <li><strong>Проверить MDE/power на ключевых метриках:</strong> Хотя бы качественно: могли ли мы увидеть +X%? Если минимальная обнаружимая дельта (MDE) была 5%, а реальный эффект 0.5% — тест не мог его обнаружить. Нужно повторить с большей мощностью.</li>
+                    <li><strong>Проверить устойчивость по времени:</strong> Ранние дни vs хвост эксперимента. Если в начале был эффект, а потом исчез — это адаптация, а не "нет эффекта". Если эффект появился только в конце — это лаг, нужно продлить окно.</li>
+                    <li><strong>Проверить сегменты:</strong> Device/platform/temperature/гео. Возможно, эффект есть в мобильных, но нет в десктопе, или наоборот. Агрегат маскирует эффект.</li>
+                    <li><strong>Проверить механизм (диагностические метрики):</strong> Requests → responses → shows, coverage, fill, show rate. Возможно, механизм сработал частично (например, show rate вырос, но CPM упал), и в итоге revenue не изменилась.</li>
+                    <li><strong>Зафиксировать решение и условия, при которых стоит вернуться к гипотезе:</strong> Если эффекта нет, но гипотеза была разумной — опиши, при каких условиях (больше данных, другой сегмент, другое время) стоит повторить тест.</li>
+                </ol>
+
+                <p>
+                    <strong>Важно:</strong> "Нет эффекта" — полезная информация, если ясно, ЧТО именно не сработало. Это не провал, а результат, который исключает гипотезу или указывает на необходимость изменений в дизайне теста.
+                </p>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Разницы нет → значит тест бесполезен, забываем. Гипотеза неверна, больше не тестируем.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Нулевой эффект — тоже валидный вывод, если тест имел достаточную мощность для обнаружения эффекта. Нужно описать границы: что мы смогли увидеть (например, эффект больше 2% был бы обнаружен) и что не смогли (эффект меньше 0.5% мог быть пропущен). Решение зависит от проверки: если power достаточен, сегменты проверены, лаги учтены — закрываем тест с выводом "эффекта нет". Если power недостаточен или есть подозрения на компенсацию — повторяем с изменениями (больше данных, другой дизайн, сегментация).
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что "гипотеза неверна навсегда" — возможно, эффект есть, но тест не смог его обнаружить. Нельзя утверждать, что "эффект точно 0 при любых условиях" — возможно, эффект есть в других сегментах или проявится позже. Нельзя утверждать, что можно игнорировать лаги/сегменты — нулевой эффект в агрегате может маскировать разнонаправленные эффекты в сегментах или эффекты с лагом.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../experiments/time-and-lags.html">Время и лаги: когда эффект проявляется</a></li>
+                <li><a href="../../experiments/checklists-operating.html">Чеклисты и operating: как закрывать тесты</a></li>
+                <li><a href="../../monetization/time/windowing.html">Windowing: выбор окна наблюдения</a></li>
+                <li><a href="../../experiments/metrics-for-reading.html">Метрики для чтения эксперимента: проверка механизма</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./003-stat-sig-no-impact.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./005-segment-conflict-simpson.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 004: No effect
+        // Synthetic data: 14 days, baseline = 100
+        // Both metrics: Control and Test almost identical, small noise
+        // Difference ~0%, lines overlap
+
+        let currentMode = 'annotated';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Revenue: Both groups almost identical with small noise
+            const revControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const revTest = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+
+            // Primary: Both groups almost identical
+            const primaryControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const primaryTest = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+
+            return { revControl, revTest, primaryControl, primaryTest };
+        }
+
+        function renderChart() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Main chart with both metrics overlapping
+            ABCharts.render({
+                el: '#chart-main',
+                series: [
+                    { name: 'Revenue (Control)', values: data.revControl, dashed: true, opacity: 0.6, color: '#999' },
+                    { name: 'Revenue (Test)', values: data.revTest, color: '#999', opacity: 0.8 },
+                    { name: 'Primary (Control)', values: data.primaryControl, dashed: true, opacity: 0.5, color: '#666' },
+                    { name: 'Primary (Test)', values: data.primaryTest, color: '#666', opacity: 0.7 }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Значение (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 7, y: 100.2, text: 'Разница ~0%', color: '#999', fontSize: '11px' },
+                        { x: 12, y: 100.3, text: 'Проверить power/MDE', color: '#960', fontSize: '10px' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderChart();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+        });
+    </script>
+</body>
+</html>

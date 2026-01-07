@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плейбуки</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .layers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .layers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .layer-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .layer-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .layer-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .layer-card-list {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .layer-card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .playbook-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .playbook-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .playbook-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .playbook-section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .playbook-list {
+            padding-left: 1.25rem;
+        }
+
+        .playbook-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .tree-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .checks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .checks-table th,
+        .checks-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .checks-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .checks-table td {
+            color: #2c3e50;
+        }
+
+        .postmortem-template {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .postmortem-template-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .postmortem-template-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .postmortem-template-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node circle {
+            fill: #ffffff;
+            stroke: #1f2a37;
+            stroke-width: 2;
+        }
+
+        .node text {
+            font-size: 11px;
+            fill: #2c3e50;
+        }
+
+        .node.active circle {
+            fill: #1f2a37;
+        }
+
+        .node.active text {
+            fill: #ffffff;
+        }
+
+        .link {
+            fill: none;
+            stroke: #999;
+            stroke-width: 1.5;
+        }
+
+        .link.active {
+            stroke: #1f2a37;
+            stroke-width: 2;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Плейбуки</h1>
+        <p class="subtitle">Плейбук превращает тревогу в действие.</p>
+
+        <div class="intro">
+            <p>
+                "Срочно крутим ручку" часто ухудшает ситуацию. Проблема может быть в другом слое, а действие в одном слое может усугубить проблему в другом.
+            </p>
+            <p>
+                Плейбук = диагностика → гипотеза → проверка → действие → мониторинг → постмортем. Порядок действий важнее скорости реакции.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4 слоя причины</div>
+            <div class="layers-grid">
+                <div class="layer-card">
+                    <div class="layer-card-title">Demand (аукцион/цена)</div>
+                    <div class="layer-card-item">
+                        <strong>Симптомы:</strong>
+                        <ul class="layer-card-list">
+                            <li>CPM падает</li>
+                            <li>Fill rate снижается</li>
+                            <li>Responses availability уменьшается</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Первая проверка:</strong>
+                        <ul class="layer-card-list">
+                            <li>Сезонность и внешние факторы</li>
+                            <li>Доступность ответов по сегментам</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Что НЕ делать:</strong> Менять механику без понимания причины спроса.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Supply (инвентарь)</div>
+                    <div class="layer-card-item">
+                        <strong>Симптомы:</strong>
+                        <ul class="layer-card-list">
+                            <li>Inventory per user падает</li>
+                            <li>Coverage сжимается</li>
+                            <li>Show opportunities уменьшаются</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Первая проверка:</strong>
+                        <ul class="layer-card-list">
+                            <li>Доступность инвентаря по сегментам</li>
+                            <li>Динамика coverage во времени</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Что НЕ делать:</strong> Дожимать давление на оставшийся инвентарь.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Delivery (доставка/тех)</div>
+                    <div class="layer-card-item">
+                        <strong>Симптомы:</strong>
+                        <ul class="layer-card-list">
+                            <li>Responses ratio падает</li>
+                            <li>Error rate растёт</li>
+                            <li>Latency увеличивается</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Первая проверка:</strong>
+                        <ul class="layer-card-list">
+                            <li>Технические метрики и логи</li>
+                            <li>Воронка requests → responses → shows</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Что НЕ делать:</strong> Трогать другие слои — проблема в delivery.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Pressure (давление/поведение)</div>
+                    <div class="layer-card-item">
+                        <strong>Симптомы:</strong>
+                        <ul class="layer-card-list">
+                            <li>Show rate падает</li>
+                            <li>Frequency растёт</li>
+                            <li>Saturation наступает</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Первая проверка:</strong>
+                        <ul class="layer-card-list">
+                            <li>Прокси-давление и saturation</li>
+                            <li>Траектория во времени (сегодня vs потом)</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Что НЕ делать:</strong> Дожимать давление дальше — это сломает систему.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Выбери симптом — получи плейбук</div>
+            <div class="interactive-panel">
+                <div class="playbook-controls">
+                    <div class="control-group">
+                        <label class="control-label">Симптом</label>
+                        <select id="symptomSelect" class="control-input">
+                            <option value="revenue-down-cpm-up">Revenue ↓ при CPM ↑</option>
+                            <option value="revenue-down-cpm-stable">Revenue ↓ при CPM ≈</option>
+                            <option value="showrate-down">ShowRate ↓</option>
+                            <option value="fillrate-down">FillRate ↓</option>
+                            <option value="requests-up-shows-down">Requests ↑, Shows ↓</option>
+                            <option value="ctr-down">CTR ↓ при стабильном showRate</option>
+                            <option value="pressure-up-revenue-stable">Pressure/частота ↑ при стабильной выручке</option>
+                            <option value="rpm-down-users-up">RPM ↓ при Users ↑</option>
+                            <option value="segment-down">Сегмент/платформа просел</option>
+                            <option value="regime-change">Резкая смена режима после релиза</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Срез</label>
+                        <select id="sliceSelect" class="control-input">
+                            <option value="overall">В целом</option>
+                            <option value="platform">Платформа</option>
+                            <option value="placement">Плейсмент</option>
+                            <option value="format">Формат</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="playbook-output" id="playbookOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Дерево диагностики</div>
+            <div class="tree-container">
+                <svg id="treeChart"></svg>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Быстрые проверки (первые 15 минут)</div>
+            <table class="checks-table">
+                <thead>
+                    <tr>
+                        <th>Проверка</th>
+                        <th>Что ловит</th>
+                        <th>Слой</th>
+                        <th>Типичный артефакт</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Воронка requests → responses → shows</td>
+                        <td>Разрыв в delivery</td>
+                        <td>Delivery</td>
+                        <td>Технические ошибки, лаг</td>
+                    </tr>
+                    <tr>
+                        <td>Show rate vs вчерашний день</td>
+                        <td>Деградация механики</td>
+                        <td>Delivery/Pressure</td>
+                        <td>Сезонность, шум</td>
+                    </tr>
+                    <tr>
+                        <td>CPM vs show rate динамика</td>
+                        <td>Компенсация ценой</td>
+                        <td>Supply</td>
+                        <td>Лаг, компенсация</td>
+                    </tr>
+                    <tr>
+                        <td>Fill rate по сегментам</td>
+                        <td>Проблема спроса</td>
+                        <td>Demand</td>
+                        <td>Сегмент, сезонность</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory per user</td>
+                        <td>Сжатие предложения</td>
+                        <td>Supply</td>
+                        <td>Сезонность, тренд</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency и плотность</td>
+                        <td>Рост давления</td>
+                        <td>Pressure</td>
+                        <td>Лаг до денег</td>
+                    </tr>
+                    <tr>
+                        <td>CTR по форматам</td>
+                        <td>Композиционный сдвиг</td>
+                        <td>Pressure</td>
+                        <td>Mix, сегмент</td>
+                    </tr>
+                    <tr>
+                        <td>Дисперсия по сегментам</td>
+                        <td>Хрупкость системы</td>
+                        <td>Pressure</td>
+                        <td>Выбросы, хвосты</td>
+                    </tr>
+                    <tr>
+                        <td>Coverage динамика</td>
+                        <td>Доступность инвентаря</td>
+                        <td>Supply</td>
+                        <td>Тренд, сезонность</td>
+                    </tr>
+                    <tr>
+                        <td>Responses availability</td>
+                        <td>Проблема спроса</td>
+                        <th>Demand</th>
+                        <td>Сезонность, внешние факторы</td>
+                    </tr>
+                    <tr>
+                        <td>Error rate и latency</td>
+                        <td>Технические проблемы</td>
+                        <td>Delivery</td>
+                        <td>Всплески, деградация</td>
+                    </tr>
+                    <tr>
+                        <td>Траектория во времени</td>
+                        <td>Скрытое насыщение</td>
+                        <td>Pressure</td>
+                        <td>Лаг, компенсация</td>
+                    </tr>
+                    <tr>
+                        <td>Сравнение по платформам</td>
+                        <td>Проблема в сегменте</td>
+                        <td>All</td>
+                        <td>Сегмент, артефакт</td>
+                    </tr>
+                    <tr>
+                        <td>Окно наблюдения</td>
+                        <td>Ложная тревога</td>
+                        <td>All</td>
+                        <td>Короткое окно, шум</td>
+                    </tr>
+                    <tr>
+                        <td>Baseline и guardrails</td>
+                        <td>Выход за границы</td>
+                        <td>All</td>
+                        <td>Естественные колебания</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Как писать постмортем без секретов</div>
+            <div class="postmortem-template">
+                <div class="postmortem-template-title">Шаблон постмортема</div>
+                <ul class="postmortem-template-list">
+                    <li><strong>Симптом:</strong> Что изменилось в метриках (конкретно, без внутренних названий)</li>
+                    <li><strong>Когда началось (t0):</strong> Момент начала деградации механизма (не падения денег)</li>
+                    <li><strong>Где проявилось (срез):</strong> Сегмент/платформа/плейсмент/формат, где проблема сильнее</li>
+                    <li><strong>Механизм (слой):</strong> Demand/Supply/Delivery/Pressure — какой слой сломался</li>
+                    <li><strong>Что сделали:</strong> Конкретные действия (без внутренних названий фич)</li>
+                    <li><strong>Что сработало/не сработало:</strong> Какие действия помогли, какие ухудшили</li>
+                    <li><strong>Что добавили в алерты/дашборды:</strong> Новые метрики, пороги, окна для раннего предупреждения</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Хороший плейбук делает систему спокойнее, даже когда метрики шумят.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Порядок действий важнее скорости.</p>
+        </div>
+    </div>
+
+    <script>
+        // Playbooks by symptom
+        const playbooksBySymptom = {
+            'revenue-down-cpm-up': {
+                diagnosis: [
+                    'Проверить show rate и объём показов — падают ли они',
+                    'Сравнить CPM с динамикой объёма — компенсация ли это',
+                    'Оценить воронку requests → responses → shows',
+                    'Проверить механику (showConv) — не деградирует ли',
+                    'Посмотреть на траекторию во времени — не скрытое ли насыщение',
+                    'Сравнить по сегментам — не маскирует ли среднее проблему',
+                    'Проверить inventory и coverage — не сжалось ли предложение'
+                ],
+                hypothesis: [
+                    'Сжатие предложения поднимает цену, компенсируя падение объёма',
+                    'Механика деградирует, но цена маскирует проблему в выручке'
+                ],
+                check: 'График: show rate и CPM во времени. Разрез: по сегментам и платформам.',
+                safe: [
+                    'Остановить все изменения до локализации',
+                    'Проверить механику (showConv) и траекторию',
+                    'Оценить масштаб по сегментам'
+                ],
+                dangerous: [
+                    'Радоваться росту CPM — это компенсация, не успех',
+                    'Дожимать давление дальше — это может сломать систему',
+                    'Менять механику без понимания причины'
+                ],
+                verify: 'Метрики: show rate восстановился, revenue стабилизировался. Окно: 7–14 дней после действия.'
+            },
+            'revenue-down-cpm-stable': {
+                diagnosis: [
+                    'Проверить fill rate и доступность ответов',
+                    'Сравнить CPM с предыдущим периодом и сезонностью',
+                    'Оценить конкуренцию и аукцион — не пустеет ли',
+                    'Проверить доступность спроса по сегментам',
+                    'Посмотреть на динамику coverage и inventory',
+                    'Сравнить requests и responses — не сжался ли спрос',
+                    'Проверить сезонность и внешние факторы'
+                ],
+                hypothesis: [
+                    'Спрос или аукцион сжался, цена не компенсирует',
+                    'Сезонность или внешние факторы снизили доступность ответов'
+                ],
+                check: 'График: fill rate, CPM, responses availability во времени. Разрез: по сегментам.',
+                safe: [
+                    'Проверить сезонность и внешние факторы',
+                    'Оценить масштаб: все сегменты или часть',
+                    'Мониторить восстановление без вмешательств'
+                ],
+                dangerous: [
+                    'Паниковать из-за сезонных колебаний',
+                    'Менять механику без понимания причины спроса',
+                    'Дожимать давление на оставшийся спрос'
+                ],
+                verify: 'Метрики: fill rate восстановился, revenue стабилизировался. Окно: 7–14 дней.'
+            },
+            'showrate-down': {
+                diagnosis: [
+                    'Проверить воронку requests → responses → shows',
+                    'Сравнить show rate с давлением (frequency, плотность)',
+                    'Оценить конкуренцию форматов и плейсментов',
+                    'Проверить доступность инвентаря и coverage',
+                    'Посмотреть на динамику showConv во времени',
+                    'Сравнить по сегментам — где проблема сильнее',
+                    'Проверить технические метрики delivery'
+                ],
+                hypothesis: [
+                    'Давление или насыщение снижают доступность инвентаря',
+                    'Технические проблемы в delivery разрывают воронку'
+                ],
+                check: 'График: воронка requests → shows, show rate во времени. Разрез: по сегментам и форматам.',
+                safe: [
+                    'Остановить изменения, влияющие на давление',
+                    'Проверить технические метрики delivery',
+                    'Сравнить по сегментам — где проблема'
+                ],
+                dangerous: [
+                    'Оптимизировать только CPM — это может скрыть падение объёма',
+                    'Дожимать давление дальше',
+                    'Игнорировать технические метрики'
+                ],
+                verify: 'Метрики: show rate восстановился, воронка цела. Окно: 3–7 дней после действия.'
+            },
+            'fillrate-down': {
+                diagnosis: [
+                    'Проверить доступность ответов по сегментам и площадкам',
+                    'Сравнить fill rate с предыдущим периодом',
+                    'Оценить распределение по источникам спроса',
+                    'Проверить динамику coverage во времени',
+                    'Посмотреть на лаг между запросами и ответами',
+                    'Сравнить fill rate с show rate — где теряется конверсия',
+                    'Проверить сезонность и внешние факторы'
+                ],
+                hypothesis: [
+                    'Истощение инвентаря или сжатие доступности ответов',
+                    'Спрос стал недоступным из-за ограничений системы или рынка'
+                ],
+                check: 'График: fill rate, coverage, responses availability во времени. Разрез: по сегментам и источникам.',
+                safe: [
+                    'Проверить сезонность и внешние факторы',
+                    'Оценить масштаб: все сегменты или часть',
+                    'Мониторить восстановление без вмешательств'
+                ],
+                dangerous: [
+                    'Считать fill rate "нормальным" только потому, что он стабилен',
+                    'Менять механику без понимания причины спроса',
+                    'Дожимать давление на оставшийся спрос'
+                ],
+                verify: 'Метрики: fill rate восстановился, coverage стабилен. Окно: 7–14 дней.'
+            },
+            'requests-up-shows-down': {
+                diagnosis: [
+                    'Проверить воронку requests → responses → shows по шагам',
+                    'Сравнить responses ratio с предыдущим периодом',
+                    'Оценить технические метрики: error rate, latency',
+                    'Проверить availability системы delivery',
+                    'Посмотреть на логи и мониторинг',
+                    'Сравнить по сегментам — где разрыв сильнее',
+                    'Проверить, не изменилась ли частота запросов'
+                ],
+                hypothesis: [
+                    'Технические проблемы в delivery разрывают воронку',
+                    'Система не справляется с объёмом запросов'
+                ],
+                check: 'График: воронка requests → shows, responses ratio, error rate. Разрез: по сегментам.',
+                safe: [
+                    'Остановить все изменения в delivery',
+                    'Проверить технические алерты и логи',
+                    'Оценить масштаб: все запросы или часть'
+                ],
+                dangerous: [
+                    'Трогать другие слои — проблема в delivery',
+                    'Игнорировать технические метрики',
+                    'Менять механику без понимания технической причины'
+                ],
+                verify: 'Метрики: responses ratio восстановился, воронка цела. Окно: 1–3 дня после фикса.'
+            },
+            'ctr-down': {
+                diagnosis: [
+                    'Проверить CTR по каждому формату отдельно',
+                    'Сравнить mix форматов — не сдвинулся ли',
+                    'Оценить давление (frequency, плотность)',
+                    'Проверить распределение внимания между форматами',
+                    'Посмотреть на сегменты — не компенсирует ли один другой',
+                    'Сравнить средний CTR с взвешенным',
+                    'Проверить динамику CTR во времени'
+                ],
+                hypothesis: [
+                    'Композиционный сдвиг маскирует деградацию отдельных форматов',
+                    'Давление снижает внимание к форматам'
+                ],
+                check: 'График: CTR по форматам, mix форматов во времени. Разрез: по форматам и плейсментам.',
+                safe: [
+                    'Остановить изменения, влияющие на mix',
+                    'Проверить давление и saturation',
+                    'Сравнить по форматам — где проблема'
+                ],
+                dangerous: [
+                    'Смотреть только на средний CTR — проверьте каждый формат отдельно',
+                    'Менять mix без понимания причины',
+                    'Игнорировать давление'
+                ],
+                verify: 'Метрики: CTR по форматам восстановился, mix стабилен. Окно: 5–10 дней.'
+            },
+            'pressure-up-revenue-stable': {
+                diagnosis: [
+                    'Проверить прокси-давление: частота, плотность, конкуренция',
+                    'Сравнить show rate при росте давления — не падает ли',
+                    'Оценить траекторию во времени: сегодня vs потом',
+                    'Проверить, не скрытое ли это насыщение',
+                    'Посмотреть на пороги — не перешли ли за границу',
+                    'Сравнить давление с механикой — где связь',
+                    'Проверить сегменты — не маскирует ли среднее'
+                ],
+                hypothesis: [
+                    'Система достигла предела отдачи, дальнейший рост давления не даёт результата',
+                    'Скрытое насыщение: механика деградирует, но выручка ещё держится'
+                ],
+                check: 'График: давление, show rate, revenue во времени. Разрез: по сегментам.',
+                safe: [
+                    'Остановить рост давления',
+                    'Проверить saturation и пороги',
+                    'Оценить долгосрочную траекторию'
+                ],
+                dangerous: [
+                    'Дожимать давление дальше — это может сломать систему',
+                    'Игнорировать saturation',
+                    'Радоваться стабильной выручке при падающей механике'
+                ],
+                verify: 'Метрики: давление снизилось, show rate восстановился. Окно: 10–20 дней после действия.'
+            },
+            'rpm-down-users-up': {
+                diagnosis: [
+                    'Проверить revenue per user и его компоненты',
+                    'Сравнить inventory per user — не упал ли',
+                    'Оценить show rate и конверсии',
+                    'Проверить mix пользователей — не сдвинулся ли',
+                    'Посмотреть на сегменты — не компенсирует ли один другой',
+                    'Сравнить RPM с предыдущим периодом',
+                    'Проверить давление на новых пользователей'
+                ],
+                hypothesis: [
+                    'Новые пользователи имеют другой профиль (меньше инвентаря/внимания)',
+                    'Рост пользователей разбавляет метрики без роста выручки'
+                ],
+                check: 'График: RPM, inventory per user, show rate по сегментам. Разрез: по сегментам пользователей.',
+                safe: [
+                    'Проверить mix пользователей и сегменты',
+                    'Оценить давление на новых пользователей',
+                    'Сравнить по сегментам — где проблема'
+                ],
+                dangerous: [
+                    'Паниковать из-за естественного разбавления',
+                    'Менять механику без понимания профиля пользователей',
+                    'Игнорировать сегментацию'
+                ],
+                verify: 'Метрики: RPM стабилизировался, mix пользователей норм. Окно: 7–14 дней.'
+            },
+            'segment-down': {
+                diagnosis: [
+                    'Проверить метрики по проблемному сегменту отдельно',
+                    'Сравнить с другими сегментами — не компенсирует ли среднее',
+                    'Оценить дисперсию по сегментам — не растёт ли',
+                    'Проверить хвосты распределения',
+                    'Посмотреть на траектории сегментов во времени',
+                    'Сравнить среднее с медианой — не скрывает ли выбросы',
+                    'Проверить, не изменился ли mix сегментов'
+                ],
+                hypothesis: [
+                    'Проблема концентрируется в одном сегменте, среднее маскирует',
+                    'Система становится хрупкой: отдельные сегменты деградируют'
+                ],
+                check: 'График: метрики по сегментам, дисперсия, хвосты. Разрез: по проблемному сегменту.',
+                safe: [
+                    'Остановить изменения, влияющие на сегменты',
+                    'Проверить давление по сегментам',
+                    'Сравнить среднее с медианой'
+                ],
+                dangerous: [
+                    'Успокаиваться средним — проверьте сегменты и хвосты',
+                    'Игнорировать растущую дисперсию',
+                    'Менять механику для всех сегментов из-за одного'
+                ],
+                verify: 'Метрики: проблемный сегмент восстановился, дисперсия снизилась. Окно: 7–14 дней.'
+            },
+            'regime-change': {
+                diagnosis: [
+                    'Проверить, что изменилось в системе (релиз/конфиг)',
+                    'Сравнить метрики до и после изменения',
+                    'Оценить все слои — не сломался ли один',
+                    'Проверить воронку и механику',
+                    'Посмотреть на траекторию — не лаг ли это',
+                    'Сравнить по сегментам — не затронуло ли всех',
+                    'Проверить, не компенсация ли это'
+                ],
+                hypothesis: [
+                    'Изменение сломало один из слоёв механизма',
+                    'Система перешла в новый режим работы'
+                ],
+                check: 'График: метрики до/после, все слои во времени. Разрез: по сегментам.',
+                safe: [
+                    'Откатить изменение, если возможно',
+                    'Проверить все слои — где разрыв',
+                    'Оценить масштаб: все сегменты или часть'
+                ],
+                dangerous: [
+                    'Делать новые изменения до понимания причины',
+                    'Игнорировать связь с релизом',
+                    'Менять другие части системы'
+                ],
+                verify: 'Метрики: система вернулась в стабильный режим. Окно: 3–7 дней после отката/фикса.'
+            }
+        };
+
+        // Update playbook
+        function updatePlaybook() {
+            const symptom = document.getElementById('symptomSelect').value;
+            const slice = document.getElementById('sliceSelect').value;
+            const playbook = playbooksBySymptom[symptom];
+
+            const sliceNote = slice !== 'overall' ? ` (срез: ${slice === 'platform' ? 'платформа' : slice === 'placement' ? 'плейсмент' : 'формат'})` : '';
+
+            document.getElementById('playbookOutput').innerHTML = `
+                <div class="playbook-section">
+                    <div class="playbook-section-title">A) Диагностика${sliceNote}</div>
+                    <ol class="playbook-list">
+                        ${playbook.diagnosis.map(item => `<li>${item}</li>`).join('')}
+                    </ol>
+                </div>
+                <div class="playbook-section">
+                    <div class="playbook-section-title">B) Быстрая гипотеза</div>
+                    <ul class="playbook-list">
+                        ${playbook.hypothesis.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="playbook-section">
+                    <div class="playbook-section-title">C) Минимальная проверка</div>
+                    <div>${playbook.check}</div>
+                </div>
+                <div class="playbook-section">
+                    <div class="playbook-section-title">D) Безопасные действия</div>
+                    <ul class="playbook-list">
+                        ${playbook.safe.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="playbook-section">
+                    <div class="playbook-section-title">E) Опасные действия</div>
+                    <ul class="playbook-list">
+                        ${playbook.dangerous.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="playbook-section">
+                    <div class="playbook-section-title">F) Как убедиться, что починили</div>
+                    <div>${playbook.verify}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('symptomSelect').addEventListener('change', updatePlaybook);
+        document.getElementById('sliceSelect').addEventListener('change', updatePlaybook);
+        updatePlaybook();
+
+        // Decision tree
+        function generateTree() {
+            const treeData = {
+                name: 'Revenue изменилось?',
+                children: [
+                    {
+                        name: 'CPM',
+                        children: [
+                            { name: 'CPM ↑', layer: 'Supply/Delivery', action: 'Проверить show rate и компенсацию' },
+                            { name: 'CPM ↓', layer: 'Demand', action: 'Проверить fill rate и спрос' },
+                            { name: 'CPM ≈', layer: 'Supply/Delivery', action: 'Проверить объём и механику' }
+                        ]
+                    },
+                    {
+                        name: 'ShowRate',
+                        children: [
+                            { name: 'ShowRate ↓', layer: 'Delivery/Pressure', action: 'Проверить воронку и давление' },
+                            { name: 'ShowRate ≈', layer: 'Demand/Supply', action: 'Проверить fill rate и inventory' }
+                        ]
+                    },
+                    {
+                        name: 'FillRate',
+                        children: [
+                            { name: 'FillRate ↓', layer: 'Demand', action: 'Проверить спрос и аукцион' },
+                            { name: 'FillRate ≈', layer: 'Supply/Delivery', action: 'Проверить inventory и delivery' }
+                        ]
+                    },
+                    {
+                        name: 'CTR',
+                        children: [
+                            { name: 'CTR ↓', layer: 'Pressure', action: 'Проверить mix форматов и давление' },
+                            { name: 'CTR ≈', layer: 'All', action: 'Проверить другие множители' }
+                        ]
+                    },
+                    {
+                        name: 'Pressure',
+                        children: [
+                            { name: 'Pressure ↑', layer: 'Pressure', action: 'Проверить saturation и show rate' },
+                            { name: 'Pressure ≈', layer: 'Demand/Supply/Delivery', action: 'Проверить другие слои' }
+                        ]
+                    }
+                ]
+            };
+
+            const margin = { top: 20, right: 120, bottom: 20, left: 120 };
+            const container = d3.select('#treeChart').node().parentElement;
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            d3.select('#treeChart').selectAll('*').remove();
+
+            const svg = d3.select('#treeChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const root = d3.hierarchy(treeData);
+            const treeLayout = d3.tree().size([height, width]);
+            treeLayout(root);
+
+            // Links
+            const links = g.selectAll('.link')
+                .data(root.links())
+                .enter()
+                .append('path')
+                .attr('class', 'link')
+                .attr('d', d3.linkHorizontal()
+                    .x(d => d.y)
+                    .y(d => d.x));
+
+            // Nodes
+            const nodes = g.selectAll('.node')
+                .data(root.descendants())
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.y},${d.x})`)
+                .on('click', function(event, d) {
+                    // Toggle active state
+                    d3.selectAll('.node').classed('active', false);
+                    d3.selectAll('.link').classed('active', false);
+                    
+                    // Highlight path to root
+                    let current = d;
+                    while (current) {
+                        d3.select(this.parentNode.querySelector(`.node[transform*="${current.y},${current.x}"]`))
+                            .classed('active', true);
+                        if (current.parent) {
+                            const link = g.selectAll('.link').filter(function(linkData) {
+                                return linkData.source === current.parent && linkData.target === current;
+                            });
+                            link.classed('active', true);
+                        }
+                        current = current.parent;
+                    }
+                });
+
+            nodes.append('circle')
+                .attr('r', 6);
+
+            nodes.append('text')
+                .attr('dy', '.35em')
+                .attr('x', d => d.children ? -10 : 10)
+                .style('text-anchor', d => d.children ? 'end' : 'start')
+                .text(d => d.data.name);
+
+            // Add layer/action info for leaf nodes
+            nodes.filter(d => !d.children)
+                .append('text')
+                .attr('dy', '1.5em')
+                .attr('x', 10)
+                .style('text-anchor', 'start')
+                .style('font-size', '10px')
+                .style('fill', '#999')
+                .text(d => `${d.data.layer || ''} ${d.data.action || ''}`)
+                .call(wrap, 150);
+
+            function wrap(text, width) {
+                text.each(function() {
+                    const text = d3.select(this);
+                    const words = text.text().split(/\s+/).reverse();
+                    let word;
+                    let line = [];
+                    let lineNumber = 0;
+                    const lineHeight = 1.2;
+                    const y = text.attr('y');
+                    const dy = parseFloat(text.attr('dy'));
+                    let tspan = text.text(null).append('tspan').attr('x', 10).attr('y', y).attr('dy', dy + 'em');
+                    while (word = words.pop()) {
+                        line.push(word);
+                        tspan.text(line.join(' '));
+                        if (tspan.node().getComputedTextLength() > width) {
+                            line.pop();
+                            tspan.text(line.join(' '));
+                            line = [word];
+                            tspan = text.append('tspan').attr('x', 10).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'em').text(word);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initial render
+        generateTree();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateTree();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

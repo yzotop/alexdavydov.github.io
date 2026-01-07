@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operating Monetization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .lead p {
+            margin-bottom: 1rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .panel {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .panel p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #888;
+            margin-top: 1rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            transition: border-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            border-color: #999;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .card-tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 900px) {
+            .checklist-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .checklist-column {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .checklist-column-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-column p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .failures-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .failures-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .failures-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .failure-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .failure-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .failure-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .failure-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .cross-links {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .cross-links a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .cross-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .cross-links .separator {
+            margin: 0 0.5rem;
+            color: #ccc;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .interpretation strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <a href="../../../lab/monetization/index.html" class="back-link">← Назад к курсу монетизации</a>
+            <a href="../../index.html" class="back-link secondary">← Все курсы</a>
+        </div>
+        <h1>Operating Monetization</h1>
+        <p class="subtitle">Практика эксплуатации рекламной системы.</p>
+
+        <div class="lead">
+            <p>
+                Operating — это ежедневный/недельный контроль системы в условиях неопределённости: у вас редко есть полная информация, эффекты запаздывают, метрики конфликтуют.
+            </p>
+            <p>
+                Цель — не "максимизировать CPM", а удерживать систему стабильной, улучшая её.
+            </p>
+        </div>
+
+        <p class="anchor-sentence">
+            Сначала стабилизируйте механизм. Потом — оптимизируйте.
+        </p>
+
+        <div class="section">
+            <div class="section-title">Быстрый старт (10 минут)</div>
+            <div class="panel">
+                <p>1) Проверьте воронку: requests → responses → shows.</p>
+                <p>2) Сравните механику и итог: showConv / show rate vs выручка.</p>
+                <p>3) Проверьте давление: частота, насыщение, прокси-давление.</p>
+                <p>4) Проверьте лаг: не читаете ли вы 'тишину' как успех.</p>
+                <p>5) Снимите конфликт метрик: CPM↑ при show rate↓ — это компенсация.</p>
+                <p>6) Если сомневаетесь — расширьте окно и остановите вмешательства.</p>
+                <p>Операционный режим — это борьба с ложным спокойствием.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Четыре операционных трека</div>
+            <div class="cards-grid">
+                <a href="./signals/index.html" class="card">
+                    <div class="card-title">Сигналы</div>
+                    <div class="card-tagline">Что портится раньше денег.</div>
+                    <div class="card-item">
+                        <strong>Что делать:</strong> Ловить деградацию механики до отчёта.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ранние сигналы:</strong> show rate, showConv, variance, хвосты.
+                    </div>
+                </a>
+
+                <a href="./decisions/index.html" class="card">
+                    <div class="card-title">Решения</div>
+                    <div class="card-tagline">Когда трогать, когда ждать.</div>
+                    <div class="card-item">
+                        <strong>Что делать:</strong> Выбирать окно, стоп/континью, откат.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ранние сигналы:</strong> лаг, неопределённость, необратимость.
+                    </div>
+                </a>
+
+                <a href="./risk/index.html" class="card">
+                    <div class="card-title">Риски</div>
+                    <div class="card-tagline">Где система ломается.</div>
+                    <div class="card-item">
+                        <strong>Что делать:</strong> Диагностировать насыщение и пороги.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ранние сигналы:</strong> скрытое насыщение, дрейф, tail-risk.
+                    </div>
+                </a>
+
+                <a href="./rhythm/index.html" class="card">
+                    <div class="card-title">Ритм</div>
+                    <div class="card-tagline">Как жить с системой.</div>
+                    <div class="card-item">
+                        <strong>Что делать:</strong> Ежедневный/недельный/квартальный цикл контроля.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ранние сигналы:</strong> разные горизонты, разные метрики.
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Операционный чеклист</div>
+            <div class="checklist-grid">
+                <div class="checklist-column">
+                    <div class="checklist-column-title">Утро (5 минут)</div>
+                    <p>Проверка воронки: requests → shows</p>
+                    <p>Show rate vs вчерашний день</p>
+                    <p>Прокси-давление: частота, плотность</p>
+                    <p>Аномалии в хвостах распределения</p>
+                    <p>Остановить все изменения до проверки</p>
+                </div>
+                <div class="checklist-column">
+                    <div class="checklist-column-title">Неделя (30 минут)</div>
+                    <p>Проверка окна: не читаете ли тишину</p>
+                    <p>Лаг: механика vs итог</p>
+                    <p>Хвосты сегментов: где риск</p>
+                    <p>Здоровье экспериментов</p>
+                    <p>Дрейф базовой линии</p>
+                </div>
+                <div class="checklist-column">
+                    <div class="checklist-column-title">Месяц (2 часа)</div>
+                    <p>Смена режима: новые правила игры</p>
+                    <p>Карта насыщения: где пороги</p>
+                    <p>Аудит определений метрик</p>
+                    <p>Обновление правил решений</p>
+                    <p>Бэклог операционных улучшений</p>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #888; font-style: italic; max-width: 700px;">
+                Чеклист важнее дашборда: он заставляет задавать правильные вопросы.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Типовые провалы (и что делать)</div>
+            <div class="failures-grid">
+                <div class="failure-card">
+                    <div class="failure-title">Тишина после вмешательства</div>
+                    <div class="failure-item">
+                        <strong>Как выглядит:</strong> Выручка стабильна, механика падает.
+                    </div>
+                    <div class="failure-item">
+                        <strong>Что делать:</strong> Проверить лаг и компенсацию ценой.
+                    </div>
+                </div>
+                <div class="failure-card">
+                    <div class="failure-title">Компенсация ценой</div>
+                    <div class="failure-item">
+                        <strong>Как выглядит:</strong> CPM растёт, show rate падает, выручка держится.
+                    </div>
+                    <div class="failure-item">
+                        <strong>Что делать:</strong> Смотреть на механику, а не на итог.
+                    </div>
+                </div>
+                <div class="failure-card">
+                    <div class="failure-title">Скрытое насыщение</div>
+                    <div class="failure-item">
+                        <strong>Как выглядит:</strong> Выручка растёт, механика деградирует.
+                    </div>
+                    <div class="failure-item">
+                        <strong>Что делать:</strong> Проверить showConv и траекторию во времени.
+                    </div>
+                </div>
+                <div class="failure-card">
+                    <div class="failure-title">Ложный аплифт из-за окна</div>
+                    <div class="failure-item">
+                        <strong>Как выглядит:</strong> Короткое окно показывает рост, длинное — падение.
+                    </div>
+                    <div class="failure-item">
+                        <strong>Что делать:</strong> Расширить окно и проверить лаг.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Связанные главы курса</div>
+            <div class="cross-links">
+                <a href="../metrics/index.html">Метрики</a>
+                <span class="separator">·</span>
+                <a href="../pressure/index.html">Давление</a>
+                <span class="separator">·</span>
+                <a href="../time/index.html">Время</a>
+                <span class="separator">·</span>
+                <a href="../experiments/index.html">Эксперименты</a>
+                <span class="separator">·</span>
+                <a href="../syllabus.html">Syllabus</a>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Operating — это навык удерживать систему в устойчивой области под неопределённостью.
+        </p>
+
+        <p class="interpretation">
+            Если вы умеете читать ранние сигналы, вы реже 'удивляетесь' выручке.
+        </p>
+
+        <p class="interpretation">
+            <strong>Управляйте механизмом — и деньги перестанут быть сюрпризом.</strong>
+        </p>
+
+        <div class="footer">
+            <a href="../../../lab/monetization/index.html" class="back-link">← Назад к курсу монетизации</a>
+            <p class="footer-note">Сначала стабилизируйте. Потом улучшайте.</p>
+        </div>
+    </div>
+</body>
+</html>
+

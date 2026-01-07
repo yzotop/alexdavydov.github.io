@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 5: Как принимаются решения в реальных A/B-тестах — A/B-тестирование: принятие решений на практике</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .card {
+            max-width: 700px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .situation-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .situation-item h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .situation-item p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin: 0;
+        }
+
+        .tool-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .tool-item h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .tool-item p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .lesson-nav {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lesson-nav a {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .lesson-nav a:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .decision-type-badge {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-type-badge a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .decision-type-badge a:hover {
+            border-color: #666;
+        }
+
+        .related-practice-box {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            border-left: 3px solid #1a1a1a;
+        }
+
+        .related-practice-box h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .practice-scenarios-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .practice-scenarios-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .practice-scenarios-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .practice-scenarios-list a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-scenarios-list a:hover {
+            border-color: #666;
+        }
+
+        .practice-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 1px solid #1a1a1a;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-link:hover {
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="../index.html">Курс</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+            <a href="../practice/index.html">Практика</a>
+        </div>
+
+        <header>
+            <div class="kicker">Lesson 5</div>
+            <h1>Как принимать решение по результатам эксперимента</h1>
+            <p class="subtitle">В реальности данные неполные, метрики конфликтуют, дедлайны давят. Вот как использовать графики, механизмы и чеклисты для защищаемого решения.</p>
+            
+            <div class="decision-type-badge">
+                <strong>Тип решения:</strong> <a href="../index.html#decision-4">Что делать с неудачным экспериментом?</a>
+            </div>
+            
+            <div class="related-practice-box">
+                <h3>Практика по этому типу решения:</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.75rem;">
+                    После изучения урока переходи в практику для тренировки на реальных графиках.
+                </p>
+                <ul class="practice-scenarios-list">
+                    <li><a href="../practice/scenarios/001-cpm-up-rev-down.html">001 «CPM вырос, а выручка упала»</a> — негативный эффект</li>
+                    <li><a href="../practice/scenarios/004-no-effect.html">004 «Ничего не произошло — и это результат»</a> — нулевой эффект</li>
+                    <li><a href="../practice/scenarios/010-more-shows-less-revenue.html">010 «Больше показов — меньше денег»</a> — негативный эффект</li>
+                    <li><a href="../practice/scenarios/012-engagement-no-revenue.html">012 «Вовлечённость без денег»</a> — негативный эффект</li>
+                </ul>
+                <a href="../practice/index.html#decision-4" class="practice-link">→ Открыть все сценарии этого типа</a>
+            </div>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Неидеальные условия</h2>
+                <div class="situation-item">
+                    <h3>Конфликтующие метрики</h3>
+                    <p>Primary вырос, но guardrails упали. Revenue вырос, но retention просел. Нет "чистого" ответа. Решение: приоритизируй по бизнес-риску. Если guardrail критичен — не катим, даже если primary хорош.</p>
+                </div>
+                <div class="situation-item">
+                    <h3>Неполные данные</h3>
+                    <p>Эксперимент ещё не закончился, но нужно решать. CI широкие, эффект нестабилен. Решение: если нестабильно — продлевай. Если стабильно, но CI широкие — оценивай худший сценарий из интервала.</p>
+                </div>
+                <div class="situation-item">
+                    <h3>Бизнес-давление</h3>
+                    <p>Нужно катить к релизу, но данные неоднозначны. Решение: катим ограниченно (канареечный выкат) или откладываем. Не катим "на авось" — это дороже, чем задержка.</p>
+                </div>
+                <div class="situation-item">
+                    <h3>Дедлайны</h3>
+                    <p>Окно оценки не завершено, но нужно решать сейчас. Решение: фиксируй "что видно сейчас" и "что может измениться". Если эффект стабилен 7+ дней — можно решать. Если прыгает — ждём.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Инструменты для защищаемого решения</h2>
+                <div class="tool-item">
+                    <h3>Графики</h3>
+                    <p>Форма кривой говорит больше, чем средняя дельта. Step change — катим. Ramp — ждём стабилизации. Bounce — не катим. График показывает механизм: если видно, что эффект через объём, а не цену — это защищаемый вывод.</p>
+                </div>
+                <div class="tool-item">
+                    <h3>Механизмы</h3>
+                    <p>Если механизм понятен (цена × объём = выручка, и видно, что изменилось), решение защищаемо. Если механизм непонятен (выручка выросла, но непонятно за счёт чего) — это риск. Нужна диагностика перед решением.</p>
+                </div>
+                <div class="tool-item">
+                    <h3>Чеклисты</h3>
+                    <p>Чеклист — это не "галочки", а рамка для проверки. Если хотя бы один пункт не пройден — решение рискованно. Используй чеклист не для "одобрения", а для выявления рисков. Если риски найдены — либо устраняй, либо не катим.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Типовые сценарии решений</h2>
+                <ul>
+                    <li><strong>Всё согласовано:</strong> Primary вырос, guardrails в порядке, механизм понятен, эффект устойчив. → Катим.</li>
+                    <li><strong>Конфликт метрик:</strong> Primary вырос, но guardrail упал. → Оценивай критичность guardrail. Если критичен — не катим. Если некритичен — катим с мониторингом.</li>
+                    <li><strong>Нестабильность:</strong> Эффект прыгает, CI широкие. → Продлевай эксперимент. Не решай на нестабильных данных.</li>
+                    <li><strong>Mix shift:</strong> Total вырос, но внутри сегментов эффект отрицательный. → Не катим. Это Simpson, агрегат врет.</li>
+                    <li><strong>Каннибализация:</strong> Локально формат выиграл, но total упал. → Не катим. Системный проигрыш важнее локальной победы.</li>
+                    <li><strong>Лаги:</strong> Первые дни минус, хвост плюс. → Оценивай форму. Если ramp — ждём стабилизации. Если step change — можно решать.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>Как защищать решение</h2>
+                <p>
+                    Решение защищаемо, если можешь объяснить механизм. "Revenue вырос на 2%" — не защищаемо. "Revenue вырос на 2%, потому что show rate вырос на 5%, а CPM остался стабильным — эффект через объём" — защищаемо.
+                </p>
+                <p>
+                    Если механизм непонятен, но эффект есть — это риск. Либо диагностируй дальше, либо не катим. "Не знаю, почему выросло, но выросло" — плохое решение.
+                </p>
+                <p>
+                    Используй графики для показа формы эффекта. Используй чеклист для показа, что проверил риски. Используй механизмы для объяснения, почему эффект устойчив.
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>Когда не катить — это тоже решение</h2>
+                <p>
+                    Не катить — это не "провал эксперимента". Это защита системы от деградации. Если данные неоднозначны, риски высоки, механизм непонятен — не катим. Это правильное решение.
+                </p>
+                <p>
+                    Лучше не катить хороший эксперимент, чем катить плохой. Плохой выкат стоит дороже, чем задержка хорошего. Используй чеклист и механизмы для оценки рисков. Если риски выше выгоды — не катим.
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>Ответственность за решение</h2>
+                <p>
+                    Решение принимаешь ты, не данные. Данные показывают, что происходит. Ты решаешь, что делать. Если решение ошибочно — это твоя ответственность, не "данные были плохие".
+                </p>
+                <p>
+                    Защищаемое решение — это не "всё проверил и всё хорошо". Это "вижу риски, оценил их, принял решение с пониманием последствий". Если риски неочевидны — это не защищаемо.
+                </p>
+                <p>
+                    Используй Decision Flow как рамку для проверки. Если все 6 шагов пройдены — решение защищаемо. Если хотя бы один шаг не пройден — либо устраняй проблему, либо не катим.
+                </p>
+            </section>
+        </main>
+
+        <nav class="lesson-nav">
+            <a href="../index.html">← Назад к курсу</a>
+            <a href="../checklist.html">Открыть чеклист →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

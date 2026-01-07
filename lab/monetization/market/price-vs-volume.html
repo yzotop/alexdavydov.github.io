@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price vs Volume</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .formula-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .formula-line {
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1rem;
+        }
+
+        .formula-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .scenario-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .scenario-radio {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .scenario-radio input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .scenario-radio label {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .calculator-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .calculator-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .calculator-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .calculator-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-conclusion {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .pattern-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .pattern-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .pattern-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .pattern-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .pattern-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Price vs Volume</h1>
+        <p class="subtitle">Выручка = объём × цена. Спорьте только после разложения.</p>
+
+        <div class="intro">
+            <p>
+                Нельзя обсуждать "почему выросла выручка", пока не понятно: за счёт цены или объёма. Одинаковый рост revenue может быть достигнут разными путями: volume-driven (объём растёт, цена стабильна), price-driven (цена растёт, объём стабилен), или compensation (объём растёт, цена падает, или наоборот).
+            </p>
+            <p>
+                Цена часто маскирует деградацию качества: CPM может расти, компенсируя падение объёма. Объём часто показывает эффект давления: shows могут расти, но эффективность падает. Разложение revenue на volume и price — первый шаг к пониманию причин.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Формула и язык</div>
+            <div class="formula-panel">
+                <div class="formula-line">R = V × P</div>
+                <div class="formula-line">Индексы: R_idx = V_idx × P_idx</div>
+                <div class="formula-line">Вклады: ΔR% ≈ ΔV% + ΔP% (для малых изменений)</div>
+                <div class="formula-note">
+                    Это не точная бухгалтерия, а язык для обсуждения причин. Индексы нормализуют к базе, вклады показывают вклад каждого фактора в изменение.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Три линии индексов во времени</div>
+            <div class="chart-container">
+                <svg id="indicesChart"></svg>
+                <p class="chart-caption">Revenue — итог. Причины живут в V и P.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Waterfall вкладов (Δlog)</div>
+            <div class="chart-container">
+                <div class="scenario-controls">
+                    <div class="scenario-radio">
+                        <input type="radio" id="scenarioA" name="scenario" value="A" checked>
+                        <label for="scenarioA">Сценарий A: volume-driven</label>
+                    </div>
+                    <div class="scenario-radio">
+                        <input type="radio" id="scenarioB" name="scenario" value="B">
+                        <label for="scenarioB">Сценарий B: price-driven</label>
+                    </div>
+                    <div class="scenario-radio">
+                        <input type="radio" id="scenarioC" name="scenario" value="C">
+                        <label for="scenarioC">Сценарий C: compensation (V↑, P↓)</label>
+                    </div>
+                </div>
+                <svg id="waterfallChart"></svg>
+                <p class="chart-caption">Одинаковый ΔR может быть достигнут разными путями.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Разложи изменение</div>
+            <div class="calculator-panel">
+                <div class="calculator-controls">
+                    <div class="control-group">
+                        <label class="control-label">R0 (базовая выручка)</label>
+                        <input type="number" id="r0Input" class="control-input" value="100" min="0.01" step="0.01">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">V0 (базовый объём)</label>
+                        <input type="number" id="v0Input" class="control-input" value="1000" min="0.01" step="0.01">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">P0 (базовая цена)</label>
+                        <input type="number" id="p0Input" class="control-input" value="0.10" min="0.01" step="0.01">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">V1 (новый объём)</label>
+                        <input type="number" id="v1Input" class="control-input" value="1200" min="0.01" step="0.01">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">P1 (новая цена)</label>
+                        <input type="number" id="p1Input" class="control-input" value="0.11" min="0.01" step="0.01">
+                    </div>
+                </div>
+                <div class="calculator-output" id="calculatorOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">5 типовых паттернов</div>
+            <div class="pattern-cards">
+                <div class="pattern-card">
+                    <div class="pattern-card-title">Volume-driven growth</div>
+                    <div class="pattern-card-item">
+                        <strong>Как выглядит:</strong> V↑ P↔
+                    </div>
+                    <div class="pattern-card-item">
+                        <strong>Что это может означать:</strong> Рост объёма при стабильной цене. Может быть delivery/coverage улучшился, или давление выросло (но качество ещё не деградировало).
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-card-title">Price-driven growth</div>
+                    <div class="pattern-card-item">
+                        <strong>Как выглядит:</strong> V↔ P↑
+                    </div>
+                    <div class="pattern-card-item">
+                        <strong>Что это может означать:</strong> Рост цены при стабильном объёме. Может быть конкуренция выросла, или ограничения сняли, или качество улучшилось.
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-card-title">Compensation</div>
+                    <div class="pattern-card-item">
+                        <strong>Как выглядит:</strong> V↑ P↓ (или V↓ P↑)
+                    </div>
+                    <div class="pattern-card-item">
+                        <strong>Что это может означать:</strong> Один фактор компенсирует другой. Может быть объём растёт, но качество падает (цена падает), или цена растёт, но объём падает (компенсация за деградацию).
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-card-title">Both down</div>
+                    <div class="pattern-card-item">
+                        <strong>Как выглядит:</strong> V↓ P↓
+                    </div>
+                    <div class="pattern-card-item">
+                        <strong>Что это может означать:</strong> Падение и объёма, и цены. Может быть рыночный шок/сезонность, или системная деградация (механика + качество).
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-card-title">Mix shift</div>
+                    <div class="pattern-card-item">
+                        <strong>Как выглядит:</strong> R↔, но сегменты расходятся (variance↑)
+                    </div>
+                    <div class="pattern-card-item">
+                        <strong>Что это может означать:</strong> Среднее стабильно, но распределение меняется. Может быть composition shift: high-quality сегмент деградирует, low-quality растёт, среднее маскирует проблемы.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Что проверить после разложения</div>
+            <ul class="checklist">
+                <li>Если price↑: спрос/конкуренция/ограничения — проверь auction competition, floors, constraints</li>
+                <li>Если price↓: шок/сезонность/микс — проверь demand shocks, seasonality, mix shift</li>
+                <li>Если volume↑: delivery/coverage/pressure — проверь цепочку opportunities→shows, coverage, pressure proxy</li>
+                <li>Если volume↓: hidden inventory/quality/fatigue — проверь loss-слои, quality proxy, frequency proxy</li>
+                <li>Смотреть лаги: volume раньше, revenue позже — механика реагирует раньше денег</li>
+                <li>Смотреть хвосты и сегменты — не маскирует ли среднее проблемы в отдельных сегментах</li>
+                <li>Свериться с change log — не смешались ли эффекты изменений</li>
+                <li>Проверить saturation/pressure proxy — не упирается ли система в потолок</li>
+                <li>Проверить composition качества (из Inventory) — не выросла ли доля low-quality</li>
+                <li>Не делать вывод по одному дню — смотреть на окне лагов, не на коротком окне</li>
+                <li>Нормализовать по сезону — учитывать day-of-week, month, quarter эффекты</li>
+                <li>Сравнить с контрольными сегментами — не все сегменты одинаково реагируют</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./auction-competition.html" class="next-card">
+                    <div class="next-card-title">Аукцион и конкуренция →</div>
+                    <div class="next-card-text">CPM — это сигнал конкуренции за внимание.</div>
+                </a>
+                <a href="./floor-and-constraints.html" class="next-card">
+                    <div class="next-card-title">Пороги и ограничения →</div>
+                    <div class="next-card-text">Когда цена упирается в ограничения.</div>
+                </a>
+                <a href="../inventory/index.html" class="next-card">
+                    <div class="next-card-title">Инвентарь →</div>
+                    <div class="next-card-text">Цена зависит от качества инвентаря.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Рынку</a>
+            <p class="footer-note">Выручка = объём × цена. Спорьте только после разложения.</p>
+        </div>
+    </div>
+
+    <script>
+        // Indices chart
+        function generateIndicesChart() {
+            const container = d3.select('#indicesChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#indicesChart').selectAll('*').remove();
+
+            const svg = d3.select('#indicesChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const volumeChange = 80;
+            const priceChange = 120;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Volume index: changes earlier
+                const volumeGrowth = t > volumeChange ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - volumeChange) / 10))) : 0;
+                const volumeSeason = 0.02 * Math.sin(t / 15);
+                const volume = 1.0 + volumeGrowth + volumeSeason;
+
+                // Price index: may compensate
+                const priceGrowth = t > priceChange ? 0.08 * (1 - 1 / (1 + Math.exp(-(t - priceChange) / 8))) : 0;
+                const price = 1.0 + priceGrowth;
+
+                // Revenue index: result
+                const revenue = volume * price;
+
+                data.push({ t, volume, price, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.9, 1.4])
+                .range([height, 0]);
+
+            // Markers
+            g.append('line')
+                .attr('x1', x(volumeChange))
+                .attr('x2', x(volumeChange))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(volumeChange))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('изменение объёма');
+
+            g.append('line')
+                .attr('x1', x(priceChange))
+                .attr('x2', x(priceChange))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(priceChange))
+                .attr('y', height - 15)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('изменение цены');
+
+            // Lines
+            const lineVolume = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.volume))
+                .curve(d3.curveMonotoneX);
+
+            const linePrice = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.price))
+                .curve(d3.curveMonotoneX);
+
+            const lineRevenue = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineVolume);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', linePrice);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#aaa')
+                .attr('stroke-width', 2)
+                .attr('d', lineRevenue);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].volume) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('Volume index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].price) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('Price index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#aaa')
+                .text('Revenue index');
+        }
+
+        // Waterfall chart
+        const scenarioData = {
+            'A': { deltaV: 0.12, deltaP: 0.01, deltaR: 0.13 },
+            'B': { deltaV: 0.01, deltaP: 0.12, deltaR: 0.13 },
+            'C': { deltaV: 0.18, deltaP: -0.05, deltaR: 0.13 }
+        };
+
+        function generateWaterfallChart() {
+            const selectedScenario = document.querySelector('input[name="scenario"]:checked').value;
+            const data = scenarioData[selectedScenario];
+
+            const container = d3.select('#waterfallChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 250 - margin.top - margin.bottom;
+
+            d3.select('#waterfallChart').selectAll('*').remove();
+
+            const svg = d3.select('#waterfallChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const categories = ['baseline', 'ΔV', 'ΔP', 'ΔR'];
+            const values = [0, data.deltaV, data.deltaP, data.deltaR];
+            const cumulative = [0, data.deltaV, data.deltaV + data.deltaP, data.deltaR];
+
+            const x = d3.scaleBand()
+                .domain(categories)
+                .range([0, width])
+                .padding(0.2);
+
+            const y = d3.scaleLinear()
+                .domain([-0.1, 0.2])
+                .range([height, 0]);
+
+            // Bars
+            categories.forEach((cat, i) => {
+                if (i === 0) {
+                    // Baseline line
+                    g.append('line')
+                        .attr('x1', x(cat) + x.bandwidth() / 2)
+                        .attr('x2', x(cat) + x.bandwidth() / 2)
+                        .attr('y1', y(0))
+                        .attr('y2', y(0))
+                        .attr('stroke', '#999')
+                        .attr('stroke-width', 2)
+                        .attr('stroke-dasharray', '3,3');
+                } else {
+                    const startY = cumulative[i - 1];
+                    const endY = cumulative[i];
+                    const barHeight = Math.abs(endY - startY);
+
+                    g.append('rect')
+                        .attr('x', x(cat))
+                        .attr('y', Math.min(y(startY), y(endY)))
+                        .attr('width', x.bandwidth())
+                        .attr('height', barHeight)
+                        .attr('fill', values[i] >= 0 ? '#1f2a37' : '#999');
+                }
+            });
+
+            // Connecting lines
+            for (let i = 0; i < categories.length - 1; i++) {
+                if (i > 0) {
+                    g.append('line')
+                        .attr('x1', x(categories[i]) + x.bandwidth())
+                        .attr('x2', x(categories[i + 1]))
+                        .attr('y1', y(cumulative[i]))
+                        .attr('y2', y(cumulative[i]))
+                        .attr('stroke', '#999')
+                        .attr('stroke-width', 1);
+                }
+            }
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.2f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Value labels
+            categories.forEach((cat, i) => {
+                if (i > 0) {
+                    const value = values[i];
+                    const yPos = cumulative[i];
+                    g.append('text')
+                        .attr('x', x(cat) + x.bandwidth() / 2)
+                        .attr('y', y(yPos) - 5)
+                        .attr('text-anchor', 'middle')
+                        .attr('font-size', '10px')
+                        .attr('fill', '#1a1a1a')
+                        .text((value >= 0 ? '+' : '') + (value * 100).toFixed(1) + '%');
+                }
+            });
+        }
+
+        document.querySelectorAll('input[name="scenario"]').forEach(radio => {
+            radio.addEventListener('change', generateWaterfallChart);
+        });
+
+        // Calculator
+        function updateCalculator() {
+            const r0 = parseFloat(document.getElementById('r0Input').value) || 100;
+            const v0 = parseFloat(document.getElementById('v0Input').value) || 1000;
+            const p0 = parseFloat(document.getElementById('p0Input').value) || 0.10;
+            const v1 = parseFloat(document.getElementById('v1Input').value) || 1200;
+            const p1 = parseFloat(document.getElementById('p1Input').value) || 0.11;
+
+            const r1 = v1 * p1;
+            const deltaR = r1 - r0;
+            const deltaRPercent = (deltaR / r0) * 100;
+            const deltaVPercent = ((v1 - v0) / v0) * 100;
+            const deltaPPercent = ((p1 - p0) / p0) * 100;
+
+            // Approximation check
+            const approxSum = deltaVPercent + deltaPPercent;
+            const error = Math.abs(deltaRPercent - approxSum);
+
+            // Determine main contributor
+            let mainContributor = '';
+            if (Math.abs(deltaVPercent) > Math.abs(deltaPPercent) * 1.5) {
+                mainContributor = 'volume';
+            } else if (Math.abs(deltaPPercent) > Math.abs(deltaVPercent) * 1.5) {
+                mainContributor = 'price';
+            } else {
+                mainContributor = 'оба фактора';
+            }
+
+            // Check for compensation
+            const hasCompensation = (deltaVPercent > 0 && deltaPPercent < 0) || (deltaVPercent < 0 && deltaPPercent > 0);
+
+            let conclusion = '';
+            if (hasCompensation) {
+                conclusion = `Есть компенсация: ${deltaVPercent >= 0 ? 'объём растёт' : 'объём падает'}, но ${deltaPPercent >= 0 ? 'цена растёт' : 'цена падает'}. Основной вклад: ${mainContributor}.`;
+            } else {
+                conclusion = `Основной вклад: ${mainContributor}. ${deltaVPercent >= 0 && deltaPPercent >= 0 ? 'Оба фактора растут.' : deltaVPercent < 0 && deltaPPercent < 0 ? 'Оба фактора падают.' : ''}`;
+            }
+
+            document.getElementById('calculatorOutput').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">R1</div>
+                        <div class="output-metric-value">${r1.toFixed(2)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">ΔR%</div>
+                        <div class="output-metric-value">${deltaRPercent >= 0 ? '+' : ''}${deltaRPercent.toFixed(2)}%</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">ΔV%</div>
+                        <div class="output-metric-value">${deltaVPercent >= 0 ? '+' : ''}${deltaVPercent.toFixed(2)}%</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">ΔP%</div>
+                        <div class="output-metric-value">${deltaPPercent >= 0 ? '+' : ''}${deltaPPercent.toFixed(2)}%</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">ΔV% + ΔP%</div>
+                        <div class="output-metric-value">${approxSum >= 0 ? '+' : ''}${approxSum.toFixed(2)}%</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Погрешность</div>
+                        <div class="output-metric-value">${error.toFixed(2)}%</div>
+                    </div>
+                </div>
+                <div class="output-conclusion">${conclusion}</div>
+            `;
+        }
+
+        document.getElementById('r0Input').addEventListener('input', updateCalculator);
+        document.getElementById('v0Input').addEventListener('input', updateCalculator);
+        document.getElementById('p0Input').addEventListener('input', updateCalculator);
+        document.getElementById('v1Input').addEventListener('input', updateCalculator);
+        document.getElementById('p1Input').addEventListener('input', updateCalculator);
+
+        // Initial render
+        generateIndicesChart();
+        generateWaterfallChart();
+        updateCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateIndicesChart();
+                generateWaterfallChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

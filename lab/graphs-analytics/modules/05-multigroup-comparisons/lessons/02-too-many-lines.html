@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Много линий = шум: когда детализация ломает вывод — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 5.2 / Модуль 5</div>
+            <h1>Почему много линий мешает решению</h1>
+            <p class="subtitle">Когда стремление показать всё мешает увидеть главное</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике часто возникает ситуация, когда есть контроль и несколько тестовых вариантов, или много сегментов и срезов. Аналитик строит один график со всеми линиями, стремясь показать всю доступную информацию. Но вместо улучшения понимания это разрушает способность принять решение.
+                </p>
+                <p>
+                    Типичные кейсы, где много линий создаёт шум:
+                </p>
+                <ul>
+                    <li>Мультигрупповые A/B-тесты: контроль и 5–7 тестовых вариантов на одном графике</li>
+                    <li>Сегментированные метрики: все сегменты пользователей показаны отдельными линиями</li>
+                    <li>Отчёты для стейкхолдеров: попытка показать все метрики и все группы одновременно</li>
+                    <li>Дашборды с большим числом серий: каждая метрика или группа — отдельная линия</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что добавление новых линий и групп не улучшает понимание, а часто разрушает способность принять решение. График перестаёт быть аргументом, когда количество линий превышает когнитивную ёмкость читателя.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: перегруженный график</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Много линий одинаковой визуальной важности</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Many lines (all equal visual weight) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,155 150,150 250,145 350,135 450,140 550,145" 
+                                fill="none" stroke="#1a1a1a" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,145 150,140 250,135 350,145 450,150 550,155" 
+                                fill="none" stroke="#999" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,160 150,155 250,150 350,130 450,135 550,140" 
+                                fill="none" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,140 150,135 250,150 350,150 450,155 550,160" 
+                                fill="none" stroke="#1a1a1a" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,165 150,160 250,155 350,125 450,130 550,135" 
+                                fill="none" stroke="#999" stroke-width="1.5" opacity="0.7"/>
+                            <polyline points="50,135 150,130 250,155 350,155 450,160 550,165" 
+                                fill="none" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                            <!-- Crowded legend -->
+                            <g transform="translate(400, 30)">
+                                <line x1="0" y1="0" x2="20" y2="0" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="5" font-size="9" fill="#666">Контроль</text>
+                                <line x1="0" y1="15" x2="20" y2="15" stroke="#1a1a1a" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="20" font-size="9" fill="#666">Тест 1</text>
+                                <line x1="0" y1="30" x2="20" y2="30" stroke="#999" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="35" font-size="9" fill="#666">Тест 2</text>
+                                <line x1="0" y1="45" x2="20" y2="45" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="50" font-size="9" fill="#666">Тест 3</text>
+                                <line x1="0" y1="60" x2="20" y2="60" stroke="#1a1a1a" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="65" font-size="9" fill="#666">Тест 4</text>
+                                <line x1="0" y1="75" x2="20" y2="75" stroke="#999" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="80" font-size="9" fill="#666">Тест 5</text>
+                                <line x1="0" y1="90" x2="20" y2="90" stroke="#666" stroke-width="1.5" opacity="0.7"/>
+                                <text x="25" y="95" font-size="9" fill="#666">Тест 6</text>
+                            </g>
+                            <!-- Confusion -->
+                            <text x="300" y="100" font-size="12" fill="#d32f2f" text-anchor="middle">На что смотреть?</text>
+                            <text x="300" y="115" font-size="11" fill="#666" text-anchor="middle">Все линии равнозначны</text>
+                            <text x="300" y="130" font-size="10" fill="#666" text-anchor="middle">Детализация разрушает фокус</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Детализация разрушает фокус сравнения.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Много линий одинаковой визуальной важности создают визуальный шум. Цвета и легенда перегружены, читатель не понимает, на что смотреть. Все линии выглядят одинаково важными, и нет способа выделить ключевое сравнение. График перестаёт быть аргументом и становится просто набором данных, которые нужно интерпретировать.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Глаз не способен одновременно отслеживать большое количество линий</h3>
+                        <p>
+                            Человеческий глаз и внимание имеют ограниченную когнитивную ёмкость. Одновременное отслеживание большого количества линий превышает эту ёмкость, и читатель не может эффективно обрабатывать информацию. Вместо понимания графика возникает визуальный шум, где все линии смешиваются и теряются. Количество информации не равно качеству понимания.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Визуальная иерархия отсутствует — все линии выглядят одинаково важными</h3>
+                        <p>
+                            Если все линии имеют одинаковый визуальный вес, цвет и стиль, визуальная иерархия отсутствует. Читатель не понимает, какие линии важны для решения, а какие второстепенны. Нет способа выделить ключевое сравнение, и график перестаёт направлять к решению. Все линии выглядят одинаково важными, хотя для решения важны только некоторые.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Сравнение превращается в визуальный поиск, а не в чтение эффекта и решения</h3>
+                        <p>
+                            Когда линий слишком много, сравнение превращается в визуальный поиск нужной информации, а не в прямое чтение эффекта и решения. Читатель должен искать нужные линии среди множества других, сравнивать их вручную и вычислять вывод. График перестаёт быть аргументом и становится задачей на поиск информации, что замедляет принятие решения и создаёт риск ошибки.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: управляемая детализация</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Явное выделение ключевых линий</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Control (de-emphasized) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                            <!-- Other lines (very de-emphasized) -->
+                            <polyline points="50,155 150,150 250,145 350,135 450,140 550,145" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1" opacity="0.3"/>
+                            <polyline points="50,145 150,140 250,135 350,145 450,150 550,155" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1" opacity="0.3"/>
+                            <polyline points="50,160 150,155 250,150 350,130 450,135 550,140" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1" opacity="0.3"/>
+                            <polyline points="50,140 150,135 250,150 350,150 450,155 550,160" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1" opacity="0.3"/>
+                            <!-- Key test (emphasized) -->
+                            <polyline points="50,165 150,160 250,155 350,125 450,130 550,135" 
+                                fill="none" stroke="#1a1a1a" stroke-width="4"/>
+                            <!-- Direct labels -->
+                            <text x="520" y="130" font-size="12" fill="#1a1a1a" font-weight="500">Тест 5 (лучший)</text>
+                            <text x="520" y="155" font-size="11" fill="#999" font-style="italic" opacity="0.5">Контроль</text>
+                            <text x="520" y="170" font-size="10" fill="#999" opacity="0.3">Остальные тесты</text>
+                            <!-- Effect indicator -->
+                            <line x1="350" y1="140" x2="350" y2="125" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="360" y="130" font-size="11" fill="#1a1a1a" font-weight="500">+15</text>
+                            <!-- Conclusion -->
+                            <text x="300" y="100" font-size="11" fill="#0284c7" text-anchor="middle">Фокус на ключевом сравнении</text>
+                            <text x="300" y="115" font-size="10" fill="#666" text-anchor="middle">Остальные линии деэмфазированы</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Хороший график показывает ровно столько, сколько нужно для решения.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Управляемая детализация явно выделяет 1–2 ключевые линии, а остальные деэмфазируются или убираются. Альтернативно, можно разделить график на несколько или перейти к агрегированному представлению. Хороший график показывает ровно столько, сколько нужно для решения, а не все доступные данные. Детализация должна подчиняться решению, а не полноте данных.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Не принимать решение из-за «непонятности» графика, когда слишком много линий создаёт визуальный шум. Выбирать вариант на основе случайного впечатления, потому что невозможно эффективно сравнить все варианты. Просить «ещё один график» бесконечно, пытаясь найти способ понять перегруженную визуализацию.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Сужать фокус до сравнения, которое действительно влияет на выбор, выделяя 1–2 ключевые линии и деэмфазируя остальные. Строить график под решение, а не под полноту данных, понимая, что детализация должна подчиняться логике принятия решения. Управлять детализацией ради решения, а не ради показа всех доступных данных.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Если график требует объяснений, он уже не работает как аргумент. Детализация должна подчиняться решению. График перестаёт быть аргументом, когда количество линий превышает когнитивную ёмкость читателя. Хороший график показывает ровно столько, сколько нужно для решения, явно выделяя ключевое сравнение и деэмфазируя второстепенное.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Сколько линий действительно нужно для решения? Можно ли убрать часть линий без потери смысла?</li>
+                    <li>Понимаю ли я, какая линия главная? Есть ли визуальная иерархия, которая выделяет ключевое сравнение?</li>
+                    <li>Можно ли убрать часть данных без потери смысла? Если да, то эти данные создают шум, а не аргумент.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

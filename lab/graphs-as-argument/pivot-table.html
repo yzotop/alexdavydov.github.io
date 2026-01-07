@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pivot-таблица: как агрегаты превратить в решение</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .table-container {
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        table.before-table {
+            border: 1px solid #e8e8e8;
+        }
+
+        table.after-table {
+            border: 1px solid #1a1a1a;
+        }
+
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: 1px solid #e8e8e8;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        table.after-table th {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        table.after-table th.group-header {
+            background: #333;
+        }
+
+        td {
+            color: #1a1a1a;
+        }
+
+        .delta-positive {
+            color: #060;
+            font-weight: 500;
+        }
+
+        .delta-negative {
+            color: #c00;
+            font-weight: 500;
+        }
+
+        .delta-zero {
+            color: #666;
+        }
+
+        .segment-highlight {
+            background-color: #f0f0f0;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+        
+        <h1>Pivot-таблица: как агрегаты превратить в решение</h1>
+        <p class="subtitle">Pivot-таблица — это не формат отчёта. Это модель сравнения, которая напрямую формирует аналитические выводы и решения.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                A/B-тест завершён. Эксперимент длился 14 дней, трафик стабильный. В тестовой группе изменили механику показа рекламы. Результаты сегментированы: Desktop, Mobile, Tablet; новые пользователи, возвращающиеся; категории контента.
+            </p>
+            <p>
+                Нужно принять решение: запускать в прод, откатывать, частичный rollout или дальнейшая итерация. Все расчёты корректны, сырые агрегаты доступны. Сложность — в сравнении эффектов по сегментам.
+            </p>
+            <p>
+                Pivot-таблица построена из исходных данных. Все числа на месте. Но решение неочевидно.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: pivot как сырая агрегация</h2>
+            <p>
+                Типичная pivot-таблица: строки = сегменты, столбцы = метрики или группы, значения = средние или суммы, порядок по умолчанию, нет явной логики сравнения.
+            </p>
+            <p>
+                Такие pivot-таблицы обычно получаются при использовании стандартного поведения BI-систем или привычек работы с электронными таблицами. Данные агрегируются, но структура не отражает логику решения.
+            </p>
+
+            <div class="table-container">
+                <table class="before-table">
+                    <thead>
+                        <tr>
+                            <th>Сегмент</th>
+                            <th>Revenue</th>
+                            <th>RPM</th>
+                            <th>Conversion</th>
+                            <th>Retention</th>
+                            <th>Shows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Desktop</td>
+                            <td>125,000</td>
+                            <td>2.85</td>
+                            <td>0.045</td>
+                            <td>0.72</td>
+                            <td>43,860</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td>98,500</td>
+                            <td>2.65</td>
+                            <td>0.042</td>
+                            <td>0.68</td>
+                            <td>37,170</td>
+                        </tr>
+                        <tr>
+                            <td>Tablet</td>
+                            <td>28,500</td>
+                            <td>2.70</td>
+                            <td>0.044</td>
+                            <td>0.71</td>
+                            <td>10,556</td>
+                        </tr>
+                        <tr>
+                            <td>New Users</td>
+                            <td>85,200</td>
+                            <td>2.60</td>
+                            <td>0.040</td>
+                            <td>0.65</td>
+                            <td>32,769</td>
+                        </tr>
+                        <tr>
+                            <td>Returning</td>
+                            <td>166,800</td>
+                            <td>2.90</td>
+                            <td>0.048</td>
+                            <td>0.75</td>
+                            <td>57,517</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример типичной pivot-таблицы: агрегаты по сегментам, но нет сравнения контроль/тест, нет дельт, порядок не отражает важность для решения.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такая pivot-таблица не отвечает на вопрос решения по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Сырые агрегаты не отвечают на вопрос решения:</strong> Решение требует понимания: где эффект есть, где его нет, какой он по знаку и величине. Pivot-таблица показывает абсолютные значения по сегментам, но не показывает изменение относительно контроля. Невозможно понять, в каком сегменте тест лучше, в каком хуже, насколько значимы различия. Нужно мысленно сравнивать числа между строками, что увеличивает когнитивную нагрузку и риск ошибки.
+                </li>
+                <li>
+                    <strong>Сравнения когнитивно дороги:</strong> Чтобы понять эффект в сегменте, нужно найти соответствующую строку в контрольной группе, вычислить разницу, оценить её значимость. Если сегментов много, это требует последовательного сканирования и мысленных вычислений для каждого сегмента. Глаз вынужден прыгать между строками, теряя контекст. Каждое сравнение требует отдельного когнитивного усилия, что замедляет принятие решения и увеличивает вероятность пропустить важные паттерны.
+                </li>
+                <li>
+                    <strong>Неясно, какие сегменты определяют результат:</strong> Решение часто зависит от одного-двух ключевых сегментов, которые определяют общий эффект. В pivot-таблице с сырыми агрегатами все сегменты выглядят одинаково важными. Невозможно быстро определить, какой сегмент доминирует, какой незначим, какой компенсирует эффекты других. Порядок строк не отражает важность для решения, поэтому нужно анализировать все строки подряд, даже если большинство из них не влияет на итоговое решение.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: pivot как модель решения</h2>
+            <p>
+                Переработанная pivot-таблица: структурирована вокруг сравнения, а не агрегации, явно показывает контроль vs тест vs дельта, упорядочивает сегменты по величине эффекта или релевантности для решения, делает доминирующие и нерелевантные сегменты видимыми сразу.
+            </p>
+            <p>
+                Используются: упорядочивание как аналитический инструмент, явные измерения сравнения, снижение когнитивной нагрузки. Структура отражает логику решения, а не структуру данных.
+            </p>
+
+            <div class="table-container">
+                <table class="after-table">
+                    <thead>
+                        <tr>
+                            <th class="group-header" colspan="4">Сегмент</th>
+                        </tr>
+                        <tr>
+                            <th>Сегмент</th>
+                            <th>Control</th>
+                            <th>Test</th>
+                            <th>Δ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="segment-highlight">
+                            <td><strong>Desktop</strong></td>
+                            <td>125,000</td>
+                            <td>129,000</td>
+                            <td class="delta-positive">+3.2%</td>
+                        </tr>
+                        <tr>
+                            <td>Returning</td>
+                            <td>166,800</td>
+                            <td>170,200</td>
+                            <td class="delta-positive">+2.0%</td>
+                        </tr>
+                        <tr>
+                            <td>New Users</td>
+                            <td>85,200</td>
+                            <td>86,100</td>
+                            <td class="delta-positive">+1.1%</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td>98,500</td>
+                            <td>99,500</td>
+                            <td class="delta-positive">+1.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Tablet</td>
+                            <td>28,500</td>
+                            <td>28,400</td>
+                            <td class="delta-negative">-0.4%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанная pivot-таблица: структурирована вокруг сравнения, сегменты упорядочены по эффекту, дельта явно видна, доминирующий сегмент выделен.
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>Pivot-таблица работает как модель решения, когда она структурирована вокруг сравнения, а не вывода данных.</strong> Таблица явно показывает контроль, тест и дельту для каждого сегмента, сегменты упорядочены по величине эффекта или релевантности для решения, доминирующие и нерелевантные сегменты видимы сразу. Структура отражает логику принятия решения: какие сегменты важны, где эффект значим, где его нет.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Pivot-таблица не работает как модель решения, когда она показывает только сырые агрегаты без сравнения.</strong> Если нет явного сравнения контроль vs тест, если порядок строк не отражает важность для решения, если нужно мысленно вычислять дельты и искать доминирующие сегменты — таблица блокирует принятие решения, даже если все расчёты корректны. Она становится отчётом о данных, а не инструментом решения.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Понятно ли, какие сегменты важны для решения?</li>
+                <li>Можно ли определить главный драйвер за 10 секунд?</li>
+                <li>Структурирована ли pivot-таблица вокруг сравнения, а не вывода данных?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./colored-table.html">← Предыдущий урок</a>
+            <a href="./message-title.html">Следующий урок →</a>
+        </div>
+    </div>
+</body>
+</html>
+

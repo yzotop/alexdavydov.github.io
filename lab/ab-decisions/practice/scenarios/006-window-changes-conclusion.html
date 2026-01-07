@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Окно меняет вывод</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul, .analysis ol {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+        <h1>Окно меняет вывод</h1>
+        <p class="subtitle">На 3–4 день тест "минус", на 10–14 день — "плюс". Что делать?</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-3" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли верить эффекту?</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                В тесте усилили один рекламный формат/плейсмент (подняли приоритет, добавили показы, поменяли место).
+            </p>
+            <p>
+                Эксперимент длился 14 дней, трафик стабильный. CPM при этом примерно стабильный, изменения похожи на адаптацию поведения/системы.
+            </p>
+            <p>
+                В первые 3–4 дня основная метрика (Revenue/RPM) ниже контроля (примерно −1.2%).
+            </p>
+            <p>
+                Начиная с 7–8 дня метрика выравнивается и к концу теста становится выше (примерно +0.8%).
+            </p>
+            <p>
+                Вопрос: какой вывод делать и как выбирать окно оценки?
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart" id="chart-main"></div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Какой вывод ты сделаешь на 4-й день? А на 14-й?</li>
+                <li>Это "шум", "адаптация", "эффект с лагом" или "смена режима"?</li>
+                <li>Какие метрики-диагностики подтвердят механизм лага (show/fill, coverage, latency, частота, усталость)?</li>
+                <li>Когда останавливать тест (stop rules), если раннее окно показывает минус?</li>
+                <li>Как выбрать окно оценки и что писать в итоговом отчёте?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что дельта меняет знак: первые дни отрицательная, затем пересекает ноль и становится положительной. Это классический паттерн эффекта с лагом.
+                </p>
+
+                <p>
+                    <strong>Объяснение:</strong> Эффекты могут приходить с лагом по разным причинам: поведение пользователя (адаптация, привыкание), рынок (конкуренция, сезонность), система (кеши, переобучение, прогрев), обучение (инвентарь, рекомендации), раскрытие инвентаря (show rate растёт постепенно).
+                </p>
+
+                <p>
+                    <strong>Три причины "ранний минус → поздний плюс":</strong>
+                </p>
+                <ol>
+                    <li><strong>Пользовательская адаптация:</strong> Поведение меняется постепенно. Пользователи привыкают к новому месту блока, новому формату показа. Первые дни может быть негативная реакция (непривычно, мешает), затем адаптация и улучшение вовлечённости.</li>
+                    <li><strong>Стабилизация системы/торгов:</strong> Переобучение моделей, прогрев кешей, стабилизация торговых алгоритмов. Система "учится" работать с новым форматом, и эффективность растёт со временем.</li>
+                    <li><strong>Раскрытие инвентаря/рост show rate:</strong> Эффект проявляется постепенно. Например, lazy load начинает работать лучше по мере того, как пользователи скроллят дальше, или инвентарь "раскрывается" постепенно, увеличивая show rate.</li>
+                </ol>
+
+                <p>
+                    <strong>Протокол чтения:</strong>
+                </p>
+                <ol>
+                    <li><strong>Смотреть не только итоговую дельту, но и форму кривой:</strong> Если кривая меняет знак или направление — это важный сигнал. Нужно понять механизм, а не просто усреднить.</li>
+                    <li><strong>Проверить диагностические метрики:</strong> Shows, show rate, fill/coverage, responses. Если show rate растёт постепенно, а fill rate стабилизируется — это подтверждает механизм лага.</li>
+                    <li><strong>Сравнить 1–3 день vs 10–14 день и понять механизм, а не "среднее":</strong> Не усреднять по всему окну, а разобрать раннее и позднее поведение отдельно. Что изменилось между этими периодами?</li>
+                    <li><strong>Заранее задавать окно и stop rules:</strong> Иначе отчёт станет пост-хок. Если окно выбирается после просмотра данных, это самообман. Нужно заранее определить: какое окно для оценки, какие stop rules для раннего останова.</li>
+                </ol>
+
+                <p>
+                    <strong>Важно:</strong> "Окно меняет вывод" — красный флаг, требующий механистического объяснения. Если вывод зависит от выбора окна, нужно объяснить, почему это происходит, иначе решение будет ненадёжным.
+                </p>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «На 3-й день минус — значит тест провалился, останавливаем. Или наоборот: на 14-й день плюс — значит катим.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Оценка зависит от окна: раннее окно (1–4 день) показывает минус, позднее (10–14 день) — плюс. Если форма кривой меняет знак, нужен разбор механизма и проверка диагностических метрик (show rate, fill, coverage). Решение должно приниматься по заранее заданным правилам (окно и stop rules) и с объяснением лага: почему эффект пришёл позже? Если механизм понятен (адаптация, стабилизация системы, раскрытие инвентаря) и поздний эффект устойчив — можно рассматривать выкат. Если механизм неясен — нужно продлить тест или переработать дизайн.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что "поздний плюс гарантированно устойчив" — возможно, это временная адаптация, которая потом вернётся к минусу. Нельзя утверждать, что "ранний минус был просто шум" — нужно проверить диагностические метрики и понять механизм. Нельзя утверждать, что можно выбирать окно постфактум без риска самообмана — если окно выбирается после просмотра данных, это cherry-picking и ненадёжное решение.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../experiments/time-and-lags.html">Время и лаги: когда эффект проявляется</a></li>
+                <li><a href="../../monetization/time/windowing.html">Windowing: выбор окна наблюдения</a></li>
+                <li><a href="../../monetization/time/delayed-effects.html">Delayed effects: отложенные эффекты</a></li>
+                <li><a href="../../experiments/checklists-operating.html">Чеклисты и operating: stop rules и окна</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./005-segment-conflict-simpson.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./007-local-win-system-loss.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 006: Window changes conclusion
+        // Synthetic data: 14 days, baseline = 100
+        // Early period (days 0-7): Test < Control (-1.2%)
+        // Late period (days 8-14): Test > Control (+0.8%)
+        // Vertical line at day 7 to show window change
+
+        let currentMode = 'annotated';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Control stable
+            const control = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+
+            // Test: starts negative, then crosses zero and becomes positive
+            const test = days.map(d => {
+                const base = 100;
+                let delta;
+                if (d <= 4) {
+                    // Early: negative
+                    delta = -1.2 - (4 - d) * 0.1; // -1.2% to -0.8%
+                } else if (d <= 7) {
+                    // Transition: crossing zero
+                    delta = -0.5 + (d - 4) * 0.4; // -0.5% to +0.7%
+                } else {
+                    // Late: positive
+                    delta = 0.8 + (d - 7) * 0.05; // +0.8% to +1.1%
+                }
+                const noise = (Math.random() - 0.5) * 0.3;
+                return { x: d, y: base + delta + noise };
+            });
+
+            return { control, test };
+        }
+
+        function renderChart() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            ABCharts.render({
+                el: '#chart-main',
+                series: [
+                    { name: 'Control', values: data.control, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.test, color: '#4a9eff' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Revenue (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    lines: annotationsEnabled ? [
+                        { x: 7, color: '#960', opacity: 0.5, dashed: true, width: 2 }
+                    ] : [],
+                    labels: annotationsEnabled ? [
+                        { x: 3, y: 98.5, text: 'Раннее окно: -1.2%', color: '#ff6b6b', fontSize: '10px' },
+                        { x: 7, y: 99.5, text: 'Смена окна', color: '#960', fontSize: '10px', fontWeight: '500' },
+                        { x: 12, y: 101, text: 'Позднее окно: +0.8%', color: '#4a9eff', fontSize: '10px' }
+                    ] : [],
+                    bands: annotationsEnabled ? [
+                        { xStart: 0, xEnd: 4, yMin: 98, yMax: 100, color: '#ff6b6b', opacity: 0.1 },
+                        { xStart: 8, xEnd: 14, yMin: 100, yMax: 101.5, color: '#4a9eff', opacity: 0.1 }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderChart();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+        });
+    </script>
+</body>
+</html>

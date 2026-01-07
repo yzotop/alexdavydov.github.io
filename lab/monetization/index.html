@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математика монетизации рекламы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .audience-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .audience-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .audience-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .audience-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .module-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .module-key-idea {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .module-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .module-lessons {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .module-lessons-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .module-lessons ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .module-lessons li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .module-lessons li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        .module-lessons a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .module-lessons a:hover {
+            border-bottom-color: #1a1a1a;
+        }
+
+        .module-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .module-link:hover {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+        }
+
+        .what-not {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #e8e8e8;
+        }
+
+        .what-not h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .what-not p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <header>
+            <div class="kicker">Основной курс</div>
+            <h1>Математика монетизации рекламы</h1>
+            <p class="subtitle">Метрики → механика → траектории</p>
+        </header>
+
+        <main>
+            <section class="intro">
+                <h2>О чём курс</h2>
+                <p>
+                    Этот курс рассматривает монетизацию рекламы как систему с ограниченным вниманием, компромиссами и отложенными эффектами. Здесь мы изучаем не только уровни метрик, но и механику их изменения.
+                </p>
+                <p>
+                    Монетизация — это не таблица чисел, а динамическая система. Давление меняет траектории раньше, чем деньги. Время превращает оптимизацию в риск. Метрики — это тени структуры, и структура важнее.
+                </p>
+                <p>
+                    Проблема, которую решает курс: аналитики часто читают метрики как статичные числа, не видя механику системы. Это приводит к неправильным решениям: увеличивают давление, когда система уже насыщена, делают выводы из коротких окон, не учитывают лаги и компромиссы.
+                </p>
+            </section>
+
+            <div class="what-not">
+                <h3>Чего в курсе нет</h3>
+                <p>
+                    Это не курс по настройке рекламных систем, не каталог метрик, не гайд по оптимизации. Речь идёт о математической и системной стороне монетизации: как читать механику за цифрами, как видеть траектории и компромиссы, как принимать решения в условиях нелинейности и лагов.
+                </p>
+            </div>
+
+            <section class="audience-section">
+                <h2>Для кого курс</h2>
+                <ul>
+                    <li>Product и data аналитики, которые работают с монетизацией рекламы и интерпретируют метрики</li>
+                    <li>Специалисты по экспериментам и монетизации, которые принимают решения на основе данных</li>
+                    <li>Analytics leads и decision-makers, которые управляют рекламными системами и нуждаются в системном понимании</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Структура курса</h2>
+                <div class="modules-grid">
+                    <div class="module-card">
+                        <div class="module-title">Модуль 1. Метрики монетизации</div>
+                        <div class="module-key-idea">Ключевая идея: метрики — это проекции системы на разные оси. Они не объясняют выручку по отдельности, но вместе дают карту рычагов</div>
+                        <div class="module-content">
+                            Этот раздел вводит базовые определения: выручку как итог, CPM как вводящий в заблуждение сигнал, show/fill rate как ранние индикаторы. Разложение метрик и калькуляторы помогают понять, "за счёт чего" меняются деньги.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./metrics/index.html">Обзор раздела</a></li>
+                                <li><a href="./metrics/revenue.html">Выручка</a></li>
+                                <li><a href="./metrics/cpm.html">CPM</a></li>
+                                <li><a href="./metrics/show-fill-rate.html">Show rate & Fill rate</a></li>
+                                <li><a href="./metrics/metric-decomposition.html">Разложение выручки</a></li>
+                                <li><a href="./metrics/calculators.html">Калькуляторы</a></li>
+                            </ul>
+                            <a href="./metrics/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 2. Давление и насыщение</div>
+                        <div class="module-key-idea">Ключевая идея: давление — это не количество рекламы, а сила, с которой система меняет поведение пользователей</div>
+                        <div class="module-content">
+                            Этот раздел объясняет нелинейность: давление не равно количеству рекламы, насыщение создаёт убывающую отдачу, пороги резко меняют режим. Вмешательства могут чинить механику — или ломать её дальше.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./pressure/index.html">Обзор раздела</a></li>
+                                <li><a href="./pressure/saturation.html">Насыщение</a></li>
+                                <li><a href="./pressure/thresholds.html">Пороги</a></li>
+                                <li><a href="./pressure/hidden-saturation.html">Скрытое насыщение</a></li>
+                                <li><a href="./pressure/pressure-is-not-adload.html">Давление ≠ количество рекламы</a></li>
+                                <li><a href="./pressure/intervention.html">Вмешательства</a></li>
+                            </ul>
+                            <a href="./pressure/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 3. Время и лаги</div>
+                        <div class="module-key-idea">Ключевая идея: последствия приходят позже. Система может менять механику задолго до того, как это видно в выручке</div>
+                        <div class="module-content">
+                            Этот раздел про отложенные эффекты: долгую тишину, когда система копит риск, дрифт и смену режима. Короткие окна наблюдения часто врут — потому что последствия приходят с лагом.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./time/index.html">Обзор раздела</a></li>
+                                <li><a href="./time/delayed-effects.html">Отложенные эффекты</a></li>
+                                <li><a href="./time/long-silence.html">Долгая тишина</a></li>
+                                <li><a href="./time/drift.html">Дрейф</a></li>
+                                <li><a href="./time/regime-change.html">Смена режима</a></li>
+                                <li><a href="./time/windowing.html">Окно наблюдения</a></li>
+                            </ul>
+                            <a href="./time/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 4. Инвентарь</div>
+                        <div class="module-key-idea">Ключевая идея: инвентарь — это возможности, а не показы. Больше инвентаря не всегда означает больше выручки</div>
+                        <div class="module-content">
+                            Инвентарь — это возможности, а не показы. Цепочка монетизации, качество инвентаря, композиционные сдвиги. Больше инвентаря не всегда означает больше выручки.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./inventory/index.html">Обзор раздела</a></li>
+                                <li><a href="./inventory/inventory-metrics.html">Метрики инвентаря</a></li>
+                                <li><a href="./inventory/inventory-quality.html">Качество инвентаря</a></li>
+                                <li><a href="./inventory/hidden-inventory.html">Скрытый инвентарь</a></li>
+                                <li><a href="./inventory/inventory-fatigue.html">Усталость инвентаря</a></li>
+                                <li><a href="./inventory/coverage-vs-pressure.html">Покрытие vs давление</a></li>
+                            </ul>
+                            <a href="./inventory/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 5. Эксперименты</div>
+                        <div class="module-key-idea">Ключевая идея: не про фичи и цифры. Про повторяющиеся формы причин и следствий</div>
+                        <div class="module-content">
+                            Каталог паттернов: давление, время, решения. Эталонный разбор: эксперимент как траектория. Форма причин важнее процента в отчёте.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./experiments/index.html">Обзор раздела</a></li>
+                                <li><a href="./experiments/anatomy-of-experiment.html">Анатомия эксперимента</a></li>
+                                <li><a href="./experiments/pressure-patterns.html">Паттерны давления</a></li>
+                                <li><a href="./experiments/time-patterns.html">Паттерны времени</a></li>
+                                <li><a href="./experiments/decision-patterns.html">Паттерны решений</a></li>
+                            </ul>
+                            <a href="./experiments/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 6. Operating</div>
+                        <div class="module-key-idea">Ключевая идея: практика эксплуатации системы. Управляйте механизмом — и деньги перестанут быть сюрпризом</div>
+                        <div class="module-content">
+                            Чеклисты, сигналы, решения, риски. Ежедневный/недельный/месячный ритм контроля. Управляйте механизмом — и деньги перестанут быть сюрпризом.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./operating/index.html">Обзор раздела</a></li>
+                                <li><a href="./operating/signals.html">Сигналы</a></li>
+                                <li><a href="./operating/alerts.html">Алерты</a></li>
+                                <li><a href="./operating/cadence.html">Ритм контроля</a></li>
+                                <li><a href="./operating/dashboard-spec.html">Спецификация дашборда</a></li>
+                                <li><a href="./operating/governance.html">Управление</a></li>
+                                <li><a href="./operating/incidents.html">Инциденты</a></li>
+                                <li><a href="./operating/playbooks.html">Плейбуки</a></li>
+                                <li><a href="./operating/quality.html">Качество</a></li>
+                            </ul>
+                            <a href="./operating/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 7. Рынок</div>
+                        <div class="module-key-idea">Ключевая идея: цена, спрос, конкуренция. Как отличить рыночные эффекты от механических</div>
+                        <div class="module-content">
+                            Цена, спрос, конкуренция: как читать CPM и шоки. Разложение price × volume, аукционы, ограничения, сезонность. Как отличить рыночные эффекты от механических.
+                        </div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки раздела:</div>
+                            <ul>
+                                <li><a href="./market/index.html">Обзор раздела</a></li>
+                                <li><a href="./market/price-vs-volume.html">Цена vs объём</a></li>
+                                <li><a href="./market/price-elasticity.html">Эластичность цены</a></li>
+                                <li><a href="./market/auction-competition.html">Аукционы и конкуренция</a></li>
+                                <li><a href="./market/demand-shocks.html">Шоки спроса</a></li>
+                                <li><a href="./market/floor-and-constraints.html">Floor и ограничения</a></li>
+                            </ul>
+                            <a href="./market/index.html" class="module-link">Открыть раздел →</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e8e8e8;">
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">Монетизация — это динамика, а не таблица.</p>
+        </footer>
+    </div>
+</body>
+</html>

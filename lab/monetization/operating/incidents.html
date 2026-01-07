@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инциденты</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .layers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .layers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .layer-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .layer-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .layer-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .layer-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 768px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .incident-select {
+            padding: 0.75rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .action-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .action-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .action-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-list {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .action-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .action-safe {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .action-safe li {
+            margin-bottom: 0.5rem;
+        }
+
+        .action-danger {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #666;
+            font-style: italic;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .action-danger strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .runbook-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .runbook-table th,
+        .runbook-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .runbook-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .runbook-table td {
+            color: #2c3e50;
+        }
+
+        .postmortem {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .postmortem-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .postmortem-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .postmortem-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .line-signal {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .bar {
+            fill: #666;
+        }
+
+        .bar-positive {
+            fill: #999;
+        }
+
+        .bar-negative {
+            fill: #999;
+            opacity: 0.6;
+        }
+
+        .bar-baseline {
+            fill: #1f2a37;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Инциденты: диагностика монетизации</h1>
+        <p class="subtitle">Сначала локализуй слой. Потом трогай рычаг.</p>
+
+        <div class="intro">
+            <p>
+                Инцидент — это не "упала выручка", а "сломался слой механизма". Выручка — это итог, который складывается из нескольких слоёв: спрос, предложение, доставка, давление.
+            </p>
+            <p>
+                Порядок действий: локализация слоя → проверка целостности → оценка масштаба → решение → мониторинг восстановления.
+            </p>
+            <p>
+                Основной принцип: не лечить деньги, лечить слой. Если выручка просела, нужно найти, какой множитель в формуле сломался первым.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4 слоя, где обычно ломается</div>
+            <div class="layers-grid">
+                <div class="layer-card">
+                    <div class="layer-card-title">Слой A: Demand (аукцион/цена внимания)</div>
+                    <div class="layer-card-item">
+                        <strong>Типичные симптомы:</strong> CPM падает, конкуренция снижается, аукцион пустеет.
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Быстрая проверка:</strong> CPM динамика, fill rate, доступность ответов, сезонность.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Слой B: Supply (инвентарь/возможности)</div>
+                    <div class="layer-card-item">
+                        <strong>Типичные симптомы:</strong> Inventory падает, coverage сжимается, show opportunities уменьшаются.
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Быстрая проверка:</strong> Inventory per user, coverage, доступность инвентаря по сегментам.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Слой C: Delivery (доставка/тех)</div>
+                    <div class="layer-card-item">
+                        <strong>Типичные симптомы:</strong> Requests не конвертируются в responses, responses не доходят до shows, технические ошибки.
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Быстрая проверка:</strong> Воронка requests → responses → shows, error rate, latency, availability.
+                    </div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-card-title">Слой D: Pressure & Behavior (давление/поведение)</div>
+                    <div class="layer-card-item">
+                        <strong>Типичные симптомы:</strong> Frequency растёт, saturation наступает, session depth падает, show rate деградирует.
+                    </div>
+                    <div class="layer-card-item">
+                        <strong>Быстрая проверка:</strong> Frequency, плотность показов, show rate, траектория во времени.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Разложение выручки по множителям</div>
+            <div class="chart-container">
+                <svg id="chart1"></svg>
+                <p class="chart-caption">
+                    Инцидент почти всегда виден в одном из множителей раньше, чем в итоговой выручке.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Таймлайн инцидента</div>
+            <div class="chart-container">
+                <svg id="chart2"></svg>
+                <p class="chart-caption">
+                    T0 всегда раньше T1. Поэтому нужен триаж по слоям.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Инцидент → план действий</div>
+            <div class="interactive-panel">
+                <div>
+                    <label for="incidentSelect" style="display: block; font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Выберите симптом инцидента:</label>
+                    <select id="incidentSelect" class="incident-select">
+                        <option value="revenue-down-cpm-up">Revenue ↓, CPM ↑</option>
+                        <option value="revenue-down-cpm-down">Revenue ↓, CPM ↓</option>
+                        <option value="showrate-down">ShowRate ↓ при стабильных requests</option>
+                        <option value="requests-down">Requests ↓ резко</option>
+                        <option value="responses-down">Responses ↓ при стабильных requests</option>
+                        <option value="ctr-down">CTR ↓ при стабильных shows</option>
+                        <option value="frequency-up">Frequency ↑, revenue плоская</option>
+                        <option value="variance-up">Дисперсия сегментов ↑, среднее норм</option>
+                    </select>
+                </div>
+                <div class="action-panel" id="actionPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Runbook: 30 минут</div>
+            <table class="runbook-table">
+                <thead>
+                    <tr>
+                        <th>Минуты</th>
+                        <th>Действие</th>
+                        <th>Метрика/срез</th>
+                        <th>Решение/вывод</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0–5</td>
+                        <td>Триаж по слоям</td>
+                        <td>Revenue, CPM, ShowRate, Requests</td>
+                        <td>Определить слой вероятной причины</td>
+                    </tr>
+                    <tr>
+                        <td>5–10</td>
+                        <td>Проверка воронки</td>
+                        <td>Requests → Responses → Shows</td>
+                        <td>Локализовать точку разрыва</td>
+                    </tr>
+                    <tr>
+                        <td>10–20</td>
+                        <td>Сегментация</td>
+                        <td>По сегментам, площадкам, форматам</td>
+                        <td>Найти, где проблема концентрируется</td>
+                    </tr>
+                    <tr>
+                        <td>20–30</td>
+                        <td>Оценка масштаба</td>
+                        <td>Процент затронутых, траектория</td>
+                        <td>Принять решение: откат/фикс/мониторинг</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Пост-мортем: что фиксировать</div>
+            <div class="postmortem">
+                <div class="postmortem-title">После инцидента зафиксируйте:</div>
+                <ul class="postmortem-list">
+                    <li>Таймлайн: t0 (начало деградации механизма), t1 (деньги начали реагировать), t2 (вмешательство)</li>
+                    <li>Слой причины: Demand/Supply/Delivery/Pressure</li>
+                    <li>Guardrails: какие границы были нарушены</li>
+                    <li>Сегменты/плейсменты/форматы: где проблема была сильнее</li>
+                    <li>Ранние метрики: какие сигналы появились первыми</li>
+                    <li>Что сработало: какие действия помогли</li>
+                    <li>Что усугубило: какие действия ухудшили ситуацию</li>
+                    <li>План предотвращения: алерты, пороги, окна мониторинга</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Инциденты лечатся порядком действий, а не героизмом.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Сначала локализуй. Потом действуй.</p>
+        </div>
+    </div>
+
+    <script>
+        // Incident map
+        const incidentMap = {
+            'revenue-down-cpm-up': {
+                layer: 'Supply или Delivery',
+                checks: [
+                    'Проверить show rate и объём показов — падают ли они',
+                    'Сравнить CPM с динамикой объёма — компенсация ли это',
+                    'Оценить воронку requests → responses → shows',
+                    'Проверить механику (showConv) — не деградирует ли',
+                    'Посмотреть на траекторию во времени — не скрытое ли насыщение'
+                ],
+                safe: [
+                    'Остановить все изменения до локализации',
+                    'Расширить окно наблюдения для оценки масштаба',
+                    'Проверить сегменты — не маскирует ли среднее проблему'
+                ],
+                danger: 'Не радоваться росту CPM — это компенсация, не успех. Не дожимать давление дальше.'
+            },
+            'revenue-down-cpm-down': {
+                layer: 'Demand',
+                checks: [
+                    'Проверить fill rate и доступность ответов',
+                    'Сравнить CPM с предыдущим периодом и сезонностью',
+                    'Оценить конкуренцию и аукцион — не пустеет ли',
+                    'Проверить доступность спроса по сегментам',
+                    'Посмотреть на динамику coverage и inventory'
+                ],
+                safe: [
+                    'Проверить сезонность и внешние факторы',
+                    'Оценить масштаб: все сегменты или часть',
+                    'Мониторить восстановление без вмешательств'
+                ],
+                danger: 'Не паниковать из-за сезонных колебаний. Не менять механику без понимания причины.'
+            },
+            'showrate-down': {
+                layer: 'Delivery или Pressure',
+                checks: [
+                    'Проверить воронку requests → responses → shows',
+                    'Сравнить show rate с давлением (frequency, плотность)',
+                    'Оценить конкуренцию форматов и плейсментов',
+                    'Проверить доступность инвентаря и coverage',
+                    'Посмотреть на динамику showConv во времени'
+                ],
+                safe: [
+                    'Остановить изменения, влияющие на давление',
+                    'Проверить технические метрики delivery',
+                    'Сравнить по сегментам — где проблема сильнее'
+                ],
+                danger: 'Не оптимизировать только CPM — это может скрыть падение объёма.'
+            },
+            'requests-down': {
+                layer: 'Supply или внешние факторы',
+                checks: [
+                    'Проверить inventory per user и coverage',
+                    'Сравнить с предыдущим периодом и трендами',
+                    'Оценить доступность инвентаря по сегментам',
+                    'Проверить внешние факторы (сезонность, события)',
+                    'Посмотреть на динамику пользователей и сессий'
+                ],
+                safe: [
+                    'Проверить сезонность и внешние события',
+                    'Оценить масштаб: все сегменты или часть',
+                    'Мониторить восстановление без вмешательств'
+                ],
+                danger: 'Не менять механику без понимания причины. Не паниковать из-за естественных колебаний.'
+            },
+            'responses-down': {
+                layer: 'Delivery',
+                checks: [
+                    'Проверить технические метрики: error rate, latency',
+                    'Сравнить requests с responses — где разрыв',
+                    'Оценить availability и health системы',
+                    'Проверить логи и мониторинг delivery',
+                    'Посмотреть на динамику во времени — когда началось'
+                ],
+                safe: [
+                    'Остановить все изменения в delivery',
+                    'Проверить технические алерты и логи',
+                    'Оценить масштаб: все запросы или часть'
+                ],
+                danger: 'Не трогать другие слои — проблема в delivery. Не игнорировать технические метрики.'
+            },
+            'ctr-down': {
+                layer: 'Pressure или композиционный сдвиг',
+                checks: [
+                    'Проверить CTR по каждому формату отдельно',
+                    'Сравнить mix форматов — не сдвинулся ли',
+                    'Оценить давление (frequency, плотность)',
+                    'Проверить распределение внимания между форматами',
+                    'Посмотреть на сегменты — не компенсирует ли один другой'
+                ],
+                safe: [
+                    'Остановить изменения, влияющие на mix',
+                    'Проверить давление и saturation',
+                    'Сравнить по форматам — где проблема'
+                ],
+                danger: 'Не смотреть только на средний CTR — проверьте каждый формат отдельно.'
+            },
+            'frequency-up': {
+                layer: 'Pressure',
+                checks: [
+                    'Проверить show rate при росте frequency',
+                    'Сравнить давление с механикой — где связь',
+                    'Оценить saturation и пороги',
+                    'Проверить траекторию во времени: сегодня vs потом',
+                    'Посмотреть на сегменты — не маскирует ли среднее'
+                ],
+                safe: [
+                    'Остановить рост давления',
+                    'Проверить saturation и пороги',
+                    'Оценить долгосрочную траекторию'
+                ],
+                danger: 'Не дожимать frequency дальше — это может сломать систему. Не игнорировать saturation.'
+            },
+            'variance-up': {
+                layer: 'Pressure или композиционный сдвиг',
+                checks: [
+                    'Проверить дисперсию по сегментам, площадкам, форматам',
+                    'Сравнить хвосты распределения — не растут ли экстремумы',
+                    'Оценить квантили — не сдвигаются ли',
+                    'Проверить, какие сегменты деградируют',
+                    'Посмотреть на траектории сегментов во времени'
+                ],
+                safe: [
+                    'Остановить изменения, влияющие на сегменты',
+                    'Проверить давление по сегментам',
+                    'Сравнить среднее с медианой — не скрывает ли выбросы'
+                ],
+                danger: 'Не успокаиваться средним — проверьте сегменты и хвосты. Не игнорировать растущую дисперсию.'
+            }
+        };
+
+        // Update action panel
+        function updateAction() {
+            const select = document.getElementById('incidentSelect');
+            const panel = document.getElementById('actionPanel');
+            const data = incidentMap[select.value];
+
+            panel.innerHTML = `
+                <div class="action-title">Слой вероятной причины</div>
+                <div class="action-text">${data.layer}</div>
+                <div class="action-title">Первые 5 проверок</div>
+                <ol class="action-list">
+                    ${data.checks.map(check => `<li>${check}</li>`).join('')}
+                </ol>
+                <div class="action-title">Что можно сделать безопасно</div>
+                <ul class="action-safe">
+                    ${data.safe.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                <div class="action-danger">
+                    <strong>Что нельзя делать в панике:</strong> ${data.danger}
+                </div>
+            `;
+        }
+
+        document.getElementById('incidentSelect').addEventListener('change', updateAction);
+        updateAction();
+
+        // Chart 1: Revenue decomposition
+        function generateChart1() {
+            const factors = [
+                { name: 'Users', baseline: 1.0, delta: 0.0 },
+                { name: 'Inventory', baseline: 1.0, delta: -0.08 },
+                { name: 'ShowRate', baseline: 1.0, delta: -0.12 },
+                { name: 'CTR', baseline: 1.0, delta: -0.03 },
+                { name: 'CPM', baseline: 1.0, delta: 0.05 }
+            ];
+
+            const baseline = factors.reduce((acc, f) => acc * f.baseline, 1.0);
+            let current = baseline;
+            const contributions = factors.map(f => {
+                const prev = current;
+                current = current * (f.baseline + f.delta) / f.baseline;
+                return { name: f.name, value: current - prev, cumulative: current };
+            });
+            const final = contributions[contributions.length - 1].cumulative;
+
+            const margin = { top: 30, right: 100, bottom: 50, left: 80 };
+            const container = d3.select('#chart1').node().parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart1').selectAll('*').remove();
+
+            const svg = d3.select('#chart1')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleBand()
+                .domain(factors.map(f => f.name))
+                .range([0, width])
+                .padding(0.2);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, Math.max(baseline, final) * 1.1])
+                .range([height, 0]);
+
+            // Baseline
+            g.append('rect')
+                .attr('class', 'bar bar-baseline')
+                .attr('x', 0)
+                .attr('y', yScale(baseline))
+                .attr('width', width)
+                .attr('height', height - yScale(baseline))
+                .attr('opacity', 0.1);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', yScale(baseline) - 5)
+                .attr('text-anchor', 'middle')
+                .text('baseline');
+
+            // Bars
+            let cumulative = baseline;
+            factors.forEach((factor, i) => {
+                const prev = cumulative;
+                cumulative = cumulative * (factor.baseline + factor.delta) / factor.baseline;
+                const barHeight = Math.abs(cumulative - prev);
+                const barY = cumulative < prev ? yScale(cumulative) : yScale(prev);
+
+                g.append('rect')
+                    .attr('class', factor.delta < 0 ? 'bar bar-negative' : 'bar bar-positive')
+                    .attr('x', xScale(factor.name))
+                    .attr('y', barY)
+                    .attr('width', xScale.bandwidth())
+                    .attr('height', barHeight);
+
+                g.append('text')
+                    .attr('class', 'axis-label')
+                    .attr('x', xScale(factor.name) + xScale.bandwidth() / 2)
+                    .attr('y', barY - 5)
+                    .attr('text-anchor', 'middle')
+                    .text(`${factor.delta >= 0 ? '+' : ''}${(factor.delta * 100).toFixed(1)}%`);
+            });
+
+            // Final line
+            g.append('line')
+                .attr('class', 'event-line')
+                .attr('x1', 0)
+                .attr('x2', width)
+                .attr('y1', yScale(final))
+                .attr('y2', yScale(final));
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width + 5)
+                .attr('y', yScale(final) + 4)
+                .text(`итог: ${(final * 100).toFixed(1)}%`);
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('Множитель');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -60)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('Накопленный эффект');
+        }
+
+        // Chart 2: Timeline
+        function generateChart2() {
+            const data = [];
+            for (let t = 1; t <= 140; t++) {
+                // Delivery health (responses/requests ratio)
+                const deliveryBase = 0.92;
+                const deliveryDecline = t >= 60 ? 0.15 * (1 / (1 + Math.exp(-(t - 60) / 5))) : 0;
+                const deliveryWave = 0.01 * Math.sin(t / 20);
+                const delivery = Math.max(0.70, deliveryBase - deliveryDecline + deliveryWave);
+
+                // Show rate
+                const showRateBase = 0.88;
+                const showRateDecline = t >= 60 ? 0.18 * (1 / (1 + Math.exp(-(t - 60) / 6))) : 0;
+                const showRateWave = 0.015 * Math.sin(t / 18);
+                const showRate = Math.max(0.65, showRateBase - showRateDecline + showRateWave);
+
+                // Revenue (lagged)
+                const revenueBase = 0.95;
+                const revenueDecline = t >= 75 ? 0.12 * (1 / (1 + Math.exp(-(t - 75) / 6))) : 0;
+                const revenueWave = 0.01 * Math.sin(t / 22);
+                const revenue = Math.max(0.78, revenueBase - revenueDecline + revenueWave);
+
+                data.push({ t, delivery, showRate, revenue });
+            }
+
+            const margin = { top: 30, right: 100, bottom: 40, left: 50 };
+            const container = d3.select('#chart2').node().parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart2').selectAll('*').remove();
+
+            const svg = d3.select('#chart2')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleLinear()
+                .domain([1, 140])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0.6, 1.0])
+                .range([height, 0]);
+
+            // Event lines
+            const events = [
+                { t: 60, label: 't0: начало деградации механизма' },
+                { t: 75, label: 't1: деньги "заметили"' },
+                { t: 90, label: 't2: вмешательство' }
+            ];
+
+            events.forEach(event => {
+                g.append('line')
+                    .attr('class', 'event-line')
+                    .attr('x1', xScale(event.t))
+                    .attr('x2', xScale(event.t))
+                    .attr('y1', 0)
+                    .attr('y2', height);
+
+                g.append('text')
+                    .attr('class', 'axis-label')
+                    .attr('x', xScale(event.t) + 3)
+                    .attr('y', 12)
+                    .text(event.label);
+            });
+
+            // Lines
+            const line = d3.line()
+                .x(d => xScale(d.t))
+                .y(d => yScale(d.value))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.revenue })))
+                .attr('class', 'line line-revenue')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.showRate })))
+                .attr('class', 'line line-signal')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.delivery })))
+                .attr('class', 'line line-signal')
+                .attr('stroke-dasharray', '2,2')
+                .attr('d', line);
+
+            // Labels
+            const last = data[data.length - 1];
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.revenue) - 5)
+                .text('выручка');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.showRate) - 5)
+                .text('show rate');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.delivery) - 5)
+                .text('delivery health');
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(7)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('t');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('нормализованная шкала');
+        }
+
+        // Initial render
+        generateChart1();
+        generateChart2();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateChart1();
+                generateChart2();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

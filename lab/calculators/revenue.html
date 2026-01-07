@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выручка = цена × объём</title>
+    <script src="assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="assets/css/calculators.css">
+    <link rel="stylesheet" href="assets/css/calculators_charts.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
+
+        <h1>Выручка = цена × объём</h1>
+        <p class="subtitle">Trade-off CPM и показов. Почему рост цены может снизить деньги.</p>
+
+        <div class="calculator-layout">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>CPM (цена за 1000 показов)</span>
+                        <span class="control-value" id="cpm-value">100</span>
+                    </label>
+                    <input type="range" id="cpm" min="40" max="240" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Показы (индекс, базовое значение)</span>
+                        <span class="control-value" id="shows-value">100</span>
+                    </label>
+                    <input type="range" id="shows" min="50" max="150" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Эластичность объёма к цене</span>
+                        <span class="control-value" id="elasticity-value">-1.0</span>
+                    </label>
+                    <input type="range" id="elasticity" min="-40" max="0" step="1" value="-20">
+                    <p class="control-note">Отрицательное значение: при росте цены объём падает по степени</p>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="kpi-block">
+                    <div class="kpi-item">
+                        <span class="kpi-label">Выручка (индекс)</span>
+                        <span class="kpi-value" id="revenue-index">100.0</span>
+                    </div>
+                    <div class="kpi-item">
+                        <span class="kpi-label">CPM (индекс)</span>
+                        <span class="kpi-value" id="cpm-index">100.0</span>
+                    </div>
+                    <div class="kpi-item">
+                        <span class="kpi-label">Показы (индекс)</span>
+                        <span class="kpi-value" id="shows-index">100.0</span>
+                    </div>
+                </div>
+
+                <div class="chart-card single">
+                    <h3 class="chart-title">Выручка vs CPM</h3>
+                    
+                    <p class="chart-hint">
+                        По оси X — CPM (цена), по оси Y — итоговая выручка системы.
+                        Кривая показывает trade-off цены и объёма при текущей эластичности.
+                    </p>
+                    
+                    <p class="chart-context" id="chart-context"></p>
+                    <p class="chart-warning" id="chart-warning"></p>
+                    
+                    <div id="rev-vs-price-chart" class="chart big"></div>
+                    <div class="chart-footer">
+                        <div class="chart-sensitivity">
+                            Локальная чувствительность: ΔRevenue/ΔCPM ≈ <span id="sensitivity-value">0.0</span>
+                        </div>
+                        <div class="chart-plateau" id="plateau-info" style="display: none;"></div>
+                        <div class="chart-verdict" id="chart-verdict">Вы находитесь рядом с оптимумом.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-block">
+            <h3>Что показывает калькулятор</h3>
+            <p>Выручка = CPM × Показы. Но при росте CPM показы могут падать (эластичность). Калькулятор показывает trade-off: оптимальную точку, где выручка максимальна.</p>
+        </div>
+    </div>
+
+    <script src="assets/js/revenue_calculator.js"></script>
+</body>
+</html>

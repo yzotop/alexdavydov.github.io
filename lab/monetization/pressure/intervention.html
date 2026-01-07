@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intervention</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+        }
+
+        .controls-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        select:hover {
+            border-color: #999;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .chart-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-without {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-with {
+            stroke: #1f2a37;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .explanation-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .explanation-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .explanation-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .explanation-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #999;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Intervention</h1>
+        <p class="subtitle">Что можно и что нельзя делать рядом с порогом.</p>
+        <p class="insight">Когда система близка к насыщению, правильные действия выглядят "скучно", а неправильные — "эффективно".</p>
+
+        <p class="explanation">
+            Вмешательство — это изменение механики: достижимого инвентаря, конверсии в показ, конкуренции форматов и траектории во времени. Не просто 'прибавить показов'.
+        </p>
+
+        <p class="thesis">
+            <strong>Рядом с порогом цель — не максимизировать, а стабилизировать.</strong>
+        </p>
+
+        <p class="explanation">
+            Потому что цена ошибки рядом с порогом нелинейна: маленькое усиление давления может резко ухудшить механизм.
+        </p>
+
+        <div class="chart-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Давление (D)</label>
+                    <div class="slider-container">
+                        <input type="range" id="pressureSlider" class="slider" min="0.20" max="1.20" step="0.01" value="0.78">
+                        <span class="slider-value" id="pressureValue">0.78</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Тип вмешательства</label>
+                    <select id="interventionSelect">
+                        <option value="A">Открыть инвентарь</option>
+                        <option value="B">Развести форматы</option>
+                        <option value="C">Снизить частоту</option>
+                        <option value="D">Поднять цену</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-title">Механика: конверсия в показ</div>
+                <svg id="chart1"></svg>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-title">Итог: выручка (индекс)</div>
+                <svg id="chart2"></svg>
+            </div>
+
+            <p class="chart-caption">
+                Хорошее вмешательство чинит механизм. Плохое — маскирует его ценой.
+            </p>
+
+            <div class="explanation-panel">
+                <div class="explanation-panel-title">Проверка здравого смысла</div>
+                <p>Если вмешательство не чинит showConv — оно не чинит систему.</p>
+                <p>Рост CPM может компенсировать деньги, но не восстановит траекторию.</p>
+                <p>Лучшие вмешательства расширяют reachable space.</p>
+                <p>Рядом с порогом важнее стабильность, чем максимум.</p>
+                <p>Механика — первая. Итог — второй.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Хорошее вмешательство делает систему менее хрупкой: растёт достижимый инвентарь, улучшается конверсия в показ, снижается конкуренция форматов.
+        </p>
+
+        <p class="interpretation">
+            Плохое вмешательство делает отчёт красивее, но систему — слабее. Оно перекладывает проблему во времени.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Не лечите выручку. Лечите механизм.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к давлению</a>
+            <p class="footer-note">Вмешательство — это изменение траектории, а не KPI.</p>
+        </div>
+    </div>
+
+    <script>
+        // Model functions
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        // Baseline without intervention
+        function baselineShowConv(D, d) {
+            const base0 = 0.86 - 0.10 * (D - 0.20);
+            const thresholdDrop = 0.14 * (1 / (1 + Math.exp(-(D - 0.80) * 14)));
+            const startShow = clamp(base0 - thresholdDrop, 0.60, 0.88);
+            
+            const degRate = 0.0015 + 0.0040 * (1 / (1 + Math.exp(-(D - 0.75) * 10)));
+            const show = clamp(
+                startShow - degRate * d - 0.02 * (1 / (1 + Math.exp(-(d - 25) / 4))),
+                0.55,
+                0.90
+            );
+            return show;
+        }
+
+        function baselineInventory(d) {
+            return 1.0 - 0.10 * (1 / (1 + Math.exp(-(d - 30) / 8)));
+        }
+
+        function baselineCPM(D, d) {
+            const cpm = 160 + 6 * Math.sin(d / 8) + 22 * (D - 0.20);
+            return clamp(cpm, 120, 240);
+        }
+
+        function generateBaseline(D) {
+            const data = [];
+            for (let d = 0; d <= 60; d++) {
+                const show = baselineShowConv(D, d);
+                const inv = baselineInventory(d);
+                const cpm = baselineCPM(D, d);
+                const shows = 1200 * inv * show;
+                const rev = (shows / 1000) * cpm;
+                
+                if (d === 0) {
+                    data.push({ d, show, inv, cpm, rev, revIndex: 100 });
+                } else {
+                    const rev0 = data[0].rev;
+                    data.push({ d, show, inv, cpm, rev, revIndex: 100 * rev / rev0 });
+                }
+            }
+            return data;
+        }
+
+        // Interventions
+        function interventionShowConv(D, d, type) {
+            const base = baselineShowConv(D, d);
+            
+            if (type === 'A') {
+                // Открыть инвентарь
+                const boost = 0.03 * (1 / (1 + Math.exp(-(d - 10) / 4)));
+                return clamp(base + boost, 0.55, 0.92);
+            } else if (type === 'B') {
+                // Развести форматы
+                const boost = 0.06 * (1 / (1 + Math.exp(-(d - 8) / 4))) - 0.01 * (1 / (1 + Math.exp(-(d - 40) / 6)));
+                return clamp(base + boost, 0.55, 0.93);
+            } else if (type === 'C') {
+                // Снизить частоту
+                const base0 = 0.86 - 0.10 * (D - 0.20);
+                const thresholdDrop = 0.14 * (1 / (1 + Math.exp(-(D - 0.80) * 14)));
+                const startShow = clamp(base0 - thresholdDrop, 0.60, 0.88);
+                const degRate = 0.0015 + 0.0040 * (1 / (1 + Math.exp(-(D - 0.75) * 10)));
+                const degRateYes = 0.6 * degRate;
+                const show = clamp(
+                    startShow - degRateYes * d - 0.01 * (1 / (1 + Math.exp(-(d - 25) / 4))),
+                    0.55,
+                    0.92
+                );
+                return show;
+            } else {
+                // Поднять цену - show unchanged
+                return base;
+            }
+        }
+
+        function interventionInventory(d, type) {
+            const base = baselineInventory(d);
+            
+            if (type === 'A') {
+                // Открыть инвентарь
+                const boost = 0.10 * (1 / (1 + Math.exp(-(d - 10) / 4)));
+                return clamp(base + boost, 0.85, 1.15);
+            } else if (type === 'B') {
+                // Развести форматы
+                const reduction = 0.03 * (1 / (1 + Math.exp(-(d - 8) / 4)));
+                return clamp(base - reduction, 0.80, 1.05);
+            } else {
+                // C and D - unchanged
+                return base;
+            }
+        }
+
+        function interventionCPM(D, d, type) {
+            const base = baselineCPM(D, d);
+            
+            if (type === 'C') {
+                // Снизить частоту
+                const reduction = 8 * (1 / (1 + Math.exp(-(d - 10) / 4)));
+                return clamp(base - reduction, 110, 240);
+            } else if (type === 'D') {
+                // Поднять цену
+                const increase = 35 * (1 / (1 + Math.exp(-(d - 10) / 4)));
+                return clamp(base + increase, 120, 280);
+            } else {
+                // A and B - unchanged
+                return base;
+            }
+        }
+
+        function generateWithIntervention(D, type) {
+            const baseline = generateBaseline(D);
+            const rev0 = baseline[0].rev;
+            const data = [];
+            
+            for (let d = 0; d <= 60; d++) {
+                const show = interventionShowConv(D, d, type);
+                const inv = interventionInventory(d, type);
+                const cpm = interventionCPM(D, d, type);
+                const shows = 1200 * inv * show;
+                const rev = (shows / 1000) * cpm;
+                const revIndex = 100 * rev / rev0;
+                
+                data.push({ d, show, inv, cpm, rev, revIndex });
+            }
+            
+            return data;
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 80, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 280 - margin.top - margin.bottom;
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0, 60])
+            .range([0, width]);
+
+        const yScale1 = d3.scaleLinear()
+            .domain([0.55, 0.90])
+            .range([height, 0]);
+
+        const yScale2 = d3.scaleLinear()
+            .domain([60, 140])
+            .range([height, 0]);
+
+        // Line generators
+        const line1 = d3.line()
+            .x(d => xScale(d.d))
+            .y(d => yScale1(d.show))
+            .curve(d3.curveMonotoneX);
+
+        const line2 = d3.line()
+            .x(d => xScale(d.d))
+            .y(d => yScale2(d.revIndex))
+            .curve(d3.curveMonotoneX);
+
+        // Chart 1: Show conversion
+        const svg1 = d3.select("#chart1")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g1 = svg1.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Chart 2: Revenue
+        const svg2 = d3.select("#chart2")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g2 = svg2.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Initialize axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickValues([0, 15, 30, 45, 60])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis1 = d3.axisLeft(yScale1)
+            .ticks(3)
+            .tickValues([0.6, 0.75, 0.9])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis2 = d3.axisLeft(yScale2)
+            .ticks(4)
+            .tickValues([80, 100, 120, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .call(yAxis1);
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Конверсия");
+
+        g2.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .call(yAxis2);
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 30)
+            .attr("text-anchor", "middle")
+            .text("Дни");
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Выручка (индекс)");
+
+        // State
+        let currentPressure = 0.78;
+        let currentIntervention = 'A';
+
+        // Update functions
+        function updateCharts() {
+            const baseline = generateBaseline(currentPressure);
+            const withIntervention = generateWithIntervention(currentPressure, currentIntervention);
+
+            // Chart 1: Show conversion
+            const path1Without = g1.selectAll(".line-without")
+                .data([baseline]);
+
+            const path1WithoutEnter = path1Without.enter()
+                .append("path")
+                .attr("class", "line-without line")
+                .attr("d", d => line1(d.map(item => ({ d: item.d, show: item.show }))));
+
+            path1Without.merge(path1WithoutEnter)
+                .transition()
+                .duration(450)
+                .attr("d", d => line1(d.map(item => ({ d: item.d, show: item.show }))));
+
+            const path1With = g1.selectAll(".line-with")
+                .data([withIntervention]);
+
+            const path1WithEnter = path1With.enter()
+                .append("path")
+                .attr("class", "line-with line")
+                .attr("d", d => line1(d.map(item => ({ d: item.d, show: item.show }))));
+
+            path1With.merge(path1WithEnter)
+                .transition()
+                .duration(450)
+                .attr("d", d => line1(d.map(item => ({ d: item.d, show: item.show }))));
+
+            // Labels chart 1
+            const last1Without = baseline[baseline.length - 1];
+            const label1Without = g1.selectAll(".label-without")
+                .data([last1Without]);
+
+            const label1WithoutEnter = label1Without.enter()
+                .append("text")
+                .attr("class", "axis-label label-without")
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale1(d.show) - 5)
+                .text("без");
+
+            label1Without.merge(label1WithoutEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale1(d.show) - 5);
+
+            const last1With = withIntervention[withIntervention.length - 1];
+            const label1With = g1.selectAll(".label-with")
+                .data([last1With]);
+
+            const label1WithEnter = label1With.enter()
+                .append("text")
+                .attr("class", "axis-label label-with")
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale1(d.show) + 15)
+                .text("с");
+
+            label1With.merge(label1WithEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale1(d.show) + 15);
+
+            // Chart 2: Revenue
+            const path2Without = g2.selectAll(".line-without")
+                .data([baseline]);
+
+            const path2WithoutEnter = path2Without.enter()
+                .append("path")
+                .attr("class", "line-without line")
+                .attr("d", d => line2(d.map(item => ({ d: item.d, revIndex: item.revIndex }))));
+
+            path2Without.merge(path2WithoutEnter)
+                .transition()
+                .duration(450)
+                .attr("d", d => line2(d.map(item => ({ d: item.d, revIndex: item.revIndex }))));
+
+            const path2With = g2.selectAll(".line-with")
+                .data([withIntervention]);
+
+            const path2WithEnter = path2With.enter()
+                .append("path")
+                .attr("class", "line-with line")
+                .attr("d", d => line2(d.map(item => ({ d: item.d, revIndex: item.revIndex }))));
+
+            path2With.merge(path2WithEnter)
+                .transition()
+                .duration(450)
+                .attr("d", d => line2(d.map(item => ({ d: item.d, revIndex: item.revIndex }))));
+
+            // Labels chart 2
+            const last2Without = baseline[baseline.length - 1];
+            const label2Without = g2.selectAll(".label-without")
+                .data([last2Without]);
+
+            const label2WithoutEnter = label2Without.enter()
+                .append("text")
+                .attr("class", "axis-label label-without")
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale2(d.revIndex) - 5)
+                .text("без");
+
+            label2Without.merge(label2WithoutEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale2(d.revIndex) - 5);
+
+            const last2With = withIntervention[withIntervention.length - 1];
+            const label2With = g2.selectAll(".label-with")
+                .data([last2With]);
+
+            const label2WithEnter = label2With.enter()
+                .append("text")
+                .attr("class", "axis-label label-with")
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale2(d.revIndex) + 15)
+                .text("с");
+
+            label2With.merge(label2WithEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale(d.d) + 5)
+                .attr("y", d => yScale2(d.revIndex) + 15);
+        }
+
+        // Slider
+        const pressureSlider = document.getElementById("pressureSlider");
+        const pressureValue = document.getElementById("pressureValue");
+
+        pressureSlider.addEventListener("input", function() {
+            currentPressure = parseFloat(this.value);
+            pressureValue.textContent = currentPressure.toFixed(2);
+            updateCharts();
+        });
+
+        // Dropdown
+        const interventionSelect = document.getElementById("interventionSelect");
+
+        interventionSelect.addEventListener("change", function() {
+            currentIntervention = this.value;
+            updateCharts();
+        });
+
+        // Initial render
+        updateCharts();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

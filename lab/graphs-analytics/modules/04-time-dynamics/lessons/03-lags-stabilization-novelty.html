@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лаги, стабилизация и эффект новизны — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 4.3 / Модуль 4</div>
+            <h1>Лаги, стабилизация и эффект новизны</h1>
+            <p class="subtitle">Почему эффект может появляться не сразу, исчезать или менять форму</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике эффект во времени редко возникает мгновенно и линейно. Запущено изменение — продуктовое, ценовое, алгоритмическое — и в первые дни эффект отсутствует или нестабилен. Затем появляется рост, плато или откат.
+                </p>
+                <p>
+                    Типичные вопросы, которые возникают при чтении временной динамики:
+                </p>
+                <ul>
+                    <li>«Почему в первую неделю эффекта не было?»</li>
+                    <li>«Почему сначала был рост, а потом всё вернулось?»</li>
+                    <li>«Это эффект исчез или он стабилизировался?»</li>
+                </ul>
+                <p>
+                    Эффект может запаздывать, стабилизироваться или быть временным. Непонимание этих фаз приводит к неверным управленческим решениям: закрытию теста слишком рано, откату изменений при наступлении плато или выкатке решения на основе краткосрочного всплеска.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: наивное чтение графика</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">График без выделения фаз</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="200" y="270" font-size="11" fill="#666">День 7</text>
+                            <text x="350" y="270" font-size="11" fill="#666">День 14</text>
+                            <text x="500" y="270" font-size="11" fill="#666">День 21</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Baseline -->
+                            <line x1="50" y1="200" x2="550" y2="200" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="2,2"/>
+                            <!-- Line showing lag → growth → plateau/decline -->
+                            <polyline points="50,200 100,200 150,200 200,195 250,180 300,160 350,150 400,150 450,150 500,155 550,160" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Points -->
+                            <circle cx="50" cy="200" r="3" fill="#1a1a1a"/>
+                            <circle cx="200" cy="195" r="3" fill="#1a1a1a"/>
+                            <circle cx="350" cy="150" r="3" fill="#1a1a1a"/>
+                            <circle cx="550" cy="160" r="3" fill="#1a1a1a"/>
+                            <!-- Confused interpretation -->
+                            <text x="300" y="100" font-size="12" fill="#d32f2f" text-anchor="middle">Эффект хаотичный?</text>
+                            <text x="300" y="115" font-size="11" fill="#666" text-anchor="middle">Сначала нет, потом есть, потом снова нет?</text>
+                            <text x="300" y="130" font-size="10" fill="#666" text-anchor="middle">Вся динамика как один процесс</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Вся динамика читается как один процесс, без различия фаз поведения эффекта.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    График без выделения фаз показывает эффект как хаотичный или противоречивый. Решения принимаются по первым точкам или пикам, без понимания того, что эффект проходит через разные фазы: лаг, рост, стабилизацию или откат. Читатель не видит структуру временного поведения эффекта.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Лаг эффекта игнорируется</h3>
+                        <p>
+                            Система требует времени на адаптацию: пользователи привыкают к изменению, алгоритмы переобучаются, поведение меняется с задержкой. Но график читается как «эффекта нет», если аналитик смотрит только на первые дни. Отсутствие эффекта в начале — не отсутствие эффекта. Это лаг, который нужно учитывать при выборе окна оценки.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Стабилизация воспринимается как исчезновение эффекта</h3>
+                        <p>
+                            Плато читается как возврат к нулю, а не как новый уровень. Эффект стабилизировался на новом значении, но аналитик видит это как «эффект исчез». Изменение эффекта со временем — не обязательно его исчезновение. Это может быть стабилизация, которая и есть конечный результат изменения.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Эффект новизны принимается за устойчивый результат</h3>
+                        <p>
+                            Краткосрочный всплеск ошибочно интерпретируется как долгосрочный эффект. Пользователи реагируют на новизну, но затем интерес угасает, и эффект возвращается к исходному уровню. Если аналитик принимает решение на основе эффекта новизны, он выкатывает изменение, которое не даст долгосрочного результата.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: корректная форма</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">График с выделенными фазами</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="200" y="270" font-size="11" fill="#666">День 7</text>
+                            <text x="350" y="270" font-size="11" fill="#666">День 14</text>
+                            <text x="500" y="270" font-size="11" fill="#666">День 21</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Baseline -->
+                            <line x1="50" y1="200" x2="550" y2="200" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="2,2"/>
+                            <!-- Line with phases -->
+                            <polyline points="50,200 100,200 150,200 200,195 250,180 300,160 350,150 400,150 450,150 500,155 550,160" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Phase 1: Lag -->
+                            <rect x="50" y="180" width="150" height="40" fill="#fff5f5" opacity="0.3" stroke="#d32f2f" stroke-width="1" stroke-dasharray="3,3"/>
+                            <text x="125" y="170" font-size="11" fill="#d32f2f" text-anchor="middle" font-weight="500">Лаг</text>
+                            <text x="125" y="185" font-size="10" fill="#666" text-anchor="middle">Дни 1-7</text>
+                            <!-- Phase 2: Growth -->
+                            <rect x="200" y="120" width="150" height="80" fill="#f0f9ff" opacity="0.3" stroke="#0284c7" stroke-width="1" stroke-dasharray="3,3"/>
+                            <text x="275" y="110" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="500">Рост</text>
+                            <text x="275" y="125" font-size="10" fill="#666" text-anchor="middle">Дни 7-14</text>
+                            <!-- Phase 3: Stabilization -->
+                            <rect x="350" y="120" width="200" height="40" fill="#f0f9ff" opacity="0.3" stroke="#0284c7" stroke-width="1" stroke-dasharray="3,3"/>
+                            <text x="450" y="110" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="500">Стабилизация</text>
+                            <text x="450" y="125" font-size="10" fill="#666" text-anchor="middle">Дни 14-21</text>
+                            <!-- New level indicator -->
+                            <line x1="350" y1="150" x2="550" y2="150" stroke="#0284c7" stroke-width="2" stroke-dasharray="5,5"/>
+                            <text x="550" y="145" font-size="10" fill="#0284c7">Новый уровень</text>
+                            <!-- Conclusion -->
+                            <text x="300" y="80" font-size="11" fill="#0284c7" text-anchor="middle">Эффект разворачивается во времени</text>
+                            <text x="300" y="95" font-size="10" fill="#666" text-anchor="middle">Фазы явно выделены</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График показывает не только «что произошло», но и «как эффект разворачивался во времени».
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Временной график с выделенными фазами показывает структуру поведения эффекта: лаг → рост → стабилизация или откат. Фазы явно выделены визуально или аннотациями. Читатель видит, что эффект — это процесс, а не точка, и понимает, в какой фазе находится система. Это позволяет принять правильное решение: учитывать лаг, отличать стабилизацию от исчезновения, проверять устойчивость эффекта.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Закрывать тест слишком рано из-за лага, не понимая, что эффект появится позже. Откатывать изменение при наступлении плато, не понимая, что это стабилизация на новом уровне, а не исчезновение эффекта. Выкатывать решение на основе эффекта новизны, не проверяя, сохранится ли эффект после фазы новизны.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Учитывать лаг при выборе окна оценки, понимая, что система требует времени на адаптацию. Отличать стабилизацию от исчезновения эффекта, видя, что плато — это новый уровень, а не возврат к нулю. Проверять устойчивость эффекта после фазы новизны, понимая, что краткосрочный всплеск может не означать долгосрочный результат.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Эффект — это процесс, а не точка. Чтобы принять решение, нужно понимать, в какой фазе находится система. Отсутствие эффекта в начале — не отсутствие эффекта. Изменение эффекта со временем — не обязательно его исчезновение. График должен показывать фазы поведения эффекта во времени, чтобы аналитик мог правильно интерпретировать результат и принять обоснованное решение.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Вижу ли я на графике фазы эффекта: лаг, рост, стабилизацию или откат?</li>
+                    <li>Понимаю ли я, есть ли лаг и каков он, или я интерпретирую отсутствие эффекта в начале как отсутствие эффекта вообще?</li>
+                    <li>Отличаю ли я устойчивый эффект от эффекта новизны, или я принимаю краткосрочный всплеск за долгосрочный результат?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

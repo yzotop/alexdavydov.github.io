@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алерты</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .alerts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .alert-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .alert-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .alert-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .controls-panel {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            background: #fafafa;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .builder-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .control-slider {
+            width: 100%;
+        }
+
+        .control-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-checkbox input {
+            cursor: pointer;
+        }
+
+        .recipe-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .recipe-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-item {
+            margin-bottom: 1rem;
+        }
+
+        .recipe-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .recipe-code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #ffffff;
+            padding: 0.75rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .alerts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .alerts-table th,
+        .alerts-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .alerts-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .alerts-table td {
+            color: #2c3e50;
+        }
+
+        .antipatterns {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .antipatterns-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .antipatterns-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .antipatterns-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-metric {
+            stroke: #666;
+        }
+
+        .line-short {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-long {
+            stroke: #1f2a37;
+            stroke-dasharray: 2, 2;
+        }
+
+        .line-signal {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .alert-marker {
+            fill: #1f2a37;
+            stroke: #ffffff;
+            stroke-width: 1;
+        }
+
+        .alert-marker-false {
+            fill: #999;
+            opacity: 0.5;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Алерты: раннее предупреждение</h1>
+        <p class="subtitle">Алерт — это контракт на время реакции, а не шум в чате.</p>
+
+        <div class="intro">
+            <p>
+                "Revenue ↓" — плохой алерт: он срабатывает поздно, когда механизм уже сломан, и смешивает разные причины. К моменту, когда выручка падает, система уже деградировала в одном из слоёв.
+            </p>
+            <p>
+                Хороший алерт = (ранний сигнал) + (контекст) + (уровень уверенности) + (ожидаемое действие). Он ловит деградацию до падения денег, указывает на слой причины и подсказывает, что проверить.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Карта алертов по слоям</div>
+            <div class="alerts-grid">
+                <div class="alert-card">
+                    <div class="alert-card-title">Слой Demand (аукцион/цена)</div>
+                    <div class="alert-card-item">
+                        <strong>Метрики:</strong> Fill rate, CPM, responses availability
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Порог:</strong> Relative % от baseline (сезонность учтена)
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Окно:</strong> Long (7–14 дней)
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Лаг до денег:</strong> 5–10 дней
+                    </div>
+                </div>
+
+                <div class="alert-card">
+                    <div class="alert-card-title">Слой Supply (инвентарь)</div>
+                    <div class="alert-card-item">
+                        <strong>Метрики:</strong> Inventory per user, coverage, show opportunities
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Порог:</strong> Absolute или deviation от baseline
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Окно:</strong> Medium (3–7 дней)
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Лаг до денег:</strong> 7–14 дней
+                    </div>
+                </div>
+
+                <div class="alert-card">
+                    <div class="alert-card-title">Слой Delivery (доставка/тех)</div>
+                    <div class="alert-card-item">
+                        <strong>Метрики:</strong> Responses ratio, error rate, latency
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Порог:</strong> Absolute или z-score
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Окно:</strong> Short (1–3 дня)
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Лаг до денег:</strong> 2–5 дней
+                    </div>
+                </div>
+
+                <div class="alert-card">
+                    <div class="alert-card-title">Слой Pressure (давление/поведение)</div>
+                    <div class="alert-card-item">
+                        <strong>Метрики:</strong> Show rate, frequency, saturation proxy
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Порог:</strong> Relative % или deviation
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Окно:</strong> Medium (3–7 дней)
+                    </div>
+                    <div class="alert-card-item">
+                        <strong>Лаг до денег:</strong> 10–20 дней
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Окна и ложные тревоги</div>
+            <div class="chart-container">
+                <div class="controls-panel">
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="sensitive" name="sensitivity" value="sensitive">
+                            <label for="sensitive">Слишком чувствительно</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="normal" name="sensitivity" value="normal" checked>
+                            <label for="normal">Нормально</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="dull" name="sensitivity" value="dull">
+                            <label for="dull">Слишком тупо</label>
+                        </div>
+                    </div>
+                </div>
+                <svg id="chart1"></svg>
+                <p class="chart-caption">
+                    Короткое окно ловит шум. Длинное окно пропускает ранние сигналы. Баланс — в контексте слоя.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Сигнал vs деньги (лаг)</div>
+            <div class="chart-container">
+                <svg id="chart2"></svg>
+                <p class="chart-caption">
+                    Алерт покупает время.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Собери алерт</div>
+            <div class="interactive-panel">
+                <div class="builder-controls">
+                    <div class="control-group">
+                        <label class="control-label">Слой</label>
+                        <select id="layerSelect" class="control-input">
+                            <option value="demand">Demand</option>
+                            <option value="supply">Supply</option>
+                            <option value="delivery">Delivery</option>
+                            <option value="pressure">Pressure</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Метрика</label>
+                        <select id="metricSelect" class="control-input">
+                            <!-- Will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Тип порога</label>
+                        <select id="thresholdSelect" class="control-input">
+                            <option value="relative">Relative %</option>
+                            <option value="zscore">Z-score</option>
+                            <option value="absolute">Absolute</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Окно (дней)</label>
+                        <input type="range" id="windowSlider" class="control-slider" min="3" max="30" step="1" value="7">
+                        <span id="windowValue" style="font-size: 0.9rem; color: #666;">7</span>
+                    </div>
+                    <div class="control-checkbox">
+                        <input type="checkbox" id="seasonalityCheck" checked>
+                        <label for="seasonalityCheck">Сезонность учтена</label>
+                    </div>
+                </div>
+                <div class="recipe-panel" id="recipePanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Набор алертов по умолчанию</div>
+            <table class="alerts-table">
+                <thead>
+                    <tr>
+                        <th>Алерт</th>
+                        <th>Слой</th>
+                        <th>Метрика</th>
+                        <th>Порог</th>
+                        <th>Окно</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Show rate degradation</td>
+                        <td>Delivery/Pressure</td>
+                        <td>Show rate</td>
+                        <td>-10% от baseline</td>
+                        <td>3 дня</td>
+                        <td>Проверить воронку и давление</td>
+                    </tr>
+                    <tr>
+                        <td>Fill rate drop</td>
+                        <td>Demand</td>
+                        <td>Fill rate</td>
+                        <td>-15% от baseline</td>
+                        <td>7 дней</td>
+                        <td>Проверить спрос и аукцион</td>
+                    </tr>
+                    <tr>
+                        <td>Responses ratio decline</td>
+                        <td>Delivery</td>
+                        <td>Responses / Requests</td>
+                        <td>&lt; 0.85</td>
+                        <td>1 день</td>
+                        <td>Проверить технические метрики</td>
+                    </tr>
+                    <tr>
+                        <td>CPM compensation</td>
+                        <td>Supply</td>
+                        <td>CPM при падении show rate</td>
+                        <td>CPM↑ &gt;5% при show rate↓</td>
+                        <td>5 дней</td>
+                        <td>Проверить инвентарь и компенсацию</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency spike</td>
+                        <td>Pressure</td>
+                        <td>Frequency</td>
+                        <td>+20% от baseline</td>
+                        <td>3 дня</td>
+                        <td>Проверить saturation и show rate</td>
+                    </tr>
+                    <tr>
+                        <td>Inventory squeeze</td>
+                        <td>Supply</td>
+                        <td>Inventory per user</td>
+                        <td>-12% от baseline</td>
+                        <td>7 дней</td>
+                        <td>Проверить coverage и доступность</td>
+                    </tr>
+                    <tr>
+                        <td>CTR mix shift</td>
+                        <td>Pressure</td>
+                        <td>CTR по форматам</td>
+                        <td>Mix change &gt;15%</td>
+                        <td>5 дней</td>
+                        <td>Проверить композицию и давление</td>
+                    </tr>
+                    <tr>
+                        <td>Segment variance</td>
+                        <td>Pressure</td>
+                        <td>Дисперсия по сегментам</td>
+                        <td>+30% от baseline</td>
+                        <td>7 дней</td>
+                        <td>Проверить хвосты и сегменты</td>
+                    </tr>
+                    <tr>
+                        <td>Revenue lag alert</td>
+                        <td>All</td>
+                        <td>Revenue при падении механизма</td>
+                        <td>Revenue↓ &gt;5% при механике↓</td>
+                        <td>10 дней</td>
+                        <td>Проверить лаг и компенсацию</td>
+                    </tr>
+                    <tr>
+                        <td>Hidden saturation</td>
+                        <td>Pressure</td>
+                        <td>ShowConv при росте revenue</td>
+                        <td>ShowConv↓ при revenue↑</td>
+                        <td>14 дней</td>
+                        <td>Проверить скрытое насыщение</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Анти-паттерны</div>
+            <div class="antipatterns">
+                <div class="antipatterns-title">Чего избегать при проектировании алертов:</div>
+                <ul class="antipatterns-list">
+                    <li>Алерт по revenue без разложения на множители — слишком поздно и не указывает причину.</li>
+                    <li>Один порог на все сегменты — маскирует проблемы в отдельных частях системы.</li>
+                    <li>Без cooldown — спамит при колебаниях и сезонности.</li>
+                    <li>Без подтверждения (confirm window) — ложные тревоги из-за шума.</li>
+                    <li>Игнор лагов — алерт срабатывает одновременно с падением денег, не покупая времени.</li>
+                    <li>Нет владельца и action — алерт срабатывает, но никто не знает, что делать.</li>
+                    <li>Нет "тишины" (silence) после релиза — алерты мешают во время плановых изменений.</li>
+                    <li>Нет мониторинга качества алертов — не знаете, сколько ложных тревог и пропусков.</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Лучший алерт — тот, который редко срабатывает и почти всегда прав.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Алерт — это время на реакцию.</p>
+        </div>
+    </div>
+
+    <script>
+        // Metrics by layer
+        const metricsByLayer = {
+            demand: ['Fill rate', 'CPM', 'Responses availability'],
+            supply: ['Inventory per user', 'Coverage', 'Show opportunities'],
+            delivery: ['Responses ratio', 'Error rate', 'Latency'],
+            pressure: ['Show rate', 'Frequency', 'Saturation proxy']
+        };
+
+        // Alert templates
+        const alertTemplates = {
+            demand: {
+                'Fill rate': {
+                    relative: 'Fill rate упал на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Fill rate отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Fill rate ниже {threshold} за {window} дней'
+                },
+                'CPM': {
+                    relative: 'CPM изменился на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'CPM отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'CPM {threshold} за {window} дней'
+                },
+                'Responses availability': {
+                    relative: 'Доступность ответов упала на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Доступность ответов отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Доступность ответов ниже {threshold} за {window} дней'
+                }
+            },
+            supply: {
+                'Inventory per user': {
+                    relative: 'Inventory per user упал на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Inventory per user отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Inventory per user ниже {threshold} за {window} дней'
+                },
+                'Coverage': {
+                    relative: 'Coverage упал на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Coverage отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Coverage ниже {threshold} за {window} дней'
+                },
+                'Show opportunities': {
+                    relative: 'Show opportunities упали на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Show opportunities отклоняются на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Show opportunities ниже {threshold} за {window} дней'
+                }
+            },
+            delivery: {
+                'Responses ratio': {
+                    relative: 'Responses ratio упал на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Responses ratio отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Responses ratio ниже {threshold} за {window} дней'
+                },
+                'Error rate': {
+                    relative: 'Error rate вырос на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Error rate отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Error rate выше {threshold} за {window} дней'
+                },
+                'Latency': {
+                    relative: 'Latency вырос на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Latency отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Latency выше {threshold} за {window} дней'
+                }
+            },
+            pressure: {
+                'Show rate': {
+                    relative: 'Show rate упал на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Show rate отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Show rate ниже {threshold} за {window} дней'
+                },
+                'Frequency': {
+                    relative: 'Frequency вырос на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Frequency отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Frequency выше {threshold} за {window} дней'
+                },
+                'Saturation proxy': {
+                    relative: 'Saturation proxy вырос на {threshold}% относительно baseline за {window} дней',
+                    zscore: 'Saturation proxy отклоняется на {threshold} сигм от baseline за {window} дней',
+                    absolute: 'Saturation proxy выше {threshold} за {window} дней'
+                }
+            }
+        };
+
+        const actionByLayer = {
+            demand: 'Проверить спрос, аукцион, сезонность. Оценить доступность ответов по сегментам.',
+            supply: 'Проверить инвентарь, coverage, доступность по сегментам. Оценить сжатие предложения.',
+            delivery: 'Проверить технические метрики, логи, health системы. Оценить воронку requests → responses.',
+            pressure: 'Проверить давление, saturation, show rate. Оценить траекторию во времени.'
+        };
+
+        // Update metrics dropdown
+        function updateMetrics() {
+            const layer = document.getElementById('layerSelect').value;
+            const metricSelect = document.getElementById('metricSelect');
+            metricSelect.innerHTML = metricsByLayer[layer].map(m => 
+                `<option value="${m}">${m}</option>`
+            ).join('');
+            updateRecipe();
+        }
+
+        // Update recipe
+        function updateRecipe() {
+            const layer = document.getElementById('layerSelect').value;
+            const metric = document.getElementById('metricSelect').value;
+            const thresholdType = document.getElementById('thresholdSelect').value;
+            const window = parseInt(document.getElementById('windowSlider').value);
+            const seasonality = document.getElementById('seasonalityCheck').checked;
+
+            const template = alertTemplates[layer][metric][thresholdType];
+            const threshold = thresholdType === 'relative' ? '10' : (thresholdType === 'zscore' ? '2' : '0.85');
+            const condition = template.replace('{threshold}', threshold).replace('{window}', window);
+
+            const alertName = `${metric} alert (${layer})`;
+            const recommendedAction = actionByLayer[layer];
+            const suppressRules = `Cooldown: ${window * 2} часов. Min duration: ${window} дней. Confirm window: ${Math.ceil(window / 2)} дней.${seasonality ? ' Сезонность учтена.' : ''}`;
+
+            document.getElementById('recipePanel').innerHTML = `
+                <div class="recipe-title">Рецепт алерта</div>
+                <div class="recipe-item">
+                    <strong>Название:</strong><br>
+                    <div class="recipe-code">${alertName}</div>
+                </div>
+                <div class="recipe-item">
+                    <strong>Условие:</strong><br>
+                    <div class="recipe-code">${condition}</div>
+                </div>
+                <div class="recipe-item">
+                    <strong>Рекомендуемое действие:</strong><br>
+                    ${recommendedAction}
+                </div>
+                <div class="recipe-item">
+                    <strong>Правила подавления:</strong><br>
+                    ${suppressRules}
+                </div>
+            `;
+        }
+
+        document.getElementById('layerSelect').addEventListener('change', updateMetrics);
+        document.getElementById('metricSelect').addEventListener('change', updateRecipe);
+        document.getElementById('thresholdSelect').addEventListener('change', updateRecipe);
+        document.getElementById('windowSlider').addEventListener('input', function() {
+            document.getElementById('windowValue').textContent = this.value;
+            updateRecipe();
+        });
+        document.getElementById('seasonalityCheck').addEventListener('change', updateRecipe);
+
+        // Initialize
+        updateMetrics();
+
+        // Chart 1: Windows and false alarms
+        function generateChart1() {
+            const sensitivity = document.querySelector('input[name="sensitivity"]:checked').value;
+            
+            let shortWindow, longWindow, threshold;
+            if (sensitivity === 'sensitive') {
+                shortWindow = 3;
+                longWindow = 14;
+                threshold = 0.05;
+            } else if (sensitivity === 'normal') {
+                shortWindow = 7;
+                longWindow = 30;
+                threshold = 0.08;
+            } else {
+                shortWindow = 14;
+                longWindow = 45;
+                threshold = 0.12;
+            }
+
+            const data = [];
+            for (let t = 1; t <= 160; t++) {
+                const seasonality = 0.03 * Math.sin(t / 20);
+                const noise = 0.02 * Math.sin(t * 0.7) * Math.cos(t * 0.3);
+                const degradation = t >= 85 ? 0.15 * (1 / (1 + Math.exp(-(t - 85) / 8))) : 0;
+                const spike = (t >= 40 && t <= 45) ? 0.12 * Math.exp(-Math.abs(t - 42.5) / 1.5) : 0;
+                const metric = 0.90 + seasonality + noise - degradation + spike;
+                data.push({ t, metric });
+            }
+
+            // Calculate moving averages
+            data.forEach((d, i) => {
+                const shortStart = Math.max(0, i - shortWindow + 1);
+                const longStart = Math.max(0, i - longWindow + 1);
+                d.shortAvg = data.slice(shortStart, i + 1).reduce((sum, x) => sum + x.metric, 0) / (i - shortStart + 1);
+                d.longAvg = data.slice(longStart, i + 1).reduce((sum, x) => sum + x.metric, 0) / (i - longStart + 1);
+            });
+
+            // Find alert triggers
+            const alerts = [];
+            data.forEach((d, i) => {
+                if (i >= shortWindow) {
+                    const deviation = Math.abs(d.shortAvg - d.longAvg) / d.longAvg;
+                    if (deviation > threshold) {
+                        alerts.push({ t: d.t, value: d.shortAvg, isFalse: (d.t >= 40 && d.t <= 50) });
+                    }
+                }
+            });
+
+            const margin = { top: 30, right: 100, bottom: 40, left: 50 };
+            const container = d3.select('#chart1').node().parentElement.parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart1').selectAll('*').remove();
+
+            const svg = d3.select('#chart1')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleLinear()
+                .domain([1, 160])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0.75, 1.05])
+                .range([height, 0]);
+
+            // Lines
+            const line = d3.line()
+                .x(d => xScale(d.t))
+                .y(d => yScale(d.value))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.metric })))
+                .attr('class', 'line line-metric')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.shortAvg })))
+                .attr('class', 'line line-short')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.longAvg })))
+                .attr('class', 'line line-long')
+                .attr('d', line);
+
+            // Alert markers
+            alerts.forEach(alert => {
+                g.append('circle')
+                    .attr('class', alert.isFalse ? 'alert-marker alert-marker-false' : 'alert-marker')
+                    .attr('cx', xScale(alert.t))
+                    .attr('cy', yScale(alert.value))
+                    .attr('r', 4);
+            });
+
+            // Labels
+            const last = data[data.length - 1];
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.metric) - 5)
+                .text('метрика');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.shortAvg) - 5)
+                .text('short window');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.longAvg) - 5)
+                .text('long baseline');
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(7)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('t');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('нормализованная шкала');
+        }
+
+        // Chart 2: Signal vs money (lag)
+        function generateChart2() {
+            const data = [];
+            for (let t = 1; t <= 160; t++) {
+                // Signal (show rate or responses ratio)
+                const signalBase = 0.88;
+                const signalDecline = t >= 60 ? 0.18 * (1 / (1 + Math.exp(-(t - 60) / 6))) : 0;
+                const signalWave = 0.015 * Math.sin(t / 18);
+                const signal = Math.max(0.65, signalBase - signalDecline + signalWave);
+
+                // Revenue (lagged)
+                const revenueBase = 0.95;
+                const revenueDecline = t >= 85 ? 0.12 * (1 / (1 + Math.exp(-(t - 85) / 6))) : 0;
+                const revenueWave = 0.01 * Math.sin(t / 22);
+                const revenue = Math.max(0.78, revenueBase - revenueDecline + revenueWave);
+
+                data.push({ t, signal, revenue });
+            }
+
+            const margin = { top: 30, right: 100, bottom: 40, left: 50 };
+            const container = d3.select('#chart2').node().parentElement;
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#chart2').selectAll('*').remove();
+
+            const svg = d3.select('#chart2')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleLinear()
+                .domain([1, 160])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0.6, 1.0])
+                .range([height, 0]);
+
+            // Event lines
+            const events = [
+                { t: 60, label: 't0: начало деградации' },
+                { t: 72, label: 't_alert: сработал алерт' },
+                { t: 85, label: 't_money: заметили в выручке' }
+            ];
+
+            events.forEach(event => {
+                g.append('line')
+                    .attr('class', 'event-line')
+                    .attr('x1', xScale(event.t))
+                    .attr('x2', xScale(event.t))
+                    .attr('y1', 0)
+                    .attr('y2', height);
+
+                g.append('text')
+                    .attr('class', 'axis-label')
+                    .attr('x', xScale(event.t) + 3)
+                    .attr('y', 12 + events.indexOf(event) * 12)
+                    .text(event.label);
+            });
+
+            // Lines
+            const line = d3.line()
+                .x(d => xScale(d.t))
+                .y(d => yScale(d.value))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.revenue })))
+                .attr('class', 'line line-revenue')
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data.map(d => ({ t: d.t, value: d.signal })))
+                .attr('class', 'line line-signal')
+                .attr('d', line);
+
+            // Labels
+            const last = data[data.length - 1];
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.revenue) - 5)
+                .text('выручка');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', xScale(last.t) + 5)
+                .attr('y', yScale(last.signal) - 5)
+                .text('ранний сигнал');
+
+            // Axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(7)
+                .tickSize(4)
+                .tickPadding(8);
+
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(4)
+                .tickPadding(8);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(xAxis);
+
+            g.append('g')
+                .attr('class', 'axis')
+                .call(yAxis);
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .text('t');
+
+            g.append('text')
+                .attr('class', 'axis-label')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .text('нормализованная шкала');
+        }
+
+        // Initial render
+        generateChart1();
+        generateChart2();
+
+        // Update chart 1 on sensitivity change
+        document.querySelectorAll('input[name="sensitivity"]').forEach(radio => {
+            radio.addEventListener('change', generateChart1);
+        });
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateChart1();
+                generateChart2();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

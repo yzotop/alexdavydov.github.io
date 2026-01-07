@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI для решения: как убрать шум и оставить сигнал</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .kpi-example {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .kpi-grid-bad {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .kpi-item {
+            padding: 1rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .kpi-grid-good {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .kpi-main {
+            padding: 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .kpi-main-value {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-main-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .kpi-secondary {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .comparison-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>KPI для решения: как убрать шум и оставить сигнал</h1>
+        <p class="subtitle">Перегруженный KPI-график или таблица для менеджмента: много метрик, все имеют одинаковый вес, сигнал теряется в шуме.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                Нужно представить итоги месяца для менеджмента: запускать новую стратегию монетизации, продолжать текущую или корректировать. Есть множество метрик: выручка, конверсия, удержание, ARPU, RPM, объём показов, retention, LTV, и другие.
+            </p>
+            <p>
+                Все KPI корректны, расчёты точны. Решение зависит от одного ключевого сигнала: выросла ли выручка достаточно, чтобы оправдать изменения, или нужно корректировать стратегию. Остальные метрики — контекст или guardrails, но не основа решения. Проблема не в качестве данных — проблема в том, что решение неочевидно.
+            </p>
+            <p>
+                Дашборд построен: все метрики показаны одинаково, в виде сетки KPI-карточек. Все числа точны. Но сигнал теряется в шуме.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: перегруженный KPI-дашборд</h2>
+            <p>
+                Типичное представление: множество метрик показаны одинаково, все имеют одинаковый визуальный вес, нет выделения ключевого сигнала, структура не отражает логику решения.
+            </p>
+            <p>
+                Такие дашборды обычно получаются при автоматической генерации из BI-систем или использовании стандартных шаблонов. Все метрики показаны, но не структурированы по важности для решения.
+            </p>
+
+            <div class="kpi-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #666;">BEFORE: KPI как шум</div>
+                <div class="kpi-grid-bad">
+                    <div class="kpi-item">
+                        <div class="kpi-value">258,700</div>
+                        <div class="kpi-label">Revenue</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">2.925</div>
+                        <div class="kpi-label">RPM</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">0.0465</div>
+                        <div class="kpi-label">Conversion</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">0.715</div>
+                        <div class="kpi-label">Retention</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">88,700</div>
+                        <div class="kpi-label">Shows</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">1.85</div>
+                        <div class="kpi-label">CTR</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">12.5</div>
+                        <div class="kpi-label">ARPU</div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">45.2</div>
+                        <div class="kpi-label">LTV</div>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример перегруженного KPI-дашборда: все метрики одинаковы, сигнал неочевиден.
+            </p>
+            <p>
+                <strong>Почему одинаковое визуальное представление создаёт когнитивный шум:</strong> Когда все метрики показаны одинаково (одинаковый размер, цвет, вес), каждая метрика привлекает внимание одинаково. Глаз не может быстро выделить, что важно для решения, что является контекстом, что можно игнорировать. Нужно сканировать все метрики, оценивать каждую, определять, какая критична. Каждая метрика требует отдельного когнитивного усилия, что увеличивает шум и замедляет понимание сигнала.
+            </p>
+            <p>
+                <strong>Почему график отвечает "что существует" вместо "что делать":</strong> Дашборд показывает все метрики, но не структурирует их по важности для решения. Невозможно понять, какая метрика определяет решение (запускать/не запускать), какие метрики поддерживают вывод, какие нерелевантны. Обсуждение смещается с решения на интерпретацию: "Revenue вырос, но Retention упал, а Conversion вырос, что это значит?" График показывает данные, но не направляет к действию.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такое представление не показывает сигнал явно по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Шум перекрывает сигнал:</strong> Когда все метрики показаны одинаково, ключевой сигнал теряется среди остальных. Глаз не может быстро выделить, что важно для решения, что является контекстом, что можно игнорировать. Нужно сканировать все метрики, оценивать каждую, определять, какая критична. Каждая метрика привлекает внимание одинаково, что увеличивает когнитивную нагрузку и замедляет понимание сигнала.
+                </li>
+                <li>
+                    <strong>Структура не отражает логику решения:</strong> Решение зависит от одного ключевого сигнала (например, выручка), остальные метрики — контекст или guardrails. Но если все метрики показаны одинаково, невозможно понять, какая метрика определяет решение, какие метрики поддерживают вывод, какие нерелевантны. Нужно мысленно структурировать метрики по важности, что требует дополнительной аналитической работы. Дашборд остаётся набором чисел, а не инструментом для принятия решения.
+                </li>
+                <li>
+                    <strong>Невозможно быстро принять решение:</strong> Решение должно приниматься быстро: есть сигнал — действуем, нет сигнала — не действуем, сигнал неоднозначен — собираем больше данных. Но если сигнал не выделен, нужно анализировать все метрики, что замедляет принятие решения. Невозможно за 10 секунд понять, какое решение принять. Дашборд блокирует быстрое принятие решения, даже если все данные корректны.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: сигнал выделен, шум убран</h2>
+            <p>
+                Переработанный дашборд: ключевой сигнал выделен визуально, остальные метрики показаны как контекст, структура отражает логику решения.
+            </p>
+            <p>
+                Используются: визуальное выделение (ключевой сигнал крупнее, темнее, в центре), иерархия (сигнал главный, остальное — контекст), минимализм (только то, что нужно для решения). Дашборд структурирован вокруг сигнала, а не вокруг данных.
+            </p>
+
+            <div class="kpi-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #1a1a1a;">AFTER: KPI как сигнал</div>
+                <div class="kpi-grid-good">
+                    <div class="kpi-main">
+                        <div class="kpi-main-value">+2.7%</div>
+                        <div class="kpi-main-label">Revenue: рост достаточен для запуска</div>
+                    </div>
+                    <div class="kpi-secondary">Retention: -1.4% (мониторим)</div>
+                    <div class="kpi-secondary">Conversion: +2.2% (поддерживает)</div>
+                    <div class="kpi-secondary" style="opacity: 0.6; font-size: 0.8rem;">RPM: 2.925 | Shows: 88,700 | CTR: 1.85</div>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанный дашборд: сигнал выделен, шум убран, решение очевидно.
+            </p>
+            <p>
+                <strong>Как иерархия кодирует логику решения:</strong> Ключевой сигнал (Revenue +2.7%) визуально выделен (крупнее, темнее, в центре) — это основа решения. Вторичные метрики (Retention, Conversion) показаны как контекст — они поддерживают или ограничивают вывод, но не определяют решение. Остальные метрики (RPM, Shows, CTR) деэмфазированы — они присутствуют для полноты, но не требуют внимания. Визуальная иерархия кодирует аналитическую иерархию: что важно для решения, что является контекстом, что можно игнорировать.
+            </p>
+            <p>
+                <strong>Почему меньше сигналов повышает уверенность:</strong> Когда выделен один ключевой сигнал, решение становится очевидным: Revenue вырос на 2.7% — это достаточный рост для запуска. Вторичные метрики (Retention -1.4%, Conversion +2.2%) не меняют решение, они только добавляют контекст: есть компромисс с удержанием, но конверсия поддерживает. Меньше сигналов означает меньше неопределённости, больше уверенности в решении. График поддерживает явное действие, а не требует дополнительной интерпретации.
+            </p>
+        </section>
+
+        <section class="comparison-block">
+            <h3>Много KPI ≠ хорошее решение</h3>
+            <p>
+                Больше метрик увеличивает неопределённость, а не инсайты. Когда все метрики показаны одинаково, каждая метрика привлекает внимание, что рассеивает фокус и увеличивает когнитивный шум. Невозможно быстро понять, что важно, что неважно, какое действие требуется.
+            </p>
+            <p>
+                Решение требует приоритизации, а не полноты. Не все метрики одинаково важны для решения. Одна метрика определяет решение (запускать/не запускать), остальные — контекст или guardrails. Если все метрики показаны одинаково, невозможно понять, какая критична, что делать дальше.
+            </p>
+            <p>
+                Сигнал должен быть выбран, а не обнаружен. Аналитик должен решить, какой сигнал важен для решения, и выделить его визуально. Остальные метрики должны быть деэмфазированы или убраны. Это превращает KPI-дашборд в аргумент: график отвечает на вопрос "что делать?", а не просто показывает "что существует".
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>KPI-визуализация работает, когда она кодирует иерархию решения.</strong> Ключевой сигнал визуально выделен (крупнее, темнее, в центре), остальные метрики показаны как контекст или guardrails, структура отражает логику решения. График отвечает на вопрос "что делать?", а не просто показывает "что существует". Дашборд не просто показывает метрики — он формирует правильный сигнал и направляет к решению за один взгляд.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>KPI-визуализация не работает, когда всё выглядит одинаково важным.</strong> Если все метрики показаны одинаково, если структура не отражает логику решения, если невозможно быстро принять решение — дашборд блокирует принятие решения, даже если все данные корректны. График становится аргументом только тогда, когда он отвечает на вопрос "что делать?", а не просто показывает набор чисел.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Выделен ли один ключевой сигнал визуально?</li>
+                <li>Можно ли принять решение за 10 секунд?</li>
+                <li>Структурирован ли дашборд вокруг сигнала, а не вокруг данных?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./honest-time-axis.html">← Предыдущий урок</a>
+            <span></span>
+        </div>
+    </div>
+</body>
+</html>
+

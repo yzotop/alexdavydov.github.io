@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как масштаб усиливает или скрывает эффект — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .core-idea {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+            max-width: 700px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .visual-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .form-visual {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .form-visual:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-visual-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .explanation-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .explanation-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .explanation-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .explanation-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .explanation-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .mistakes-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .mistakes-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .mistakes-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .decision-item h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .decision-item p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .decision-item p:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-question {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-question strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-question p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-question p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../02-effect-forms.html" class="back-to-module">← К модулю</a>
+
+        <header>
+            <div class="kicker">Урок 4 / Модуль 2</div>
+            <h1>Как масштаб усиливает или скрывает эффект</h1>
+        </header>
+
+        <main>
+            <div class="core-idea">
+                Масштаб определяет воспринимаемую величину и срочность эффекта: один и те же данные, показанные в разном масштабе, приводят к разным интерпретациям и решениям.
+            </div>
+
+            <section class="visual-section">
+                <h2>Визуальные паттерны искажения масштабом</h2>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Широкий масштаб скрывает эффект</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Wide scale axis -->
+                            <line x1="50" y1="20" x2="50" y2="180" stroke="#999" stroke-width="1"/>
+                            <text x="10" y="25" font-size="10" fill="#999">100</text>
+                            <text x="10" y="100" font-size="10" fill="#999">50</text>
+                            <text x="10" y="180" font-size="10" fill="#999">0</text>
+                            <!-- Baseline -->
+                            <line x1="80" y1="100" x2="200" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Small change -->
+                            <line x1="200" y1="100" x2="200" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+                            <line x1="200" y1="95" x2="350" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Labels -->
+                            <text x="200" y="90" font-size="11" fill="#1a1a1a">Тот же эффект</text>
+                            <text x="100" y="50" font-size="11" fill="#666">Широкий масштаб</text>
+                            <text x="100" y="70" font-size="11" fill="#666">Кажется неважным</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Узкий масштаб преувеличивает эффект</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Narrow scale axis -->
+                            <line x1="50" y1="50" x2="50" y2="150" stroke="#999" stroke-width="1"/>
+                            <text x="10" y="55" font-size="10" fill="#999">52</text>
+                            <text x="10" y="100" font-size="10" fill="#999">50</text>
+                            <text x="10" y="150" font-size="10" fill="#999">48</text>
+                            <!-- Baseline -->
+                            <line x1="80" y1="100" x2="200" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Same small change -->
+                            <line x1="200" y1="100" x2="200" y2="70" stroke="#1a1a1a" stroke-width="3"/>
+                            <line x1="200" y1="70" x2="350" y2="70" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="200" y="60" font-size="11" fill="#1a1a1a">Тот же эффект</text>
+                            <text x="100" y="40" font-size="11" fill="#666">Узкий масштаб</text>
+                            <text x="100" y="55" font-size="11" fill="#d32f2f">Кажется критичным</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Масштаб с нуля vs усечённый масштаб</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Zero-based scale -->
+                            <line x1="50" y1="20" x2="50" y2="180" stroke="#999" stroke-width="1"/>
+                            <text x="5" y="25" font-size="10" fill="#999">0</text>
+                            <text x="5" y="100" font-size="10" fill="#999">50</text>
+                            <text x="5" y="180" font-size="10" fill="#999">100</text>
+                            <!-- Baseline and change -->
+                            <line x1="80" y1="100" x2="200" y2="100" stroke="#666" stroke-width="2"/>
+                            <line x1="200" y1="100" x2="200" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+                            <line x1="200" y1="95" x2="350" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Truncated scale (right side) -->
+                            <line x1="200" y1="50" x2="200" y2="150" stroke="#999" stroke-width="1" stroke-dasharray="2,2"/>
+                            <text x="205" y="55" font-size="10" fill="#999">48</text>
+                            <text x="205" y="100" font-size="10" fill="#999">50</text>
+                            <text x="205" y="150" font-size="10" fill="#999">52</text>
+                            <!-- Same change on truncated -->
+                            <line x1="250" y1="100" x2="350" y2="100" stroke="#666" stroke-width="2"/>
+                            <line x1="300" y1="100" x2="300" y2="50" stroke="#d32f2f" stroke-width="3"/>
+                            <line x1="300" y1="50" x2="350" y2="50" stroke="#d32f2f" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="100" y="85" font-size="11" fill="#1a1a1a">С нуля</text>
+                            <text x="100" y="100" font-size="11" fill="#666">Низкий риск</text>
+                            <text x="300" y="40" font-size="11" fill="#d32f2f">Усечённый</text>
+                            <text x="300" y="55" font-size="11" fill="#d32f2f">Высокий риск</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Несовместимые масштабы: ложное сравнение</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Single axis -->
+                            <line x1="50" y1="20" x2="50" y2="180" stroke="#999" stroke-width="1"/>
+                            <text x="10" y="25" font-size="10" fill="#999">100</text>
+                            <text x="10" y="100" font-size="10" fill="#999">50</text>
+                            <text x="10" y="180" font-size="10" fill="#999">0</text>
+                            <!-- Metric 1 (revenue, high values) -->
+                            <line x1="80" y1="50" x2="200" y2="50" stroke="#1a1a1a" stroke-width="2"/>
+                            <line x1="200" y1="50" x2="200" y2="45" stroke="#1a1a1a" stroke-width="2"/>
+                            <line x1="200" y1="45" x2="350" y2="45" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Metric 2 (conversion, low values) -->
+                            <line x1="80" y1="150" x2="200" y2="150" stroke="#0284c7" stroke-width="2"/>
+                            <line x1="200" y1="150" x2="200" y2="140" stroke="#0284c7" stroke-width="2"/>
+                            <line x1="200" y1="140" x2="350" y2="140" stroke="#0284c7" stroke-width="2"/>
+                            <!-- Labels -->
+                            <text x="80" y="40" font-size="11" fill="#1a1a1a">Revenue</text>
+                            <text x="80" y="130" font-size="11" fill="#0284c7">Conversion</text>
+                            <text x="200" y="120" font-size="11" fill="#d32f2f">Ложное сравнение</text>
+                            <text x="200" y="135" font-size="11" fill="#666">Разные диапазоны</text>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <section class="explanation-section">
+                <h2>Где появляется в аналитике</h2>
+                <p>
+                    Искажение масштабом встречается везде, где график используется для принятия решения, но выбор масштаба не согласован с логикой решения.
+                </p>
+                <ul>
+                    <li>
+                        <strong>A/B-тесты:</strong> Небольшой uplift скрывается широким масштабом, который показывает весь диапазон метрики. Эффект выглядит незначительным, хотя он может быть практическим значимым для бизнеса.
+                    </li>
+                    <li>
+                        <strong>Монетизация:</strong> Графики выручки с огромными абсолютными диапазонами (например, от 0 до миллиона) делают изменения в несколько процентов визуально незаметными, хотя они могут быть критичны для решения.
+                    </li>
+                    <li>
+                        <strong>KPI-дашборды:</strong> Разные метрики с несовместимыми естественными диапазонами (revenue в миллионах, conversion в процентах) показываются на одной оси, создавая ложное впечатление сравнимой величины изменений.
+                    </li>
+                </ul>
+                <p>
+                    Аналитики часто не замечают искажения, потому что считают масштаб техническим выбором, а не частью аргумента. Они не проверяют, как изменится вывод при другом масштабе.
+                </p>
+            </section>
+
+            <section class="mistakes-section">
+                <h2>Типичные ошибки</h2>
+                <ul>
+                    <li>
+                        <strong>Предположение, что выбор масштаба нейтрален:</strong> Использование масштаба по умолчанию или "удобного" масштаба без проверки, как он влияет на интерпретацию. Не учитывается, что масштаб уже содержит интерпретацию.
+                    </li>
+                    <li>
+                        <strong>Изменение масштаба для поддержки предпочтительного нарратива:</strong> Сознательное или неосознанное использование узкого масштаба для преувеличения эффекта или широкого для его минимизации. Масштаб выбирается под вывод, а не под данные.
+                    </li>
+                    <li>
+                        <strong>Сравнение метрик с разными естественными диапазонами:</strong> Показ разных метрик на одной оси без нормализации или без понимания, что их визуальное сравнение некорректно. Создаётся ложное впечатление сравнимости.
+                    </li>
+                </ul>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+
+                <div class="decision-item">
+                    <h3>Эффект скрыт широким масштабом</h3>
+                    <p>
+                        Когда эффект визуально незаметен из-за широкого масштаба, решение зависит от практической значимости эффекта, а не от его видимости на графике.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Игнорировать эффект, потому что "на графике ничего не видно" или "эффект слишком мал". Не проверять, соответствует ли визуальная незначительность практической незначительности.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Малый эффект относительно какого порога решения? Соответствует ли масштаб графика порогу практической значимости? Как изменится вывод, если изменить масштаб?</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <h3>Эффект преувеличен узким масштабом</h3>
+                    <p>
+                        Когда эффект выглядит драматично из-за узкого масштаба, решение должно учитывать абсолютную величину эффекта, а не только визуальное впечатление.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Принимать решение на основе визуального впечатления "большого" эффекта, не проверяя его абсолютную величину и практическую значимость. Катить изменение, потому что "эффект выглядит значимым".</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Какова абсолютная величина эффекта? Превышает ли она порог практической значимости? Не преувеличивает ли узкий масштаб визуальное впечатление?</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <h3>Ложное сравнение несовместимых метрик</h3>
+                    <p>
+                        Когда разные метрики показаны на одной оси с несовместимыми масштабами, сравнение визуально некорректно и может привести к неправильным выводам.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Сравнивать визуально метрики с разными естественными диапазонами, делая выводы о "большем" или "меньшем" эффекте на основе визуального сравнения на одной оси.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Совместимы ли естественные диапазоны метрик? Нужна ли нормализация для корректного сравнения? Не создаёт ли общая ось ложное впечатление сравнимости?</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Масштаб — это часть аргумента: он усиливает, скрывает или искажает эффект. Выбор масштаба должен быть согласован с логикой решения, а не с эстетикой или удобством. Прежде чем делать вывод на основе визуальной величины эффекта, проверь, как изменится вывод при другом масштабе.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Самопроверка</h2>
+                <ul>
+                    <li>Изменился бы вывод, если использовать другой масштаб?</li>
+                    <li>Согласован ли этот масштаб с порогом принятия решения?</li>
+                    <li>Сравниваю ли я совместимые величины, или масштаб создаёт ложное сравнение?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

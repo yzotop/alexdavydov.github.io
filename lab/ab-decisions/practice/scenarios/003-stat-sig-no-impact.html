@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статзначимо, но бизнес-эффекта нет</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul, .analysis ol {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+        <h1>Статзначимо, но бизнес-эффекта нет</h1>
+        <p class="subtitle">Дельта есть, p-value красивый — а решение всё равно "нет".</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-3" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли верить эффекту?</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Изменили UI/плейсмент/правило показа в тестовой группе. Primary метрика (CTR) выросла на +0.30% (relative) и стала статистически значимой (p &lt; 0.05).
+            </p>
+            <p>
+                Guardrail/бизнес-метрика (Revenue/RPM) изменилась на +0.03% (почти ноль, статистически не значимо).
+            </p>
+            <p>
+                Эксперимент длился 14 дней, трафик стабильный. Контрольная группа без изменений.
+            </p>
+            <p>
+                Вопрос: можно ли катить в прод на основе статистической значимости primary метрики?
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart" id="chart-main"></div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Почему "stat sig" не означает "можно катить"?</li>
+                <li>Как отличить "реальный эффект" от "неважного эффекта"?</li>
+                <li>Какая минимальная полезная дельта (MDE / practical significance) здесь нужна?</li>
+                <li>Какие guardrails могут запретить выкат даже при росте primary?</li>
+                <li>Что нужно проверить по сегментам и по времени (устойчивость эффекта)?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что primary метрика (CTR) действительно выросла в тестовой группе, и разница статистически значима. Однако revenue практически не изменилась, что указывает на отсутствие бизнес-эффекта.
+                </p>
+
+                <p>
+                    <strong>Разница между статистической и практической значимостью:</strong>
+                </p>
+                <ul>
+                    <li><strong>Статистическая значимость</strong> (p-value) говорит: "мы уверены, что эффект не ноль". Это техническая уверенность в том, что разница не случайна.</li>
+                    <li><strong>Практическая значимость</strong> (practical significance) говорит: "эффект достаточно большой, чтобы влиять на бизнес". Это вопрос величины эффекта, а не уверенности в его существовании.</li>
+                </ul>
+
+                <p>
+                    <strong>Типовые причины расхождения:</strong>
+                </p>
+                <ol>
+                    <li><strong>Эффект маленький, но данных много:</strong> При большом объёме данных даже крошечные эффекты становятся статистически значимыми. P-value маленький, но бизнес-импакт близок к нулю.</li>
+                    <li><strong>Primary вырос, но цепочка до денег не сработала:</strong> CTR вырос, но это не конвертировалось в revenue. Возможно, клики не привели к конверсиям, или цена клика упала, или изменился микс инвентаря.</li>
+                    <li><strong>Эффект локальный/сегментный:</strong> Рост в одном сегменте компенсируется просадками в других. Общий эффект на revenue близок к нулю, хотя primary метрика показывает рост.</li>
+                </ol>
+
+                <p>
+                    <strong>Чеклист решения:</strong>
+                </p>
+                <ol>
+                    <li><strong>Оценить бизнес-импакт в абсолютных деньгах</strong> (а не процентах): +0.30% CTR при текущем объёме — это сколько дополнительных кликов и сколько денег? Если эффект меньше шума в системе — он неважен.</li>
+                    <li><strong>Сравнить с "шумом"/естественной волатильностью:</strong> Насколько эффект больше естественных колебаний метрики? Если эффект меньше волатильности — он неразличим на практике.</li>
+                    <li><strong>Проверить устойчивость по времени:</strong> Первые дни vs хвост эксперимента. Если эффект ослабевает или исчезает — это признак адаптации, а не устойчивого улучшения.</li>
+                    <li><strong>Проверить сегменты и возможный Simpson:</strong> Разбить по девайсам, гео, плейсментам. Возможно, эффект есть только в одном сегменте, а в других — просадка.</li>
+                    <li><strong>Проверить guardrails:</strong> Pressure, retention, complaints, latency — что уместно для вашей системы. Если guardrails ухудшились, даже маленький рост primary не оправдывает выкат.</li>
+                </ol>
+
+                <p>
+                    <strong>Вывод "катим" возможен только если:</strong>
+                </p>
+                <ul>
+                    <li>Есть measurable бизнес-эффект (revenue/RPM вырос на значимую величину) или есть доказанная механика, которая гарантированно конвертируется в деньги в будущем.</li>
+                    <li>Риски/guardrails не ухудшились — система остаётся устойчивой.</li>
+                </ul>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Есть stat sig — значит победа, катим. Primary метрика выросла, это хорошо для бизнеса.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Эффект по primary метрике статистически значим, но практически неважен: +0.30% CTR не конвертируется в measurable рост revenue (+0.03% близко к нулю). Бизнес-импакт близок к нулю и меньше естественной волатильности системы. Решение зависит от practical significance (минимальной полезной дельты) и рисков: если нет measurable бизнес-эффекта и guardrails не проверены, выкат не оправдан, даже при статистической значимости.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что "улучшение точно полезно бизнесу" — revenue не выросла. Нельзя утверждать, что "раз p-value маленький, то выручка потом вырастет" — нет доказанной механики конверсии CTR в деньги. Нельзя утверждать, что эффект устойчив без проверки по времени и сегментам — возможно, это адаптация или локальный эффект.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../experiments/metrics-for-reading.html">Метрики для чтения эксперимента: primary vs diagnostic vs guardrails</a></li>
+                <li><a href="../../experiments/anatomy-of-experiment.html">Анатомия эксперимента: эталонный разбор</a></li>
+                <li><a href="../../monetization/metrics/metric-decomposition.html">Декомпозиция метрик: как разложить эффект</a></li>
+                <li><a href="../../experiments/time-and-lags.html">Время и лаги: устойчивость эффекта</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./002-rev-up-no-cpm.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./004-no-effect.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 003: Stat sig, no practical impact
+        // Synthetic data: 14 days, baseline = 100
+        // Primary (CTR): Control stable ~100, Test slightly higher ~100.3 (+0.3%, stat sig but tiny)
+        // Revenue: Both stable ~100, difference ~0.03% (practically zero)
+
+        let currentMode = 'annotated';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Primary metric (CTR): Control stable, Test slightly higher
+            const primaryControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.2 }));
+            const primaryTest = days.map(d => {
+                const base = 100.3; // +0.3% relative
+                const noise = (Math.random() - 0.5) * 0.15;
+                return { x: d, y: base + noise };
+            });
+
+            // Revenue: Both stable, almost identical
+            const revControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.2 }));
+            const revTest = days.map(d => ({ x: d, y: 100.03 + (Math.random() - 0.5) * 0.2 })); // +0.03%
+
+            return { primaryControl, primaryTest, revControl, revTest };
+        }
+
+        function renderChart() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Main chart with both metrics
+            ABCharts.render({
+                el: '#chart-main',
+                series: [
+                    { name: 'Primary (Control)', values: data.primaryControl, dashed: true, opacity: 0.6, color: '#999' },
+                    { name: 'Primary (Test)', values: data.primaryTest, color: '#4a9eff' },
+                    { name: 'Revenue (Control)', values: data.revControl, dashed: true, opacity: 0.4, color: '#999' },
+                    { name: 'Revenue (Test)', values: data.revTest, color: '#ff6b6b', opacity: 0.7 }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Значение (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(2)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 7, y: 100.3, text: 'Primary: +0.30%', color: '#4a9eff', fontSize: '11px', fontWeight: '500' },
+                        { x: 7, y: 100.03, text: 'Revenue: +0.03%', color: '#ff6b6b', fontSize: '10px' },
+                        { x: 12, y: 100.35, text: 'Stat sig, но нет бизнес-эффекта', color: '#960', fontSize: '10px' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderChart();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+        });
+    </script>
+</body>
+</html>

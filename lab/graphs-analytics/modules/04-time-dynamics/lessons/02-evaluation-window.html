@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Окно оценки: как выбор периода меняет вывод — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 4.2 / Модуль 4</div>
+            <h1>Как выбор периода меняет вывод</h1>
+            <p class="subtitle">Когда эффект есть, но его «не видно» — или наоборот</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В A/B-тестах и продуктовых экспериментах эффект развивается во времени. Аналитик выбирает период анализа: первые дни, середина теста или весь период. От этого выбора зависит вывод и решение.
+                </p>
+                <p>
+                    Типичные вопросы, которые возникают при выборе окна оценки:
+                </p>
+                <ul>
+                    <li>«Почему сначала был рост, а потом всё пропало?»</li>
+                    <li>«Почему за первые 3 дня эффект есть, а за 14 — нет?»</li>
+                    <li>«Нужно ли закрывать тест сейчас или ждать?»</li>
+                </ul>
+                <p>
+                    Один и тот же эффект может выглядеть положительным, нейтральным или отрицательным в зависимости от выбранного периода. Проблема не в данных, а в том, как аналитик выбирает окно оценки и интерпретирует результат.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: неправильное окно оценки</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Узкое окно оценки скрывает динамику</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="200" y="270" font-size="11" fill="#666">День 5</text>
+                            <text x="350" y="270" font-size="11" fill="#666">День 10</text>
+                            <text x="500" y="270" font-size="11" fill="#666">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Full data line (light, showing full context) -->
+                            <polyline points="50,150 100,140 150,130 200,120 250,125 300,130 350,135 400,140 450,145 500,150 550,155" 
+                                fill="none" stroke="#e8e8e8" stroke-width="2" stroke-dasharray="3,3"/>
+                            <!-- Selected window (highlighted) -->
+                            <rect x="200" y="50" width="150" height="200" fill="#fff5f5" opacity="0.3" stroke="#d32f2f" stroke-width="2" stroke-dasharray="5,5"/>
+                            <!-- Window line (only visible part) -->
+                            <polyline points="200,120 250,125 300,130 350,135" 
+                                fill="none" stroke="#d32f2f" stroke-width="3"/>
+                            <!-- Window labels -->
+                            <text x="275" y="40" font-size="12" fill="#d32f2f" text-anchor="middle" font-weight="500">Окно оценки</text>
+                            <text x="275" y="55" font-size="11" fill="#666" text-anchor="middle">Дни 5-10</text>
+                            <!-- Conclusion -->
+                            <text x="275" y="100" font-size="11" fill="#d32f2f" text-anchor="middle">Эффект нестабилен?</text>
+                            <text x="275" y="115" font-size="10" fill="#666" text-anchor="middle">Вывод по узкому окну</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Окно оценки выбрано так, что искажает поведение эффекта.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    График с выбранным узким или неудачным периодом показывает эффект как нестабильный, шумный или отсутствующий. Вывод строится на частичном фрагменте динамики, без понимания того, что происходит до и после выбранного окна. Полная картина скрыта, и решение принимается на основе неполной информации.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Эффект может иметь лаг</h3>
+                        <p>
+                            Раннее окно оценки показывает «ничего», хотя эффект появится позже. Пользователи могут адаптироваться к изменению, алгоритмы могут переобучиться, поведение может измениться с задержкой. Если аналитик закрывает тест на основе раннего окна, он может пропустить реальный эффект.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Эффект может стабилизироваться</h3>
+                        <p>
+                            Короткое окно оценки усиливает шум и создаёт ложную нестабильность. Эффект может колебаться в первые дни, а затем стабилизироваться. Если аналитик выбирает окно в фазе колебаний, он видит нестабильность там, где на самом деле есть устойчивый тренд. Короткое окно не даёт увидеть полную динамику.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Выбор окна часто подгоняется под ожидания</h3>
+                        <p>
+                            Аналитик неосознанно выбирает период, который подтверждает желаемый вывод. Если ожидается положительный эффект, выбирается окно, где эффект виден. Если нужно показать отсутствие эффекта, выбирается окно с шумом. Это не злой умысел, а когнитивная ловушка: человек видит то, что хочет увидеть, и выбирает окно, которое это подтверждает.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: корректная форма</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Полный временной диапазон с явным окном</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="200" y="270" font-size="11" fill="#666">День 5</text>
+                            <text x="350" y="270" font-size="11" fill="#666">День 10</text>
+                            <text x="500" y="270" font-size="11" fill="#666">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Full data line -->
+                            <polyline points="50,150 100,140 150,130 200,120 250,125 300,130 350,135 400,140 450,145 500,150 550,155" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Phases -->
+                            <text x="100" y="100" font-size="11" fill="#666">Фаза запуска</text>
+                            <text x="300" y="100" font-size="11" fill="#666">Стабилизация</text>
+                            <text x="500" y="100" font-size="11" fill="#666">Устойчивый эффект</text>
+                            <!-- Window highlight -->
+                            <rect x="200" y="50" width="150" height="200" fill="#f0f9ff" opacity="0.3" stroke="#0284c7" stroke-width="2"/>
+                            <!-- Window line -->
+                            <polyline points="200,120 250,125 300,130 350,135" 
+                                fill="none" stroke="#0284c7" stroke-width="3"/>
+                            <!-- Window labels -->
+                            <text x="275" y="40" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="500">Окно оценки</text>
+                            <text x="275" y="55" font-size="11" fill="#666" text-anchor="middle">Дни 5-10 (явно указано)</text>
+                            <!-- Conclusion -->
+                            <text x="275" y="110" font-size="11" fill="#0284c7" text-anchor="middle">Эффект стабилизируется</text>
+                            <text x="275" y="125" font-size="10" fill="#666" text-anchor="middle">Вывод в контексте полной динамики</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График показывает полный временной диапазон с явно отмеченным окном оценки.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    График с полным временным диапазоном показывает, как меняется вывод при расширении или сдвиге окна. Читатель видит эффект до, во время и после выбранного периода. Окно оценки явно отмечено, и его выбор обоснован. Хорошая визуализация показывает, что вывод зависит от окна, и помогает понять, почему выбран именно этот период.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Закрывать тест слишком рано на основе узкого окна, которое не показывает полную динамику. Откатывать изменения из-за «пропавшего эффекта», не понимая, что эффект может иметь лаг или стабилизироваться позже. Продлевать тест бесконечно из-за шума в коротком окне, не видя, что эффект уже стабилизировался.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильное решение:</strong> Оценивать эффект в контексте его временного профиля, видя фазы запуска, адаптации и стабилизации. Разделять эти фазы и понимать, что вывод зависит от того, в какой фазе выбрано окно. Осознанно выбирать окно под вопрос решения: если нужно увидеть стабильность — выбирать период после стабилизации, если нужно увидеть динамику — выбирать период с изменениями.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Вывод без указания окна оценки — неполный вывод. Если окно меняется — меняется и решение. Окно оценки — это не техническая деталь, а часть аналитического аргумента. Выбор периода уже содержит интерпретацию и напрямую влияет на решение. Всегда задавай вопрос: «за какой период сделан вывод?» и «как изменится вывод, если сдвинуть или расширить окно?»
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Видно ли на графике, какое окно используется для оценки эффекта?</li>
+                    <li>Понимаю ли я, как эффект ведёт себя за пределами выбранного окна?</li>
+                    <li>Изменится ли вывод, если сдвинуть или расширить период оценки?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

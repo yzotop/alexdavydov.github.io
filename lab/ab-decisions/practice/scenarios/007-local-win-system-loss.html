@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Локальная победа, системный проигрыш</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul, .analysis ol {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+        <h1>Локальная победа, системный проигрыш</h1>
+        <p class="subtitle">Один формат "выиграл", но общая монетизация упала. Каннибализация и перетоки.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-2" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли масштабировать</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                В тесте усилили один рекламный формат/плейсмент (подняли приоритет, добавили показы, поменяли место).
+            </p>
+            <p>
+                Локальная метрика формата улучшилась: Revenue(format A) +6% и/или RPM(format A) +4%.
+            </p>
+            <p>
+                Но общая выручка (Total Revenue) снизилась: −1.0%.
+            </p>
+            <p>
+                Второй формат (format B) просел сильнее: Revenue(format B) −4% (или shows/coverage упали).
+            </p>
+            <p>
+                Эксперимент длился 14 дней, трафик стабильный, CPM по рынку примерно без шоков.
+            </p>
+            <p>
+                Вопрос: как такое возможно и можно ли "спасти" идею?
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart" id="chart-main"></div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Как так: формат A в плюс, а Total в минус?</li>
+                <li>Какие механизмы перетока возможны: вытеснение, частотные ограничения, внимание пользователя, конкуренция за инвентарь?</li>
+                <li>Какие диагностические метрики подтвердят каннибализацию: общий объём показов, show/fill, доли форматов, давление, частота?</li>
+                <li>Можно ли "спасти" идею: изменить дизайн (cap/приоритет/таргет/порог) вместо полного отказа?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что формат A показывает положительную дельту (+6%), в то время как формат B проседает (−4%), и общая выручка падает (−1%). Это классический паттерн каннибализации.
+                </p>
+
+                <p>
+                    <strong>Объяснение:</strong> Система ограничена вниманием пользователя и инвентарём. Усиление одного формата часто приводит к:
+                </p>
+                <ol>
+                    <li><strong>Вытеснению других показов (substitution):</strong> Формат A "крадёт" показы у формата B. Общий объём показов не растёт, происходит перераспределение.</li>
+                    <li><strong>Повышению давления и снижению эффективности остальных (fatigue):</strong> Увеличение частоты показа формата A повышает общее давление на пользователя, что снижает эффективность формата B и других элементов системы.</li>
+                    <li><strong>Изменению микса в сторону менее эффективной комбинации:</strong> Средний CPM/CTR может выглядеть хорошо, но общая выручка падает из-за сдвига в сторону менее эффективного микса форматов.</li>
+                </ol>
+
+                <p>
+                    <strong>Типовые паттерны:</strong>
+                </p>
+                <ol>
+                    <li><strong>"Format A steals impressions from B":</strong> Переток показов. Формат A получил больше показов за счёт формата B. Общий объём показов не изменился или даже упал.</li>
+                    <li><strong>"Pressure increases, efficiency drops":</strong> Убывающая отдача. Увеличение частоты/давления формата A привело к снижению эффективности всей системы. Пользователи устали, CTR упал, CPM снизился.</li>
+                    <li><strong>"Mix shift":</strong> Средний CPM/CTR выглядит хорошо, но total хуже. Смещение микса в сторону формата A (который имеет более высокий локальный RPM) маскирует падение общего объёма или эффективности формата B.</li>
+                </ol>
+
+                <p>
+                    <strong>Протокол проверки:</strong>
+                </p>
+                <ol>
+                    <li><strong>Total Revenue и Total shows:</strong> Сначала система, потом детали. Вырос ли общий объём показов или произошёл переток? Если total shows не вырос, а revenue упала — это признак каннибализации.</li>
+                    <li><strong>Revenue/shows по форматам A vs B:</strong> Доли, перетоки. Как изменились доли форматов? Выросла ли доля формата A за счёт формата B? Как изменился объём показов каждого формата?</li>
+                    <li><strong>Pressure/frequency + метрики усталости:</strong> Если есть метрики давления и частоты — проверить, не выросло ли давление и не снизилась ли эффективность из-за усталости.</li>
+                    <li><strong>Show/fill/coverage:</strong> Не деградировала ли воронка? Возможно, увеличение формата A привело к снижению fill rate или coverage других форматов.</li>
+                    <li><strong>Разрезы по сегментам:</strong> Где каннибализация сильнее? Возможно, в одних сегментах эффект положительный, в других — отрицательный, и агрегат маскирует проблему.</li>
+                </ol>
+
+                <p>
+                    <strong>Важно:</strong> Локальные метрики формата нельзя оптимизировать в отрыве от total. Оптимизация одного формата может вредить системе, если она не учитывает ограничения внимания пользователя и инвентаря.
+                </p>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Format A вырос — значит нужно катить, он же эффективнее. Локальная метрика улучшилась, это хорошо.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Улучшение формата A (+6%) не компенсировало потери формата B (−4%) и системы в целом (−1%). Вероятна каннибализация: формат A "украл" показы у формата B или повысил давление, что снизило эффективность всей системы. Решение — не катить как есть, а переработать дизайн (cap на частоту, изменение приоритета, таргетинг, пороги) и проверить total-first. Если после изменений total revenue не растёт — идею нужно отклонить или существенно доработать.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что "формат A плохой" — он показал рост локально. Нельзя утверждать, что "любое усиление A всегда вредно" — возможно, с правильным дизайном (cap, приоритет) эффект будет положительным. Нельзя утверждать, что можно судить по метрикам одного плейсмента без total — локальная оптимизация может вредить системе, если не учитывает ограничения внимания и инвентаря.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../monetization/pressure/saturation.html">Насыщение: убывающая отдача при росте давления</a></li>
+                <li><a href="../../monetization/pressure/hidden-saturation.html">Скрытое насыщение: когда давление невидимо</a></li>
+                <li><a href="../../monetization/metrics/metric-decomposition.html">Декомпозиция метрик: разложение на форматы</a></li>
+                <li><a href="../../experiments/pressure-design.html">Дизайн под давление: каннибализация в экспериментах</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./006-window-changes-conclusion.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./008-lazy-load-via-funnel.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 007: Local win, system loss
+        // Synthetic data: 14 days, baseline = 100
+        // Local RPM: Control stable ~100, Test grows to ~104 (+4%)
+        // Total Revenue: Control stable ~100, Test drops to ~99 (-1%)
+
+        let currentMode = 'annotated';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Local RPM: Control stable, Test grows
+            const localControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+            const localTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.28; // ~4% over 14 days
+                const noise = (Math.random() - 0.5) * 0.3;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Total Revenue: Control stable, Test drops
+            const totalControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+            const totalTest = days.map(d => {
+                const base = 100;
+                const drop = d * 0.07; // -1% over 14 days
+                const noise = (Math.random() - 0.5) * 0.3;
+                return { x: d, y: base - drop + noise };
+            });
+
+            return { localControl, localTest, totalControl, totalTest };
+        }
+
+        function renderChart() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Main chart with both metrics
+            ABCharts.render({
+                el: '#chart-main',
+                series: [
+                    { name: 'Local RPM (Control)', values: data.localControl, dashed: true, opacity: 0.5, color: '#999' },
+                    { name: 'Local RPM (Test)', values: data.localTest, color: '#4a9eff', opacity: 0.8 },
+                    { name: 'Total Revenue (Control)', values: data.totalControl, dashed: true, opacity: 0.5, color: '#999' },
+                    { name: 'Total Revenue (Test)', values: data.totalTest, color: '#ff6b6b' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Значение (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 12, y: 103.5, text: 'Local RPM: +4%', color: '#4a9eff', fontSize: '11px', fontWeight: '500' },
+                        { x: 12, y: 99, text: 'Total Revenue: -1%', color: '#ff6b6b', fontSize: '11px', fontWeight: '500' },
+                        { x: 7, y: 101, text: 'Каннибализация?', color: '#960', fontSize: '10px' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderChart();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+        });
+    </script>
+</body>
+</html>

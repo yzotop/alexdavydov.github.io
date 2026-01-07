@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог паттернов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .usage-steps {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .usage-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .usage-step-number {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .filters-panel {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+            background: #ffffff;
+            color: #1a1a1a;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .filter-chip:hover {
+            border-color: #999;
+            background: #fafafa;
+        }
+
+        .filter-chip.active {
+            background: #1a1a1a;
+            color: #ffffff;
+            border-color: #1a1a1a;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .pattern-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .pattern-card:hover {
+            border-color: #999;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .pattern-card.hidden {
+            display: none;
+        }
+
+        .pattern-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .pattern-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-tag {
+            padding: 0.25rem 0.5rem;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .pattern-section {
+            margin-bottom: 1rem;
+        }
+
+        .pattern-section-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pattern-section-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .pattern-section-content ul {
+            margin-top: 0.25rem;
+            padding-left: 1.25rem;
+        }
+
+        .pattern-section-content li {
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+
+        .quick-select-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .quick-select-table th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e8e8e8;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        .quick-select-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e8e8e8;
+            color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        .quick-select-table tr:hover {
+            background: #fafafa;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Каталог паттернов</h1>
+        <p class="subtitle">Не кейсы. Формы.</p>
+        <p class="insight">Паттерн — это повторяющаяся механика, которая ведёт метрики одинаково, даже если "фича" разная.</p>
+
+        <h2>Как пользоваться каталогом</h2>
+        <div class="usage-steps">
+            <div class="usage-step">
+                <div class="usage-step-number">1</div>
+                <div>Определи, какой рычаг трогаешь (pressure / time / price / mix / inventory)</div>
+            </div>
+            <div class="usage-step">
+                <div class="usage-step-number">2</div>
+                <div>Выбери паттерн</div>
+            </div>
+            <div class="usage-step">
+                <div class="usage-step-number">3</div>
+                <div>Поставь primary + guardrails</div>
+            </div>
+            <div class="usage-step">
+                <div class="usage-step-number">4</div>
+                <div>Проверь артефакты (окно, каннибализация, рынок)</div>
+            </div>
+        </div>
+
+        <h2>Фильтры</h2>
+        <div class="filters-panel">
+            <div class="filter-chip active" data-filter="all">All</div>
+            <div class="filter-chip" data-filter="pressure">Pressure</div>
+            <div class="filter-chip" data-filter="time">Time</div>
+            <div class="filter-chip" data-filter="market">Market/Price</div>
+            <div class="filter-chip" data-filter="mix">Mix/Quality</div>
+        </div>
+
+        <h2>Каталог паттернов</h2>
+        <div class="patterns-grid">
+            <!-- Pattern 1: Pressure Step -->
+            <div class="pattern-card" data-categories="pressure">
+                <div class="pattern-title">Pressure Step</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Pressure</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Увеличиваете давление на инвентарь (частота, плотность, coverage)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Частота показов растёт, особенно в высокоценных сегментах</li>
+                            <li>Pressure proxy увеличивается, накапливается усталость</li>
+                            <li>Coverage расширяется, но может вытеснять низкочастотные сегменты</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, Volume/shows</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Fatigue/pressure proxy (tail/frequency), Retention/satisfaction proxy, Quality/mix proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Revenue растёт, но guardrails ухудшаются быстрее (перегруз)</li>
+                            <li>Frequency tail растёт, coverage падает (вытеснение)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 2: Frequency Cap Change -->
+            <div class="pattern-card" data-categories="pressure">
+                <div class="pattern-title">Frequency Cap Change</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Pressure</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Меняете ограничения частоты показов (caps, лимиты)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Распределение частоты сдвигается (хвост укорачивается или удлиняется)</li>
+                            <li>Coverage меняется: меньше caps = больше coverage, но выше усталость</li>
+                            <li>Микс инвентаря перераспределяется между частотными сегментами</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, Coverage/fill-like proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Frequency tail distribution, Retention/satisfaction proxy, Quality/mix proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Coverage растёт, но frequency tail ухудшается (перегруз)</li>
+                            <li>Revenue растёт краткосрочно, но retention падает позже (усталость)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 3: Inventory Reveal -->
+            <div class="pattern-card" data-categories="mix pressure">
+                <div class="pattern-title">Inventory Reveal</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Mix/Quality</span>
+                    <span class="pattern-tag">Pressure</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Раскрываете скрытый инвентарь (улучшаете delivery, убираете constraints)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Coverage расширяется, eligible-to-show conversion улучшается</li>
+                            <li>Микс меняется: добавляется низкокачественный или низкочастотный инвентарь</li>
+                            <li>Pressure может увеличиться, если новый инвентарь конкурирует за внимание</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Volume/shows, Revenue index</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Quality/mix proxy, Price index (proxy), Fatigue/pressure proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Volume растёт, но price падает (низкокачественный микс)</li>
+                            <li>Coverage улучшается, но quality proxy ухудшается (сдвиг микса)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 4: Placement Reshape -->
+            <div class="pattern-card" data-categories="mix">
+                <div class="pattern-title">Placement Reshape</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Mix/Quality</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Меняете формат или расположение размещений (внимание, видимость)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>CTR меняется (внимание к размещению), engagement proxy меняется</li>
+                            <li>Микс инвентаря перераспределяется (высококачественные vs низкокачественные сегменты)</li>
+                            <li>Displacement может произойти: рост в одном месте = падение в другом</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, CTR (диагностическая)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Engagement/attention proxy, Quality/mix proxy, Retention/satisfaction proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>CTR растёт, но engagement падает (displacement)</li>
+                            <li>Revenue растёт, но quality proxy ухудшается (сдвиг в низкокачественный микс)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 5: Price/Floor Move -->
+            <div class="pattern-card" data-categories="market">
+                <div class="pattern-title">Price/Floor Move</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Market/Price</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Меняете цену или floor (порог минимальной цены)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Price index меняется (рост floor = рост цены, но падение volume)</li>
+                            <li>Volume меняется обратно (trade-off: цена ↑ = объём ↓)</li>
+                            <li>Микс меняется: floor отрезает низкоценный хвост, микс становится "чище"</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, Price index (proxy)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Volume/shows, Coverage/fill-like proxy, Quality/mix proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Price растёт, но volume падает сильнее (эластичность достигнута)</li>
+                            <li>Revenue растёт краткосрочно, но coverage падает (пережатый режим)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 6: Market Shock Guarded -->
+            <div class="pattern-card" data-categories="market time">
+                <div class="pattern-title">Market Shock Guarded</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Market/Price</span>
+                    <span class="pattern-tag">Time</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Тестируете на фоне рыночного сдвига (шок спроса, сезонность, конкуренция)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Рынок меняется независимо от теста (спрос, конкуренция, сезонность)</li>
+                            <li>Эффект теста смешивается с рыночным эффектом</li>
+                            <li>Baseline нестабилен, контрольная группа "плавает"</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index (baseline-adjusted), Price index (proxy)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Baseline stability, Control group stability, Market indicators</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Naive uplift положительный, но baseline-adjusted около нуля (артефакт рынка)</li>
+                            <li>Контрольная группа нестабильна, выводы ненадёжны</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 7: Lagged Rollout -->
+            <div class="pattern-card" data-categories="time">
+                <div class="pattern-title">Lagged Rollout</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Time</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Эффект приходит с задержкой (поведенческий лаг, адаптация, накопление)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Ранние сигналы (proxy) меняются раньше, чем итоговая метрика</li>
+                            <li>Эффект накапливается постепенно (sigmoid-like кривая)</li>
+                            <li>Короткое окно ловит адаптацию, а не устойчивый эффект</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index (long window), Early proxy signals</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Early proxy vs primary divergence, Late effects window, Risk accumulation</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Short window показывает рост, long window показывает падение (ложная победа)</li>
+                            <li>Proxy улучшается, но primary не следует (proxy drift)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 8: Window Sensitivity -->
+            <div class="pattern-card" data-categories="time">
+                <div class="pattern-title">Window Sensitivity</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Time</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Вывод сильно зависит от выбора окна оценки (короткое vs длинное)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Короткое окно ловит ранние эффекты (адаптация, шум)</li>
+                            <li>Длинное окно ловит устойчивые эффекты и поздние последствия</li>
+                            <li>Вывод меняется в зависимости от окна (ранний плюс → поздний минус)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index (short vs long window comparison)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Window stability, Late effects indicators, Risk accumulation over time</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Short window uplift положительный, long window отрицательный (нестабильность)</li>
+                            <li>Эффект ослабевает со временем без изменения рынка (усталость)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 9: Cannibalization Check -->
+            <div class="pattern-card" data-categories="pressure mix">
+                <div class="pattern-title">Cannibalization Check</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Pressure</span>
+                    <span class="pattern-tag">Mix/Quality</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Подозреваете переток между сегментами (shared inventory, конкуренция за внимание)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Test segment растёт, но соседние сегменты падают</li>
+                            <li>Total revenue не меняется или меняется слабо (компенсация)</li>
+                            <li>Микс перераспределяется между сегментами</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Total revenue index, Test segment revenue</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Adjacent segments revenue, Mix composition, Coverage stability</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Test segment растёт, total revenue не меняется (каннибализация)</li>
+                            <li>Рост в одном сегменте = падение в соседнем (переток)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 10: Mix Shift -->
+            <div class="pattern-card" data-categories="mix">
+                <div class="pattern-title">Mix Shift</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Mix/Quality</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Изменение приводит к сдвигу микса инвентаря (композиционные изменения)</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Доли сегментов меняются (высококачественные vs низкокачественные)</li>
+                            <li>Среднее может не меняться, но распределение меняется</li>
+                            <li>Coverage может меняться (вытеснение сегментов)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, Quality-weighted revenue</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Quality/mix proxy, Distribution tails, Coverage stability</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Среднее растёт, но хвосты деградируют (distribution shift)</li>
+                            <li>Revenue растёт, но quality proxy падает (сдвиг в низкокачественный микс)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 11: Proxy Improvement Trap -->
+            <div class="pattern-card" data-categories="mix time">
+                <div class="pattern-title">Proxy Improvement Trap</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Mix/Quality</span>
+                    <span class="pattern-tag">Time</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Ранний сигнал (proxy) улучшается, но итоговая метрика не следует</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Proxy улучшается (coverage, showConv, CTR), но revenue не растёт</li>
+                            <li>Корреляция между proxy и primary ломается (proxy drift)</li>
+                            <li>Эффект проявляется в proxy раньше, но не доходит до primary</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index, Proxy vs primary divergence</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Proxy-primary correlation, Price/volume decomposition, Quality/mix proxy</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Proxy улучшается, primary не следует (proxy drift)</li>
+                            <li>Coverage растёт, но price падает (компенсация через цену)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pattern 12: Local Win / System Loss -->
+            <div class="pattern-card" data-categories="pressure time">
+                <div class="pattern-title">Local Win / System Loss</div>
+                <div class="pattern-tags">
+                    <span class="pattern-tag">Pressure</span>
+                    <span class="pattern-tag">Time</span>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Когда использовать</div>
+                    <div class="pattern-section-content">Тест "побеждает" в окне оценки, но система проигрывает при выкатке</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Что меняется (механизм)</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>В тесте revenue растёт, guardrails стабильны</li>
+                            <li>При выкатке эффект меняется (масштаб, saturation, конкуренция)</li>
+                            <li>Поздние эффекты проявляются только при полной выкатке (усталость, деградация)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Primary</div>
+                    <div class="pattern-section-content">Revenue index (test vs rollout comparison), System-wide revenue</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Guardrails</div>
+                    <div class="pattern-section-content">Late effects indicators, Scale effects, Saturation indicators, Risk accumulation</div>
+                </div>
+                <div class="pattern-section">
+                    <div class="pattern-section-title">Красные флаги</div>
+                    <div class="pattern-section-content">
+                        <ul>
+                            <li>Test uplift положительный, rollout uplift отрицательный (масштабный эффект)</li>
+                            <li>Guardrails ухудшаются при выкатке, хотя в тесте были стабильны</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Быстрый выбор паттерна</h2>
+        <table class="quick-select-table">
+            <thead>
+                <tr>
+                    <th>Если вы меняете …</th>
+                    <th>→ начните с паттерна …</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Давление (частота, плотность, coverage)</td>
+                    <td>Pressure Step, Frequency Cap Change</td>
+                </tr>
+                <tr>
+                    <td>Окно/лаг (эффект приходит позже)</td>
+                    <td>Lagged Rollout, Window Sensitivity</td>
+                </tr>
+                <tr>
+                    <td>Цена/пол (floor, pricing)</td>
+                    <td>Price/Floor Move</td>
+                </tr>
+                <tr>
+                    <td>Микс (композиция, качество инвентаря)</td>
+                    <td>Mix Shift, Inventory Reveal</td>
+                </tr>
+                <tr>
+                    <td>Подозрение на переток между сегментами</td>
+                    <td>Cannibalization Check</td>
+                </tr>
+                <tr>
+                    <td>Улучшили proxy без денег</td>
+                    <td>Proxy Improvement Trap</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="final-quote">
+            Название изменения не важно. Важна форма реакции системы.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        const filterChips = document.querySelectorAll('.filter-chip');
+        const patternCards = document.querySelectorAll('.pattern-card');
+
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                // Remove active class from all chips
+                filterChips.forEach(c => c.classList.remove('active'));
+                // Add active class to clicked chip
+                chip.classList.add('active');
+
+                const filter = chip.getAttribute('data-filter');
+
+                // Filter cards
+                patternCards.forEach(card => {
+                    const categories = card.getAttribute('data-categories').split(' ');
+                    
+                    if (filter === 'all') {
+                        card.classList.remove('hidden');
+                    } else {
+                        // Map filter to category
+                        const filterMap = {
+                            'pressure': 'pressure',
+                            'time': 'time',
+                            'market': 'market',
+                            'mix': 'mix'
+                        };
+                        
+                        const targetCategory = filterMap[filter];
+                        const hasCategory = categories.includes(targetCategory);
+                        
+                        if (hasCategory) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

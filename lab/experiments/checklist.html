@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-лист: проектирование эксперимента</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+            border-left: 3px solid #1a1a1a;
+        }
+
+        .checklist-block h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-bottom a.button {
+            padding: 0.5rem 1rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .nav-bottom a.button:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html" class="active">Чеклист</a>
+        </div>
+
+        <h1>Чек-лист: проектирование эксперимента</h1>
+        <p class="subtitle">Быстрая проверка: готов ли эксперимент к запуску и интерпретации результатов.</p>
+
+        <div class="intro">
+            <p>
+                Используйте этот чек-лист перед запуском эксперимента и при интерпретации результатов. Если хотя бы один пункт не выполнен — эксперимент может привести к неверным решениям.
+            </p>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Гипотеза и механизм</h3>
+            <ul>
+                <li>Сформулирована ли гипотеза как механизм, а не как "выросло / не выросло"?</li>
+                <li>Понятно ли, какой механизм эффекта ожидается (цена / объём / микс / воронка / давление)?</li>
+                <li>Согласованы ли Primary / Diagnostic / Guardrails метрики?</li>
+                <li>Как разложить деньги на рычаги для диагностики?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Структура и контроль</h3>
+            <ul>
+                <li>Есть ли риск смещения состава между контроль и тест?</li>
+                <li>Контролируется ли состав сегментов (reweight при необходимости)?</li>
+                <li>Не маскирует ли агрегат эффекты (Simpson paradox)?</li>
+                <li>Учтены ли системные эффекты (каннибализация, перетоки)?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Время и окно оценки</h3>
+            <ul>
+                <li>Учтены ли лаги эффекта при выборе окна оценки?</li>
+                <li>Как выбор окна влияет на вывод?</li>
+                <li>Определены ли stop rules для принятия решения?</li>
+                <li>Устойчив ли эффект по времени?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Системные эффекты</h3>
+            <ul>
+                <li>Есть ли риск каннибализации между форматами/сегментами?</li>
+                <li>Локальная победа или системный проигрыш?</li>
+                <li>Что происходит с Total, а не только с локальными метриками?</li>
+                <li>Учтены ли давление, насыщение и перетоки?</li>
+            </ul>
+        </div>
+
+        <div class="checklist-block">
+            <h3>Решение и мониторинг</h3>
+            <ul>
+                <li>Статистическая значимость ≠ практическая значимость?</li>
+                <li>Есть ли бизнес-эффект, даже если stat sig?</li>
+                <li>Можно ли принять решение на основе результатов?</li>
+                <li>Что мониторим после выката?</li>
+            </ul>
+        </div>
+
+        <div class="nav-bottom">
+            <a href="./syllabus.html">← Назад к программе</a>
+            <a href="./role-of-experiment.html" class="button">Начать курс заново</a>
+        </div>
+    </div>
+</body>
+</html>
+

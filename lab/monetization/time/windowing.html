@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windowing</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+        }
+
+        .controls-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .readout {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .readout-item {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .readout-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2.2;
+        }
+
+        .line-effect {
+            stroke: #666;
+        }
+
+        .zero-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            opacity: 0.6;
+        }
+
+        .window-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .window-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .marker-dot {
+            fill: #1a1a1a;
+            stroke: #fff;
+            stroke-width: 1.5;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .explanation-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .explanation-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .explanation-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .explanation-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #999;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Windowing</h1>
+        <p class="subtitle">Как окно наблюдения меняет вывод.</p>
+        <p class="insight">Один и тот же эксперимент может быть 'плюсом' и 'минусом' — в зависимости от того, какое окно вы смотрите.</p>
+
+        <p class="explanation">
+            В реальности эффект часто не постоянный: есть разгон, компенсация, усталость, лаг. Поэтому вывод из окна 7 дней и окна 28 дней может быть разным.
+        </p>
+
+        <p class="thesis">
+            <strong>Если вы не фиксируете окно — вы не фиксируете вывод.</strong>
+        </p>
+
+        <div class="chart-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Старт окна (день)</label>
+                    <div class="slider-container">
+                        <input type="range" id="startSlider" class="slider" min="1" max="84" step="1" value="14">
+                        <span class="slider-value" id="startValue">14</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Длина окна (дней)</label>
+                    <div class="slider-container">
+                        <input type="range" id="lengthSlider" class="slider" min="7" max="42" step="1" value="14">
+                        <span class="slider-value" id="lengthValue">14</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item" id="windowInfo"></div>
+                    <div class="readout-item" id="avgEffect"></div>
+                    <div class="readout-item" id="conclusion"></div>
+                </div>
+            </div>
+
+            <svg id="chart"></svg>
+
+            <p class="chart-caption">
+                Смена окна меняет знак среднего эффекта.
+            </p>
+
+            <div class="explanation-panel">
+                <div class="explanation-panel-title">Почему окна дают разные ответы</div>
+                <p>Есть разгон и адаптация.</p>
+                <p>Есть лаги и компенсации.</p>
+                <p>Есть усталость и насыщение.</p>
+                <p>Поэтому 'эффект' — это функция времени.</p>
+                <p>В A/B фиксируйте окно так же жёстко, как метрику.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Окно — это часть методологии. Если окна плавают, то плавает и вывод.
+        </p>
+
+        <p class="interpretation">
+            В монетизации лучше заранее определить: короткое окно для ранних сигналов и длинное окно для устойчивого итога.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Окно — это линза. Меняете линзу — меняете вывод.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад ко времени</a>
+            <p class="footer-note">Окно — это часть ответа.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic data
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        const data = [];
+
+        for (let t = 1; t <= 90; t++) {
+            const launch = 2.2 * Math.exp(-(t - 1) / 18);
+            const fatigue = 2.0 * (1 / (1 + Math.exp(-(t - 55) / 6)));
+            const wave = 0.25 * Math.sin(t / 6) + 0.12 * Math.sin(t / 15);
+            const delta = launch - fatigue + wave;
+            
+            data.push({ t, delta });
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 90])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([-2.5, 2.5])
+            .range([height, 0]);
+
+        // Line generator
+        const line = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.delta))
+            .curve(d3.curveMonotoneX);
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Zero line
+        g.append("line")
+            .attr("class", "zero-line")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", yScale(0))
+            .attr("y2", yScale(0));
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width - 5)
+            .attr("y", yScale(0) - 5)
+            .attr("text-anchor", "end")
+            .text("0%");
+
+        // Line
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-effect")
+            .attr("d", line);
+
+        // Label
+        const last = data[data.length - 1];
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale(last.t) + 5)
+            .attr("y", yScale(last.delta) - 5)
+            .text("дневной эффект");
+
+        // Axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(7)
+            .tickValues([1, 15, 30, 45, 60, 75, 90])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(5)
+            .tickValues([-2, -1, 0, 1, 2])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("День");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Эффект (%)");
+
+        // State
+        let windowStart = 14;
+        let windowLength = 14;
+
+        // Update function
+        function updateWindow() {
+            const end = Math.min(windowStart + windowLength - 1, 90);
+            const windowData = data.filter(d => d.t >= windowStart && d.t <= end);
+            const avg = windowData.reduce((sum, d) => sum + d.delta, 0) / windowData.length;
+            const avgPct = Math.round(avg * 10) / 10;
+
+            // Update readout
+            document.getElementById("windowInfo").innerHTML = 
+                `<strong>Окно:</strong> ${windowStart}–${end} (${windowData.length} дней)`;
+            
+            document.getElementById("avgEffect").innerHTML = 
+                `<strong>Средний эффект в окне:</strong> ${avgPct > 0 ? '+' : ''}${avgPct}%`;
+            
+            let conclusion;
+            if (avg > 0.2) {
+                conclusion = "плюс";
+            } else if (avg < -0.2) {
+                conclusion = "минус";
+            } else {
+                conclusion = "около нуля";
+            }
+            document.getElementById("conclusion").innerHTML = 
+                `<strong>Вывод:</strong> ${conclusion}`;
+
+            // Update window region
+            const windowRect = g.selectAll(".window-region")
+                .data([{ start: windowStart, end }]);
+
+            const windowRectEnter = windowRect.enter()
+                .append("rect")
+                .attr("class", "window-region")
+                .attr("y", 0)
+                .attr("height", height);
+
+            windowRect.merge(windowRectEnter)
+                .attr("x", d => xScale(d.start))
+                .attr("width", d => xScale(d.end) - xScale(d.start));
+
+            // Update window label
+            const windowLabel = g.selectAll(".window-label")
+                .data([{ start: windowStart }]);
+
+            const windowLabelEnter = windowLabel.enter()
+                .append("text")
+                .attr("class", "window-label")
+                .attr("y", 15);
+
+            windowLabel.merge(windowLabelEnter)
+                .attr("x", d => xScale(d.start) + 5)
+                .text("окно анализа");
+
+            // Update marker dot
+            const midDay = Math.round((windowStart + end) / 2);
+            const midData = data.find(d => d.t === midDay);
+            
+            const marker = g.selectAll(".marker-dot")
+                .data(midData ? [midData] : []);
+
+            const markerEnter = marker.enter()
+                .append("circle")
+                .attr("class", "marker-dot")
+                .attr("r", 4);
+
+            marker.merge(markerEnter)
+                .attr("cx", d => xScale(d.t))
+                .attr("cy", d => yScale(d.delta));
+
+            marker.exit().remove();
+        }
+
+        // Sliders
+        const startSlider = document.getElementById("startSlider");
+        const startValue = document.getElementById("startValue");
+        const lengthSlider = document.getElementById("lengthSlider");
+        const lengthValue = document.getElementById("lengthValue");
+
+        startSlider.addEventListener("input", function() {
+            windowStart = parseInt(this.value);
+            startValue.textContent = windowStart;
+            if (windowStart + windowLength - 1 > 90) {
+                windowLength = 90 - windowStart + 1;
+                lengthSlider.value = windowLength;
+                lengthValue.textContent = windowLength;
+            }
+            updateWindow();
+        });
+
+        lengthSlider.addEventListener("input", function() {
+            windowLength = parseInt(this.value);
+            lengthValue.textContent = windowLength;
+            if (windowStart + windowLength - 1 > 90) {
+                windowStart = 90 - windowLength + 1;
+                startSlider.value = windowStart;
+                startValue.textContent = windowStart;
+            }
+            updateWindow();
+        });
+
+        // Initial render
+        updateWindow();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

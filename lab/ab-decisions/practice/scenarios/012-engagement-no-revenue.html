@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вовлечённость без денег</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Вовлечённость без денег</h1>
+        <p class="subtitle">Рост вовлечённости не всегда приводит к росту выручки, если новые элементы конкурируют с рекламой за внимание пользователя.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-2" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Можно ли масштабировать</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Добавили вовлекающие интерактивные элементы (игры, викторины, интерактивные виджеты) в контент в тестовой группе. Цель — повысить вовлечённость пользователей и потенциально увеличить выручку.
+            </p>
+            <p>
+                Эксперимент длился 14 дней. Трафик стабильный, сезонных эффектов не наблюдалось. Контрольная группа без изменений — стандартный контент без интерактивных элементов.
+            </p>
+            <p>
+                В тестовой группе вовлечённость выросла (time spent +3–5%, глубина сессии +2–4%), но выручка упала на 5–7%. DAU снизился на 1–2%. Внимание к рекламным блокам снизилось — пользователи переключаются на интерактивные элементы.
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart-tabs-nav">
+                <button id="tab-engagement" onclick="switchTab('engagement')" class="active">Engagement</button>
+                <button id="tab-revenue" onclick="switchTab('revenue')">Revenue</button>
+            </div>
+
+            <div id="tab-content-engagement" class="chart-tab-content active">
+                <div class="chart" id="chart-engagement"></div>
+            </div>
+
+            <div id="tab-content-revenue" class="chart-tab-content">
+                <div class="chart" id="chart-revenue"></div>
+            </div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Что здесь произошло?</li>
+                <li>Почему вовлечённость выросла, а выручка упала?</li>
+                <li>Как интерактивные элементы влияют на монетизацию?</li>
+                <li>Почему внимание к рекламе снизилось?</li>
+                <li>Можно ли катить в прод?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+
+                <p>
+                    На графике видно, что вовлечённость выросла, но выручка упала. Одновременно снизилось внимание к рекламным блокам. Это классический пример каннибализации внимания — интерактивные элементы конкурируют с рекламой за внимание пользователя.
+                </p>
+
+                <p>
+                    <strong>Механизм эффекта:</strong> Добавление вовлекающих элементов переключает внимание пользователя с рекламы на интерактивный контент. Это приводит к:
+                </p>
+                <ul>
+                    <li><strong>Росту вовлечённости:</strong> Пользователи дольше остаются в контенте, больше взаимодействуют с интерактивными элементами.</li>
+                    <li><strong>Снижению внимания к рекламе:</strong> Пользователи переключаются на игры/викторины и меньше взаимодействуют с рекламными блоками.</li>
+                    <li><strong>Падению выручки:</strong> Меньше внимания к рекламе = меньше кликов и взаимодействий = меньше выручки.</li>
+                    <li><strong>Снижению DAU:</strong> Возможно, интерактивные элементы не подходят для всех пользователей, что снижает общую активность.</li>
+                </ul>
+
+                <p>
+                    <strong>Почему вовлечённость ≠ выручка:</strong> Вовлечённость — это прокси-метрика, которая не всегда коррелирует с монетизацией. Если пользователь вовлечён в интерактивный контент, но не взаимодействует с рекламой, выручка падает, даже если time spent растёт.
+                </p>
+
+                <p>
+                    <strong>Каннибализация внимания:</strong> Интерактивные элементы конкурируют с рекламой за ограниченное внимание пользователя. Вместо того чтобы усилить монетизацию, они отвлекают от рекламы, что снижает выручку.
+                </p>
+
+                <p>
+                    <strong>Почему это важно:</strong> Это пример того, как локальная оптимизация (рост вовлечённости) может вредить системной метрике (выручка). Важно проверять не только прокси-метрики, но и бизнес-метрики.
+                </p>
+
+                <p>
+                    <strong>Порядок проверки:</strong>
+                </p>
+                <ol>
+                    <li>Revenue — главная метрика, упала ли выручка?</li>
+                    <li>Engagement — выросла ли вовлечённость (time spent, глубина сессии)?</li>
+                    <li>Attention к рекламе — снизилось ли внимание к рекламным блокам (CTR, viewability)?</li>
+                    <li>DAU — не ухудшилась ли общая активность пользователей?</li>
+                    <li>Guardrails — не ухудшились ли другие продуктовые метрики?</li>
+                </ol>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Вовлечённость выросла, значит эксперимент успешен. Выручка упадёт позже, когда пользователи привыкнут. Можно катить в прод.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Добавление интерактивных элементов привело к росту вовлечённости, но падению выручки на 5–7%. Интерактивные элементы конкурируют с рекламой за внимание пользователя, что снижает внимание к рекламным блокам и выручку. Это классический пример каннибализации внимания и того, что вовлечённость ≠ выручка. Нельзя катить в прод — нужно либо убрать интерактивные элементы, либо найти способ монетизировать их напрямую, либо интегрировать их так, чтобы они не конкурировали с рекламой.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что «вовлечённость всегда приводит к росту выручки» — важно проверять бизнес-метрики, а не только прокси-метрики. Нельзя утверждать, что «интерактивные элементы всегда плохи» — важно, как они интегрированы и не конкурируют ли с рекламой. Нельзя утверждать, что «эффект проявится позже» — 14 дней достаточно для оценки эффекта на выручку.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../monetization/metrics/revenue.html">Выручка: главная метрика монетизации</a></li>
+                <li><a href="../lessons/03-aggregates-lie.html">Lesson 3: Агрегаты врут — каннибализация и системные эффекты</a></li>
+                <li><a href="./007-local-win-system-loss.html">Сценарий 007: Локальная победа, системный проигрыш</a></li>
+                <li><a href="../../experiments/metrics-for-reading.html">Метрики для чтения: primary vs proxy</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./011-adaptive-pressure-segments.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <span class="nav-disabled">Следующий сценарий →</span>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 012: Engagement up, no revenue
+        // Synthetic data: 14 days, baseline = 100
+        // Engagement: Control ~100, Test grows to ~104 (4% increase)
+        // Revenue: Control ~100, Test drops to ~94 (6% decrease)
+
+        let currentMode = 'annotated';
+        let currentTab = 'engagement';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Engagement: Test grows
+            const engagementControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const engagementTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.29; // ~4% over 14 days
+                const noise = (Math.random() - 0.5) * 0.4;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Revenue: Test drops
+            const revControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const revTest = days.map(d => {
+                const base = 100;
+                const drop = d > 2 ? (d - 2) * 0.5 : 0; // Starts dropping after day 2
+                const noise = (Math.random() - 0.5) * 0.5;
+                return { x: d, y: base - drop + noise };
+            });
+
+            return { engagementControl, engagementTest, revControl, revTest };
+        }
+
+        function renderCharts() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Engagement Chart
+            ABCharts.render({
+                el: '#chart-engagement',
+                series: [
+                    { name: 'Control', values: data.engagementControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.engagementTest, color: ABCharts.colors.test }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Вовлечённость (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 14, y: data.engagementTest[14].y + 5, text: '+4% Engagement', color: ABCharts.colors.test, textAnchor: 'end', dy: -5 }
+                    ]
+                }
+            });
+
+            // Revenue Chart
+            ABCharts.render({
+                el: '#chart-revenue',
+                series: [
+                    { name: 'Control', values: data.revControl, dashArray: '4,4', opacity: 0.8 },
+                    { name: 'Test', values: data.revTest, color: ABCharts.colors.danger }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Выручка (индекс)',
+                    yFormat: d3.format(".1f")
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: [
+                        { x: 14, y: data.revTest[14].y - 5, text: '-6% Revenue', color: ABCharts.colors.danger, textAnchor: 'end', dy: 5 }
+                    ]
+                }
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.remove('active');
+            document.getElementById('mode-annotated').classList.remove('active');
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            renderCharts();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-engagement').classList.remove('active');
+            document.getElementById('tab-revenue').classList.remove('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            document.getElementById('tab-content-engagement').classList.remove('active');
+            document.getElementById('tab-content-revenue').classList.remove('active');
+            document.getElementById(`tab-content-${tab}`).classList.add('active');
+        }
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCharts();
+            switchTab(currentTab);
+        });
+    </script>
+</body>
+</html>
+

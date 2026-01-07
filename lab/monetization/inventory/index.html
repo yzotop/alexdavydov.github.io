@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инвентарь</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .chain-container {
+            margin: 3rem 0;
+            padding: 2rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            overflow-x: auto;
+        }
+
+        .chain {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 800px;
+            padding: 1rem 0;
+        }
+
+        .chain-step {
+            flex: 1;
+            text-align: center;
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #ffffff;
+        }
+
+        .chain-step-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .chain-step-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .chain-arrow {
+            font-size: 1.5rem;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .chain-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-list {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .quality-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .quality-table th,
+        .quality-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .quality-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .quality-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Инвентарь</h1>
+        <p class="subtitle">Инвентарь — это не 'показы'. Это возможность показать рекламу в правильном контексте.</p>
+
+        <div class="intro">
+            <p>
+                Инвентарь = "возможности" (opportunities), а не фактические показы. Это моменты, когда система может показать рекламу пользователю в подходящем контексте. Но не все возможности превращаются в показы, и не все показы превращаются в деньги.
+            </p>
+            <p>
+                Показ — это результат цепочки: доступность, доставка, давление, конкуренция. На каждом шаге теряется часть возможностей. Инвентарь может расти, но если растёт без внимания пользователя или без качества контекста, выручка не растёт.
+            </p>
+            <p>
+                Ошибка: считать, что "больше инвентаря = больше выручки". Рост инвентаря может ухудшать качество через давление, конкуренцию за внимание, композиционный сдвиг в сторону низкокачественных возможностей.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Цепочка монетизации</div>
+            <div class="chain-container">
+                <div class="chain">
+                    <div class="chain-step">
+                        <div class="chain-step-title">Opportunities</div>
+                        <div class="chain-step-note">Инвентарь</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Слишком ранний/частый/конкурирующий</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-step">
+                        <div class="chain-step-title">Requests</div>
+                        <div class="chain-step-note">Запросы</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Не все возможности запрашиваются</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-step">
+                        <div class="chain-step-title">Responses</div>
+                        <div class="chain-step-note">Ответы</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Спрос недоступен/недостаточен</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-step">
+                        <div class="chain-step-title">Shows</div>
+                        <div class="chain-step-note">Показы</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Насыщение/давление снижают конверсию</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-step">
+                        <div class="chain-step-title">Clicks</div>
+                        <div class="chain-step-note">Клики</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Внимание распределено/усталость</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-step">
+                        <div class="chain-step-title">Revenue</div>
+                        <div class="chain-step-note">Деньги</div>
+                        <div class="chain-step-note" style="margin-top: 0.5rem; font-size: 0.8rem;">Компенсация/лаг скрывают проблемы</div>
+                    </div>
+                </div>
+                <p class="chain-caption">Оптимизация на одном шаге может ухудшить другой.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Инвентарь ≠ показы</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Слишком ранний инвентарь</div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Opportunities растут, но show rate падает. Пользователь ещё не готов к рекламе.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Время до первого показа относительно контента</li>
+                            <li>Coverage: доля возможностей, дошедших до show</li>
+                            <li>Attention proxy: скролл/время до показа</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Слишком частый инвентарь</div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Opportunities растут через частоту/повторение, но CTR и эффективность падают.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Frequency proxy: частота касаний рекламой</li>
+                            <li>Saturation proxy: рост показов без роста эффекта</li>
+                            <li>Delayed revenue reaction: лаг между показом и эффектом</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Слишком конкурирующий инвентарь</div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Несколько мест/форматов борются за одно внимание, CTR падает, но opportunities растут.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Composition shift: доля форматов в общем инвентаре</li>
+                            <li>Variance by segments: края распределения внимания</li>
+                            <li>Cannibalization: один формат отнимает внимание у другого</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Слишком 'дешёвый' инвентарь</div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Volume растёт, а ценность падает. Revenue не растёт пропорционально opportunities.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Quality mix: доля high/mid/low quality в общем инвентаре</li>
+                            <li>Response ratio: responses/requests — доступность спроса</li>
+                            <li>ShowConv: shows/opportunities — конверсия возможностей</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Рост инвентаря без роста выручки</div>
+            <div class="chart-container">
+                <svg id="growthChart"></svg>
+                <p class="chart-caption">Если растёт opportunity, но не растут shows/revenue — вы добавляете возможности без внимания.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Композиционный сдвиг: качество падает</div>
+            <div class="chart-container">
+                <svg id="compositionChart"></svg>
+                <p class="chart-caption">Общий объём может расти, пока качество распределения ухудшается.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Уроки раздела</div>
+            <div class="next-cards">
+                <a href="./inventory-quality.html" class="next-card">
+                    <div class="next-card-title">Качество инвентаря →</div>
+                    <div class="next-card-text">Почему одинаковые показы не равны. Composition shift, fatigue, crowding.</div>
+                </a>
+                <a href="./coverage-vs-pressure.html" class="next-card">
+                    <div class="next-card-title">Coverage vs Pressure →</div>
+                    <div class="next-card-text">Почему 'дожим инвентаря' часто убивает качество.</div>
+                </a>
+                <a href="./hidden-inventory.html" class="next-card">
+                    <div class="next-card-title">Скрытый инвентарь →</div>
+                    <div class="next-card-text">Когда возможности есть, а показов нет. Loss-слои и диагностика.</div>
+                </a>
+                <a href="./inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Усталость инвентаря →</div>
+                    <div class="next-card-text">Как повторение снижает эффективность возможностей.</div>
+                </a>
+                <a href="./inventory-metrics.html" class="next-card">
+                    <div class="next-card-title">Метрики инвентаря →</div>
+                    <div class="next-card-text">Что мерить и как считать. Словарь метрик и калькуляторы.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Как измерять качество инвентаря (без 'секретных' метрик)</div>
+            <table class="quality-table">
+                <thead>
+                    <tr>
+                        <th>Прокси качества</th>
+                        <th>Что отражает</th>
+                        <th>Где смотреть в цепочке</th>
+                        <th>Типовой риск</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Coverage</td>
+                        <td>Доля возможностей, дошедших до show</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Рост opportunities без роста shows</td>
+                    </tr>
+                    <tr>
+                        <td>Response ratio</td>
+                        <td>Доступность спроса на запросы</td>
+                        <td>Requests → Responses</td>
+                        <td>Спрос недоступен или недостаточен</td>
+                    </tr>
+                    <tr>
+                        <td>ShowConv</td>
+                        <td>Конверсия возможностей в показы</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Насыщение снижает конверсию</td>
+                    </tr>
+                    <tr>
+                        <td>Attention proxy</td>
+                        <td>Внимание пользователя к контексту</td>
+                        <td>Shows → Clicks</td>
+                        <td>Ранний/частый инвентарь без внимания</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency proxy</td>
+                        <td>Частота касаний рекламой</td>
+                        <td>Shows → Clicks</td>
+                        <td>Усталость от повторения</td>
+                    </tr>
+                    <tr>
+                        <td>Saturation proxy</td>
+                        <td>Рост показов без роста эффекта</td>
+                        <td>Shows → Revenue</td>
+                        <td>Добавление возможностей без ценности</td>
+                    </tr>
+                    <tr>
+                        <td>Variance by segments</td>
+                        <td>Края распределения качества</td>
+                        <td>Все шаги</td>
+                        <td>Среднее маскирует проблемы в сегментах</td>
+                    </tr>
+                    <tr>
+                        <td>Delayed revenue reaction</td>
+                        <td>Лаг между показом и эффектом</td>
+                        <td>Shows → Revenue</td>
+                        <td>Короткое окно скрывает проблемы</td>
+                    </tr>
+                    <tr>
+                        <td>Composition shift</td>
+                        <td>Сдвиг в распределении качества</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Рост low-quality доли в общем объёме</td>
+                    </tr>
+                    <tr>
+                        <td>Cannibalization</td>
+                        <td>Один формат отнимает внимание у другого</td>
+                        <td>Shows → Clicks</td>
+                        <td>Конкуренция форматов снижает общий эффект</td>
+                    </tr>
+                    <tr>
+                        <td>Quality mix</td>
+                        <td>Доля high/mid/low quality в инвентаре</td>
+                        <td>Opportunities</td>
+                        <td>Рост объёма за счёт low-quality</td>
+                    </tr>
+                    <tr>
+                        <td>Lag indicator</td>
+                        <td>Время между механикой и деньгами</td>
+                        <td>Shows → Revenue</td>
+                        <td>Короткое окно даёт ложные сигналы</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Чеклист: инвентарь растёт — что проверить</div>
+            <ul class="checklist">
+                <li>Где в цепочке потери: opportunities → requests → responses → shows — на каком шаге теряется больше всего</li>
+                <li>Не выросло ли давление: frequency proxy, saturation proxy — не упирается ли система в потолок</li>
+                <li>Не ухудшился ли микс качества: composition shift, quality mix — не растёт ли доля low-quality</li>
+                <li>Не появилось ли каннибализации форматов: один формат не отнимает ли внимание у другого</li>
+                <li>Не стало ли больше low-attention ситуаций: attention proxy, coverage — не падает ли внимание к контексту</li>
+                <li>Не изменился ли лаг: delayed revenue reaction — не скрывает ли лаг проблемы в механике</li>
+                <li>Сегменты: high-pressure users деградируют раньше — проверь variance by segments, не маскирует ли среднее проблемы</li>
+                <li>Response ratio: не падает ли доступность спроса при росте requests</li>
+                <li>ShowConv: не падает ли конверсия opportunities в shows при росте инвентаря</li>
+                <li>Coverage: не падает ли доля возможностей, дошедших до show</li>
+                <li>Время до первого показа: не слишком ли рано появляется инвентарь относительно контента</li>
+                <li>Окно наблюдения: не слишком ли короткое окно скрывает проблемы через лаг</li>
+            </ul>
+        </div>
+
+        <div class="footer" style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e8e8e8;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <a href="../index.html" class="back-link">← к курсу</a>
+                <a href="../experiments/index.html" class="back-link" style="margin-left: auto;">Следующий раздел: Эксперименты →</a>
+            </div>
+            <p class="footer-note" style="margin-top: 1rem;">Инвентарь — это возможности, а не показы.</p>
+        </div>
+    </div>
+
+    <script>
+        // Growth chart
+        function generateGrowthChart() {
+            const container = d3.select('#growthChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#growthChart').selectAll('*').remove();
+
+            const svg = d3.select('#growthChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 160;
+            const threshold = 60;
+            const saturation = 90;
+            const revenueDrop = 110;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Opportunities: linear growth + sigmoid after threshold
+                const sigmoid = t > threshold ? 0.4 * (1 - 1 / (1 + Math.exp(-(t - threshold) / 10))) : 0;
+                const opportunities = 0.3 + 0.001 * t + sigmoid;
+
+                // Shows: slower growth, hits ceiling after saturation
+                const showCeiling = t > saturation ? 0.75 : 0.3 + 0.004 * t;
+                const shows = Math.min(showCeiling, 0.75);
+
+                // Revenue: flat, slight drop after revenueDrop
+                const drop = t > revenueDrop ? 0.05 * (1 - 1 / (1 + Math.exp(-(t - revenueDrop) / 8))) : 0;
+                const revenue = 0.65 - drop;
+
+                data.push({ t, opportunities, shows, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Threshold line
+            g.append('line')
+                .attr('x1', x(threshold))
+                .attr('x2', x(threshold))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(threshold))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('порог насыщения');
+
+            // Lines
+            const line = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.opportunities))
+                .curve(d3.curveMonotoneX);
+
+            const lineShows = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.shows))
+                .curve(d3.curveMonotoneX);
+
+            const lineRevenue = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineShows);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineRevenue);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].opportunities) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('inventory_opportunities');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].shows) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('shows');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('revenue');
+        }
+
+        // Composition chart
+        function generateCompositionChart() {
+            const container = d3.select('#compositionChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#compositionChart').selectAll('*').remove();
+
+            const svg = d3.select('#compositionChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 160;
+            const shiftStart = 80;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // High quality: starts high, decreases after shiftStart
+                const highDrop = t > shiftStart ? 0.3 * (1 - 1 / (1 + Math.exp(-(t - shiftStart) / 10))) : 0;
+                const high = 0.5 - highDrop;
+
+                // Low quality: starts low, increases after shiftStart
+                const lowGrowth = t > shiftStart ? 0.35 * (1 - 1 / (1 + Math.exp(-(t - shiftStart) / 10))) : 0;
+                const low = 0.15 + lowGrowth;
+
+                // Mid quality: fills the gap
+                const mid = 1 - high - low;
+
+                data.push({ t, high, mid, low });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Stacked area
+            const area = d3.area()
+                .x(d => x(d.t))
+                .y0((d, i) => {
+                    let sum = 0;
+                    for (let j = 0; j < i; j++) {
+                        sum += data[j].low + data[j].mid + data[j].high;
+                    }
+                    return y(sum);
+                })
+                .y1((d, i) => {
+                    let sum = 0;
+                    for (let j = 0; j <= i; j++) {
+                        sum += data[j].low + data[j].mid + data[j].high;
+                    }
+                    return y(sum);
+                })
+                .curve(d3.curveMonotoneX);
+
+            // Lines for shares
+            const lineHigh = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.high))
+                .curve(d3.curveMonotoneX);
+
+            const lineMid = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.mid))
+                .curve(d3.curveMonotoneX);
+
+            const lineLow = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.low))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data.map((d, i) => ({ t: d.t, value: d.high })))
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineHigh);
+
+            g.append('path')
+                .datum(data.map((d, i) => ({ t: d.t, value: d.mid })))
+                .attr('fill', 'none')
+                .attr('stroke', '#777')
+                .attr('stroke-width', 2)
+                .attr('d', lineMid);
+
+            g.append('path')
+                .datum(data.map((d, i) => ({ t: d.t, value: d.low })))
+                .attr('fill', 'none')
+                .attr('stroke', '#aaa')
+                .attr('stroke-width', 2)
+                .attr('d', lineLow);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].high) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('доля high-quality');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].mid) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#777')
+                .text('доля mid-quality');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].low) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#aaa')
+                .text('доля low-quality');
+        }
+
+        // Initial render
+        generateGrowthChart();
+        generateCompositionChart();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateGrowthChart();
+                generateCompositionChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

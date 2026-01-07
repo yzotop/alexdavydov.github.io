@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конфликты метрик</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro {
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 3rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .layers-stack {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .layer-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: #fafafa;
+        }
+
+        .layer-number {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .layer-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .layer-hint {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .simulator-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .controls-panel {
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .control-slider {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-value {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .radio-option label {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .diagnosis {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .diagnosis-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .checklist ol {
+            list-style: none;
+            counter-reset: checklist-counter;
+        }
+
+        .checklist li {
+            counter-increment: checklist-counter;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: counter(checklist-counter) ")";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Конфликты метрик</h1>
+        <p class="subtitle">Когда улучшение одной метрики ломает другую.</p>
+        <p class="insight">Правильный вопрос: какой компромисс мы принимаем — и чем платим.</p>
+
+        <div class="intro">
+            <p>
+                В монетизации продуктовые метрики часто конфликтуют с денежными. CTR может расти при падении CPM.
+                Выручка может расти при падении удержания. Важно не "выбрать сторону", а понять механизм компромисса
+                и принять осознанное решение.
+            </p>
+        </div>
+
+        <h2>Четыре типовых конфликта</h2>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">Выручка ↑, удержание ↓</div>
+                <div class="card-item">
+                    <strong>Почему возникает:</strong> Перегруз системы давлением, деградация качества инвентаря,
+                    рост частоты показов без учёта усталости пользователя.
+                </div>
+                <div class="card-item">
+                    <strong>Что проверять:</strong> Pressure proxy, frequency, quality mix, сегменты по вовлечённости.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">CTR ↑, CPM ↓</div>
+                <div class="card-item">
+                    <strong>Почему возникает:</strong> Перераспределение внимания между форматами, приход дешёвого спроса,
+                    композиционный сдвиг в сторону низкокачественного инвентаря.
+                </div>
+                <div class="card-item">
+                    <strong>Что проверять:</strong> Mix shift, competition intensity, quality proxies, volume vs price decomposition.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">ShowRate ↑, продуктовая вовлечённость ↓</div>
+                <div class="card-item">
+                    <strong>Почему возникает:</strong> Инвентарь монетизируется ценой скролла и времени пользователя,
+                    ранние показы отнимают внимание от контента, рост давления снижает качество опыта.
+                </div>
+                <div class="card-item">
+                    <strong>Что проверять:</strong> Time-to-first-ad, scroll depth, session duration, attention proxy.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Продуктовые метрики ↑, выручка ↓</div>
+                <div class="card-item">
+                    <strong>Почему возникает:</strong> Снижение плотности рекламы улучшает опыт, но падает доступность инвентаря
+                    и цена из-за снижения конкуренции в аукционе.
+                </div>
+                <div class="card-item">
+                    <strong>Что проверять:</strong> Coverage, fill rate, competition intensity, price vs volume decomposition.
+                </div>
+            </div>
+        </div>
+
+        <h2>Слои решения</h2>
+
+        <div class="layers-stack">
+            <div class="layer-card">
+                <div class="layer-number">Слой 1</div>
+                <div class="layer-title">Сигнал</div>
+                <div class="layer-hint">Что выросло? Что упало? Насколько?</div>
+            </div>
+
+            <div class="layer-card">
+                <div class="layer-number">Слой 2</div>
+                <div class="layer-title">Механизм</div>
+                <div class="layer-hint">Что именно изменилось? Какой рычаг сдвинулся?</div>
+            </div>
+
+            <div class="layer-card">
+                <div class="layer-number">Слой 3</div>
+                <div class="layer-title">Компромисс</div>
+                <div class="layer-hint">Что мы обменяли? Какую цену платим?</div>
+            </div>
+
+            <div class="layer-card">
+                <div class="layer-number">Слой 4</div>
+                <div class="layer-title">Риск</div>
+                <div class="layer-hint">Какой хвост событий мы увеличили? Что может сломаться позже?</div>
+            </div>
+        </div>
+
+        <h2>Trade-off симулятор</h2>
+
+        <div class="simulator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Ad load (давление)</label>
+                    <input type="range" id="adLoadSlider" class="control-slider" min="0" max="100" value="50">
+                    <span class="control-value" id="adLoadValue">50</span>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 0.25rem;">сколько пытаемся показывать</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Quality (качество инвентаря)</label>
+                    <input type="range" id="qualitySlider" class="control-slider" min="0" max="100" value="70">
+                    <span class="control-value" id="qualityValue">70</span>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 0.25rem;">насколько показы релевантны</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Market (спрос/цена)</label>
+                    <input type="range" id="marketSlider" class="control-slider" min="0" max="100" value="60">
+                    <span class="control-value" id="marketValue">60</span>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 0.25rem;">насколько рынок платит</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Latency (лаг/инерция)</label>
+                    <input type="range" id="latencySlider" class="control-slider" min="0" max="100" value="30">
+                    <span class="control-value" id="latencyValue">30</span>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 0.25rem;">как быстро эффекты проявляются</div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Objective</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="objRevenue" name="objective" value="revenue" checked>
+                            <label for="objRevenue">Revenue-first</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="objBalanced" name="objective" value="balanced">
+                            <label for="objBalanced">Balanced</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="objProduct" name="objective" value="product">
+                            <label for="objProduct">Product-first</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Horizon</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="horizonShort" name="horizon" value="short" checked>
+                            <label for="horizonShort">Short (7d)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="horizonLong" name="horizon" value="long">
+                            <label for="horizonLong">Long (60d)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <svg id="tradeoffChart"></svg>
+            <div class="diagnosis" id="diagnosis">
+                <!-- Content will be populated by JS -->
+            </div>
+            <p class="chart-caption">
+                Крути рычаги и смотри, как меняется компромисс между revenue, product_value и risk.
+            </p>
+        </div>
+
+        <h2>Как принимать решение (чеклист)</h2>
+
+        <ol class="checklist">
+            <li>Сформулируй конфликт: что выросло, что упало, насколько</li>
+            <li>Определи рычаг: инвентарь, цена, давление, время — что именно сдвинулось</li>
+            <li>Проверь guardrails: устойчивость системы, не падают ли критические метрики ниже порога</li>
+            <li>Проверь лаг и окно: не режь хвост, дождись полного проявления эффектов</li>
+            <li>Сделай разложение: куда ушла выручка — shows, CTR, CPM, mix shift</li>
+            <li>Определи допустимую цену: сколько product можно "потратить" ради денег, и наоборот</li>
+            <li>Выбери режим: катить, откатить, ограничить, сегментировать, итерация с другим дизайном</li>
+            <li>Зафиксируй правило: что мониторим дальше, какие guardrails ставим, когда останавливаем</li>
+        </ol>
+
+        <p class="final-quote">
+            Компромисс неизбежен. Важно выбрать его сознательно и измеримо.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+
+    <script>
+        // Chart setup
+        const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+        const width = 800;
+        const height = 400;
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const svg = d3.select('#tradeoffChart')
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .style('max-width', '100%')
+            .style('height', 'auto');
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 120])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([innerHeight, 0]);
+
+        // Helper functions
+        function sigmoid(x, k = 1) {
+            return 1 / (1 + Math.exp(-k * (x - 0.5)));
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        // Generate data
+        function generateData(adLoad, quality, market, latency, objective, horizon) {
+            const data = [];
+            const pressure = adLoad / 100;
+            const q = quality / 100;
+            const m = market / 100;
+            const lag = latency / 100;
+            const launch = 30;
+            const decisionWindow = 60;
+
+            for (let t = 1; t <= 120; t++) {
+                // Time since launch
+                const tSinceLaunch = Math.max(0, t - launch);
+
+                // Product value: падает от pressure, растет от quality, имеет инерцию
+                const pressurePenalty = pressure * (1 - q) * sigmoid(tSinceLaunch / (20 + lag * 30), 2);
+                const qualityBoost = q * (1 - sigmoid(tSinceLaunch / (30 + lag * 20), 1.5));
+                const baseProduct = 0.7;
+                const productValue = clamp(baseProduct - pressurePenalty + qualityBoost * 0.3, 0.3, 0.9);
+
+                // Risk: растет нелинейно от pressure, усиливается при высоком lag
+                const pressureRisk = pressure * sigmoid(pressure - 0.4, 3) * (1 + lag * 0.5);
+                const timeRisk = tSinceLaunch > 20 ? (tSinceLaunch - 20) * 0.001 * (1 + lag) : 0;
+                const risk = clamp(pressureRisk * 0.6 + timeRisk, 0.1, 0.95);
+
+                // Revenue: f(pressure, quality, market) * (1 - penalty_from_risk)
+                const baseRevenue = 0.5;
+                const pressureGain = pressure * 0.4 * (1 - sigmoid(pressure - 0.6, 4));
+                const qualityGain = q * 0.2;
+                const marketGain = m * 0.3;
+                const revenueBase = baseRevenue + pressureGain + qualityGain + marketGain;
+                const riskPenalty = risk * 0.4;
+                const revenue = clamp(revenueBase * (1 - riskPenalty), 0.3, 0.85);
+
+                // Apply horizon effect (long horizon shows more risk accumulation)
+                const horizonMultiplier = horizon === 'long' ? 1.2 : 1.0;
+                const adjustedRisk = clamp(risk * horizonMultiplier, 0.1, 0.95);
+
+                data.push({ t, revenue, productValue, risk: adjustedRisk });
+            }
+
+            return data;
+        }
+
+        // Diagnosis logic
+        function generateDiagnosis(data, adLoad, quality, market, latency, objective) {
+            const last = data[data.length - 1];
+            const mid = data[60];
+            const early = data[30];
+
+            const revenueChange = last.revenue - early.revenue;
+            const productChange = last.productValue - early.productValue;
+            const riskChange = last.risk - early.risk;
+
+            const diagnosis = [];
+
+            // Regime detection
+            if (revenueChange > 0.05 && riskChange > 0.15 && productChange < -0.1) {
+                diagnosis.push('Режим: перегруз. Revenue растёт, но risk и product деградируют. Система работает на пределе.');
+            } else if (revenueChange < -0.05 && productChange > 0.1 && market < 0.5) {
+                diagnosis.push('Режим: ценовой вакуум. Product улучшился, но revenue падает из-за низкого спроса.');
+            } else if (revenueChange > 0.1 && riskChange < 0.05 && productChange > -0.05) {
+                diagnosis.push('Режим: здоровый рост. Revenue растёт без критического роста risk и падения product.');
+            } else if (revenueChange < 0.05 && riskChange > 0.2) {
+                diagnosis.push('Режим: скрытая деградация. Risk растёт быстрее, чем revenue. Механизм ломается.');
+            } else {
+                diagnosis.push('Режим: компромисс. Trade-off между revenue, product и risk требует выбора приоритета.');
+            }
+
+            // Pressure analysis
+            if (adLoad > 70 && riskChange > 0.1) {
+                diagnosis.push('Высокое давление создаёт риск. Снизь ad load или улучши quality.');
+            }
+
+            // Quality analysis
+            if (quality < 50 && productChange < -0.1) {
+                diagnosis.push('Низкое quality деградирует product. Улучши релевантность показов.');
+            }
+
+            // Market analysis
+            if (market < 40 && revenueChange < 0) {
+                diagnosis.push('Низкий спрос ограничивает revenue. Проверь competition и constraints.');
+            }
+
+            // Lag analysis
+            if (latency > 60 && riskChange > 0.15) {
+                diagnosis.push('Высокий lag скрывает проблемы. Эффекты проявятся позже — расширь окно наблюдения.');
+            }
+
+            // Objective-specific
+            if (objective === 'revenue' && productChange < -0.15) {
+                diagnosis.push('Revenue-first режим: product деградирует. Определи допустимую цену product.');
+            } else if (objective === 'product' && revenueChange < -0.1) {
+                diagnosis.push('Product-first режим: revenue падает. Проверь, не слишком ли низкая плотность рекламы.');
+            }
+
+            return diagnosis;
+        }
+
+        // Line generators
+        const revenueLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        const productLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.productValue))
+            .curve(d3.curveMonotoneX);
+
+        const riskLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Update function
+        function updateChart() {
+            const adLoad = parseInt(document.getElementById('adLoadSlider').value);
+            const quality = parseInt(document.getElementById('qualitySlider').value);
+            const market = parseInt(document.getElementById('marketSlider').value);
+            const latency = parseInt(document.getElementById('latencySlider').value);
+            const objective = document.querySelector('input[name="objective"]:checked').value;
+            const horizon = document.querySelector('input[name="horizon"]:checked').value;
+
+            // Update values
+            document.getElementById('adLoadValue').textContent = adLoad;
+            document.getElementById('qualityValue').textContent = quality;
+            document.getElementById('marketValue').textContent = market;
+            document.getElementById('latencyValue').textContent = latency;
+
+            const data = generateData(adLoad, quality, market, latency, objective, horizon);
+            const diagnosis = generateDiagnosis(data, adLoad, quality, market, latency, objective);
+
+            // Clear previous
+            g.selectAll('*').remove();
+
+            // Launch marker
+            g.append('line')
+                .attr('x1', xScale(30))
+                .attr('x2', xScale(30))
+                .attr('y1', 0)
+                .attr('y2', innerHeight)
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '2,2')
+                .attr('opacity', 0.6);
+
+            g.append('text')
+                .attr('x', xScale(30))
+                .attr('y', innerHeight + 20)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('launch');
+
+            // Decision window marker
+            g.append('line')
+                .attr('x1', xScale(60))
+                .attr('x2', xScale(60))
+                .attr('y1', 0)
+                .attr('y2', innerHeight)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3')
+                .attr('opacity', 0.7);
+
+            g.append('text')
+                .attr('x', xScale(60))
+                .attr('y', innerHeight + 20)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('decision window');
+
+            // Lines
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', revenueLine);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('d', productLine);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', riskLine);
+
+            // Labels
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].productValue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('product_value');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].risk) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('risk');
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(xScale).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(yScale).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Update diagnosis
+            const diagnosisEl = document.getElementById('diagnosis');
+            diagnosisEl.innerHTML = diagnosis.map(item => 
+                `<div class="diagnosis-item">${item}</div>`
+            ).join('');
+        }
+
+        // Initial render
+        updateChart();
+
+        // Event listeners
+        document.getElementById('adLoadSlider').addEventListener('input', updateChart);
+        document.getElementById('qualitySlider').addEventListener('input', updateChart);
+        document.getElementById('marketSlider').addEventListener('input', updateChart);
+        document.getElementById('latencySlider').addEventListener('input', updateChart);
+        d3.selectAll('input[name="objective"]').on('change', updateChart);
+        d3.selectAll('input[name="horizon"]').on('change', updateChart);
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateChart, 250);
+        });
+    </script>
+</body>
+</html>
+
+

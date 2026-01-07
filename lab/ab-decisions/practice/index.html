@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика A/B-тестирования на графиках</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: #333;
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            border: 1px solid #1a1a1a;
+            color: #1a1a1a;
+        }
+
+        .cta-button.secondary:hover {
+            background: #fafafa;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .lessons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .lesson-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .lesson-card:hover {
+            background-color: #fafafa;
+            border-color: #d8d8d8;
+        }
+
+        .lesson-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .lesson-description {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .lesson-link:hover {
+            color: #1a1a1a;
+        }
+
+        .decision-sections {
+            margin-top: 3rem;
+        }
+
+        .decision-practice-section {
+            margin-bottom: 4rem;
+            padding-bottom: 3rem;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        .decision-practice-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .section-number {
+            flex-shrink: 0;
+            width: 3rem;
+            height: 3rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .section-description {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="./index.html" class="active">Практика</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Практика: тренажёр по принятию решений</h1>
+        <p class="subtitle">Смотри график → думай → раскрывай разбор. Хороший аналитик видит паттерн до того, как прочитает вывод.</p>
+        <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem; margin-bottom: 2rem;">
+            Это <strong>тренажёр</strong> основного курса, а не отдельный курс. Практика тренирует распознавание ситуаций на графиках без подсказок. 
+            Рамки для принятия решений — в <a href="../index.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">разделе "Курс"</a>.
+        </p>
+
+        <div class="intro">
+            <p>
+                Практика тренирует распознавание паттернов на графиках без подсказок. Каждый сценарий содержит график без подсказок. 
+                Ваша задача — самостоятельно проанализировать, что произошло, и только потом раскрыть разбор.
+            </p>
+            <p>
+                Сценарии сгруппированы по <strong>4 типам решений</strong>, которые повторяются в реальных экспериментах. 
+                Каждый сценарий тренирует конкретный тип решения.
+            </p>
+            <p>
+                Фокус на мышлении, а не на интерфейсе. Никаких симуляторов и калькуляторов —
+                только графики и ваша способность их читать.
+            </p>
+        </div>
+
+        <div class="cta-buttons">
+            <a href="./scenarios/001-cpm-up-rev-down.html" class="cta-button">Начать практику</a>
+            <a href="./syllabus.html" class="cta-button secondary">Программа</a>
+            <a href="./checklist.html" class="cta-button secondary">Чеклист</a>
+        </div>
+
+        <div class="decision-sections">
+            <section class="decision-practice-section" id="decision-1">
+                <div class="section-header">
+                    <div class="section-number">1</div>
+                    <div>
+                        <h2>Можно ли верить эффекту?</h2>
+                        <p class="section-description">Тренируем проверку достоверности эффекта</p>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                    <a href="../lessons/02-statistics-vs-decision.html">→ Урок: Статистика ≠ решение</a> | 
+                    <a href="../lessons/04-time-matters.html">→ Урок: Время решает</a>
+                </p>
+                <div class="lessons-grid">
+                    <div class="lesson-card">
+                        <div class="lesson-title">Статзначимо, но бизнес-эффекта нет</div>
+                        <div class="lesson-description">
+                            Primary +0.30% (sig), Revenue +0.03% (≈0). Как принимать решение?
+                        </div>
+                        <a href="./scenarios/003-stat-sig-no-impact.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Ничего не произошло — и это результат</div>
+                        <div class="lesson-description">
+                            Δ≈0% по Revenue и CTR. Закрываем тест или повторяем?
+                        </div>
+                        <a href="./scenarios/004-no-effect.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Окно меняет вывод</div>
+                        <div class="lesson-description">
+                            Дни 1–4: −1.2%, дни 10–14: +0.8%. Как принять решение?
+                        </div>
+                        <a href="./scenarios/006-window-changes-conclusion.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="decision-practice-section" id="decision-2">
+                <div class="section-header">
+                    <div class="section-number">2</div>
+                    <div>
+                        <h2>Что именно дало эффект?</h2>
+                        <p class="section-description">Тренируем декомпозицию механизма эффекта</p>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                    <a href="../lessons/01-price-vs-money.html">→ Урок: Цена ≠ деньги</a>
+                </p>
+                <div class="lessons-grid">
+                    <div class="lesson-card">
+                        <div class="lesson-title">CPM вырос, а выручка упала</div>
+                        <div class="lesson-description">
+                            Повысили floor на 15%. CPM вырос на 12%, но выручка упала на 3%.
+                            Что здесь произошло?
+                        </div>
+                        <a href="./scenarios/001-cpm-up-rev-down.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Выручка выросла без роста CPM</div>
+                        <div class="lesson-description">
+                            Выручка +4%, CPM ~0%. За счёт чего это могло произойти?
+                        </div>
+                        <a href="./scenarios/002-rev-up-no-cpm.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Lazy Load — рост через воронку</div>
+                        <div class="lesson-description">
+                            Выручка +5–7%, CPM стабилен, давление не изменилось. Рост show rate.
+                        </div>
+                        <a href="./scenarios/008-lazy-load-via-funnel.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Рост видимости без роста давления</div>
+                        <div class="lesson-description">
+                            Выручка +3–6%, CPM стабилен, show rate +25–30%. Изменение позиции блока.
+                        </div>
+                        <a href="./scenarios/009-visibility-no-pressure.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Больше показов — меньше денег</div>
+                        <div class="lesson-description">
+                            Показы +8–12%, выручка −2–4%, CPM −10–15%. Расширение инвентаря.
+                        </div>
+                        <a href="./scenarios/010-more-shows-less-revenue.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="decision-practice-section" id="decision-3">
+                <div class="section-header">
+                    <div class="section-number">3</div>
+                    <div>
+                        <h2>Можно ли масштабировать?</h2>
+                        <p class="section-description">Тренируем проверку системного эффекта</p>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                    <a href="../lessons/03-aggregates-lie.html">→ Урок: Агрегаты врут</a>
+                </p>
+                <div class="lessons-grid">
+                    <div class="lesson-card">
+                        <div class="lesson-title">Сегменты спорят друг с другом (Simpson)</div>
+                        <div class="lesson-description">
+                            All +0.6%, но Desktop −1.0% и Touch −0.5%. Как такое бывает?
+                        </div>
+                        <a href="./scenarios/005-segment-conflict-simpson.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Локальная победа, системный проигрыш</div>
+                        <div class="lesson-description">
+                            Format A +6%, Format B −4%, Total −1%. Каннибализация?
+                        </div>
+                        <a href="./scenarios/007-local-win-system-loss.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Адаптивное давление по сегментам</div>
+                        <div class="lesson-description">
+                            Выручка +8–10% на мобильных, в агрегате +4–5%. Разные эффекты по сегментам.
+                        </div>
+                        <a href="./scenarios/011-adaptive-pressure-segments.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Вовлечённость без денег</div>
+                        <div class="lesson-description">
+                            Вовлечённость +3–5%, выручка −5–7%. Интерактивные элементы конкурируют с рекламой.
+                        </div>
+                        <a href="./scenarios/012-engagement-no-revenue.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="decision-practice-section" id="decision-4">
+                <div class="section-header">
+                    <div class="section-number">4</div>
+                    <div>
+                        <h2>Что делать с неудачным экспериментом?</h2>
+                        <p class="section-description">Тренируем работу с негативными и нулевыми результатами</p>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                    <a href="../lessons/05-real-decisions.html">→ Урок: Как принимаются решения</a>
+                </p>
+                <div class="lessons-grid">
+                    <div class="lesson-card">
+                        <div class="lesson-title">CPM вырос, а выручка упала</div>
+                        <div class="lesson-description">
+                            Повысили floor на 15%. CPM вырос на 12%, но выручка упала на 3%.
+                            Негативный эффект: что делать?
+                        </div>
+                        <a href="./scenarios/001-cpm-up-rev-down.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Ничего не произошло — и это результат</div>
+                        <div class="lesson-description">
+                            Δ≈0% по Revenue и CTR. Нулевой эффект: закрытие теста.
+                        </div>
+                        <a href="./scenarios/004-no-effect.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Больше показов — меньше денег</div>
+                        <div class="lesson-description">
+                            Показы +8–12%, выручка −2–4%, CPM −10–15%. Негативный эффект: расширение вредит.
+                        </div>
+                        <a href="./scenarios/010-more-shows-less-revenue.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+
+                    <div class="lesson-card">
+                        <div class="lesson-title">Вовлечённость без денег</div>
+                        <div class="lesson-description">
+                            Вовлечённость +3–5%, выручка −5–7%. Негативный эффект: каннибализация внимания.
+                        </div>
+                        <a href="./scenarios/012-engagement-no-revenue.html" class="lesson-link">→ Открыть сценарий</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
+

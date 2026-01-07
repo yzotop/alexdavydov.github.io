@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Long Silence</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+            stroke-width: 2.5;
+        }
+
+        .line-risk {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .shaded-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .shaded-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .threshold-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .marker-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .explanation-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .explanation-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .explanation-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .explanation-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #999;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Long Silence</h1>
+        <p class="subtitle">Тишина не значит стабильность.</p>
+        <p class="insight">Система может долго выглядеть ровной, пока внутри накапливается риск.</p>
+
+        <p class="explanation">
+            Долгая тишина — это период, когда наблюдаемые метрики почти не меняются, но скрытые переменные (усталость, конкуренция, насыщение) накапливаются.
+        </p>
+
+        <p class="thesis">
+            <strong>Если вы ждёте сигнала в выручке — вы всегда опоздаете.</strong>
+        </p>
+
+        <p class="explanation">
+            Нужно учиться видеть тишину как фазу накопления, а не как 'норму'.
+        </p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+            <p class="chart-caption">
+                Латентное растёт тихо. Наблюдаемое падает быстро.
+            </p>
+
+            <div class="explanation-panel">
+                <div class="explanation-panel-title">Как не ошибиться в тишине</div>
+                <p>Ровная выручка не означает ровную систему.</p>
+                <p>Тишина — это фаза накопления.</p>
+                <p>Ищите рост риска в ранних сигналах: конверсия в показ, давление, конкуренция.</p>
+                <p>Окна наблюдения должны захватывать лаг.</p>
+                <p>Система предупреждает раньше, чем падают деньги.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Долгая тишина — главный источник ложного спокойствия в монетизации. В этот период легко 'дожимать' и незаметно подойти к порогу.
+        </p>
+
+        <p class="interpretation">
+            Если вы видите тишину, это повод не ускоряться, а проверять механизм: что происходит с showConv, насыщением и траекторией пользователя.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Тишина — это сигнал, если вы умеете его читать.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад ко времени</a>
+            <p class="footer-note">Тишина — это отсутствие сигнала, а не отсутствие процесса.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic data
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        const data = [];
+
+        for (let t = 1; t <= 180; t++) {
+            // Latent risk
+            const risk_base = 20 + 0.28 * t;
+            const risk_acc = 45 * (1 / (1 + Math.exp(-(t - 105) / 10)));
+            const risk_wave = 2.0 * Math.sin(t / 13);
+            const risk = clamp(risk_base + risk_acc + risk_wave, 0, 140);
+
+            // Observed revenue
+            const riskAbove = risk - 100;
+            const resp = 1 / (1 + Math.exp(-(t - 125) / 4));
+            const drop = 0.22 * resp * clamp((risk - 100) / 40, 0, 1);
+            const rev_base = 102 + 1.5 * Math.sin(t / 22) - 0.03 * (t / 180);
+            const rev = clamp(rev_base * (1 - drop), 75, 115);
+
+            data.push({ t, risk, rev });
+        }
+
+        // Chart dimensions
+        const margin = { top: 40, right: 100, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 180])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 140])
+            .range([height, 0]);
+
+        // Line generators
+        const lineRevenue = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.rev))
+            .curve(d3.curveMonotoneX);
+
+        const lineRisk = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Shaded region (silence)
+        g.append("rect")
+            .attr("class", "shaded-region")
+            .attr("x", xScale(40))
+            .attr("width", xScale(120) - xScale(40))
+            .attr("y", 0)
+            .attr("height", height);
+
+        g.append("text")
+            .attr("class", "shaded-label")
+            .attr("x", xScale(40) + 5)
+            .attr("y", 15)
+            .text("долгая тишина");
+
+        // Threshold line
+        g.append("line")
+            .attr("class", "threshold-line")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", yScale(100))
+            .attr("y2", yScale(100));
+
+        g.append("text")
+            .attr("class", "marker-label")
+            .attr("x", width - 5)
+            .attr("y", yScale(100) - 5)
+            .attr("text-anchor", "end")
+            .text("порог риска");
+
+        // Event line
+        g.append("line")
+            .attr("class", "event-line")
+            .attr("x1", xScale(125))
+            .attr("x2", xScale(125))
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        g.append("text")
+            .attr("class", "marker-label")
+            .attr("x", xScale(125) + 3)
+            .attr("y", 12)
+            .text("срыв режима");
+
+        // Lines
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-revenue")
+            .attr("d", lineRevenue);
+
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-risk")
+            .attr("d", lineRisk);
+
+        // Labels
+        const last = data[data.length - 1];
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale(last.t) + 5)
+            .attr("y", yScale(last.rev) - 5)
+            .text("наблюдаемое: выручка");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale(last.t) + 5)
+            .attr("y", yScale(last.risk) + 15)
+            .text("латентное: риск");
+
+        // Axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(6)
+            .tickValues([1, 40, 80, 120, 160, 180])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(4)
+            .tickValues([20, 60, 100, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("t");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Индекс");
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выручка</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .chart-section {
+            margin-bottom: 2rem;
+        }
+
+        .chart-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .silent-window {
+            fill: #f5f5f5;
+            opacity: 0.5;
+        }
+
+        .silent-label {
+            font-size: 9px;
+            fill: #999;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-mechanism {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+            opacity: 0.8;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .line-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .reference-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.5;
+        }
+
+        .reference-label {
+            font-size: 9px;
+            fill: #aaa;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Выручка (Revenue)</h1>
+        <p class="subtitle">Итог, а не рычаг.</p>
+        <p class="insight">Выручка — полезный результат, но плохой ранний сигнал.</p>
+
+        <p class="explanation">
+            Выручка — это сумма ценности, которая прошла через систему за период. Она складывается из количества монетизируемых показов и цены за внимание.
+        </p>
+
+        <p class="thesis">
+            <strong>Выручка почти всегда реагирует позже, чем ломается механизм.</strong>
+        </p>
+
+        <p class="explanation">
+            Давление меняет поведение первым. Конверсия в показ и внимание сдвигаются раньше. Выручка может оставаться стабильной, пока система деградирует.
+        </p>
+
+        <div class="chart-container">
+            <div class="chart-section">
+                <svg id="chart-mechanism"></svg>
+            </div>
+            <div class="chart-section">
+                <svg id="chart-revenue"></svg>
+            </div>
+            <p class="chart-caption">
+                Сначала меняется путь. Потом — итог.
+            </p>
+        </div>
+
+        <p class="interpretation">
+            Выручка удобна для контроля результата и сравнения периодов. Но если смотреть только на неё, система всегда будет "ломаться внезапно".
+        </p>
+
+        <p class="interpretation">
+            Ранние сигналы — это конверсия в показ, давление и насыщение. Они описывают механизм. Выручка — его след.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Выручка — зеркало. Не руль.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к метрикам</a>
+            <p class="footer-note">Итог запаздывает.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic data
+        const T = 140;
+        const data = [];
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function showConv(t) {
+            const base = 0.84 - 0.0003 * t;
+            const decline1 = 0.08 * (1 / (1 + Math.exp(-(t - 60) / 6)));
+            const decline2 = 0.06 * (1 / (1 + Math.exp(-(t - 85) / 4)));
+            const recovery = 0.03 * (1 / (1 + Math.exp(-(t - 120) / 6)));
+            return clamp(base - decline1 - decline2 + recovery, 0.62, 0.88);
+        }
+
+        // Calculate effectiveConv with exponential smoothing (lag)
+        const effectiveConv = [];
+        for (let t = 1; t <= T; t++) {
+            if (t === 1) {
+                effectiveConv[t] = showConv(t);
+            } else {
+                effectiveConv[t] = 0.92 * effectiveConv[t - 1] + 0.08 * showConv(t);
+            }
+        }
+
+        function inventory(t) {
+            return 1.0 - 0.10 * (1 / (1 + Math.exp(-(t - 70) / 10)));
+        }
+
+        function cpm(t) {
+            const inv = inventory(t);
+            return 140 + 12 * Math.sin(t / 18) + 25 * (1 - inv);
+        }
+
+        function shows(t) {
+            return 1100 * inventory(t) * effectiveConv[t];
+        }
+
+        function revenue(t) {
+            return shows(t) * cpm(t);
+        }
+
+        // Generate data
+        let baseRevenue = null;
+        for (let t = 1; t <= T; t++) {
+            const rev = revenue(t);
+            if (baseRevenue === null) baseRevenue = rev;
+            data.push({
+                t,
+                showConv: showConv(t),
+                effectiveConv: effectiveConv[t],
+                revenue: rev,
+                revenueIndex: 100 * rev / baseRevenue
+            });
+        }
+
+        // Shared dimensions
+        const margin = { top: 30, right: 60, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 200 - margin.top - margin.bottom;
+
+        // Shared x-scale
+        const xScale = d3.scaleLinear()
+            .domain([1, T])
+            .range([0, width]);
+
+        // Mechanism chart (showConv)
+        const mechSvg = d3.select("#chart-mechanism")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const mechG = mechSvg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const mechYScale = d3.scaleLinear()
+            .domain([0.6, 0.9])
+            .range([height, 0]);
+
+        // Draw silent window
+        const silentStart = xScale(60);
+        const silentEnd = xScale(95);
+        mechG.append("rect")
+            .attr("class", "silent-window")
+            .attr("x", silentStart)
+            .attr("y", 0)
+            .attr("width", silentEnd - silentStart)
+            .attr("height", height);
+
+        mechG.append("text")
+            .attr("class", "silent-label")
+            .attr("x", (silentStart + silentEnd) / 2)
+            .attr("y", 15)
+            .attr("text-anchor", "middle")
+            .text("долгая тишина");
+
+        // Reference line at t=95
+        const refX = xScale(95);
+        mechG.append("line")
+            .attr("class", "reference-line")
+            .attr("x1", refX)
+            .attr("x2", refX)
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        mechG.append("text")
+            .attr("class", "reference-label")
+            .attr("x", refX)
+            .attr("y", 15)
+            .attr("text-anchor", "middle")
+            .text("выручка начинает реагировать");
+
+        const mechLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => mechYScale(d.showConv))
+            .curve(d3.curveMonotoneX);
+
+        mechG.append("path")
+            .datum(data)
+            .attr("class", "line line-mechanism")
+            .attr("d", mechLine);
+
+        mechG.append("text")
+            .attr("class", "line-label")
+            .attr("x", xScale(T) - 5)
+            .attr("y", mechYScale(data[data.length - 1].showConv) - 5)
+            .attr("text-anchor", "end")
+            .text("конверсия в показ");
+
+        const mechXAxis = d3.axisBottom(xScale)
+            .ticks(6)
+            .tickValues([1, 30, 60, 90, 120, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        mechG.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(mechXAxis);
+
+        const mechYAxis = d3.axisLeft(mechYScale)
+            .ticks(3)
+            .tickSize(4)
+            .tickPadding(8);
+
+        mechG.append("g")
+            .attr("class", "axis")
+            .call(mechYAxis);
+
+        mechG.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("механизм");
+
+        // Revenue chart
+        const revSvg = d3.select("#chart-revenue")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const revG = revSvg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Draw silent window (same x positions)
+        revG.append("rect")
+            .attr("class", "silent-window")
+            .attr("x", silentStart)
+            .attr("y", 0)
+            .attr("width", silentEnd - silentStart)
+            .attr("height", height);
+
+        // Reference line at t=95
+        revG.append("line")
+            .attr("class", "reference-line")
+            .attr("x1", refX)
+            .attr("x2", refX)
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        const revMin = d3.min(data, d => d.revenueIndex);
+        const revMax = d3.max(data, d => d.revenueIndex);
+        const revYScale = d3.scaleLinear()
+            .domain([revMin * 0.98, revMax * 1.02])
+            .range([height, 0]);
+
+        const revLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => revYScale(d.revenueIndex))
+            .curve(d3.curveMonotoneX);
+
+        revG.append("path")
+            .datum(data)
+            .attr("class", "line line-revenue")
+            .attr("d", revLine);
+
+        revG.append("text")
+            .attr("class", "line-label")
+            .attr("x", xScale(T) - 5)
+            .attr("y", revYScale(data[data.length - 1].revenueIndex) - 5)
+            .attr("text-anchor", "end")
+            .text("выручка");
+
+        const revXAxis = d3.axisBottom(xScale)
+            .ticks(6)
+            .tickValues([1, 30, 60, 90, 120, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        revG.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(revXAxis);
+
+        revG.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 25)
+            .attr("text-anchor", "middle")
+            .text("время");
+
+        const revYAxis = d3.axisLeft(revYScale)
+            .ticks(4)
+            .tickSize(4)
+            .tickPadding(8);
+
+        revG.append("g")
+            .attr("class", "axis")
+            .call(revYAxis);
+
+        revG.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("индекс выручки");
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

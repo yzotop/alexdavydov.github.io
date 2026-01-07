@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Защищаемое решение: как график поддерживает аргумент — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 6.3 / Модуль 6</div>
+            <h1>Как график поддерживает принятое решение</h1>
+            <p class="subtitle">Когда график отвечает на вопросы ещё до того, как их задали</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    Решение принято или предлагается, и график используется для его обоснования. Но возникают вопросы: «А если по-другому посмотреть?», «А что с рисками?», «А не временный ли эффект?». График должен не просто демонстрировать данные, а помогать защищать принятое решение перед этими вопросами, сомнениями и альтернативами.
+                </p>
+                <p>
+                    Типичные кейсы, где график должен защищать решение:
+                </p>
+                <ul>
+                    <li>Защита A/B-теста: решение о rollout требует обоснования устойчивости эффекта, механизма и ограничений</li>
+                    <li>Выкладка фичи: решение о запуске требует показа связи эффекта с механизмом и контекста</li>
+                    <li>Монетизационные решения: решение об изменении стратегии требует показа рисков и ограничений</li>
+                    <li>Продуктовые комитеты: решение о приоритете требует показа обоснованности выбора</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что график часто используется как иллюстрация к словам аналитика, а не как часть аргумента. Решение считается принятым, только если его можно защитить. График — это часть аргумента, а не иллюстрация к словам аналитика. Если график не показывает механизм, ограничения и контекст, решение выглядит хрупким и требует постоянной защиты словами.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: график как иллюстрация</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">График показывает эффект, но не защищает его</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Simple line chart showing effect -->
+                            <g transform="translate(50, 50)">
+                                <!-- Axes -->
+                                <line x1="0" y1="200" x2="500" y2="200" stroke="#1a1a1a" stroke-width="1"/>
+                                <line x1="0" y1="200" x2="0" y2="0" stroke="#1a1a1a" stroke-width="1"/>
+                                
+                                <!-- Control line -->
+                                <polyline points="0,150 100,145 200,148 300,152 400,150 500,148" 
+                                          fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5"/>
+                                
+                                <!-- Test line -->
+                                <polyline points="0,150 100,140 200,135 300,130 400,128 500,125" 
+                                          fill="none" stroke="#0284c7" stroke-width="2"/>
+                                
+                                <!-- Labels -->
+                                <text x="250" y="220" font-size="11" fill="#1a1a1a" text-anchor="middle">Время</text>
+                                <text x="10" y="100" font-size="11" fill="#1a1a1a">Метрика</text>
+                                
+                                <!-- Legend -->
+                                <rect x="350" y="10" width="15" height="2" fill="#999"/>
+                                <text x="370" y="15" font-size="10" fill="#666">Control</text>
+                                <rect x="350" y="25" width="15" height="2" fill="#0284c7"/>
+                                <text x="370" y="30" font-size="10" fill="#666">Test</text>
+                                
+                                <!-- Effect annotation -->
+                                <text x="250" y="80" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="500">+5% эффект</text>
+                            </g>
+                            
+                            <!-- Questions that graph doesn't answer -->
+                            <g transform="translate(50, 260)">
+                                <text x="250" y="0" font-size="11" fill="#d32f2f" text-anchor="middle">«А почему эффект возник?»</text>
+                                <text x="250" y="15" font-size="11" fill="#d32f2f" text-anchor="middle">«А устойчив ли он?»</text>
+                                <text x="250" y="30" font-size="11" fill="#d32f2f" text-anchor="middle">«А что с рисками?»</text>
+                            </g>
+                            
+                            <!-- Caption -->
+                            <text x="300" y="280" font-size="10" fill="#666" text-anchor="middle">График иллюстрирует вывод, но не защищает его</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График иллюстрирует вывод, но не защищает его.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    График показывает эффект, но не видны ограничения, не показан механизм, график требует устных пояснений. График иллюстрирует вывод, но не защищает его. Читатель видит эффект, но не понимает, почему он возник, насколько он устойчив, какие есть ограничения и риски. Любой альтернативный взгляд может легко разрушить аргумент, потому что график не показывает механизм и контекст.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>График не показывает, почему эффект возник и насколько он устойчив</h3>
+                        <p>
+                            Если график показывает только эффект, но не показывает механизм, читатель не понимает, почему эффект возник и насколько он устойчив. Эффект может быть временным, случайным или зависеть от контекста, но график этого не показывает. Решение выглядит хрупким, потому что непонятно, что обеспечивает эффект и будет ли он сохраняться. График не защищает решение, а создаёт сомнения.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Не видны ограничения и риски — решение выглядит хрупким</h3>
+                        <p>
+                            Если график не показывает ограничения и риски, решение выглядит хрупким. Читатель не видит guardrails, не понимает, при каких условиях решение может не работать, не знает, какие есть риски. Решение требует постоянной защиты словами, потому что график не показывает ограничения и риски. Любой вопрос о рисках разрушает аргумент, потому что график их не показывает.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Любой альтернативный взгляд может легко разрушить аргумент</h3>
+                        <p>
+                            Если график не показывает механизм, контекст и ограничения, любой альтернативный взгляд может легко разрушить аргумент. Читатель может задать вопрос «А если по-другому посмотреть?», и график не даст ответа, потому что он не показывает альтернативные разрезы, сегменты или временные окна. Решение постоянно возвращается к обсуждению, потому что график не защищает его от альтернативных взглядов.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: график как аргумент</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">График защищает решение, показывая механизм и ограничения</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Main chart with context -->
+                            <g transform="translate(50, 30)">
+                                <!-- Axes -->
+                                <line x1="0" y1="150" x2="450" y2="150" stroke="#1a1a1a" stroke-width="1"/>
+                                <line x1="0" y1="150" x2="0" y2="0" stroke="#1a1a1a" stroke-width="1"/>
+                                
+                                <!-- Control line -->
+                                <polyline points="0,120 75,118 150,120 225,122 300,120 375,118 450,120" 
+                                          fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5"/>
+                                
+                                <!-- Test line -->
+                                <polyline points="0,120 75,115 150,110 225,108 300,105 375,103 450,102" 
+                                          fill="none" stroke="#0284c7" stroke-width="2"/>
+                                
+                                <!-- Effect annotation with mechanism -->
+                                <text x="225" y="50" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="500">+5% эффект</text>
+                                <text x="225" y="65" font-size="9" fill="#666" text-anchor="middle">Механизм: улучшение конверсии</text>
+                                
+                                <!-- Stability indicator -->
+                                <rect x="300" y="80" width="100" height="20" fill="#f0f9ff" stroke="#0284c7" stroke-width="1" rx="2"/>
+                                <text x="350" y="94" font-size="9" fill="#0284c7" text-anchor="middle">Стабилен 14 дней</text>
+                                
+                                <!-- Guardrails section -->
+                                <g transform="translate(0, 170)">
+                                    <rect x="0" y="0" width="450" height="50" fill="#fff5f5" stroke="#d32f2f" stroke-width="1" stroke-dasharray="3,3" rx="4"/>
+                                    <text x="10" y="15" font-size="10" fill="#d32f2f" font-weight="500">GUARDRAILS:</text>
+                                    <text x="10" y="30" font-size="9" fill="#1a1a1a">Retention: -0.5% (в пределах нормы)</text>
+                                    <text x="10" y="43" font-size="9" fill="#1a1a1a">Margin: -0.2% (приемлемо)</text>
+                                </g>
+                                
+                                <!-- Context section -->
+                                <g transform="translate(0, 230)">
+                                    <rect x="0" y="0" width="450" height="40" fill="#fafafa" stroke="#666" stroke-width="1" rx="4"/>
+                                    <text x="10" y="15" font-size="10" fill="#666" font-weight="500">КОНТЕКСТ:</text>
+                                    <text x="10" y="30" font-size="9" fill="#1a1a1a">Окно: 14 дней после стабилизации | Сегменты: все стабильны</text>
+                                </g>
+                            </g>
+                            
+                            <!-- Decision structure -->
+                            <g transform="translate(50, 290)">
+                                <rect x="0" y="0" width="450" height="60" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="4"/>
+                                <text x="225" y="20" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="500">Решение: Rollout</text>
+                                <text x="50" y="40" font-size="10" fill="#1a1a1a">Механизм понятен</text>
+                                <text x="200" y="40" font-size="10" fill="#1a1a1a">Эффект стабилен</text>
+                                <text x="350" y="40" font-size="10" fill="#1a1a1a">Риски учтены</text>
+                            </g>
+                            
+                            <!-- Caption -->
+                            <text x="300" y="370" font-size="10" fill="#666" text-anchor="middle">График должен отвечать на вопрос: «Почему это решение разумно?»</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График должен отвечать на вопрос: «Почему это решение разумно?»
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    График как аргумент показывает связь эффекта с механизмом, контекст (время, сегменты, масштаб), ограничения и guardrails, и почему выбран именно этот вариант. График визуально отвечает на вопрос «Почему это решение разумно?», показывая механизм, устойчивость, ограничения и контекст. Решение защищено графиком, потому что он показывает, почему эффект возник, насколько он устойчив, какие есть ограничения и риски, и почему выбран именно этот вариант.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Постоянно защищать решение словами, потому что график не показывает механизм, ограничения и контекст, и требуется устное объяснение. Терять доверие к аналитике, потому что график не защищает решение, и каждый вопрос требует дополнительных объяснений. Возвращаться к обсуждению снова и снова, потому что график не показывает альтернативные взгляды и ограничения, и решение выглядит хрупким.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Быстро фиксировать решение, потому что график показывает механизм, устойчивость, ограничения и контекст, и решение защищено визуально. Снижать количество вопросов, потому что график отвечает на вопросы ещё до того, как их задали, показывая механизм, ограничения и альтернативные взгляды. Делать аналитику опорой доверия, потому что график защищает решение, показывая его обоснованность и ограничения, и решение выглядит состоятельным.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Если решение нельзя защитить графиком, оно ещё не принято. График — это часть аргумента, а не иллюстрация к словам аналитика. Решение считается принятым, только если его можно защитить. График должен показывать механизм, устойчивость, ограничения и контекст, чтобы защищать решение перед вопросами, сомнениями и альтернативами. Визуальная аргументация делает решение состоятельным и снижает необходимость постоянной защиты словами.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Понятен ли механизм эффекта? Видно ли на графике, почему эффект возник и что его обеспечивает?</li>
+                    <li>Видны ли ограничения и риски? Показаны ли guardrails, условия, при которых решение может не работать, и альтернативные взгляды?</li>
+                    <li>Могу ли я защитить решение, опираясь только на график? Или требуется дополнительное устное объяснение механизма, ограничений и контекста?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Статистика ≠ решение — A/B-тестирование: принятие решений на практике</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .card {
+            max-width: 700px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .card ol {
+            padding-left: 1.5rem;
+        }
+
+        .card ol li {
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .card ol li:before {
+            display: none;
+        }
+
+        .framework-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .framework-item h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .framework-item p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin: 0;
+        }
+
+        .practice-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        @media (min-width: 600px) {
+            .practice-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .practice-card {
+            padding: 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .practice-card:hover {
+            background: #333;
+        }
+
+        .practice-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .practice-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin: 0;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .related-topics h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .related-topics li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .related-topics a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #666;
+        }
+
+        .lesson-nav {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lesson-nav a {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .lesson-nav a:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .decision-type-badge {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-type-badge a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .decision-type-badge a:hover {
+            border-color: #666;
+        }
+
+        .related-practice-box {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            border-left: 3px solid #1a1a1a;
+        }
+
+        .related-practice-box h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .practice-scenarios-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .practice-scenarios-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .practice-scenarios-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .practice-scenarios-list a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-scenarios-list a:hover {
+            border-color: #666;
+        }
+
+        .practice-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 1px solid #1a1a1a;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-link:hover {
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="../index.html">Курс</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+            <a href="../practice/index.html">Практика</a>
+        </div>
+
+        <header>
+            <div class="kicker">Lesson 2</div>
+            <h1>Когда статистика не даёт ответа</h1>
+            <p class="subtitle">Stat sig отвечает на "есть ли отличие", но не отвечает на "стоит ли катить". Решение — это эффект × риск × стоимость.</p>
+            
+            <div class="decision-type-badge">
+                <strong>Тип решения:</strong> <a href="../index.html#decision-1">Можно ли верить эффекту?</a>
+            </div>
+            
+            <div class="related-practice-box">
+                <h3>Практика по этому типу решения:</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.75rem;">
+                    После изучения урока переходи в практику для тренировки на реальных графиках.
+                </p>
+                <ul class="practice-scenarios-list">
+                    <li><a href="../practice/scenarios/003-stat-sig-no-impact.html">003 «Статзначимо, но бизнес-эффекта нет»</a></li>
+                    <li><a href="../practice/scenarios/004-no-effect.html">004 «Ничего не произошло — и это результат»</a></li>
+                </ul>
+                <a href="../practice/index.html#decision-1" class="practice-link">→ Открыть все сценарии этого типа</a>
+            </div>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Два вопроса вместо одного</h2>
+                <div class="framework-item">
+                    <h3>"Есть ли отличие?"</h3>
+                    <p>Статистика / доверительный интервал. Отвечает на вопрос: можем ли мы с достаточной уверенностью сказать, что группы отличаются? Это про надёжность измерения.</p>
+                </div>
+                <div class="framework-item">
+                    <h3>"Стоит ли катить?"</h3>
+                    <p>Практическая значимость / цена ошибки / риски. Отвечает на вопрос: достаточно ли эффект велик, чтобы оправдать выкат? Это про бизнес-решение.</p>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666; font-style: italic;">
+                    Смешивание этих вопросов приводит к плохим решениям: катим "stat sig" без проверки эффекта, или отказываемся от хороших изменений из-за "не sig" при малой мощности.
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>Практическая значимость: эффект должен пройти порог</h2>
+                <p>
+                    <strong>MDE</strong> (Minimum Detectable Effect) — это "минимальный эффект, ради которого вообще имеет смысл". Если эффект меньше порога — даже stat sig может быть неинтересен для бизнеса.
+                </p>
+                <p>
+                    Если эффект больше порога, но риск высокий — тоже нельзя "просто катить". Нужно оценить цену ошибки и обратимость выката.
+                </p>
+                <ul style="margin-top: 1rem;">
+                    <li>"+0.1% revenue" может быть шумом и не окупить затраты на разработку и поддержку</li>
+                    <li>"-0.2% retention" может быть стоп-фактором, даже если primary метрика выросла</li>
+                    <li>"Рост нагрузки/ошибок" может быть стоп-фактором, даже если выручка выросла</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>3 типовые ловушки</h2>
+                <ul>
+                    <li><strong>Stat sig без бизнес-эффекта:</strong> малый эффект, большой N. Статистически значимо, но практической ценности нет.</li>
+                    <li><strong>"Не sig" ≠ "эффекта нет":</strong> мало мощности, широкие CI. Эффект может быть, но мы его не видим из-за малой выборки.</li>
+                    <li><strong>Peeking / ранняя остановка:</strong> окно меняет вывод. Решение зависит от того, какой период смотрим.</li>
+                    <li><strong>Множественные метрики:</strong> нашли "плюс" случайно. Чем больше метрик, тем выше шанс ложного срабатывания.</li>
+                    <li><strong>p-value как KPI:</strong> ошибка мышления. p-value — это не мера эффекта, а мера уверенности в наличии эффекта.</li>
+                    <li><strong>Игнор guardrails:</strong> катнули revenue, потеряли quality. Primary вырос, но guardrails упали — это риск.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>Как читать результат правильно (CI-first)</h2>
+                <p>Без формул, но очень конкретно:</p>
+                <ul>
+                    <li><strong>Смотри на доверительный интервал</strong> (возможные значения эффекта). Это диапазон, в котором с высокой вероятностью лежит реальный эффект.</li>
+                    <li><strong>Сравни интервал с "порогом решения"</strong> (MDE/guardrails). Где находится интервал относительно порога?</li>
+                    <li><strong>Результат может быть:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                            <li><strong>A) "достаточно хорошо"</strong> → катим. Интервал полностью выше порога, guardrails в порядке.</li>
+                            <li><strong>B) "слишком рискованно"</strong> → не катим / ограничиваем. Интервал пересекает стоп-фактор или слишком близок к нулю.</li>
+                            <li><strong>C) "непонятно"</strong> → продлеваем / меняем дизайн. Интервал слишком широкий или пересекает порог.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2>Мини-протокол решения (6 шагов)</h2>
+                <ol>
+                    <li><strong>Primary:</strong> где лежит эффект относительно порога? Интервал выше MDE или нет?</li>
+                    <li><strong>Guardrails:</strong> нет ли стоп-факторов? Quality, retention, complaints — всё в порядке?</li>
+                    <li><strong>Диагностика:</strong> что говорит механизм (volume/price/воронка)? Согласуется ли с primary?</li>
+                    <li><strong>Устойчивость:</strong> по времени/сегментам нет ли развала? Эффект стабилен или только в начале?</li>
+                    <li><strong>Риск:</strong> цена ошибки и обратимость выката. Что будет, если ошиблись? Можно ли быстро откатить?</li>
+                    <li><strong>Действие:</strong> катим / катим ограниченно / перезапуск / не катим. Решение на основе всех факторов.</li>
+                </ol>
+            </section>
+
+            <section>
+                <h2 style="font-size: 1.3rem; font-weight: 400; margin: 2rem 0 1rem 0; color: #1a1a1a;">Перейти к практике</h2>
+                <div class="practice-cards">
+                    <a href="../practice/scenarios/003-stat-sig-no-impact.html" class="practice-card">
+                        <h3>Сценарий 003</h3>
+                        <p>Статзначимо, но бизнес-эффекта нет</p>
+                    </a>
+                    <a href="../practice/scenarios/004-no-effect.html" class="practice-card">
+                        <h3>Сценарий 004</h3>
+                        <p>Ничего не произошло</p>
+                    </a>
+                </div>
+            </section>
+
+            <section class="related-topics">
+                <h3>Связанные темы</h3>
+                <ul>
+                    <li><a href="../../experiments/metrics-for-reading.html">Метрики для чтения эксперимента: primary vs diagnostic vs guardrails</a></li>
+                    <li><a href="../../experiments/checklists-operating.html">Чеклисты для операционной работы с экспериментами</a></li>
+                    <li><a href="../../experiments/metric-conflicts.html">Конфликты метрик: как принимать решения</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <nav class="lesson-nav">
+            <a href="../index.html">← Назад к курсу</a>
+            <a href="../practice/scenarios/003-stat-sig-no-impact.html">Перейти к практике модуля →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .audience-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .audience-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .audience-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .audience-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .module-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .module-key-idea {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .module-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .module-lessons {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .module-lessons-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .module-lessons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .module-lessons li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .module-lessons li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        .module-practice {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+            font-style: italic;
+        }
+
+        .module-practice a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .module-practice a:hover {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+        }
+
+        .relationship-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .relationship-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .relationship-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            padding-left: 0;
+        }
+
+        .relationship-section li strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .status-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .status-section p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .what-not {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #e8e8e8;
+        }
+
+        .what-not h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .what-not p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <header>
+            <div class="kicker">Основной курс</div>
+            <h1>Графики в аналитике и принятии решений</h1>
+            <p class="subtitle">Как визуальная форма представления данных влияет на интерпретацию, аргументы и решения в аналитике</p>
+        </header>
+
+        <main>
+            <section class="intro">
+                <h2>О чём курс</h2>
+                <p>
+                    Графики и таблицы — не просто визуализация данных. Это инструменты аналитического рассуждения, которые формируют интерпретацию и направляют к решениям. Один и тот же расчёт, представленный по-разному, приводит к разным выводам и действиям.
+                </p>
+                <p>
+                    Этот курс о том, как визуальная форма влияет на аналитическое мышление. Как структура таблицы определяет возможные сравнения. Как выбор типа графика, масштаба и группировки уже содержит интерпретацию и направляет к определённому выводу.
+                </p>
+                <p>
+                    Проблема, которую решает курс: правильные расчёты могут привести к неверным решениям, если форма представления искажает интерпретацию. Аналитики часто выбирают форму графика интуитивно, не осознавая, как это влияет на выводы.
+                </p>
+            </section>
+
+            <div class="what-not">
+                <h3>Чего в курсе нет</h3>
+                <p>
+                    Это не курс по BI-инструментам, не каталог типов графиков, не дизайн-гайд. Речь идёт о математической и аналитической стороне представления данных: как форма влияет на логику рассуждения и принятие решений.
+                </p>
+            </div>
+
+            <section class="audience-section">
+                <h2>Для кого курс</h2>
+                <ul>
+                    <li>Product и data аналитики, которые строят графики для принятия решений</li>
+                    <li>Специалисты по экспериментам и монетизации, которые интерпретируют результаты A/B-тестов</li>
+                    <li>Analytics leads и decision-makers, которые принимают решения на основе визуальных представлений данных</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Структура курса</h2>
+                <div class="modules-grid">
+                    <div class="module-card">
+                        <div class="module-title">Модуль 1. Таблица — это уже интерпретация</div>
+                        <div class="module-key-idea">Зачем модуль: структура таблицы определяет, какие сравнения и выводы вообще возможны</div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки модуля:</div>
+                            <ul>
+                                <li><a href="./modules/01-tables/lessons/01-ab-test-table.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как итоговая таблица A/B-теста подсказывает решение</a></li>
+                                <li><a href="./modules/01-tables/lessons/02-colored-table.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Когда цвет в таблице помогает, а когда мешает</a></li>
+                                <li><a href="./modules/01-tables/lessons/03-pivot-table.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Pivot-таблица: как структура задаёт сравнение</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 2. Форма эффекта задаёт вывод</div>
+                        <div class="module-key-idea">Зачем модуль: форма эффекта предшествует расчёту и определяет интерпретацию</div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки модуля:</div>
+                            <ul>
+                                <li><a href="./modules/02-effect-forms/lessons/01-three-basic-forms.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Три формы эффекта, которые читают как аргумент</a></li>
+                                <li><a href="./modules/02-effect-forms/lessons/02-plateau-noise-false-no-effect.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Когда форма создаёт иллюзию отсутствия эффекта</a></li>
+                                <li><a href="./modules/02-effect-forms/lessons/03-asymmetric-effect.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Почему рост и падение выглядят по-разному</a></li>
+                                <li><a href="./modules/02-effect-forms/lessons/04-scale-as-argument.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как масштаб усиливает или скрывает эффект</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 3. Время меняет интерпретацию</div>
+                        <div class="module-key-idea">Зачем модуль: форма представления времени определяет, виден ли эффект вообще</div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки модуля:</div>
+                            <ul>
+                                <li><a href="./modules/04-time-dynamics/lessons/01-pie-charts-over-time.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Почему pie charts ломают сравнение во времени</a></li>
+                                <li><a href="./modules/04-time-dynamics/lessons/02-evaluation-window.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как выбор периода меняет вывод</a></li>
+                                <li><a href="./modules/04-time-dynamics/lessons/03-lags-stabilization-novelty.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Лаги, стабилизация и эффект новизны</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 4. Когда вариантов больше двух</div>
+                        <div class="module-key-idea">Зачем модуль: визуальная иерархия должна отражать логику сравнения</div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки модуля:</div>
+                            <ul>
+                                <li><a href="./modules/05-multigroup-comparisons/lessons/01-control-vs-test.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как визуально выделить контроль и тест</a></li>
+                                <li><a href="./modules/05-multigroup-comparisons/lessons/02-too-many-lines.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Почему много линий мешает решению</a></li>
+                                <li><a href="./modules/05-multigroup-comparisons/lessons/03-multiple-variants-structure.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как показывать несколько вариантов без потери смысла</a></li>
+                            </ul>
+                        </div>
+                        <div class="module-practice">
+                            Практика этого модуля разбирается в <a href="../ab-decisions/practice/index.html">«Практике A/B-тестирования на графиках»</a>.
+                        </div>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">Модуль 5. От графика к решению</div>
+                        <div class="module-key-idea">Зачем модуль: решение требует одного сигнала. График работает как аргумент, когда он поддерживает выбор</div>
+                        <div class="module-lessons">
+                            <div class="module-lessons-title">Уроки модуля:</div>
+                            <ul>
+                                <li><a href="./modules/06-graph-to-decision/lessons/01-kpi-noise.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Почему много метрик мешает решению</a></li>
+                                <li><a href="./modules/06-graph-to-decision/lessons/02-primary-diagnostic-guardrails.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как визуально расставлять приоритеты метрик</a></li>
+                                <li><a href="./modules/06-graph-to-decision/lessons/03-defensible-decision.html" style="color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #ccc;">Как график поддерживает принятое решение</a></li>
+                            </ul>
+                        </div>
+                        <div class="module-practice">
+                            Практика этого модуля разбирается в <a href="../ab-decisions/practice/index.html">«Практике A/B-тестирования на графиках»</a>.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="relationship-section">
+                <h2>Связь с другими курсами</h2>
+                <ul>
+                    <li>
+                        <strong>«Практика A/B-тестирования на графиках»</strong> — тренировочный режим для чтения экспериментов через визуальные формы. Интегрируется с модулями основного курса.
+                    </li>
+                    <li>
+                        <strong>«Математика неопределённости»</strong> — расширение темы: как визуализировать неопределённость и доверительные интервалы, чтобы они поддерживали принятие решений, а не создавали шум.
+                    </li>
+                </ul>
+            </section>
+
+            <section class="status-section">
+                <h2>Статус курса</h2>
+                <p>
+                    Структура курса зафиксирована: 5 модулей, 16 уроков. Порядок модулей и уроков финальный и не будет изменяться.
+                </p>
+                <p>
+                    Контент модулей будет добавляться поэтапно. Эта страница — официальный outline курса, который показывает структуру и позиционирование курса в общей системе обучения.
+                </p>
+                <p>
+                    Контент модулей добавляется поэтапно. Модуль 1 полностью доступен, остальные модули находятся в разработке.
+                </p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

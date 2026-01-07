@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Решения: паттерны</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .lead p {
+            margin-bottom: 1rem;
+        }
+
+        .info-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .info-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .info-panel p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .calculator-card {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .readout {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .readout-item {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .readout-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .readout-item.muted {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .explanation {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .chart-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-effect {
+            stroke: #666;
+        }
+
+        .zero-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            opacity: 0.6;
+        }
+
+        .window-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .best-window-region {
+            fill: #e8e8e8;
+            opacity: 0.3;
+        }
+
+        .window-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .bar-chart-container {
+            margin-top: 1.5rem;
+        }
+
+        .bar {
+            fill: #666;
+        }
+
+        .bar-expected {
+            fill: #1f2a37;
+        }
+
+        .bar-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .bar-value {
+            font-size: 11px;
+            fill: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .irreversibility-diagram {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .branch {
+            stroke: #999;
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        .closed-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .closed-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .decision-point {
+            fill: #1a1a1a;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .patterns-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .pattern-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .pattern-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-item {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .pattern-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .interpretation strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Решения: паттерны</h1>
+        <p class="subtitle">Выбор под неопределённостью.</p>
+
+        <div class="lead">
+            <p>
+                Эксперименты — это не только измерения, но и решения: когда остановиться, когда продолжить, когда исследовать.
+            </p>
+            <p>
+                Многие потери происходят не из-за неправильных метрик, а из-за неправильных решений в условиях неопределённости.
+            </p>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-panel-title">Рамка</div>
+            <p>Решения принимаются до полной информации.</p>
+            <p>Каждый выбор имеет стоимость альтернатив.</p>
+            <p>Риск — это функция времени и необратимости.</p>
+            <p>Метрика — лишь часть сигнала.</p>
+        </div>
+
+        <p class="anchor-sentence">
+            Неизвестность — это не ошибка, а среда.
+        </p>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 1: сожаление (Regret)</div>
+            <div class="calculator-card">
+                <p class="explanation">
+                    Сожаление возникает, когда решение принято слишком рано или слишком поздно.
+                </p>
+                <div class="control-group">
+                    <label class="control-label">Ранний эффект (Δ ранний)</label>
+                    <div class="slider-container">
+                        <input type="range" id="earlyDeltaSlider" class="slider" min="-15" max="25" step="1" value="12">
+                        <span class="slider-value" id="earlyDeltaValue">+1.2</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Поздний эффект (Δ поздний)</label>
+                    <div class="slider-container">
+                        <input type="range" id="lateDeltaSlider" class="slider" min="-25" max="10" step="1" value="-14">
+                        <span class="slider-value" id="lateDeltaValue">-1.4</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Момент решения (день)</label>
+                    <div class="slider-container">
+                        <input type="range" id="decisionDaySlider" class="slider" min="10" max="70" step="1" value="28">
+                        <span class="slider-value" id="decisionDayValue">28</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item" id="chosenAvg"></div>
+                    <div class="readout-item" id="bestAvg"></div>
+                    <div class="readout-item" id="regretInfo"></div>
+                </div>
+                <div class="chart-container">
+                    <svg id="chart1"></svg>
+                    <p class="chart-caption">
+                        Сожаление — это цена выбора момента.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 2: ценность информации</div>
+            <div class="calculator-card">
+                <div class="control-group">
+                    <label class="control-label">Неопределённость исхода</label>
+                    <div class="slider-container">
+                        <input type="range" id="uncertaintySlider" class="slider" min="10" max="100" step="5" value="60">
+                        <span class="slider-value" id="uncertaintyValue">0.60</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Стоимость ожидания (в день)</label>
+                    <div class="slider-container">
+                        <input type="range" id="waitCostSlider" class="slider" min="0" max="50" step="1" value="15">
+                        <span class="slider-value" id="waitCostValue">0.15</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Горизонт решения (дней)</label>
+                    <div class="slider-container">
+                        <input type="range" id="horizonSlider" class="slider" min="7" max="42" step="1" value="21">
+                        <span class="slider-value" id="horizonValue">21</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item" id="expectedWithout"></div>
+                    <div class="readout-item" id="expectedWith"></div>
+                    <div class="readout-item" id="voiInfo"></div>
+                    <div class="readout-item muted" id="decisionHint"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-chart-container">
+                        <svg id="chart2"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Необратимость</div>
+            <div class="irreversibility-diagram">
+                <svg id="chart3"></svg>
+                <p class="chart-caption">
+                    Каждое решение сужает пространство будущих решений.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Повторяющиеся паттерны решений</div>
+            <div class="patterns-grid">
+                <div class="pattern-card">
+                    <div class="pattern-title">Exploration vs Exploitation</div>
+                    <div class="pattern-item">
+                        <strong>Что выбирают:</strong> быстрый результат
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Что недооценивают:</strong> ценность информации
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> остановка до сбора данных
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Early stop regret</div>
+                    <div class="pattern-item">
+                        <strong>Что выбирают:</strong> ранний вывод
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Что недооценивают:</strong> поздние эффекты
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> чтение окна без учета лагов
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Waiting too long</div>
+                    <div class="pattern-item">
+                        <strong>Что выбирают:</strong> больше данных
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Что недооценивают:</strong> стоимость задержки
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> перфекционизм вместо решения
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Irreversibility blindness</div>
+                    <div class="pattern-item">
+                        <strong>Что выбирают:</strong> текущий оптимум
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Что недооценивают:</strong> закрытие опций
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> не видеть цену необратимости
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Решения в экспериментах — это ставки под неопределённостью, а не оптимизация по формуле.
+        </p>
+
+        <p class="interpretation">
+            Лучшие команды управляют не точностью, а сожалением.
+        </p>
+
+        <p class="interpretation">
+            <strong>Правильное решение — это решение с минимальным будущим сожалением.</strong>
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к экспериментам</a>
+            <p class="footer-note">Не всё, что можно измерить, можно выбрать.</p>
+        </div>
+    </div>
+
+    <script>
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        // Calculator 1: Regret
+        let earlyDelta = 1.2;
+        let lateDelta = -1.4;
+        let decisionDay = 28;
+        const windowLength = 14;
+
+        function generateEffectData() {
+            const data = [];
+            for (let t = 1; t <= 90; t++) {
+                const early = earlyDelta * Math.exp(-(t - 1) / 20);
+                const late = lateDelta * (1 / (1 + Math.exp(-(t - 50) / 6)));
+                const effect = early + late;
+                data.push({ t, effect });
+            }
+            return data;
+        }
+
+        function findBestWindow(data) {
+            let bestAvg = -Infinity;
+            let bestStart = 1;
+            for (let start = 1; start <= 90 - windowLength + 1; start++) {
+                const window = data.slice(start - 1, start - 1 + windowLength);
+                const avg = window.reduce((sum, d) => sum + d.effect, 0) / windowLength;
+                if (avg > bestAvg) {
+                    bestAvg = avg;
+                    bestStart = start;
+                }
+            }
+            return { start: bestStart, avg: bestAvg };
+        }
+
+        // Chart 1 dimensions
+        const margin1 = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width1 = 800 - margin1.left - margin1.right;
+        const height1 = 300 - margin1.top - margin1.bottom;
+
+        const xScale1 = d3.scaleLinear()
+            .domain([1, 90])
+            .range([0, width1]);
+
+        const yScale1 = d3.scaleLinear()
+            .domain([-3, 3])
+            .range([height1, 0]);
+
+        const line1 = d3.line()
+            .x(d => xScale1(d.t))
+            .y(d => yScale1(d.effect))
+            .curve(d3.curveMonotoneX);
+
+        const svg1 = d3.select("#chart1")
+            .attr("width", width1 + margin1.left + margin1.right)
+            .attr("height", height1 + margin1.top + margin1.bottom);
+
+        const g1 = svg1.append("g")
+            .attr("transform", `translate(${margin1.left},${margin1.top})`);
+
+        // Zero line
+        g1.append("line")
+            .attr("class", "zero-line")
+            .attr("x1", 0)
+            .attr("x2", width1)
+            .attr("y1", yScale1(0))
+            .attr("y2", yScale1(0));
+
+        // Axes
+        const xAxis1 = d3.axisBottom(xScale1)
+            .ticks(7)
+            .tickValues([1, 15, 30, 45, 60, 75, 90])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis1 = d3.axisLeft(yScale1)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height1})`)
+            .call(xAxis1);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .call(yAxis1);
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width1 / 2)
+            .attr("y", height1 + 35)
+            .attr("text-anchor", "middle")
+            .text("День");
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height1 / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Эффект (%)");
+
+        function updateRegretChart() {
+            const data = generateEffectData();
+            const best = findBestWindow(data);
+            const chosenEnd = Math.min(decisionDay + windowLength - 1, 90);
+            const chosenWindow = data.slice(decisionDay - 1, chosenEnd);
+            const chosenAvg = chosenWindow.reduce((sum, d) => sum + d.effect, 0) / chosenWindow.length;
+            const regret = best.avg - chosenAvg;
+
+            document.getElementById("chosenAvg").innerHTML = 
+                `<strong>Средний эффект выбранного решения:</strong> ${chosenAvg.toFixed(2)}%`;
+            document.getElementById("bestAvg").innerHTML = 
+                `<strong>Лучший возможный эффект:</strong> ${best.avg.toFixed(2)}%`;
+            
+            let regretLevel;
+            if (regret < 0.2) {
+                regretLevel = "низкое";
+            } else if (regret < 0.6) {
+                regretLevel = "умеренное";
+            } else {
+                regretLevel = "высокое";
+            }
+            document.getElementById("regretInfo").innerHTML = 
+                `<strong>Сожаление:</strong> ${regret.toFixed(2)}% (${regretLevel})`;
+
+            // Update line
+            const path1 = g1.selectAll(".effect-curve")
+                .data([data]);
+
+            const path1Enter = path1.enter()
+                .append("path")
+                .attr("class", "effect-curve line line-effect")
+                .attr("d", line1);
+
+            path1.merge(path1Enter)
+                .transition()
+                .duration(450)
+                .attr("d", line1);
+
+            // Best window
+            const bestEnd = Math.min(best.start + windowLength - 1, 90);
+            const bestRect = g1.selectAll(".best-window-region")
+                .data([{ start: best.start, end: bestEnd }]);
+
+            const bestRectEnter = bestRect.enter()
+                .append("rect")
+                .attr("class", "best-window-region")
+                .attr("y", 0)
+                .attr("height", height1);
+
+            bestRect.merge(bestRectEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale1(d.start))
+                .attr("width", d => xScale1(d.end) - xScale1(d.start));
+
+            // Chosen window
+            const chosenRect = g1.selectAll(".window-region")
+                .data([{ start: decisionDay, end: chosenEnd }]);
+
+            const chosenRectEnter = chosenRect.enter()
+                .append("rect")
+                .attr("class", "window-region")
+                .attr("y", 0)
+                .attr("height", height1);
+
+            chosenRect.merge(chosenRectEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale1(d.start))
+                .attr("width", d => xScale1(d.end) - xScale1(d.start));
+
+            const chosenLabel = g1.selectAll(".window-label")
+                .data([{ start: decisionDay }]);
+
+            const chosenLabelEnter = chosenLabel.enter()
+                .append("text")
+                .attr("class", "window-label")
+                .attr("y", 15);
+
+            chosenLabel.merge(chosenLabelEnter)
+                .attr("x", d => xScale1(d.start) + 5)
+                .text("выбранное окно");
+        }
+
+        document.getElementById("earlyDeltaSlider").addEventListener("input", function() {
+            earlyDelta = parseInt(this.value) / 10;
+            document.getElementById("earlyDeltaValue").textContent = 
+                earlyDelta >= 0 ? `+${earlyDelta.toFixed(1)}` : earlyDelta.toFixed(1);
+            updateRegretChart();
+        });
+
+        document.getElementById("lateDeltaSlider").addEventListener("input", function() {
+            lateDelta = parseInt(this.value) / 10;
+            document.getElementById("lateDeltaValue").textContent = 
+                lateDelta >= 0 ? `+${lateDelta.toFixed(1)}` : lateDelta.toFixed(1);
+            updateRegretChart();
+        });
+
+        document.getElementById("decisionDaySlider").addEventListener("input", function() {
+            decisionDay = parseInt(this.value);
+            document.getElementById("decisionDayValue").textContent = decisionDay;
+            updateRegretChart();
+        });
+
+        // Calculator 2: Value of Information
+        let uncertainty = 0.6;
+        let waitCost = 0.15;
+        let horizon = 21;
+
+        // Chart 2 dimensions
+        const margin2 = { top: 30, right: 40, bottom: 50, left: 60 };
+        const width2 = 400 - margin2.left - margin2.right;
+        const height2 = 200 - margin2.top - margin2.bottom;
+
+        const xScale2 = d3.scaleBand()
+            .domain(["Без информации", "С информацией"])
+            .range([0, width2])
+            .padding(0.3);
+
+        const yScale2 = d3.scaleLinear()
+            .domain([0, 1.5])
+            .range([height2, 0]);
+
+        const svg2 = d3.select("#chart2")
+            .attr("width", width2 + margin2.left + margin2.right)
+            .attr("height", height2 + margin2.top + margin2.bottom);
+
+        const g2 = svg2.append("g")
+            .attr("transform", `translate(${margin2.left},${margin2.top})`);
+
+        const yAxis2 = d3.axisLeft(yScale2)
+            .ticks(4)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .call(yAxis2);
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height2 / 2)
+            .attr("y", -45)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Ожидаемая выгода");
+
+        function updateVoIChart() {
+            const E0 = 1.0;
+            const infoGain = uncertainty * 0.8;
+            const delayCost = waitCost * horizon;
+            const E1 = E0 + infoGain - delayCost;
+            const voi = E1 - E0;
+
+            document.getElementById("expectedWithout").innerHTML = 
+                `<strong>Ожидаемая выгода без информации:</strong> ${E0.toFixed(2)}`;
+            document.getElementById("expectedWith").innerHTML = 
+                `<strong>С информацией:</strong> ${E1.toFixed(2)}`;
+            document.getElementById("voiInfo").innerHTML = 
+                `<strong>Ценность информации (VoI):</strong> ${voi >= 0 ? '+' : ''}${voi.toFixed(2)}`;
+
+            const hint = voi > 0 ? "Имеет смысл подождать" : "Лучше решать сейчас";
+            document.getElementById("decisionHint").textContent = hint;
+
+            const barData = [
+                { label: "Без информации", value: E0 },
+                { label: "С информацией", value: E1 }
+            ];
+
+            const bars = g2.selectAll(".bar")
+                .data(barData);
+
+            const barsEnter = bars.enter()
+                .append("rect")
+                .attr("class", d => d.label === "Без информации" ? "bar bar-expected" : "bar")
+                .attr("x", d => xScale2(d.label))
+                .attr("y", height2)
+                .attr("width", xScale2.bandwidth())
+                .attr("height", 0);
+
+            bars.merge(barsEnter)
+                .transition()
+                .duration(450)
+                .attr("y", d => yScale2(d.value))
+                .attr("height", d => height2 - yScale2(d.value));
+
+            // Labels
+            const labels = g2.selectAll(".bar-value")
+                .data(barData);
+
+            const labelsEnter = labels.enter()
+                .append("text")
+                .attr("class", "bar-value")
+                .attr("x", d => xScale2(d.label) + xScale2.bandwidth() / 2)
+                .attr("y", height2)
+                .attr("text-anchor", "middle");
+
+            labels.merge(labelsEnter)
+                .transition()
+                .duration(450)
+                .attr("y", d => yScale2(d.value) - 5)
+                .text(d => d.value.toFixed(2));
+
+            // VoI annotation
+            if (voi !== 0) {
+                const voiLine = g2.selectAll(".voi-line")
+                    .data([{ start: E0, end: E1 }]);
+
+                const voiLineEnter = voiLine.enter()
+                    .append("line")
+                    .attr("class", "zero-line")
+                    .attr("x1", xScale2("Без информации") + xScale2.bandwidth() / 2)
+                    .attr("x2", xScale2("С информацией") + xScale2.bandwidth() / 2)
+                    .attr("y1", yScale2(E0))
+                    .attr("y2", yScale2(E1))
+                    .attr("stroke", "#999")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-dasharray", "2,2");
+
+                voiLine.merge(voiLineEnter)
+                    .transition()
+                    .duration(450)
+                    .attr("x1", xScale2("Без информации") + xScale2.bandwidth() / 2)
+                    .attr("x2", xScale2("С информацией") + xScale2.bandwidth() / 2)
+                    .attr("y1", yScale2(E0))
+                    .attr("y2", yScale2(E1));
+
+                const voiLabel = g2.selectAll(".voi-label")
+                    .data([{ value: voi, y: (E0 + E1) / 2 }]);
+
+                const voiLabelEnter = voiLabel.enter()
+                    .append("text")
+                    .attr("class", "bar-label")
+                    .attr("x", width2 / 2)
+                    .attr("y", height2)
+                    .attr("text-anchor", "middle")
+                    .text(`VoI: ${voi >= 0 ? '+' : ''}${voi.toFixed(2)}`);
+
+                voiLabel.merge(voiLabelEnter)
+                    .transition()
+                    .duration(450)
+                    .attr("y", d => yScale2(d.y) - 10)
+                    .text(d => `VoI: ${d.value >= 0 ? '+' : ''}${d.value.toFixed(2)}`);
+            }
+        }
+
+        document.getElementById("uncertaintySlider").addEventListener("input", function() {
+            uncertainty = parseInt(this.value) / 100;
+            document.getElementById("uncertaintyValue").textContent = uncertainty.toFixed(2);
+            updateVoIChart();
+        });
+
+        document.getElementById("waitCostSlider").addEventListener("input", function() {
+            waitCost = parseInt(this.value) / 100;
+            document.getElementById("waitCostValue").textContent = waitCost.toFixed(2);
+            updateVoIChart();
+        });
+
+        document.getElementById("horizonSlider").addEventListener("input", function() {
+            horizon = parseInt(this.value);
+            document.getElementById("horizonValue").textContent = horizon;
+            updateVoIChart();
+        });
+
+        // Chart 3: Irreversibility
+        const margin3 = { top: 30, right: 40, bottom: 50, left: 60 };
+        const width3 = 700 - margin3.left - margin3.right;
+        const height3 = 300 - margin3.top - margin3.bottom;
+
+        const xScale3 = d3.scaleLinear()
+            .domain([0, 100])
+            .range([0, width3]);
+
+        const yScale3 = d3.scaleLinear()
+            .domain([0, 100])
+            .range([height3, 0]);
+
+        const svg3 = d3.select("#chart3")
+            .attr("width", width3 + margin3.left + margin3.right)
+            .attr("height", height3 + margin3.top + margin3.bottom);
+
+        const g3 = svg3.append("g")
+            .attr("transform", `translate(${margin3.left},${margin3.top})`);
+
+        // Wide option space early
+        const earlyWidth = 60;
+        const earlyY = 70;
+        g3.append("rect")
+            .attr("x", xScale3(10))
+            .attr("y", yScale3(earlyY + earlyWidth / 2))
+            .attr("width", xScale3(30) - xScale3(10))
+            .attr("height", yScale3(earlyY - earlyWidth / 2) - yScale3(earlyY + earlyWidth / 2))
+            .attr("fill", "none")
+            .attr("stroke", "#999")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "4,2");
+
+        g3.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale3(20))
+            .attr("y", yScale3(earlyY) + 5)
+            .attr("text-anchor", "middle")
+            .text("широкое пространство опций");
+
+        // Decision point
+        const decisionX = 40;
+        const decisionY = 50;
+        g3.append("circle")
+            .attr("class", "decision-point")
+            .attr("cx", xScale3(decisionX))
+            .attr("cy", yScale3(decisionY))
+            .attr("r", 4);
+
+        g3.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale3(decisionX))
+            .attr("y", yScale3(decisionY) - 10)
+            .attr("text-anchor", "middle")
+            .text("решение");
+
+        // Branches after decision
+        const branch1Y = 30;
+        const branch2Y = 50;
+        const branch3Y = 70;
+        const branchEndX = 85;
+
+        g3.append("line")
+            .attr("class", "branch")
+            .attr("x1", xScale3(decisionX))
+            .attr("y1", yScale3(decisionY))
+            .attr("x2", xScale3(branchEndX))
+            .attr("y2", yScale3(branch1Y));
+
+        g3.append("line")
+            .attr("class", "branch")
+            .attr("x1", xScale3(decisionX))
+            .attr("y1", yScale3(decisionY))
+            .attr("x2", xScale3(branchEndX))
+            .attr("y2", yScale3(branch2Y));
+
+        g3.append("line")
+            .attr("class", "branch")
+            .attr("x1", xScale3(decisionX))
+            .attr("y1", yScale3(decisionY))
+            .attr("x2", xScale3(branchEndX))
+            .attr("y2", yScale3(branch3Y));
+
+        // Closed region
+        const closedStartX = 50;
+        const closedEndX = 100;
+        g3.append("rect")
+            .attr("class", "closed-region")
+            .attr("x", xScale3(closedStartX))
+            .attr("y", 0)
+            .attr("width", xScale3(closedEndX) - xScale3(closedStartX))
+            .attr("height", height3);
+
+        g3.append("text")
+            .attr("class", "closed-label")
+            .attr("x", xScale3(75))
+            .attr("y", height3 / 2)
+            .attr("text-anchor", "middle")
+            .text("опции закрыты");
+
+        // Axes
+        const xAxis3 = d3.axisBottom(xScale3)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis3 = d3.axisLeft(yScale3)
+            .ticks(0)
+            .tickSize(0);
+
+        g3.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height3})`)
+            .call(xAxis3);
+
+        g3.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width3 / 2)
+            .attr("y", height3 + 35)
+            .attr("text-anchor", "middle")
+            .text("Время");
+
+        g3.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height3 / 2)
+            .attr("y", -45)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Пространство решений");
+
+        // Initial render
+        updateRegretChart();
+        updateVoIChart();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

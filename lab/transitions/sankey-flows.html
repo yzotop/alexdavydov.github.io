@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flows Between States</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12/dist/d3-sankey.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin-top: 3rem;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .node {
+            fill: #2f3e4e;
+        }
+
+        .node-label {
+            font-size: 11px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .link {
+            fill: none;
+            stroke: #2f3e4e;
+            stroke-opacity: 0.3;
+        }
+
+        .link:hover {
+            stroke-opacity: 0.6;
+        }
+
+        .note {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Transitions</a>
+        <h1>Flows Between States</h1>
+        <p class="subtitle">Transitions seen as mass transport.</p>
+        <p class="caption">A simple flow map across aggregated states.</p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+            <p class="note">Aggregation is a model choice.</p>
+        </div>
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Define nodes (aggregated states)
+        const nodes = [
+            { name: "A" },
+            { name: "B" },
+            { name: "C" },
+            { name: "D" },
+            { name: "E" },
+            { name: "F" }
+        ];
+
+        // Define links with weights
+        const links = [
+            { source: 0, target: 1, value: 12 }, // A→B
+            { source: 0, target: 2, value: 6 },  // A→C
+            { source: 1, target: 2, value: 8 },  // B→C
+            { source: 1, target: 3, value: 7 }, // B→D
+            { source: 2, target: 3, value: 10 }, // C→D
+            { source: 2, target: 4, value: 5 },  // C→E
+            { source: 3, target: 4, value: 9 },  // D→E
+            { source: 3, target: 5, value: 4 }, // D→F
+            { source: 4, target: 5, value: 11 }  // E→F
+        ];
+
+        // Set up dimensions
+        const width = 800;
+        const height = 500;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create Sankey generator
+        const sankey = d3.sankey()
+            .nodeWidth(15)
+            .nodePadding(20)
+            .extent([[10, 10], [width - 10, height - 10]]);
+
+        // Process data - create copies to avoid mutation
+        const sankeyData = {
+            nodes: nodes.map(d => Object.assign({}, d)),
+            links: links.map(d => Object.assign({}, d))
+        };
+
+        // Compute layout (sankey mutates the data object)
+        sankey(sankeyData);
+        
+        const sankeyNodes = sankeyData.nodes;
+        const sankeyLinks = sankeyData.links;
+
+        // Color scale for opacity based on weight
+        const maxWeight = d3.max(links, d => d.value);
+        const opacityScale = d3.scaleLinear()
+            .domain([0, maxWeight])
+            .range([0.15, 0.5]);
+
+        // Create links
+        const link = svg.append("g")
+            .selectAll(".link")
+            .data(sankeyLinks)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", d3.sankeyLinkHorizontal())
+            .attr("stroke", "#2f3e4e")
+            .attr("stroke-width", d => Math.max(1, d.width))
+            .attr("stroke-opacity", d => opacityScale(d.value))
+            .on("mouseover", function(event, d) {
+                const sourceName = sankeyNodes[d.source.index].name;
+                const targetName = sankeyNodes[d.target.index].name;
+                tooltip
+                    .style("opacity", 1)
+                    .html(`${sourceName} → ${targetName}: ${d.value}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mousemove", function(event) {
+                tooltip
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mouseout", function() {
+                tooltip.style("opacity", 0);
+            });
+
+        // Create nodes
+        const node = svg.append("g")
+            .selectAll(".node")
+            .data(sankeyNodes)
+            .enter()
+            .append("g")
+            .attr("class", "node-group")
+            .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+        node.append("rect")
+            .attr("class", "node")
+            .attr("height", d => d.y1 - d.y0)
+            .attr("width", d => d.x1 - d.x0)
+            .attr("fill", "#2f3e4e");
+
+        node.append("text")
+            .attr("class", "node-label")
+            .attr("x", d => (d.x1 - d.x0) / 2)
+            .attr("y", d => (d.y1 - d.y0) / 2)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "middle")
+            .text(d => d.name);
+
+        // Tooltip
+        const tooltip = d3.select("#tooltip");
+    </script>
+</body>
+</html>
+

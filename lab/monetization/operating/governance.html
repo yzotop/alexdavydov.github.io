@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Governance</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .contract-box {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            background: #fafafa;
+        }
+
+        .contract-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .contract-checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .contract-checklist li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .contract-checklist li::before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .controls-panel {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            background: #fafafa;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+
+        .guardrails-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .guardrails-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .guardrails-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .guardrail-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .guardrail-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .guardrail-card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .guardrail-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .guardrail-card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .plan-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .plan-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .plan-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .plan-section-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .plan-section-list {
+            padding-left: 1.25rem;
+        }
+
+        .plan-section-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .ritual-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .ritual-table th,
+        .ritual-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .ritual-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .ritual-table td {
+            color: #2c3e50;
+        }
+
+        .antipatterns-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .antipatterns-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Governance: управление изменениями</h1>
+        <p class="subtitle">Если изменения не зафиксированы — это не эксперимент, а шум.</p>
+
+        <div class="intro">
+            <p>
+                Главная причина "непонятных" движений в выручке — не рынок, а незадокументированные вмешательства. Когда изменения не фиксируются, невозможно понять, что сработало, а что ухудшило. Система становится чёрным ящиком.
+            </p>
+            <p>
+                Governance = порядок: один рычаг → окно → проверка → запись → вывод. Каждое изменение должно быть оформлено, иметь владельца, guardrails, окно оценки и критерий отката. Без этого система необъяснима.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Минимальный контракт на изменение</div>
+            <div class="contract-box">
+                <div class="contract-title">Контракт на изменение</div>
+                <ul class="contract-checklist">
+                    <li>Цель изменения (механизм, не KPI): что именно хотим изменить в системе</li>
+                    <li>Рычаг (что именно меняем): конкретный параметр, конфиг, флаг</li>
+                    <li>Область (срезы: платформа/формат/сегмент): где применяем изменение</li>
+                    <li>t0 (когда включили): точный момент времени включения</li>
+                    <li>Ожидаемый лаг до денег: когда эффект проявится в выручке</li>
+                    <li>Окно оценки: на каком окне будем оценивать эффект</li>
+                    <li>Cooldown: пауза после изменения, без новых вмешательств</li>
+                    <li>Guardrails (3–5 ранних сигналов): метрики безопасности для раннего предупреждения</li>
+                    <li>Критерий отката: при каких условиях откатываем изменение</li>
+                    <li>Владелец решения: кто отвечает за изменение и принимает решение</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Когда не ведём журнал — мы путаем причины</div>
+            <div class="controls-panel">
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="withLog" name="logMode" value="with" checked>
+                        <label for="withLog">Есть change log</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="withoutLog" name="logMode" value="without">
+                        <label for="withoutLog">Нет change log</label>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <svg id="timelineChart"></svg>
+                <p class="chart-caption">Журнал превращает шум в причинность.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Guardrails: метрики безопасности</div>
+            <div class="guardrails-grid">
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">Show rate / coverage</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Деградацию доступности инвентаря и сжатие coverage.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Реагирует до падения выручки, показывает проблемы в delivery.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Падение на 5–10% относительно baseline за окно 3–7 дней.
+                    </div>
+                </div>
+
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">Pressure / frequency proxy</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Рост давления и насыщение системы.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Показывает насыщение до падения выручки, даёт время на реакцию.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Рост на 15–20% относительно baseline за окно 7–14 дней.
+                    </div>
+                </div>
+
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">Latency / delivery proxy</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Технические проблемы в воронке requests → responses.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Реагирует на разрыв воронки до падения объёма показов.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Рост latency на 20–30% или падение responses ratio на 5–10%.
+                    </div>
+                </div>
+
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">Segment tails (края распределения)</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Проблемы в отдельных сегментах, которые маскирует среднее.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Показывает хрупкость системы до того, как проблема распространится.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Падение в хвосте (q10 или q90) на 10–15% относительно baseline.
+                    </div>
+                </div>
+
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">Variance (рост дисперсии)</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Рост нестабильности системы, увеличение разброса метрик.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Показывает дестабилизацию до явных падений.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Рост дисперсии на 25–40% относительно baseline за окно 7–14 дней.
+                    </div>
+                </div>
+
+                <div class="guardrail-card">
+                    <div class="guardrail-card-title">User experience proxy</div>
+                    <div class="guardrail-card-item">
+                        <strong>Что ловит:</strong> Деградацию пользовательского опыта (глубина, скролл, время).
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Почему ранняя:</strong> Показывает проблемы до падения выручки, связанные с поведением пользователей.
+                    </div>
+                    <div class="guardrail-card-item">
+                        <strong>Типичный порог:</strong> Падение на 5–10% относительно baseline за окно 7–14 дней.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Собери план изменения</div>
+            <div class="interactive-panel">
+                <div class="plan-controls">
+                    <div class="control-group">
+                        <label class="control-label">Тип изменения</label>
+                        <select id="changeTypeSelect" class="control-input">
+                            <option value="pressure">Давление</option>
+                            <option value="auction">Аукцион</option>
+                            <option value="format">Формат</option>
+                            <option value="delivery">Доставка</option>
+                            <option value="ranking">Ранжирование</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Риск</label>
+                        <select id="riskSelect" class="control-input">
+                            <option value="low">Низкий</option>
+                            <option value="medium">Средний</option>
+                            <option value="high">Высокий</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Лаг</label>
+                        <select id="lagSelect" class="control-input">
+                            <option value="short">Короткий</option>
+                            <option value="medium">Средний</option>
+                            <option value="long">Длинный</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="plan-output" id="planOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Ритуал принятия решения</div>
+            <table class="ritual-table">
+                <thead>
+                    <tr>
+                        <th>Шаг</th>
+                        <th>Кто владелец</th>
+                        <th>Артефакт</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Дизайн изменения</td>
+                        <td>Владелец продукта / инженер</td>
+                        <td>Контракт на изменение (цель, рычаг, область)</td>
+                    </tr>
+                    <tr>
+                        <td>Выбор guardrails</td>
+                        <td>Владелец продукта / аналитик</td>
+                        <td>Список 3–5 метрик безопасности с порогами</td>
+                    </tr>
+                    <tr>
+                        <td>Включение + запись t0</td>
+                        <td>Инженер / оператор</td>
+                        <td>Запись в change log с точным временем включения</td>
+                    </tr>
+                    <tr>
+                        <td>Мониторинг ранних сигналов</td>
+                        <td>Владелец продукта / оператор</td>
+                        <td>Ежедневная проверка guardrails в течение cooldown</td>
+                    </tr>
+                    <tr>
+                        <td>Оценка окна</td>
+                        <td>Аналитик / владелец продукта</td>
+                        <td>Анализ эффекта на окне оценки с учётом лага</td>
+                    </tr>
+                    <tr>
+                        <td>Решение (оставить/откатить/перепроектировать)</td>
+                        <td>Владелец решения</td>
+                        <td>Решение с обоснованием и записью в change log</td>
+                    </tr>
+                    <tr>
+                        <td>Постмортем</td>
+                        <td>Владелец продукта / аналитик</td>
+                        <td>Запись: что сработало, что нет, что добавить в мониторинг</td>
+                    </tr>
+                    <tr>
+                        <td>Обновление алертов/плейбуков</td>
+                        <td>Владелец продукта / оператор</td>
+                        <td>Обновлённые алерты, плейбуки, guardrails на основе опыта</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Антипаттерны изменения</div>
+            <ul class="antipatterns-list">
+                <li><strong>"Крутим 3 рычага одновременно"</strong> — невозможно понять, что сработало. Один рычаг в окне лагов.</li>
+                <li><strong>"Нет cooldown"</strong> — система нестабильна, эффекты смешиваются. Пауза после изменения обязательна.</li>
+                <li><strong>"Нет владельца"</strong> — решение не принимается, изменение висит в неопределённости. Каждое изменение должно иметь владельца.</li>
+                <li><strong>"Порогов нет, только revenue"</strong> — слишком поздно реагируем. Нужны ранние сигналы (guardrails).</li>
+                <li><strong>"Сравниваем разные окна"</strong> — выводы меняются в зависимости от окна. Фиксируйте окно оценки заранее.</li>
+                <li><strong>"Нет сегментов"</strong> — среднее маскирует проблемы. Проверяйте каждый сегмент отдельно.</li>
+                <li><strong>"Переносим решение на 'когда будет статистика'"</strong> — решение откладывается бесконечно. Фиксируйте окно оценки и момент принятия решения.</li>
+                <li><strong>"Не обновляем мониторинг после инцидента"</strong> — повторяем те же ошибки. Каждый инцидент должен обновлять алерты и плейбуки.</li>
+            </ul>
+        </div>
+
+        <p class="final-quote">
+            Governance — это способ сделать систему объяснимой.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Если изменения не зафиксированы — это не эксперимент, а шум.</p>
+        </div>
+    </div>
+
+    <script>
+        // Governance templates
+        const governanceTemplates = {
+            pressure: {
+                low: {
+                    short: {
+                        window: '7–10 дней',
+                        cooldown: '3–5 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails'],
+                        rollback: ['Show rate падает на 10% за 3 дня', 'Pressure растёт на 20% за 7 дней']
+                    },
+                    medium: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails'],
+                        rollback: ['Show rate падает на 10% за 5 дней', 'Pressure растёт на 20% за 10 дней']
+                    },
+                    long: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails'],
+                        rollback: ['Show rate падает на 10% за 7 дней', 'Pressure растёт на 20% за 14 дней']
+                    }
+                },
+                medium: {
+                    short: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Show rate падает на 8% за 3 дня', 'Pressure растёт на 15% за 7 дней']
+                    },
+                    medium: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Show rate падает на 8% за 5 дней', 'Pressure растёт на 15% за 10 дней']
+                    },
+                    long: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Show rate падает на 8% за 7 дней', 'Pressure растёт на 15% за 14 дней']
+                    }
+                },
+                high: {
+                    short: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Show rate падает на 5% за 2 дня', 'Pressure растёт на 10% за 5 дней']
+                    },
+                    medium: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Show rate падает на 5% за 3 дня', 'Pressure растёт на 10% за 7 дней']
+                    },
+                    long: {
+                        window: '28–35 дней',
+                        cooldown: '14–21 день',
+                        guardrails: ['Show rate', 'Pressure proxy', 'Frequency', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Show rate падает на 5% за 5 дней', 'Pressure растёт на 10% за 10 дней']
+                    }
+                }
+            },
+            auction: {
+                low: {
+                    short: {
+                        window: '7–10 дней',
+                        cooldown: '3–5 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails'],
+                        rollback: ['Fill rate падает на 10% за 3 дня', 'CPM падает на 15% за 7 дней']
+                    },
+                    medium: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails'],
+                        rollback: ['Fill rate падает на 10% за 5 дней', 'CPM падает на 15% за 10 дней']
+                    },
+                    long: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails'],
+                        rollback: ['Fill rate падает на 10% за 7 дней', 'CPM падает на 15% за 14 дней']
+                    }
+                },
+                medium: {
+                    short: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Fill rate падает на 8% за 3 дня', 'CPM падает на 12% за 7 дней']
+                    },
+                    medium: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Fill rate падает на 8% за 5 дней', 'CPM падает на 12% за 10 дней']
+                    },
+                    long: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance'],
+                        rollback: ['Fill rate падает на 8% за 7 дней', 'CPM падает на 12% за 14 дней']
+                    }
+                },
+                high: {
+                    short: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Fill rate падает на 5% за 2 дня', 'CPM падает на 10% за 5 дней']
+                    },
+                    medium: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Fill rate падает на 5% за 3 дня', 'CPM падает на 10% за 7 дней']
+                    },
+                    long: {
+                        window: '28–35 дней',
+                        cooldown: '14–21 день',
+                        guardrails: ['Fill rate', 'CPM', 'Responses availability', 'Coverage', 'Segment tails', 'Variance', 'User experience proxy'],
+                        rollback: ['Fill rate падает на 5% за 5 дней', 'CPM падает на 10% за 10 дней']
+                    }
+                }
+            },
+            format: {
+                low: {
+                    short: {
+                        window: '7–10 дней',
+                        cooldown: '3–5 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 3 дня', 'Show rate падает на 8% за 5 дней']
+                    },
+                    medium: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 5 дней', 'Show rate падает на 8% за 7 дней']
+                    },
+                    long: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 7 дней', 'Show rate падает на 8% за 10 дней']
+                    }
+                },
+                medium: {
+                    short: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 3 дня', 'Show rate падает на 6% за 5 дней']
+                    },
+                    medium: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 5 дней', 'Show rate падает на 6% за 7 дней']
+                    },
+                    long: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 7 дней', 'Show rate падает на 6% за 10 дней']
+                    }
+                },
+                high: {
+                    short: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 2 дня', 'Show rate падает на 4% за 3 дня']
+                    },
+                    medium: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 3 дня', 'Show rate падает на 4% за 5 дней']
+                    },
+                    long: {
+                        window: '28–35 дней',
+                        cooldown: '14–21 день',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 5 дней', 'Show rate падает на 4% за 7 дней']
+                    }
+                }
+            },
+            delivery: {
+                low: {
+                    short: {
+                        window: '3–5 дней',
+                        cooldown: '2–3 дня',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate'],
+                        rollback: ['Latency растёт на 30% за 1 день', 'Responses ratio падает на 10% за 2 дня']
+                    },
+                    medium: {
+                        window: '5–7 дней',
+                        cooldown: '3–5 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate'],
+                        rollback: ['Latency растёт на 30% за 2 дня', 'Responses ratio падает на 10% за 3 дня']
+                    },
+                    long: {
+                        window: '7–10 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate'],
+                        rollback: ['Latency растёт на 30% за 3 дня', 'Responses ratio падает на 10% за 5 дней']
+                    }
+                },
+                medium: {
+                    short: {
+                        window: '5–7 дней',
+                        cooldown: '3–5 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance'],
+                        rollback: ['Latency растёт на 25% за 1 день', 'Responses ratio падает на 8% за 2 дня']
+                    },
+                    medium: {
+                        window: '7–10 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance'],
+                        rollback: ['Latency растёт на 25% за 2 дня', 'Responses ratio падает на 8% за 3 дня']
+                    },
+                    long: {
+                        window: '10–14 дней',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance'],
+                        rollback: ['Latency растёт на 25% за 3 дня', 'Responses ratio падает на 8% за 5 дней']
+                    }
+                },
+                high: {
+                    short: {
+                        window: '7–10 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance', 'User experience proxy'],
+                        rollback: ['Latency растёт на 20% за 1 день', 'Responses ratio падает на 5% за 1 день']
+                    },
+                    medium: {
+                        window: '10–14 дней',
+                        cooldown: '7–10 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance', 'User experience proxy'],
+                        rollback: ['Latency растёт на 20% за 2 дня', 'Responses ratio падает на 5% за 2 дня']
+                    },
+                    long: {
+                        window: '14–21 день',
+                        cooldown: '10–14 дней',
+                        guardrails: ['Latency', 'Responses ratio', 'Error rate', 'Coverage', 'Show rate', 'Variance', 'User experience proxy'],
+                        rollback: ['Latency растёт на 20% за 3 дня', 'Responses ratio падает на 5% за 3 дня']
+                    }
+                }
+            },
+            ranking: {
+                low: {
+                    short: {
+                        window: '10–14 дней',
+                        cooldown: '5–7 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 5 дней', 'Show rate падает на 8% за 7 дней']
+                    },
+                    medium: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 7 дней', 'Show rate падает на 8% за 10 дней']
+                    },
+                    long: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy'],
+                        rollback: ['CTR падает на 10% за 10 дней', 'Show rate падает на 8% за 14 дней']
+                    }
+                },
+                medium: {
+                    short: {
+                        window: '14–21 день',
+                        cooldown: '7–10 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 5 дней', 'Show rate падает на 6% за 7 дней']
+                    },
+                    medium: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 7 дней', 'Show rate падает на 6% за 10 дней']
+                    },
+                    long: {
+                        window: '28–35 дней',
+                        cooldown: '14–21 день',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance'],
+                        rollback: ['CTR падает на 8% за 10 дней', 'Show rate падает на 6% за 14 дней']
+                    }
+                },
+                high: {
+                    short: {
+                        window: '21–28 дней',
+                        cooldown: '10–14 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 3 дня', 'Show rate падает на 4% за 5 дней']
+                    },
+                    medium: {
+                        window: '28–35 дней',
+                        cooldown: '14–21 день',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 5 дней', 'Show rate падает на 4% за 7 дней']
+                    },
+                    long: {
+                        window: '35–42 дня',
+                        cooldown: '21–28 дней',
+                        guardrails: ['CTR', 'Show rate', 'Coverage', 'Segment tails', 'User experience proxy', 'Variance', 'Pressure proxy'],
+                        rollback: ['CTR падает на 5% за 7 дней', 'Show rate падает на 4% за 10 дней']
+                    }
+                }
+            }
+        };
+
+        // Update plan
+        function updatePlan() {
+            const changeType = document.getElementById('changeTypeSelect').value;
+            const risk = document.getElementById('riskSelect').value;
+            const lag = document.getElementById('lagSelect').value;
+            const template = governanceTemplates[changeType][risk][lag];
+
+            document.getElementById('planOutput').innerHTML = `
+                <div class="plan-section">
+                    <div class="plan-section-title">Рекомендуемое окно оценки</div>
+                    <div class="plan-section-text">${template.window}</div>
+                </div>
+                <div class="plan-section">
+                    <div class="plan-section-title">Cooldown</div>
+                    <div class="plan-section-text">${template.cooldown}</div>
+                </div>
+                <div class="plan-section">
+                    <div class="plan-section-title">Guardrails (5 метрик)</div>
+                    <ul class="plan-section-list">
+                        ${template.guardrails.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="plan-section">
+                    <div class="plan-section-title">Когда откатывать</div>
+                    <ul class="plan-section-list">
+                        ${template.rollback.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        document.getElementById('changeTypeSelect').addEventListener('change', updatePlan);
+        document.getElementById('riskSelect').addEventListener('change', updatePlan);
+        document.getElementById('lagSelect').addEventListener('change', updatePlan);
+        updatePlan();
+
+        // Timeline chart
+        function generateTimelineChart(hasLog) {
+            const container = d3.select('#timelineChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#timelineChart').selectAll('*').remove();
+
+            const svg = d3.select('#timelineChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 220;
+            const data = [];
+            const interventions = [
+                { t: 50, name: 'A', earlyLag: 10, revenueLag: 25 },
+                { t: 100, name: 'B', earlyLag: 12, revenueLag: 28 },
+                { t: 160, name: 'C', earlyLag: 5, revenueLag: 15 }
+            ];
+
+            for (let t = 1; t <= n; t++) {
+                let revenue = 0.85 + 0.02 * Math.sin(t / 12) + 0.01 * Math.sin(t / 25);
+
+                // Intervention A: affects delivery early, revenue late
+                if (t >= interventions[0].t) {
+                    const earlyEffect = t < interventions[0].t + interventions[0].earlyLag 
+                        ? -0.05 * (1 - 1 / (1 + Math.exp(-(t - interventions[0].t) / 3)))
+                        : -0.05;
+                    const revenueEffect = t >= interventions[0].t + interventions[0].revenueLag
+                        ? -0.08 * (1 - 1 / (1 + Math.exp(-(t - interventions[0].t - interventions[0].revenueLag) / 5)))
+                        : 0;
+                    revenue += earlyEffect * 0.3 + revenueEffect;
+                }
+
+                // Intervention B: affects pressure, then revenue
+                if (t >= interventions[1].t) {
+                    const pressureEffect = -0.04 * (1 - 1 / (1 + Math.exp(-(t - interventions[1].t) / 4)));
+                    const revenueEffect = t >= interventions[1].t + interventions[1].revenueLag
+                        ? -0.06 * (1 - 1 / (1 + Math.exp(-(t - interventions[1].t - interventions[1].revenueLag) / 6)))
+                        : 0;
+                    revenue += pressureEffect * 0.2 + revenueEffect;
+                }
+
+                // Intervention C: affects CPM without volume growth (compensation)
+                if (t >= interventions[2].t) {
+                    const cpmEffect = 0.03 * (1 - 1 / (1 + Math.exp(-(t - interventions[2].t) / 2)));
+                    const volumeEffect = -0.05 * (1 - 1 / (1 + Math.exp(-(t - interventions[2].t) / 3)));
+                    revenue += cpmEffect + volumeEffect;
+                }
+
+                data.push({ t, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.75, 0.95])
+                .range([height, 0]);
+
+            // Revenue line
+            const lineRevenue = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineRevenue);
+
+            // Intervention markers
+            interventions.forEach(intervention => {
+                g.append('line')
+                    .attr('x1', x(intervention.t))
+                    .attr('x2', x(intervention.t))
+                    .attr('y1', 0)
+                    .attr('y2', height)
+                    .attr('stroke', hasLog ? '#4ecdc4' : '#999')
+                    .attr('stroke-width', hasLog ? 2 : 1)
+                    .attr('stroke-dasharray', hasLog ? '0' : '3,3')
+                    .attr('opacity', hasLog ? 0.8 : 0.4);
+
+                if (hasLog) {
+                    g.append('text')
+                        .attr('x', x(intervention.t))
+                        .attr('y', height - 5)
+                        .attr('text-anchor', 'middle')
+                        .attr('font-size', '11px')
+                        .attr('fill', '#4ecdc4')
+                        .text(`Изменение ${intervention.name}`);
+
+                    // Lag indicator
+                    const lagY = y(data[intervention.t + intervention.revenueLag - 1].revenue);
+                    g.append('line')
+                        .attr('x1', x(intervention.t))
+                        .attr('x2', x(intervention.t + intervention.revenueLag))
+                        .attr('y1', lagY)
+                        .attr('y2', lagY)
+                        .attr('stroke', '#999')
+                        .attr('stroke-width', 1)
+                        .attr('stroke-dasharray', '2,2');
+
+                    g.append('text')
+                        .attr('x', (x(intervention.t) + x(intervention.t + intervention.revenueLag)) / 2)
+                        .attr('y', lagY - 5)
+                        .attr('text-anchor', 'middle')
+                        .attr('font-size', '10px')
+                        .attr('fill', '#999')
+                        .text(`лаг ${intervention.revenueLag}д`);
+                }
+            });
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Label
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+        }
+
+        // Initial render
+        generateTimelineChart(true);
+
+        // Radio buttons handler
+        document.querySelectorAll('input[name="logMode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                generateTimelineChart(e.target.value === 'with');
+            });
+        });
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const hasLog = document.querySelector('input[name="logMode"]:checked').value === 'with';
+                generateTimelineChart(hasLog);
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

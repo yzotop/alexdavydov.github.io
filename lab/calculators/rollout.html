@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Раскатка теста на 100% (через метрики)</title>
+    <script src="assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="assets/css/calculators.css">
+    <link rel="stylesheet" href="assets/css/calculators_charts.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
+
+        <h1>Раскатка теста на 100% (через метрики)</h1>
+        <p class="subtitle">По эффектам теста (ΔCPM, ΔShowRate, ΔRequests) понять, что произойдёт с выручкой при раскатке на 100%.</p>
+
+        <div class="calculator-layout">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Доля теста (%)</span>
+                        <span class="control-value" id="rollout-value">100</span>
+                    </label>
+                    <input type="range" id="rollout" min="0" max="100" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>ΔCPM (%)</span>
+                        <span class="control-value" id="dcpm-value">0.0</span>
+                    </label>
+                    <input type="range" id="dcpm" min="-10" max="10" step="0.1" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>ΔShowRate (%)</span>
+                        <span class="control-value" id="dshowrate-value">0.0</span>
+                    </label>
+                    <input type="range" id="dshowrate" min="-3" max="3" step="0.1" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>ΔRequests (%)</span>
+                        <span class="control-value" id="drequests-value">0.0</span>
+                    </label>
+                    <input type="range" id="drequests" min="-5" max="5" step="0.1" value="0">
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="decision-header">
+                    <div class="kpi-block">
+                        <div class="kpi-item">
+                            <span class="kpi-label">Выручка при 100%</span>
+                            <span class="kpi-value" id="revenue-100">100.0</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label">Δ к базе</span>
+                            <span class="kpi-value" id="revenue-delta">0.0</span>
+                        </div>
+                    </div>
+                    <div class="kpi-meta">
+                        <span class="kpi-meta-text">CPM: <span id="cpm-index">100.0</span> | ShowRate: <span id="showrate-index">100.0</span> | Requests: <span id="requests-index">100.0</span></span>
+                    </div>
+                    <div class="below-note" id="rollout-verdict"></div>
+                </div>
+
+                <article class="chart-card single">
+                    <h3 class="chart-title">Выручка vs доля раскатки</h3>
+                    <div id="rollout-main-chart" class="chart big"></div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/rollout_calculator.js"></script>
+</body>
+</html>

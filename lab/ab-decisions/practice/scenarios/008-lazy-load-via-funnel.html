@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lazy Load — рост через воронку</title>
+н могу    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #ffffff;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .chart-panel-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Lazy Load — рост через воронку</h1>
+        <p class="subtitle">Рост выручки через оптимизацию воронки показов, а не через давление или цену.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-1" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Что именно дало эффект</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Внедрили отложенную загрузку (lazy load) рекламных блоков в тестовой группе: блоки загружаются только когда пользователь доскролливает до соответствующей области экрана, а не заранее при загрузке страницы.
+            </p>
+            <p>
+                Эксперимент длился 14 дней. Трафик стабильный, сезонных эффектов не наблюдалось. Контрольная группа без изменений — реклама загружается заранее.
+            </p>
+            <p>
+                В тестовой группе выручка выросла на 5–7%, CPM остался практически без изменений (~+0.3%), рекламное давление не изменилось. Заметен рост show rate и доли реально увиденных показов.
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart-panel-title">Requests (запросы)</div>
+            <div class="chart" id="chart-requests"></div>
+
+            <div class="chart-panel-title" style="margin-top: 3rem;">Responses (ответы)</div>
+            <div class="chart" id="chart-responses"></div>
+
+            <div class="chart-panel-title" style="margin-top: 3rem;">Shows (показы)</div>
+            <div class="chart" id="chart-shows"></div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Есть ли эффект и когда он начинается?</li>
+                <li>За счёт чего выросла выручка при стабильном CPM и давлении?</li>
+                <li>Почему show rate вырос, а давление не изменилось?</li>
+                <li>Какие метрики нужно проверить дополнительно (fill rate, coverage, viewability)?</li>
+                <li>Можно ли катить в прод? Какие guardrails важны?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что выручка стабильно растёт с начала эксперимента, в то время как CPM остаётся практически неизменным, а рекламное давление не меняется. Одновременно растёт show rate — доля реально увиденных показов.
+                </p>
+
+                <p>
+                    <strong>Механизм эффекта:</strong> Lazy load оптимизирует воронку монетизации. Вместо того чтобы загружать рекламу заранее (когда пользователь может не доскроллить до блока), загрузка происходит только при достижении соответствующей области экрана. Это приводит к:
+                </p>
+                <ul>
+                    <li><strong>Росту show rate:</strong> Больше показов становятся реально видимыми, потому что загружаются только те блоки, до которых пользователь доскроллил.</li>
+                    <li><strong>Снижению неэффективных загрузок:</strong> Меньше запросов к рекламным сетям для блоков, которые никогда не будут показаны.</li>
+                    <li><strong>Росту качества инвентаря:</strong> Показы становятся более ценными, потому что они гарантированно видимы.</li>
+                </ul>
+
+                <p>
+                    <strong>Почему CPM не изменился:</strong> Структура спроса и конкуренция остались прежними. Изменилась не цена, а качество инвентаря — больше показов стали реально видимыми, что увеличило объём монетизируемых показов при той же цене.
+                </p>
+
+                <p>
+                    <strong>Почему давление не изменилось:</strong> Количество рекламных блоков на странице осталось прежним. Изменилась только механика загрузки — блоки загружаются позже, но их количество не изменилось. Пользователь видит столько же рекламы, просто она загружается эффективнее.
+                </p>
+
+                <p>
+                    <strong>Порядок проверки:</strong>
+                </p>
+                <ol>
+                    <li>Show rate — вырос ли процент реально увиденных показов?</li>
+                    <li>Monetizable shows — вырос ли объём монетизируемых показов?</li>
+                    <li>Fill rate, coverage — улучшилась ли воронка requests → responses → shows?</li>
+                    <li>Viewability — выросла ли доля видимых показов?</li>
+                    <li>Guardrails — не ухудшились ли пользовательские метрики (time spent, глубина сессии)?</li>
+                </ol>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Выручка выросла, значит можно катить. Lazy load всегда работает.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Рост выручки на 5–7% при стабильном CPM и давлении указывает на эффект через оптимизацию воронки показов. Lazy load повысил качество инвентаря за счёт роста show rate и доли реально видимых показов. Это один из самых эффективных приёмов оптимизации монетизации без роста давления. Можно катить в прод при условии, что guardrails (пользовательские метрики) не ухудшились.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что «lazy load всегда даёт такой эффект» — результат зависит от паттернов скролла пользователей и структуры контента. Нельзя утверждать, что «эффект будет одинаковым на всех поверхностях» — на поверхностях с короткими сессиями эффект может быть менее выражен. Нельзя утверждать, что «давление не влияет» — важно проверить, что пользовательские метрики не ухудшились.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../monetization/metrics/revenue.html">Выручка: декомпозиция на price × volume</a></li>
+                <li><a href="../../monetization/metrics/show-fill-rate.html">Show rate и fill rate как ранние индикаторы</a></li>
+                <li><a href="../lessons/01-price-vs-money.html">Lesson 1: Цена ≠ деньги — эффект через объём</a></li>
+                <li><a href="./002-rev-up-no-cpm.html">Сценарий 002: Выручка выросла без роста CPM</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./007-local-win-system-loss.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./009-visibility-no-pressure.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 008: Lazy load via funnel
+        // Synthetic data: 14 days, baseline = 100
+        // Funnel: Requests (stable) → Responses (grow) → Shows (grow more)
+        // Revenue grows via improved funnel efficiency
+
+        let currentMode = 'annotated';
+
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // Requests: Both stable (same number of ad slots)
+            const requestsControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+            const requestsTest = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+
+            // Responses: Test grows (better fill rate due to lazy load)
+            const responsesControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+            const responsesTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.35; // ~5% over 14 days
+                const noise = (Math.random() - 0.5) * 0.3;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Shows: Test grows more (better show rate)
+            const showsControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.3 }));
+            const showsTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.5; // ~7% over 14 days
+                const noise = (Math.random() - 0.5) * 0.3;
+                return { x: d, y: base + growth + noise };
+            });
+
+            return { requestsControl, requestsTest, responsesControl, responsesTest, showsControl, showsTest };
+        }
+
+        function renderCharts() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // Requests chart
+            ABCharts.render({
+                el: '#chart-requests',
+                series: [
+                    { name: 'Control', values: data.requestsControl, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.requestsTest, color: '#999' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Requests (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 7, y: 100, text: 'Requests стабильны', color: '#999', fontSize: '11px' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 300,
+                responsive: true
+            });
+
+            // Responses chart
+            ABCharts.render({
+                el: '#chart-responses',
+                series: [
+                    { name: 'Control', values: data.responsesControl, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.responsesTest, color: '#4a9eff' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Responses (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 12, y: 104.5, text: '+5%', color: '#4a9eff', fontSize: '11px', fontWeight: '500' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 300,
+                responsive: true
+            });
+
+            // Shows chart
+            ABCharts.render({
+                el: '#chart-shows',
+                series: [
+                    { name: 'Control', values: data.showsControl, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.showsTest, color: '#4a9eff' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Shows (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    labels: annotationsEnabled ? [
+                        { x: 12, y: 106.5, text: '+7%', color: '#4a9eff', fontSize: '11px', fontWeight: '500' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 300,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderCharts();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCharts();
+        });
+    </script>
+</body>
+</html>

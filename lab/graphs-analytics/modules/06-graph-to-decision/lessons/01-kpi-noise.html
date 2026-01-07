@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI и шум: почему много метрик мешает решению — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 6.1 / Модуль 6</div>
+            <h1>Почему много метрик мешает решению</h1>
+            <p class="subtitle">Когда всё важно — решение невозможно</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике часто возникает ситуация, когда есть дашборд или отчёт с большим числом KPI, все метрики показаны одинаково, и от аналитика ожидают управленческое решение. Но когда всё важно визуально, решение становится невозможным.
+                </p>
+                <p>
+                    Типичные кейсы, где много метрик создаёт шум:
+                </p>
+                <ul>
+                    <li>Итоги A/B-тестов: revenue, conversion, retention, engagement — все показаны равноправно</li>
+                    <li>Продуктовые дашборды: множество метрик без визуального приоритета</li>
+                    <li>Отчёты по монетизации: CPM, RPM, revenue, margin — все одинаково важны</li>
+                    <li>Презентации для руководства: попытка показать все метрики одновременно</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что избыточное количество KPI и равноправное представление метрик разрушает способность принять решение. Решение требует одного сигнала, а когда график показывает много равнозначных метрик, он создаёт шум, а не аргумент.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: равноправный набор KPI</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Много метрик без визуального приоритета</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- KPI blocks (all equal visual weight) -->
+                            <g transform="translate(50, 50)">
+                                <!-- Row 1 -->
+                                <rect x="0" y="0" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="60" y="20" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">Revenue</text>
+                                <text x="60" y="35" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+2.5%</text>
+                                
+                                <rect x="140" y="0" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="200" y="20" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">Conversion</text>
+                                <text x="200" y="35" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+0.3%</text>
+                                
+                                <rect x="280" y="0" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="340" y="20" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">Retention</text>
+                                <text x="340" y="35" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">-1.2%</text>
+                                
+                                <rect x="420" y="0" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="480" y="20" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">Engagement</text>
+                                <text x="480" y="35" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+5.1%</text>
+                                
+                                <!-- Row 2 -->
+                                <rect x="0" y="70" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="60" y="90" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">CPM</text>
+                                <text x="60" y="105" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+1.8%</text>
+                                
+                                <rect x="140" y="70" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="200" y="90" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">RPM</text>
+                                <text x="200" y="105" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+3.2%</text>
+                                
+                                <rect x="280" y="70" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="340" y="90" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">Margin</text>
+                                <text x="340" y="105" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">-0.5%</text>
+                                
+                                <rect x="420" y="70" width="120" height="50" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4"/>
+                                <text x="480" y="90" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="500">LTV</text>
+                                <text x="480" y="105" font-size="14" fill="#1a1a1a" text-anchor="middle" font-weight="500">+2.1%</text>
+                            </g>
+                            <!-- Confusion -->
+                            <text x="300" y="200" font-size="12" fill="#d32f2f" text-anchor="middle">На что опираться?</text>
+                            <text x="300" y="215" font-size="11" fill="#666" text-anchor="middle">Все метрики равноправны</text>
+                            <text x="300" y="230" font-size="10" fill="#666" text-anchor="middle">График показывает данные, но не подсказывает решение</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График показывает данные, но не подсказывает, что делать.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Много метрик без визуального приоритета создают визуальный шум. Нет визуального выделения того, какая метрика определяет решение, и непонятно, на что опираться. Все метрики выглядят одинаково важными, и читатель вынужден сам решать, какая метрика важнее, что переносит ответственность с анализа на интуицию.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Равноправие метрик стирает сигнал — глаз не понимает, на что смотреть</h3>
+                        <p>
+                            Когда все метрики имеют одинаковый визуальный вес, цвет и размер, равноправие метрик стирает сигнал. Глаз не понимает, на что смотреть, и все метрики смешиваются в визуальный шум. Нет способа выделить ключевую метрику, которая определяет решение, и график перестаёт направлять к решению. Вместо одного сигнала читатель видит множество равнозначных сигналов, что равно отсутствию сигнала.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Читатель вынужден сам решать, какая метрика важнее, что переносит ответственность с анализа на интуицию</h3>
+                        <p>
+                            Если график не показывает визуальную иерархию метрик, читатель вынужден сам решать, какая метрика важнее. Это переносит ответственность с анализа на интуицию: решение принимается не на основе аналитического аргумента, а на основе субъективного выбора читателя. График перестаёт быть инструментом принятия решения и становится просто набором данных, которые нужно интерпретировать.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Даже положительный эффект теряется, если он не выделен среди других показателей</h3>
+                        <p>
+                            Даже если есть положительный эффект по ключевой метрике, он теряется, если не выделен среди других показателей. Читатель не видит, что именно важно для решения, и положительный эффект смешивается с другими метриками. График не подсказывает, что делать, и решение откладывается или принимается на основе случайного впечатления, а не аналитического аргумента.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: выделение сигнала</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Явное выделение ключевой метрики</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Primary KPI (emphasized) -->
+                            <g transform="translate(50, 50)">
+                                <rect x="0" y="0" width="200" height="80" fill="#f0f9ff" stroke="#0284c7" stroke-width="3" rx="4"/>
+                                <text x="100" y="25" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="600">PRIMARY</text>
+                                <text x="100" y="45" font-size="13" fill="#1a1a1a" text-anchor="middle" font-weight="500">Revenue</text>
+                                <text x="100" y="65" font-size="18" fill="#1a1a1a" text-anchor="middle" font-weight="600">+2.5%</text>
+                            </g>
+                            
+                            <!-- Secondary KPIs (de-emphasized) -->
+                            <g transform="translate(270, 50)">
+                                <rect x="0" y="0" width="100" height="35" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4" opacity="0.6"/>
+                                <text x="50" y="15" font-size="9" fill="#666" text-anchor="middle">Conversion</text>
+                                <text x="50" y="28" font-size="11" fill="#666" text-anchor="middle">+0.3%</text>
+                                
+                                <rect x="0" y="45" width="100" height="35" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4" opacity="0.6"/>
+                                <text x="50" y="60" font-size="9" fill="#666" text-anchor="middle">Retention</text>
+                                <text x="50" y="73" font-size="11" fill="#666" text-anchor="middle">-1.2%</text>
+                            </g>
+                            
+                            <g transform="translate(390, 50)">
+                                <rect x="0" y="0" width="100" height="35" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4" opacity="0.6"/>
+                                <text x="50" y="15" font-size="9" fill="#666" text-anchor="middle">Engagement</text>
+                                <text x="50" y="28" font-size="11" fill="#666" text-anchor="middle">+5.1%</text>
+                                
+                                <rect x="0" y="45" width="100" height="35" fill="#fafafa" stroke="#e8e8e8" stroke-width="1" rx="4" opacity="0.6"/>
+                                <text x="50" y="60" font-size="9" fill="#666" text-anchor="middle">CPM</text>
+                                <text x="50" y="73" font-size="11" fill="#666" text-anchor="middle">+1.8%</text>
+                            </g>
+                            
+                            <!-- Decision -->
+                            <text x="300" y="180" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="500">Решение: Revenue +2.5%</text>
+                            <text x="300" y="195" font-size="11" fill="#666" text-anchor="middle">Остальные метрики — контекст</text>
+                            <text x="300" y="210" font-size="10" fill="#666" text-anchor="middle">Визуальная иерархия отражает логику решения</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График должен отвечать на вопрос: «По какой метрике мы принимаем решение?»
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Выделение сигнала явно выделяет одну ключевую метрику, а вторичные метрики деэмфазируются. Визуальная иерархия отражает логику решения: primary метрика выделяется, остальные играют роль контекста. График отвечает на вопрос «По какой метрике мы принимаем решение?», а не просто демонстрирует все доступные данные. Решение требует одного сигнала, и график должен его предоставить.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Откладывать решение, потому что график не показывает явного сигнала и все метрики выглядят равноправными. Искать компромиссы между метриками без приоритета, пытаясь учесть все показатели одновременно. Просить дополнительные отчёты, пытаясь найти способ понять, какая метрика важнее.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Сфокусироваться на ключевом сигнале, потому что график явно показывает, какая метрика определяет решение. Использовать вторичные метрики как контекст, понимая их роль, но не позволяя им блокировать решение. Быстро фиксировать вывод, потому что график предоставляет один сигнал, а не множество равнозначных.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Решение требует одного сигнала. Если график показывает много равнозначных KPI, он создаёт шум, а не аргумент. График должен выстраивать визуальную иерархию метрик, явно выделяя ключевую метрику, которая определяет решение, и деэмфазируя вторичные метрики. Визуальная иерархия должна отражать логику решения, а не полноту данных.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Понимаю ли я, какая метрика главная? Видна ли она сразу на графике?</li>
+                    <li>Видна ли она сразу? Или приходится искать её среди других метрик?</li>
+                    <li>Помогают ли остальные метрики, а не мешают ли решению? Играют ли они роль контекста, или создают шум?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Качество инвентаря</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 900px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-list {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .triage-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .triage-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .triage-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .triage-section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .triage-section-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .triage-section-list {
+            padding-left: 1.25rem;
+        }
+
+        .triage-section-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .quality-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .quality-table th,
+        .quality-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .quality-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .quality-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← к разделу</a>
+        <a href="../../index.html" class="back-link" style="margin-left: 1rem; font-size: 0.85rem; color: #999;">← к курсу</a>
+        <h1>Качество инвентаря</h1>
+        <p class="subtitle">Качество — это распределение внимания, а не 'факт показа'.</p>
+
+        <div class="intro">
+            <p>
+                Инвентарь бывает "доставленный", но слабый по качеству. Система может показывать рекламу, но в контекстах с низким вниманием, в повторяющихся ситуациях, или в условиях конкуренции за одно внимание. Такие показы не превращаются в клики и деньги.
+            </p>
+            <p>
+                Среднее значение метрики часто скрывает деградацию на краю распределения. Средний CTR может быть стабилен, пока p10 (нижний дециль) падает. Средний CPM может расти, пока attention proxy деградирует. Система ломается внизу, пока среднее выглядит терпимо.
+            </p>
+            <p>
+                Основная идея: "Качество умирает тихо через микс и повторение". Деградация происходит не через резкое падение одной метрики, а через постепенный сдвиг в составе инвентаря, рост частоты, конкуренцию возможностей. Это видно только по хвостам распределения и сегментам.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3 источника деградации качества</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Composition shift</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Больше low-attention ситуаций в общем микс инвентаря. Общий объём растёт, но доля качественных возможностей падает.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Доля high/mid/low attention в общем инвентаре</li>
+                            <li>Сдвиг в распределении качества по сегментам</li>
+                            <li>Рост low-attention share при стабильном объёме</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Fatigue</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Частота/повторение снижает эффект. Один и тот же пользователь видит рекламу слишком часто, внимание устаёт.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Frequency proxy: частота касаний рекламой</li>
+                            <li>Saturation proxy: рост показов без роста эффекта</li>
+                            <li>Delayed revenue response: лаг между показом и эффектом</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Crowding</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Несколько возможностей конкурируют за одно внимание. Один формат отнимает внимание у другого, общий эффект падает.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Crowding proxy: рост возможностей без роста внимания</li>
+                            <li>Composition share: доля форматов в общем инвентаре</li>
+                            <li>Cannibalization: один формат снижает эффективность другого</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Среднее 'ок', хвосты ломаются</div>
+            <div class="chart-container">
+                <svg id="tailsChart"></svg>
+                <p class="chart-caption">Система ломается внизу распределения, пока среднее выглядит терпимо.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">CPM может расти, когда качество падает</div>
+            <div class="chart-container">
+                <svg id="cpmChart"></svg>
+                <p class="chart-caption">Рост цены не лечит падение внимания — он его маскирует.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Качество как микс (composition)</div>
+            <div class="chart-container">
+                <svg id="compositionChart"></svg>
+                <p class="chart-caption">Качество деградирует через микс — общий объём ничего не гарантирует.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Quality triage: симптом → механизм → проверка</div>
+            <div class="interactive-panel">
+                <div class="triage-controls">
+                    <div class="control-group">
+                        <label class="control-label">Симптом</label>
+                        <select id="symptomSelect" class="control-input">
+                            <option value="revenue-flat-opportunities-grow">Revenue плоская, show opportunities растут</option>
+                            <option value="cpm-up-effectiveness-down">CPM растёт, но эффективность падает</option>
+                            <option value="ctr-stable-revenue-flat">CTR стабилен, но revenue не растёт</option>
+                            <option value="showrate-down-requests-stable">Show rate падает, requests стабильны</option>
+                            <option value="frequency-up-effect-none">Частота растёт, эффект нет</option>
+                            <option value="high-pressure-segment-degrades">Сегмент high-pressure деградирует первым</option>
+                            <option value="variance-up-mean-ok">Дисперсия растёт, среднее ок</option>
+                            <option value="silence-then-drop">После релиза 'тишина', потом провал</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="triage-output" id="triageOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Прокси качества инвентаря</div>
+            <table class="quality-table">
+                <thead>
+                    <tr>
+                        <th>Прокси</th>
+                        <th>Что измеряет</th>
+                        <th>Где в цепочке</th>
+                        <th>Ловит какую деградацию</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Attention proxy</td>
+                        <td>Время/скролл/видимость — внимание пользователя к контексту</td>
+                        <td>Shows → Clicks</td>
+                        <td>Low-attention ситуации, ранний/частый инвентарь</td>
+                    </tr>
+                    <tr>
+                        <td>Effective shows share</td>
+                        <td>Доля "внимательных" показов в общем объёме</td>
+                        <td>Shows → Clicks</td>
+                        <td>Composition shift, рост low-attention доли</td>
+                    </tr>
+                    <tr>
+                        <td>p10/p50/p90 по эффективности</td>
+                        <td>Края распределения эффективности показов</td>
+                        <td>Shows → Revenue</td>
+                        <td>Деградация в хвостах, скрытая от среднего</td>
+                    </tr>
+                    <tr>
+                        <td>Variance by segments</td>
+                        <td>Дисперсия эффективности по сегментам</td>
+                        <td>Все шаги</td>
+                        <td>Проблемы в отдельных сегментах, маскируемые средним</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency proxy</td>
+                        <td>Частота касаний рекламой одного пользователя</td>
+                        <td>Shows → Clicks</td>
+                        <td>Fatigue, усталость от повторения</td>
+                    </tr>
+                    <tr>
+                        <td>Saturation proxy</td>
+                        <td>Рост показов без роста эффекта</td>
+                        <td>Shows → Revenue</td>
+                        <td>Добавление возможностей без ценности</td>
+                    </tr>
+                    <tr>
+                        <td>ShowConv</td>
+                        <td>Конверсия opportunities в shows</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Насыщение снижает конверсию</td>
+                    </tr>
+                    <tr>
+                        <td>Response ratio</td>
+                        <td>Доступность спроса на запросы</td>
+                        <td>Requests → Responses</td>
+                        <td>Спрос недоступен или недостаточен</td>
+                    </tr>
+                    <tr>
+                        <td>Composition share</td>
+                        <td>Доля low/mid/high quality в общем инвентаре</td>
+                        <td>Opportunities</td>
+                        <td>Composition shift, рост low-quality доли</td>
+                    </tr>
+                    <tr>
+                        <td>Delayed revenue response</td>
+                        <td>Лаг между показом и эффектом в деньгах</td>
+                        <td>Shows → Revenue</td>
+                        <td>Короткое окно скрывает проблемы</td>
+                    </tr>
+                    <tr>
+                        <td>Anomaly persistence</td>
+                        <td>Длительность аномалий в метриках</td>
+                        <td>Все шаги</td>
+                        <td>Временные всплески vs системные проблемы</td>
+                    </tr>
+                    <tr>
+                        <td>Crowding proxy</td>
+                        <td>Рост возможностей без роста внимания</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Конкуренция возможностей за внимание</td>
+                    </tr>
+                    <tr>
+                        <td>Coverage</td>
+                        <td>Доля возможностей, дошедших до show</td>
+                        <td>Opportunities → Shows</td>
+                        <td>Рост opportunities без роста shows</td>
+                    </tr>
+                    <tr>
+                        <td>Quality mix trend</td>
+                        <td>Тренд в распределении качества во времени</td>
+                        <td>Opportunities</td>
+                        <td>Постепенный сдвиг в сторону low-quality</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Качество упало — что делать</div>
+            <ul class="checklist">
+                <li>Локализовать: какой слой (supply/delivery/pressure) — проверь цепочку opportunities → requests → responses → shows</li>
+                <li>Посмотреть хвосты (p10) и сегменты — не маскирует ли среднее проблемы в отдельных сегментах</li>
+                <li>Проверить микс качества — не выросла ли доля low-attention в общем инвентаре</li>
+                <li>Проверить частоту/повторение — не усталость ли от частых показов</li>
+                <li>Проверить конкуренцию возможностей — не конкурируют ли несколько форматов за одно внимание</li>
+                <li>Оценить лаг и окно — не слишком ли короткое окно скрывает проблемы через лаг</li>
+                <li>"Остановить вмешательства" при неопределённости — не усугубляй проблему новыми изменениями</li>
+                <li>Выбрать безопасное действие: уменьшить давление / вернуть качество / убрать низкий слой — в зависимости от локализации</li>
+                <li>Проверить восстановление по ранним сигналам — мониторь attention proxy, хвосты, сегменты</li>
+                <li>Обновить алерты/плейбуки — добавь новые прокси качества в мониторинг</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./hidden-inventory.html" class="next-card">
+                    <div class="next-card-title">Скрытый инвентарь →</div>
+                    <div class="next-card-text">Возможности, которые не превращаются в показы.</div>
+                </a>
+                <a href="./inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Усталость инвентаря →</div>
+                    <div class="next-card-text">Как повторение снижает эффективность возможностей.</div>
+                </a>
+                <a href="./coverage-vs-pressure.html" class="next-card">
+                    <div class="next-card-title">Coverage vs Pressure →</div>
+                    <div class="next-card-text">Баланс между доступностью инвентаря и давлением.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Инвентарю</a>
+            <p class="footer-note">Качество — это распределение внимания, а не 'факт показа'.</p>
+        </div>
+    </div>
+
+    <script>
+        // Quality triage map
+        const qualityTriageMap = {
+            'revenue-flat-opportunities-grow': {
+                mechanism: 'Composition shift или saturation. Инвентарь растёт, но качество падает через микс или насыщение. Возможности добавляются без внимания.',
+                checks: [
+                    'Проверить composition share: не выросла ли доля low-attention',
+                    'Проверить saturation proxy: не упирается ли система в потолок',
+                    'Проверить coverage: не падает ли доля opportunities, дошедших до show',
+                    'Проверить хвосты (p10): не деградирует ли нижний дециль',
+                    'Проверить сегменты: не маскирует ли среднее проблемы в отдельных сегментах',
+                    'Проверить лаг: не слишком ли короткое окно скрывает проблемы'
+                ],
+                dont: 'Не увеличивай давление дальше — это усугубит проблему.'
+            },
+            'cpm-up-effectiveness-down': {
+                mechanism: 'Компенсация ценой маскирует падение качества. CPM растёт, чтобы компенсировать падение объёма или внимания.',
+                checks: [
+                    'Проверить attention proxy: не падает ли внимание к контексту',
+                    'Проверить effective shows share: не падает ли доля "внимательных" показов',
+                    'Проверить showConv: не падает ли конверсия opportunities в shows',
+                    'Проверить composition shift: не выросла ли доля low-quality',
+                    'Проверить frequency proxy: не усталость ли от повторения',
+                    'Проверить хвосты: не деградирует ли p10 эффективности'
+                ],
+                dont: 'Не радуйся росту CPM — это компенсация, не успех.'
+            },
+            'ctr-stable-revenue-flat': {
+                mechanism: 'CTR стабилен, но качество контекста падает. Средний CTR маскирует проблемы в хвостах или сегментах.',
+                checks: [
+                    'Проверить хвосты (p10/p90): не падает ли нижний дециль CTR',
+                    'Проверить variance by segments: не растёт ли дисперсия по сегментам',
+                    'Проверить composition shift: не выросла ли доля low-attention',
+                    'Проверить effective shows share: не падает ли доля "внимательных" показов',
+                    'Проверить crowding proxy: не конкурируют ли форматы за внимание',
+                    'Проверить лаг: не слишком ли короткое окно скрывает проблемы'
+                ],
+                dont: 'Не смотри только на средний CTR — проверь хвосты и сегменты.'
+            },
+            'showrate-down-requests-stable': {
+                mechanism: 'Проблема в delivery или saturation. Requests стабильны, но shows падают — либо технические проблемы, либо насыщение.',
+                checks: [
+                    'Проверить response ratio: не падает ли доступность спроса',
+                    'Проверить saturation proxy: не упирается ли система в потолок',
+                    'Проверить технические метрики: не проблемы ли в delivery',
+                    'Проверить coverage: не падает ли доля opportunities, дошедших до show',
+                    'Проверить frequency proxy: не усталость ли от повторения',
+                    'Проверить сегменты: не проблемы ли в отдельных сегментах'
+                ],
+                dont: 'Не трогай другие слои — проблема в delivery или saturation.'
+            },
+            'frequency-up-effect-none': {
+                mechanism: 'Fatigue. Частота растёт, но эффект не растёт — усталость от повторения снижает внимание.',
+                checks: [
+                    'Проверить saturation proxy: не упирается ли система в потолок',
+                    'Проверить delayed revenue response: не слишком ли короткое окно',
+                    'Проверить attention proxy: не падает ли внимание при росте частоты',
+                    'Проверить effective shows share: не падает ли доля "внимательных" показов',
+                    'Проверить хвосты: не деградирует ли p10 эффективности',
+                    'Проверить сегменты: не усталость ли в отдельных сегментах'
+                ],
+                dont: 'Не увеличивай частоту дальше — это усугубит усталость.'
+            },
+            'high-pressure-segment-degrades': {
+                mechanism: 'Хрупкость системы. High-pressure сегмент деградирует первым — насыщение проявляется раньше в сегментах с высоким давлением.',
+                checks: [
+                    'Проверить variance by segments: не растёт ли дисперсия между сегментами',
+                    'Проверить хвосты (p10): не деградирует ли нижний дециль',
+                    'Проверить saturation proxy по сегментам: не упирается ли high-pressure сегмент в потолок',
+                    'Проверить composition shift по сегментам: не выросла ли доля low-quality в high-pressure',
+                    'Проверить frequency proxy по сегментам: не усталость ли в high-pressure',
+                    'Проверить coverage по сегментам: не падает ли доля opportunities в high-pressure'
+                ],
+                dont: 'Не игнорируй сегменты — среднее маскирует проблемы.'
+            },
+            'variance-up-mean-ok': {
+                mechanism: 'Деградация в хвостах. Дисперсия растёт, среднее ок — система ломается внизу распределения, пока среднее выглядит терпимо.',
+                checks: [
+                    'Проверить хвосты (p10): не падает ли нижний дециль',
+                    'Проверить variance by segments: не растёт ли дисперсия между сегментами',
+                    'Проверить composition shift: не выросла ли доля low-quality',
+                    'Проверить сегменты: не проблемы ли в отдельных сегментах',
+                    'Проверить anomaly persistence: не временные ли всплески',
+                    'Проверить quality mix trend: не постепенный ли сдвиг в сторону low-quality'
+                ],
+                dont: 'Не смотри только на среднее — проверь хвосты и сегменты.'
+            },
+            'silence-then-drop': {
+                mechanism: 'Лаг и компенсация. После релиза "тишина" — компенсация ценой маскирует проблемы, потом провал — лаг проявляется.',
+                checks: [
+                    'Проверить лаг: не слишком ли короткое окно скрывает проблемы',
+                    'Проверить компенсацию: не маскирует ли цена падение объёма',
+                    'Проверить ранние сигналы: не падает ли attention proxy, showConv',
+                    'Проверить хвосты: не деградирует ли p10 эффективности',
+                    'Проверить composition shift: не выросла ли доля low-quality',
+                    'Проверить change log: не смешались ли эффекты изменений'
+                ],
+                dont: 'Не игнорируй "тишину" — это компенсация, не успех.'
+            }
+        };
+
+        // Update triage
+        function updateTriage() {
+            const symptom = document.getElementById('symptomSelect').value;
+            const triage = qualityTriageMap[symptom];
+
+            document.getElementById('triageOutput').innerHTML = `
+                <div class="triage-section">
+                    <div class="triage-section-title">Вероятный механизм</div>
+                    <div class="triage-section-text">${triage.mechanism}</div>
+                </div>
+                <div class="triage-section">
+                    <div class="triage-section-title">Первые проверки</div>
+                    <ul class="triage-section-list">
+                        ${triage.checks.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="triage-section">
+                    <div class="triage-section-title">Что НЕ делать</div>
+                    <div class="triage-section-text">${triage.dont}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('symptomSelect').addEventListener('change', updateTriage);
+        updateTriage();
+
+        // Tails chart
+        function generateTailsChart() {
+            const container = d3.select('#tailsChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#tailsChart').selectAll('*').remove();
+
+            const svg = d3.select('#tailsChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 170;
+            const dropStart = 100;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Avg quality: almost flat, slight drop
+                const avgDrop = t > dropStart ? 0.05 * (1 - 1 / (1 + Math.exp(-(t - dropStart) / 15))) : 0;
+                const avg = 0.78 - avgDrop;
+
+                // p10 quality: drops stronger and earlier
+                const p10DropStart = 85;
+                const p10Drop = t > p10DropStart ? 0.20 * (1 - 1 / (1 + Math.exp(-(t - p10DropStart) / 10))) : 0;
+                const p10 = 0.65 - p10Drop;
+
+                // p90 quality: almost stable
+                const p90 = 0.88 + 0.01 * Math.sin(t / 20);
+
+                data.push({ t, avg, p10, p90 });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.4, 1.0])
+                .range([height, 0]);
+
+            // Moment line
+            const moment = 130;
+            g.append('line')
+                .attr('x1', x(moment))
+                .attr('x2', x(moment))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(moment))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('момент, когда это станет заметно в деньгах');
+
+            // Lines
+            const line = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.avg))
+                .curve(d3.curveMonotoneX);
+
+            const lineP10 = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.p10))
+                .curve(d3.curveMonotoneX);
+
+            const lineP90 = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.p90))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineP10);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineP90);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].avg) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('avg_quality');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].p10) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('p10_quality');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].p90) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('p90_quality');
+        }
+
+        // CPM chart
+        function generateCPMChart() {
+            const container = d3.select('#cpmChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#cpmChart').selectAll('*').remove();
+
+            const svg = d3.select('#cpmChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 170;
+            const attentionDropStart = 85;
+            const cpmRiseStart = 95;
+            const revenueDropStart = 115;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Attention proxy: drops after attentionDropStart
+                const attentionDrop = t > attentionDropStart ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - attentionDropStart) / 12))) : 0;
+                const attention = 0.75 + 0.02 * Math.sin(t / 15) - attentionDrop;
+
+                // CPM index: slowly rises after cpmRiseStart (compensation)
+                const cpmRise = t > cpmRiseStart ? 0.12 * (1 - 1 / (1 + Math.exp(-(t - cpmRiseStart) / 10))) : 0;
+                const cpm = 0.80 + 0.01 * Math.sin(t / 18) + cpmRise;
+
+                // Revenue index: reacts later
+                const revenueDrop = t > revenueDropStart ? 0.10 * (1 - 1 / (1 + Math.exp(-(t - revenueDropStart) / 8))) : 0;
+                const revenue = 0.85 - revenueDrop;
+
+                data.push({ t, attention, cpm, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.5, 1.0])
+                .range([height, 0]);
+
+            // Saturation threshold
+            const threshold = 0.75;
+            g.append('line')
+                .attr('x1', 0)
+                .attr('x2', width)
+                .attr('y1', y(threshold))
+                .attr('y2', y(threshold))
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(threshold) - 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('порог насыщения');
+
+            // Lines
+            const lineAttention = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.attention))
+                .curve(d3.curveMonotoneX);
+
+            const lineCPM = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.cpm))
+                .curve(d3.curveMonotoneX);
+
+            const lineRevenue = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineAttention);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineCPM);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1.5)
+                .attr('d', lineRevenue);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].attention) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('attention_proxy');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].cpm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('cpm_index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('revenue_index');
+        }
+
+        // Composition chart
+        function generateCompositionChart() {
+            const container = d3.select('#compositionChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#compositionChart').selectAll('*').remove();
+
+            const svg = d3.select('#compositionChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 170;
+            const shiftStart = 80;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // High attention share: starts high, decreases after shiftStart
+                const highDrop = t > shiftStart ? 0.35 * (1 - 1 / (1 + Math.exp(-(t - shiftStart) / 12))) : 0;
+                const high = 0.50 - highDrop;
+
+                // Low attention share: starts low, increases after shiftStart
+                const lowGrowth = t > shiftStart ? 0.40 * (1 - 1 / (1 + Math.exp(-(t - shiftStart) / 12))) : 0;
+                const low = 0.15 + lowGrowth;
+
+                // Mid attention share: fills the gap
+                const mid = 1 - high - low;
+
+                data.push({ t, high, mid, low });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Lines for shares
+            const lineHigh = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.high))
+                .curve(d3.curveMonotoneX);
+
+            const lineMid = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.mid))
+                .curve(d3.curveMonotoneX);
+
+            const lineLow = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.low))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineHigh);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#777')
+                .attr('stroke-width', 2)
+                .attr('d', lineMid);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#aaa')
+                .attr('stroke-width', 2)
+                .attr('d', lineLow);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].high) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('high-attention share');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].mid) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#777')
+                .text('mid share');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].low) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#aaa')
+                .text('low-attention share');
+        }
+
+        // Initial render
+        generateTailsChart();
+        generateCPMChart();
+        generateCompositionChart();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateTailsChart();
+                generateCPMChart();
+                generateCompositionChart();
+            }, 250);
+        });
+    </script>
+</body>
+</html>
+

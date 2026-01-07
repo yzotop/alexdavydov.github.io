@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Несколько вариантов в A/B: как показать структуру решения — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 5.3 / Модуль 5</div>
+            <h1>Как показывать несколько вариантов без потери смысла</h1>
+            <p class="subtitle">Когда задача — выбрать, а не просто сравнить</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике часто возникает ситуация, когда проводится эксперимент с тремя или более вариантами. Есть контроль и несколько тестов, и все варианты показаны равноправно на графике. Но задача не просто сравнить варианты, а выбрать один из них.
+                </p>
+                <p>
+                    Типичные кейсы, где нужно показать структуру решения:
+                </p>
+                <ul>
+                    <li>Multivariate A/B: несколько тестовых вариантов одновременно</li>
+                    <li>Тесты алгоритмов: сравнение нескольких версий алгоритма</li>
+                    <li>Сравнение фич: несколько продуктовых изменений в одном эксперименте</li>
+                    <li>Монетизационные эксперименты: несколько вариантов ценообразования или форматов</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что график показывает различия, но не показывает решение. При множестве вариантов важно не показать всё, а визуально зафиксировать структуру выбора: кто лучший, кто хуже, и по какому критерию. График должен помогать сделать выбор, а не просто демонстрировать различия между линиями.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: равноправное сравнение вариантов</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Все варианты показаны одинаково</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Control (equal style) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#666" stroke-width="2"/>
+                            <!-- Test 1 (equal style) -->
+                            <polyline points="50,155 150,150 250,145 350,135 450,140 550,145" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Test 2 (equal style) -->
+                            <polyline points="50,145 150,140 250,135 350,145 450,150 550,155" 
+                                fill="none" stroke="#999" stroke-width="2"/>
+                            <!-- Test 3 (equal style) -->
+                            <polyline points="50,160 150,155 250,150 350,130 450,135 550,140" 
+                                fill="none" stroke="#666" stroke-width="2"/>
+                            <!-- Test 4 (equal style) -->
+                            <polyline points="50,140 150,135 250,150 350,150 450,155 550,160" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Legend (all equal) -->
+                            <g transform="translate(400, 50)">
+                                <line x1="0" y1="0" x2="30" y2="0" stroke="#666" stroke-width="2"/>
+                                <text x="35" y="5" font-size="10" fill="#666">Контроль</text>
+                                <line x1="0" y1="20" x2="30" y2="20" stroke="#1a1a1a" stroke-width="2"/>
+                                <text x="35" y="25" font-size="10" fill="#666">Тест 1</text>
+                                <line x1="0" y1="40" x2="30" y2="40" stroke="#999" stroke-width="2"/>
+                                <text x="35" y="45" font-size="10" fill="#666">Тест 2</text>
+                                <line x1="0" y1="60" x2="30" y2="60" stroke="#666" stroke-width="2"/>
+                                <text x="35" y="65" font-size="10" fill="#666">Тест 3</text>
+                                <line x1="0" y1="80" x2="30" y2="80" stroke="#1a1a1a" stroke-width="2"/>
+                                <text x="35" y="85" font-size="10" fill="#666">Тест 4</text>
+                            </g>
+                            <!-- Question -->
+                            <text x="300" y="100" font-size="12" fill="#d32f2f" text-anchor="middle">Какой вариант выбрать?</text>
+                            <text x="300" y="115" font-size="11" fill="#666" text-anchor="middle">Все варианты равноправны</text>
+                            <text x="300" y="130" font-size="10" fill="#666" text-anchor="middle">График показывает различия, но не решение</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График показывает различия, но не показывает решение.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Все варианты показаны одинаково, без визуального приоритета. Нет визуального выделения того, какой вариант лучше, какой хуже, и по какому критерию. Непонятно, какой вариант выбирать, и читатель вынужден сам строить структуру решения в голове, сравнивая все варианты между собой.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Отсутствует критерий выбора</h3>
+                        <p>
+                            Все варианты выглядят равнозначными, и нет визуального критерия выбора. График не показывает, какой вариант лучше, какой хуже, и по какому критерию это определяется. Читатель не понимает, на что опираться при выборе, и должен сам определять критерий, сравнивая все варианты между собой. Это замедляет принятие решения и создаёт риск неправильного выбора.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>График не показывает, какие различия важны для решения, а какие вторичны</h3>
+                        <p>
+                            Если все варианты показаны равноправно, график не показывает, какие различия важны для решения, а какие вторичны. Все различия выглядят одинаково значимыми, и читатель не понимает, на что обращать внимание. График не направляет к решению, а просто демонстрирует данные, которые нужно интерпретировать. Это увеличивает когнитивную нагрузку и создаёт риск неправильной интерпретации.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Зритель вынужден сам строить структуру решения в голове</h3>
+                        <p>
+                            Если график не показывает структуру решения, зритель вынужден сам строить её в голове, сравнивая все варианты между собой и определяя, какой лучше. Это требует значительных когнитивных усилий и создаёт риск ошибки. График перестаёт быть аргументом для решения и становится задачей на интерпретацию, что замедляет принятие решения и снижает его качество.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: визуальная структура решения</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Явное выделение лидера и структуры выбора</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Control (de-emphasized) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                            <!-- Other tests (de-emphasized) -->
+                            <polyline points="50,155 150,150 250,145 350,135 450,140 550,145" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1.5" opacity="0.4"/>
+                            <polyline points="50,145 150,140 250,135 350,145 450,150 550,155" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1.5" opacity="0.4"/>
+                            <polyline points="50,140 150,135 250,150 350,150 450,155 550,160" 
+                                fill="none" stroke="#e8e8e8" stroke-width="1.5" opacity="0.4"/>
+                            <!-- Winner (emphasized) -->
+                            <polyline points="50,160 150,155 250,150 350,130 450,135 550,140" 
+                                fill="none" stroke="#1a1a1a" stroke-width="4"/>
+                            <!-- Direct labels -->
+                            <text x="520" y="135" font-size="13" fill="#1a1a1a" font-weight="600">Тест 3 — лидер</text>
+                            <text x="520" y="150" font-size="11" fill="#999" font-style="italic" opacity="0.5">Контроль</text>
+                            <text x="520" y="165" font-size="10" fill="#999" opacity="0.3">Остальные тесты</text>
+                            <!-- Effect indicator -->
+                            <line x1="350" y1="140" x2="350" y2="130" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="360" y="130" font-size="12" fill="#1a1a1a" font-weight="500">+10</text>
+                            <!-- Decision structure -->
+                            <g transform="translate(100, 50)">
+                                <rect x="0" y="0" width="200" height="40" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" rx="4"/>
+                                <text x="100" y="15" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="500">Структура решения</text>
+                                <text x="100" y="30" font-size="10" fill="#666" text-anchor="middle">Тест 3 > Контроль > Остальные</text>
+                            </g>
+                            <!-- Conclusion -->
+                            <text x="300" y="100" font-size="11" fill="#0284c7" text-anchor="middle">Решение: Тест 3</text>
+                            <text x="300" y="115" font-size="10" fill="#666" text-anchor="middle">Структура выбора визуально зафиксирована</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График должен отвечать на вопрос: «Какой вариант мы выбираем и почему?»
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Визуальная структура решения явно выделяет лидера, деэмфазирует проигравшие варианты и фиксирует структуру выбора. График отвечает на вопрос «Какой вариант мы выбираем и почему?», а не просто демонстрирует различия. Возможно группирование (лучшие / остальные) или подпись, фиксирующая выбор. График становится инструментом выбора и защиты решения, а не просто набором данных.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Затягивать выбор, потому что график не показывает явного лидера и все варианты выглядят равноправными. Выбирать «на ощущении», сравнивая все варианты между собой без понимания структуры выбора. Просить дополнительные отчёты, пытаясь найти способ понять, какой вариант лучше.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Быстро фиксировать лидера, потому что график явно показывает, какой вариант лучше. Понимать компромиссы, видя структуру выбора и понимая, какие варианты проигрывают и почему. Защищать решение визуально, опираясь на график, который явно показывает структуру выбора и критерий решения.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Когда вариантов больше двух, график обязан показывать структуру выбора, а не просто различия. График должен визуально зафиксировать, кто лучший, кто хуже, и по какому критерию. При множестве вариантов важно не показать всё, а помочь сделать выбор, явно выделяя лидера и деэмфазируя проигравшие варианты. График становится инструментом выбора и защиты решения.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Ясно ли, какой вариант выбран? Можно ли сразу увидеть лидера на графике?</li>
+                    <li>Понятно ли, по какому критерию сделан выбор? Визуально ли зафиксирован критерий решения?</li>
+                    <li>Можно ли защитить решение, опираясь только на график? Или требуется дополнительное объяснение?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

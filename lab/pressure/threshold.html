@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threshold Pressure</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .controls {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2f3e4e;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2f3e4e;
+            cursor: pointer;
+            border: none;
+        }
+
+        .p-value {
+            font-size: 0.9rem;
+            color: #666;
+            min-width: 60px;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            display: none;
+        }
+
+        .bar {
+            fill: #2f3e4e;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .bar:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Pressure</a>
+        <h1>Threshold Pressure</h1>
+        <p class="subtitle">Smooth input. Discrete outcome.</p>
+        <p class="caption">A tipping point where mass collapses into a narrow band.</p>
+
+        <div class="controls">
+            <div class="slider-container">
+                <label for="pressure-slider" style="font-size: 0.9rem; color: #666;">Pressure:</label>
+                <input type="range" id="pressure-slider" class="slider" min="0" max="1" step="0.01" value="0.35">
+                <span class="p-value" id="p-value">p = 0.35</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+        </div>
+    </div>
+
+    <script>
+        // States 1..100
+        const states = Array.from({ length: 100 }, (_, i) => i + 1);
+
+        // Set up dimensions
+        const margin = { top: 40, right: 30, bottom: 40, left: 30 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 100])
+            .range([0, width]);
+
+        let yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+
+        // Function to compute pressured distribution
+        function computePressuredDistribution(p) {
+            // Start with uniform weights
+            let weights = states.map(() => 1);
+
+            // Apply multiplicative factor to target region 1..20
+            const factor = 1 + p * 30;
+            for (let i = 0; i < 20; i++) {
+                weights[i] *= factor;
+            }
+
+            // Collapse effect after p > 0.6
+            if (p > 0.6) {
+                const collapseFactor = 1 + (p - 0.6) * 120;
+                for (let i = 9; i < 12; i++) {
+                    weights[i] *= collapseFactor;
+                }
+            }
+
+            // Renormalize
+            const sum = weights.reduce((a, b) => a + b, 0);
+            return weights.map(w => w / sum);
+        }
+
+        // Function to update chart
+        function updateChart(p) {
+            const probabilities = computePressuredDistribution(p);
+
+            // Update y scale
+            yScale.domain([0, d3.max(probabilities)]).nice();
+
+            // Update bars
+            const bars = g.selectAll(".bar")
+                .data(probabilities);
+
+            bars.enter()
+                .append("rect")
+                .attr("class", "bar")
+                .merge(bars)
+                .transition()
+                .duration(300)
+                .attr("x", (d, i) => xScale(i + 1) - (width / 100 - 0.5) / 2)
+                .attr("width", width / 100 - 0.5)
+                .attr("y", d => yScale(d))
+                .attr("height", d => height - yScale(d));
+
+            bars.exit().remove();
+        }
+
+        // Initial render
+        updateChart(0.35);
+
+        // Slider event
+        const slider = document.getElementById("pressure-slider");
+        const pValue = document.getElementById("p-value");
+
+        slider.addEventListener("input", function() {
+            const p = parseFloat(this.value);
+            pValue.textContent = `p = ${p.toFixed(2)}`;
+            updateChart(p);
+        });
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickSize(0)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+    </script>
+</body>
+</html>
+

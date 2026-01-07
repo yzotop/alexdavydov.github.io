@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение графиков с разным масштабом: ловушка интуиции — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 3.3 / Модуль 3</div>
+            <h1>Сравнение графиков с разным масштабом: ловушка интуиции</h1>
+            <p class="subtitle">Когда одинаковые эффекты выглядят разными из-за несопоставимого масштаба</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике часто возникает ситуация, когда есть два или больше графиков, метрика одна и та же, но масштаб оси Y выбран отдельно для каждого графика. Визуально один эффект выглядит сильным, другой — слабым, хотя на самом деле они могут быть одинаковыми или даже противоположными.
+                </p>
+                <p>
+                    Типичные кейсы, где сравнение графиков с разным масштабом создаёт ложные выводы:
+                </p>
+                <ul>
+                    <li>Сравнение экспериментов: несколько A/B-тестов показаны рядом, каждый с «удобным» масштабом</li>
+                    <li>Сравнение сегментов: разные сегменты пользователей на отдельных графиках</li>
+                    <li>Отчёты «до / после»: два периода показаны с разным масштабом</li>
+                    <li>Дашборды с несколькими карточками: каждая карточка имеет свой масштаб</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что визуальное сравнение графиков с разным масштабом создаёт ложные выводы. Глаз сравнивает высоту линий, а не их значения, и различие воспринимается как различие эффектов, хотя оно создано масштабом.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: визуально убедительное, но ложное сравнение</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Графики с разным масштабом создают иллюзию различия</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Graph 1 (left) -->
+                            <g transform="translate(0, 0)">
+                                <text x="100" y="20" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">Эксперимент A</text>
+                                <!-- Time axis -->
+                                <line x1="50" y1="200" x2="200" y2="200" stroke="#999" stroke-width="2"/>
+                                <text x="50" y="220" font-size="10" fill="#666">День 1</text>
+                                <text x="200" y="220" font-size="10" fill="#666">День 7</text>
+                                <!-- Y axis (narrow scale: 48-52) -->
+                                <line x1="50" y1="50" x2="50" y2="200" stroke="#999" stroke-width="1"/>
+                                <text x="25" y="55" font-size="9" fill="#666">52</text>
+                                <text x="25" y="125" font-size="9" fill="#666">50</text>
+                                <text x="25" y="200" font-size="9" fill="#666">48</text>
+                                <!-- Line (small effect, looks dramatic) -->
+                                <line x1="80" y1="150" x2="150" y2="150" stroke="#666" stroke-width="2"/>
+                                <line x1="150" y1="150" x2="150" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                                <line x1="150" y1="100" x2="180" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                                <text x="150" y="90" font-size="10" fill="#1a1a1a">+2%</text>
+                                <text x="100" y="40" font-size="9" fill="#d32f2f">Выглядит сильным</text>
+                            </g>
+                            <!-- Graph 2 (right) -->
+                            <g transform="translate(300, 0)">
+                                <text x="100" y="20" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">Эксперимент B</text>
+                                <!-- Time axis -->
+                                <line x1="50" y1="200" x2="200" y2="200" stroke="#999" stroke-width="2"/>
+                                <text x="50" y="220" font-size="10" fill="#666">День 1</text>
+                                <text x="200" y="220" font-size="10" fill="#666">День 7</text>
+                                <!-- Y axis (wide scale: 0-100) -->
+                                <line x1="50" y1="50" x2="50" y2="200" stroke="#999" stroke-width="1"/>
+                                <text x="25" y="55" font-size="9" fill="#666">100</text>
+                                <text x="25" y="125" font-size="9" fill="#666">50</text>
+                                <text x="25" y="200" font-size="9" fill="#666">0</text>
+                                <!-- Line (same effect, looks weak) -->
+                                <line x1="80" y1="150" x2="150" y2="150" stroke="#666" stroke-width="2"/>
+                                <line x1="150" y1="150" x2="150" y2="145" stroke="#1a1a1a" stroke-width="2"/>
+                                <line x1="150" y1="145" x2="180" y2="145" stroke="#1a1a1a" stroke-width="2"/>
+                                <text x="150" y="140" font-size="10" fill="#1a1a1a">+2%</text>
+                                <text x="100" y="40" font-size="9" fill="#d32f2f">Выглядит слабым</text>
+                            </g>
+                            <!-- Comparison arrow -->
+                            <line x1="250" y1="100" x2="300" y2="100" stroke="#d32f2f" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                    <polygon points="0 0, 10 3, 0 6" fill="#d32f2f"/>
+                                </marker>
+                            </defs>
+                            <!-- False conclusion -->
+                            <text x="300" y="250" font-size="12" fill="#d32f2f" text-anchor="middle">Ложный вывод: A лучше B</text>
+                            <text x="300" y="265" font-size="10" fill="#666" text-anchor="middle">На самом деле эффект одинаковый: +2%</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Различие воспринимается как различие эффектов, хотя оно создано масштабом.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Несколько графиков рядом, каждый с «удобным» масштабом, создают визуально убедительное, но ложное сравнение. Один эффект выглядит сильным, другой — слабым, хотя они могут быть одинаковыми. Глаз сравнивает высоту линий, а не их значения, и делает интуитивный вывод на основе визуального впечатления, не осознавая, что сравнивает разные шкалы.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Глаз сравнивает высоту, а не значения</h3>
+                        <p>
+                            Человеческий глаз воспринимает визуальную относительную высоту линий, а не их абсолютные значения. Если один график имеет узкий масштаб, а другой — широкий, одинаковые эффекты будут выглядеть по-разному. Разный масштаб превращает высоту в иллюзию различия, хотя реальные значения могут быть одинаковыми или даже противоположными.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Отсутствует общий якорь сравнения</h3>
+                        <p>
+                            Нельзя понять, насколько эффекты действительно различаются, если нет общего визуального якоря. Каждый график имеет свой масштаб, и нет способа визуально сопоставить эффекты. Читатель не может ответить на вопрос «какой эффект больше?», потому что визуальное сравнение некорректно.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Зритель не осознаёт, что сравнивает разные шкалы</h3>
+                        <p>
+                            Если различие масштабов не явно обозначено, зритель не осознаёт, что сравнивает разные шкалы, и делает интуитивный вывод на основе визуального впечатления. Это создаёт ложную уверенность в выводе: графики выглядят убедительно, но сравнение некорректно. Неосознанное сравнение разных шкал подрывает доверие к выводу.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: корректная форма сравнения</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Общий масштаб для всех графиков</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Graph 1 (left) -->
+                            <g transform="translate(0, 0)">
+                                <text x="100" y="20" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">Эксперимент A</text>
+                                <!-- Time axis -->
+                                <line x1="50" y1="200" x2="200" y2="200" stroke="#999" stroke-width="2"/>
+                                <text x="50" y="220" font-size="10" fill="#666">День 1</text>
+                                <text x="200" y="220" font-size="10" fill="#666">День 7</text>
+                                <!-- Y axis (common scale: 0-100) -->
+                                <line x1="50" y1="50" x2="50" y2="200" stroke="#999" stroke-width="1"/>
+                                <text x="25" y="55" font-size="9" fill="#666">100</text>
+                                <text x="25" y="125" font-size="9" fill="#666">50</text>
+                                <text x="25" y="200" font-size="9" fill="#666">0</text>
+                                <!-- Line (same effect, now comparable) -->
+                                <line x1="80" y1="150" x2="150" y2="150" stroke="#666" stroke-width="2"/>
+                                <line x1="150" y1="150" x2="150" y2="145" stroke="#1a1a1a" stroke-width="3"/>
+                                <line x1="150" y1="145" x2="180" y2="145" stroke="#1a1a1a" stroke-width="3"/>
+                                <text x="150" y="140" font-size="10" fill="#1a1a1a">+2%</text>
+                            </g>
+                            <!-- Graph 2 (right) -->
+                            <g transform="translate(300, 0)">
+                                <text x="100" y="20" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">Эксперимент B</text>
+                                <!-- Time axis -->
+                                <line x1="50" y1="200" x2="200" y2="200" stroke="#999" stroke-width="2"/>
+                                <text x="50" y="220" font-size="10" fill="#666">День 1</text>
+                                <text x="200" y="220" font-size="10" fill="#666">День 7</text>
+                                <!-- Y axis (same common scale: 0-100) -->
+                                <line x1="50" y1="50" x2="50" y2="200" stroke="#999" stroke-width="1"/>
+                                <text x="25" y="55" font-size="9" fill="#666">100</text>
+                                <text x="25" y="125" font-size="9" fill="#666">50</text>
+                                <text x="25" y="200" font-size="9" fill="#666">0</text>
+                                <!-- Line (same effect, now comparable) -->
+                                <line x1="80" y1="150" x2="150" y2="150" stroke="#666" stroke-width="2"/>
+                                <line x1="150" y1="150" x2="150" y2="145" stroke="#1a1a1a" stroke-width="3"/>
+                                <line x1="150" y1="145" x2="180" y2="145" stroke="#1a1a1a" stroke-width="3"/>
+                                <text x="150" y="140" font-size="10" fill="#1a1a1a">+2%</text>
+                            </g>
+                            <!-- Comparison arrow -->
+                            <line x1="250" y1="100" x2="300" y2="100" stroke="#0284c7" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                    <polygon points="0 0, 10 3, 0 6" fill="#0284c7"/>
+                                </marker>
+                            </defs>
+                            <!-- Correct conclusion -->
+                            <text x="300" y="250" font-size="12" fill="#0284c7" text-anchor="middle">Корректное сравнение</text>
+                            <text x="300" y="265" font-size="10" fill="#666" text-anchor="middle">Эффекты одинаковые: +2% в обоих случаях</text>
+                            <!-- Common scale label -->
+                            <text x="300" y="40" font-size="11" fill="#0284c7" text-anchor="middle">Общий масштаб: 0-100</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Сравнение должно происходить в одном визуальном пространстве.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Корректная форма сравнения использует общий масштаб для всех графиков, явно обозначает диапазон осей или приводит сравнение к нормализованной шкале. Альтернативно, можно использовать сводный график вместо отдельных, чтобы все эффекты были в одном визуальном пространстве. Сравнение должно происходить в одном визуальном пространстве, чтобы читатель мог корректно оценить относительную значимость эффектов.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Выбрать «лучший» вариант на глаз, сравнивая графики с разным масштабом и полагаясь на визуальное впечатление. Недооценить один эффект или переоценить другой из-за того, что они показаны в разном масштабе. Принять решение на основе ложного визуального сравнения, не проверяя сопоставимость масштабов.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Проверять сопоставимость масштабов перед визуальным сравнением, понимая, что графики можно сравнивать только если они находятся в одном масштабе. Приводить сравнение к общей шкале, используя общий масштаб для всех графиков или нормализованную шкалу. Делать различие явным и объяснимым, явно обозначая масштабы и объясняя, почему они выбраны.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Если масштабы разные, визуальное сравнение недопустимо. Сначала масштаб, потом вывод. Графики можно сравнивать только если они находятся в одном масштабе или если различие масштабов явно осознано и объяснено. Визуальное сравнение должно происходить в одном визуальном пространстве, чтобы читатель мог корректно оценить относительную значимость эффектов.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>В одном ли масштабе показаны графики, которые я сравниваю? Если нет, сравнение некорректно.</li>
+                    <li>Есть ли общий визуальный якорь для сравнения, или каждый график имеет свой масштаб?</li>
+                    <li>Не делаю ли я вывод на основе высоты линий, а не их значений? Если да, вывод может быть ложным.</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Effects</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .chart-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-title {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+            font-weight: 400;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-mechanism {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+            stroke-width: 2.5;
+        }
+
+        .shaded-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .shaded-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .marker-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .explanation-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .explanation-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .explanation-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .explanation-panel p:last-child {
+            margin-bottom: 0;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Delayed Effects</h1>
+        <p class="subtitle">Сначала механизм, потом деньги.</p>
+        <p class="insight">Самая частая ошибка — ждать подтверждения в выручке.</p>
+
+        <p class="explanation">
+            Система меняется через ранние сигналы: конверсия в показ, конкуренция, давление. Выручка — итог, который часто приходит с лагом.
+        </p>
+
+        <p class="thesis">
+            <strong>Если вы читаете тест в коротком окне, вы можете 'победить' и проиграть в траектории.</strong>
+        </p>
+
+        <p class="explanation">
+            На графике ниже механика начинает ухудшаться задолго до того, как выручка реагирует.
+        </p>
+
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <div class="chart-title">Механика</div>
+                <svg id="chart1"></svg>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-title">Итог</div>
+                <svg id="chart2"></svg>
+            </div>
+
+            <p class="chart-caption">
+                Оптимизация в коротком окне может выглядеть успешной, хотя механизм уже хуже.
+            </p>
+
+            <div class="explanation-panel">
+                <div class="explanation-panel-title">Как читать лаг</div>
+                <p>Смотрите на механику: show conversion.</p>
+                <p>Смотрите на давление и насыщение.</p>
+                <p>Проверяйте, где начинается реакция выручки.</p>
+                <p>Не делайте выводы раньше, чем проходит лаг.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Если смотреть только на деньги, падение всегда выглядит внезапным. На самом деле система предупреждает раньше — через механику.
+        </p>
+
+        <p class="interpretation">
+            Отложенные эффекты — причина, почему эксперименты нужно читать в траекториях, а не в точках.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Сначала меняется путь. Потом — сумма.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад ко времени</a>
+            <p class="footer-note">Лаг — это причина ложных выводов.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic data
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        const data = [];
+        let baseRevenue = 0;
+
+        for (let t = 1; t <= 160; t++) {
+            // showConv
+            const base = 0.86 - 0.00025 * t;
+            const decline1 = 0.09 * (1 / (1 + Math.exp(-(t - 60) / 6)));
+            const decline2 = 0.05 * (1 / (1 + Math.exp(-(t - 95) / 5)));
+            const tiny = 0.006 * Math.sin(t / 11);
+            const showConv = clamp(base - decline1 - decline2 + tiny, 0.62, 0.88);
+
+            // Lagged mechanism
+            let eff;
+            if (t === 1) {
+                eff = showConv;
+            } else {
+                eff = 0.93 * data[t - 2].eff + 0.07 * showConv;
+            }
+
+            // inventory
+            const inv = 1.0 - 0.10 * (1 / (1 + Math.exp(-(t - 85) / 10)));
+
+            // CPM
+            const cpm = clamp(
+                150 + 7 * Math.sin(t / 18) + 45 * (1 - inv) + 10 * (1 / (1 + Math.exp(-(t - 75) / 7))),
+                120,
+                230
+            );
+
+            // fatigue penalty
+            const pen = 1 - 0.28 * (1 / (1 + Math.exp(-(t - 112) / 6)));
+
+            // Revenue
+            const shows = 1200 * inv * eff;
+            const rev = shows * cpm * pen;
+
+            if (t === 1) {
+                baseRevenue = rev;
+            }
+
+            const revIdx = 100 * rev / baseRevenue;
+
+            data.push({ t, showConv, eff, inv, cpm, pen, rev, revIdx });
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height1 = 200 - margin.top - margin.bottom;
+        const height2 = 220 - margin.top - margin.bottom;
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 160])
+            .range([0, width]);
+
+        const yScale1 = d3.scaleLinear()
+            .domain([0.60, 0.90])
+            .range([height1, 0]);
+
+        const yScale2 = d3.scaleLinear()
+            .domain([80, 120])
+            .range([height2, 0]);
+
+        // Line generators
+        const line1 = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale1(d.showConv))
+            .curve(d3.curveMonotoneX);
+
+        const line2 = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale2(d.revIdx))
+            .curve(d3.curveMonotoneX);
+
+        // Chart 1: Mechanism
+        const svg1 = d3.select("#chart1")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height1 + margin.top + margin.bottom);
+
+        const g1 = svg1.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Shaded region
+        g1.append("rect")
+            .attr("class", "shaded-region")
+            .attr("x", xScale(60))
+            .attr("width", xScale(110) - xScale(60))
+            .attr("y", 0)
+            .attr("height", height1);
+
+        // Shaded label
+        g1.append("text")
+            .attr("class", "shaded-label")
+            .attr("x", xScale(60) + 5)
+            .attr("y", 15)
+            .text("окно, где деньги молчат");
+
+        // Event line
+        g1.append("line")
+            .attr("class", "event-line")
+            .attr("x1", xScale(115))
+            .attr("x2", xScale(115))
+            .attr("y1", 0)
+            .attr("y2", height1);
+
+        g1.append("text")
+            .attr("class", "marker-label")
+            .attr("x", xScale(115) + 3)
+            .attr("y", 12)
+            .text("итог начинает реагировать");
+
+        // Line
+        g1.append("path")
+            .datum(data)
+            .attr("class", "line line-mechanism")
+            .attr("d", line1);
+
+        // Label
+        const last1 = data[data.length - 1];
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale(last1.t) + 5)
+            .attr("y", yScale1(last1.showConv) - 5)
+            .text("механика");
+
+        // Axes
+        const yAxis1 = d3.axisLeft(yScale1)
+            .ticks(3)
+            .tickValues([0.6, 0.75, 0.9])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .call(yAxis1);
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height1 / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Конверсия");
+
+        // Chart 2: Revenue
+        const svg2 = d3.select("#chart2")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height2 + margin.top + margin.bottom);
+
+        const g2 = svg2.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Shaded region
+        g2.append("rect")
+            .attr("class", "shaded-region")
+            .attr("x", xScale(60))
+            .attr("width", xScale(110) - xScale(60))
+            .attr("y", 0)
+            .attr("height", height2);
+
+        // Event line
+        g2.append("line")
+            .attr("class", "event-line")
+            .attr("x1", xScale(115))
+            .attr("x2", xScale(115))
+            .attr("y1", 0)
+            .attr("y2", height2);
+
+        // Line
+        g2.append("path")
+            .datum(data)
+            .attr("class", "line line-revenue")
+            .attr("d", line2);
+
+        // Label
+        const last2 = data[data.length - 1];
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale(last2.t) + 5)
+            .attr("y", yScale2(last2.revIdx) - 5)
+            .text("итог (выручка)");
+
+        // Axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickValues([1, 40, 80, 120, 160])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis2 = d3.axisLeft(yScale2)
+            .ticks(3)
+            .tickValues([80, 100, 120])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height2})`)
+            .call(xAxis);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .call(yAxis2);
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height2 + 35)
+            .attr("text-anchor", "middle")
+            .text("t");
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height2 / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Выручка (индекс)");
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

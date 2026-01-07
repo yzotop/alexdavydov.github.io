@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feasible Set</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .feasible-region {
+            fill: #f0f0f0;
+            fill-opacity: 0.3;
+            stroke: #ddd;
+            stroke-width: 1;
+        }
+
+        .constrained-region {
+            fill: #e8e8e8;
+            fill-opacity: 0.4;
+            stroke: #bbb;
+            stroke-width: 1;
+        }
+
+        .point {
+            fill: #1f2a37;
+            stroke: #fff;
+            stroke-width: 1.5;
+        }
+
+        .point-label {
+            font-size: 9px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .arrow {
+            stroke: #999;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            fill: none;
+            opacity: 0.5;
+        }
+
+        .arrow-label {
+            font-size: 8px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .caption {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #888;
+            margin: 2rem 0;
+            max-width: 700px;
+            font-style: italic;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Back to Geometry</a>
+        <h1>Feasible Set</h1>
+        <p class="subtitle">Constraints define the world.</p>
+        <p class="insight">What you can't do matters as much as what you can.</p>
+
+        <p class="explanation">
+            The feasible set is the space of actions and states the system can actually reach.
+        </p>
+
+        <p class="explanation">
+            Optimization assumes freedom. Reality supplies constraints.
+        </p>
+
+        <p class="thesis">
+            <strong>Constraints define the world before decisions define the path.</strong> Two strategies can look equally good on paper, but live in different feasible sets.
+        </p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+        </div>
+
+        <p class="caption">
+            When constraints tighten, the 'best' option may disappear. The system does not move to a worse choice — it moves to the best remaining choice.
+        </p>
+
+        <p class="interpretation">
+            Optionality is geometry. Metrics are shadows.
+        </p>
+
+        <p class="interpretation">
+            Good work is often not improving the number. It is enlarging — or correctly mapping — what is feasible.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Back to Geometry</a>
+            <p class="footer-note">Uncertainty has boundaries.</p>
+        </div>
+    </div>
+
+    <script>
+        // Set up dimensions
+        const margin = { top: 40, right: 60, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 360 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+
+        // Baseline feasible set (large rectangle)
+        const baselineX = xScale(0.1);
+        const baselineY = yScale(0.9);
+        const baselineWidth = xScale(0.85) - xScale(0.1);
+        const baselineHeight = yScale(0.1) - yScale(0.9);
+
+        g.append("rect")
+            .attr("class", "feasible-region")
+            .attr("x", baselineX)
+            .attr("y", baselineY)
+            .attr("width", baselineWidth)
+            .attr("height", baselineHeight);
+
+        // Constrained feasible set (smaller, nested, shifted)
+        const constrainedX = xScale(0.15);
+        const constrainedY = yScale(0.7);
+        const constrainedWidth = xScale(0.6) - xScale(0.15);
+        const constrainedHeight = yScale(0.2) - yScale(0.7);
+
+        g.append("rect")
+            .attr("class", "constrained-region")
+            .attr("x", constrainedX)
+            .attr("y", constrainedY)
+            .attr("width", constrainedWidth)
+            .attr("height", constrainedHeight);
+
+        // Target point (inside baseline, outside constrained)
+        const targetX = xScale(0.75);
+        const targetY = yScale(0.5);
+
+        g.append("circle")
+            .attr("class", "point")
+            .attr("cx", targetX)
+            .attr("cy", targetY)
+            .attr("r", 4);
+
+        g.append("text")
+            .attr("class", "point-label")
+            .attr("x", targetX + 6)
+            .attr("y", targetY - 8)
+            .text("target");
+
+        // Best feasible point (inside constrained region)
+        const bestX = xScale(0.5);
+        const bestY = yScale(0.4);
+
+        g.append("circle")
+            .attr("class", "point")
+            .attr("cx", bestX)
+            .attr("cy", bestY)
+            .attr("r", 4);
+
+        g.append("text")
+            .attr("class", "point-label")
+            .attr("x", bestX + 6)
+            .attr("y", bestY - 8)
+            .text("best feasible");
+
+        // Arrow from target to best feasible
+        const arrowStartX = targetX - 10;
+        const arrowStartY = targetY;
+        const arrowEndX = bestX + 10;
+        const arrowEndY = bestY;
+
+        g.append("line")
+            .attr("class", "arrow")
+            .attr("x1", arrowStartX)
+            .attr("y1", arrowStartY)
+            .attr("x2", arrowEndX)
+            .attr("y2", arrowEndY);
+
+        g.append("text")
+            .attr("class", "arrow-label")
+            .attr("x", (arrowStartX + arrowEndX) / 2)
+            .attr("y", (arrowStartY + arrowEndY) / 2 - 8)
+            .attr("text-anchor", "middle")
+            .text("constraint");
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        // Y-axis
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        // Axis labels
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("x");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("y");
+    </script>
+</body>
+</html>
+

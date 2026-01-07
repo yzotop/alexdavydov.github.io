@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Время: паттерны</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .lead p {
+            margin-bottom: 1rem;
+        }
+
+        .info-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .info-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .info-panel p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .calculator-card {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .readout {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .readout-item {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .readout-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .readout-item.muted {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .chart-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-effect {
+            stroke: #666;
+        }
+
+        .line-mechanism {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .zero-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            opacity: 0.6;
+        }
+
+        .window-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .window-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .shaded-region {
+            fill: #f0f0f0;
+            opacity: 0.4;
+        }
+
+        .shaded-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .event-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .marker-label {
+            font-size: 10px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .patterns-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .pattern-card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .pattern-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-item {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .pattern-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Время: паттерны</h1>
+        <p class="subtitle">Лаги, тишина, дрейф, смена режима.</p>
+
+        <div class="lead">
+            <p>
+                Многие ошибки в монетизации происходят из-за чтения коротких окон. Система меняется через механику, а деньги реагируют позже — и окна искажают выводы.
+            </p>
+            <p>
+                Механика меняется первой, деньги реагируют позже, и выбор окна меняет знак эффекта.
+            </p>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-panel-title">Что здесь важно</div>
+            <p>Эффект редко постоянен во времени.</p>
+            <p>Есть разгон, компенсации и усталость.</p>
+            <p>Короткое окно часто врёт.</p>
+            <p>Лаг видно раньше в механике, чем в деньгах.</p>
+        </div>
+
+        <p class="anchor-sentence">
+            Фиксируйте окно так же жёстко, как метрику.
+        </p>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 1: выбор окна</div>
+            <div class="calculator-card">
+                <div class="control-group">
+                    <label class="control-label">Старт окна (день)</label>
+                    <div class="slider-container">
+                        <input type="range" id="startSlider" class="slider" min="1" max="84" step="1" value="14">
+                        <span class="slider-value" id="startValue">14</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Длина окна (дней)</label>
+                    <div class="slider-container">
+                        <input type="range" id="lengthSlider" class="slider" min="7" max="42" step="1" value="14">
+                        <span class="slider-value" id="lengthValue">14</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item" id="windowInfo"></div>
+                    <div class="readout-item" id="avgEffect"></div>
+                    <div class="readout-item" id="conclusion"></div>
+                </div>
+                <div class="chart-container">
+                    <svg id="chart1"></svg>
+                    <p class="chart-caption">
+                        Смена окна меняет знак среднего эффекта.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Калькулятор 2: лаг (механика → деньги)</div>
+            <div class="calculator-card">
+                <div class="control-group">
+                    <label class="control-label">Лаг реакции (дней)</label>
+                    <div class="slider-container">
+                        <input type="range" id="lagSlider" class="slider" min="0" max="40" step="1" value="18">
+                        <span class="slider-value" id="lagValue">18</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Сила ухудшения механики</label>
+                    <div class="slider-container">
+                        <input type="range" id="mechStrengthSlider" class="slider" min="0" max="40" step="1" value="22">
+                        <span class="slider-value" id="mechStrengthValue">0.22</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Компенсация ценой (CPM)</label>
+                    <div class="slider-container">
+                        <input type="range" id="compensationSlider" class="slider" min="0" max="30" step="1" value="12">
+                        <span class="slider-value" id="compensationValue">0.12</span>
+                    </div>
+                </div>
+                <div class="readout">
+                    <div class="readout-item muted" id="earlySignal"></div>
+                    <div class="readout-item muted" id="moneyReaction"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <svg id="chart2a"></svg>
+                    </div>
+                    <div class="chart-wrapper">
+                        <svg id="chart2b"></svg>
+                    </div>
+                    <p class="chart-caption">
+                        Лаг превращает 'успех в отчёте' в риск в механике.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Повторяющиеся паттерны времени</div>
+            <div class="patterns-grid">
+                <div class="pattern-card">
+                    <div class="pattern-title">Delayed effects</div>
+                    <div class="pattern-item">
+                        <strong>Сначала видно в:</strong> механика, конверсия в показ
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> выручка, итоговые метрики
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> читать тест в коротком окне
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Long silence</div>
+                    <div class="pattern-item">
+                        <strong>Сначала видно в:</strong> накопление риска, распределение
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> выручка, внезапное падение
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> считать тишину стабильностью
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Drift</div>
+                    <div class="pattern-item">
+                        <strong>Сначала видно в:</strong> базовая линия, квантили
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> среднее, итоговые метрики
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> искать только события
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Regime change</div>
+                    <div class="pattern-item">
+                        <strong>Сначала видно в:</strong> форма колебаний, разброс
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Позже видно в:</strong> уровень, стабильность
+                    </div>
+                    <div class="pattern-item">
+                        <strong>Типичная ошибка:</strong> мерить новый режим старой линейкой
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Время — это измерение, в котором оптимизация становится управлением риском.
+        </p>
+
+        <p class="interpretation">
+            Если вы не понимаете лаги — вы оптимизируете по прошлому.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к экспериментам</a>
+            <p class="footer-note">Время — это часть системы.</p>
+        </div>
+    </div>
+
+    <script>
+        // Calculator 1: Windowing
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        const windowData = [];
+        for (let t = 1; t <= 90; t++) {
+            const launch = 2.2 * Math.exp(-(t - 1) / 18);
+            const fatigue = 2.0 * (1 / (1 + Math.exp(-(t - 55) / 6)));
+            const wave = 0.25 * Math.sin(t / 6) + 0.12 * Math.sin(t / 15);
+            const delta = launch - fatigue + wave;
+            windowData.push({ t, delta });
+        }
+
+        // Chart 1 dimensions
+        const margin1 = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width1 = 800 - margin1.left - margin1.right;
+        const height1 = 300 - margin1.top - margin1.bottom;
+
+        const xScale1 = d3.scaleLinear()
+            .domain([1, 90])
+            .range([0, width1]);
+
+        const yScale1 = d3.scaleLinear()
+            .domain([-2.5, 2.5])
+            .range([height1, 0]);
+
+        const line1 = d3.line()
+            .x(d => xScale1(d.t))
+            .y(d => yScale1(d.delta))
+            .curve(d3.curveMonotoneX);
+
+        const svg1 = d3.select("#chart1")
+            .attr("width", width1 + margin1.left + margin1.right)
+            .attr("height", height1 + margin1.top + margin1.bottom);
+
+        const g1 = svg1.append("g")
+            .attr("transform", `translate(${margin1.left},${margin1.top})`);
+
+        // Zero line
+        g1.append("line")
+            .attr("class", "zero-line")
+            .attr("x1", 0)
+            .attr("x2", width1)
+            .attr("y1", yScale1(0))
+            .attr("y2", yScale1(0));
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width1 - 5)
+            .attr("y", yScale1(0) - 5)
+            .attr("text-anchor", "end")
+            .text("0%");
+
+        // Line
+        g1.append("path")
+            .datum(windowData)
+            .attr("class", "line line-effect")
+            .attr("d", line1);
+
+        // Label
+        const last1 = windowData[windowData.length - 1];
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", xScale1(last1.t) + 5)
+            .attr("y", yScale1(last1.delta) - 5)
+            .text("дневной эффект");
+
+        // Axes
+        const xAxis1 = d3.axisBottom(xScale1)
+            .ticks(7)
+            .tickValues([1, 15, 30, 45, 60, 75, 90])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis1 = d3.axisLeft(yScale1)
+            .ticks(5)
+            .tickValues([-2, -1, 0, 1, 2])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height1})`)
+            .call(xAxis1);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .call(yAxis1);
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width1 / 2)
+            .attr("y", height1 + 35)
+            .attr("text-anchor", "middle")
+            .text("День");
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height1 / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Эффект (%)");
+
+        let windowStart = 14;
+        let windowLength = 14;
+
+        function updateWindowChart() {
+            const end = Math.min(windowStart + windowLength - 1, 90);
+            const windowDataSlice = windowData.filter(d => d.t >= windowStart && d.t <= end);
+            const avg = windowDataSlice.reduce((sum, d) => sum + d.delta, 0) / windowDataSlice.length;
+            const avgPct = Math.round(avg * 10) / 10;
+
+            document.getElementById("windowInfo").innerHTML = 
+                `<strong>Окно:</strong> ${windowStart}–${end} (${windowDataSlice.length} дней)`;
+            
+            document.getElementById("avgEffect").innerHTML = 
+                `<strong>Средний эффект в окне:</strong> ${avgPct > 0 ? '+' : ''}${avgPct}%`;
+            
+            let conclusion;
+            if (avg > 0.2) {
+                conclusion = "плюс";
+            } else if (avg < -0.2) {
+                conclusion = "минус";
+            } else {
+                conclusion = "около нуля";
+            }
+            document.getElementById("conclusion").innerHTML = 
+                `<strong>Вывод:</strong> ${conclusion}`;
+
+            // Update window region
+            const windowRect = g1.selectAll(".window-region")
+                .data([{ start: windowStart, end }]);
+
+            const windowRectEnter = windowRect.enter()
+                .append("rect")
+                .attr("class", "window-region")
+                .attr("y", 0)
+                .attr("height", height1);
+
+            windowRect.merge(windowRectEnter)
+                .attr("x", d => xScale1(d.start))
+                .attr("width", d => xScale1(d.end) - xScale1(d.start));
+
+            const windowLabel = g1.selectAll(".window-label")
+                .data([{ start: windowStart }]);
+
+            const windowLabelEnter = windowLabel.enter()
+                .append("text")
+                .attr("class", "window-label")
+                .attr("y", 15);
+
+            windowLabel.merge(windowLabelEnter)
+                .attr("x", d => xScale1(d.start) + 5)
+                .text("окно анализа");
+        }
+
+        document.getElementById("startSlider").addEventListener("input", function() {
+            windowStart = parseInt(this.value);
+            document.getElementById("startValue").textContent = windowStart;
+            if (windowStart + windowLength - 1 > 90) {
+                windowLength = 90 - windowStart + 1;
+                document.getElementById("lengthSlider").value = windowLength;
+                document.getElementById("lengthValue").textContent = windowLength;
+            }
+            updateWindowChart();
+        });
+
+        document.getElementById("lengthSlider").addEventListener("input", function() {
+            windowLength = parseInt(this.value);
+            document.getElementById("lengthValue").textContent = windowLength;
+            if (windowStart + windowLength - 1 > 90) {
+                windowStart = 90 - windowLength + 1;
+                document.getElementById("startSlider").value = windowStart;
+                document.getElementById("startValue").textContent = windowStart;
+            }
+            updateWindowChart();
+        });
+
+        // Calculator 2: Lag
+        let lagDays = 18;
+        let mechStrength = 0.22;
+        let compensation = 0.12;
+
+        function generateLagData() {
+            const data = [];
+            let effIdx = 0;
+            const sc0 = 0.86 - 0.00025 * 1;
+
+            for (let t = 1; t <= 160; t++) {
+                const base = 0.86 - 0.00025 * t;
+                const decline = mechStrength * (1 / (1 + Math.exp(-(t - 60) / 6)));
+                const tiny = 0.006 * Math.sin(t / 11);
+                const showConv = clamp(base - decline + tiny, 0.62, 0.88);
+                const mechIdx = 100 * showConv / sc0;
+
+                // Lagged effect
+                if (t === 1) {
+                    effIdx = mechIdx;
+                } else {
+                    const target = (t - lagDays >= 1) ? 
+                        100 * (0.86 - 0.00025 * (t - lagDays) - mechStrength * (1 / (1 + Math.exp(-((t - lagDays) - 60) / 6))) + 0.006 * Math.sin((t - lagDays) / 11)) / sc0 :
+                        mechIdx;
+                    effIdx = 0.9 * effIdx + 0.1 * target;
+                }
+
+                // CPM compensation
+                const cpmIdx = clamp(
+                    100 + (compensation * 100) * (1 / (1 + Math.exp(-(t - 70) / 7))),
+                    90,
+                    130
+                );
+
+                // Revenue index
+                let revIdx = (effIdx * cpmIdx) / 100;
+                const pen = 1 - 0.15 * (1 / (1 + Math.exp(-(t - 110) / 6)));
+                revIdx = revIdx * pen;
+
+                data.push({ t, mechIdx, revIdx });
+            }
+
+            // Normalize so revIdx(1) = 100
+            const rev0 = data[0].revIdx;
+            data.forEach(d => {
+                d.revIdx = 100 * d.revIdx / rev0;
+            });
+
+            return data;
+        }
+
+        // Chart 2 dimensions
+        const margin2 = { top: 30, right: 90, bottom: 40, left: 50 };
+        const width2 = 800 - margin2.left - margin2.right;
+        const height2a = 200 - margin2.top - margin2.bottom;
+        const height2b = 220 - margin2.top - margin2.bottom;
+
+        const xScale2 = d3.scaleLinear()
+            .domain([1, 160])
+            .range([0, width2]);
+
+        const yScale2a = d3.scaleLinear()
+            .domain([60, 110])
+            .range([height2a, 0]);
+
+        const yScale2b = d3.scaleLinear()
+            .domain([80, 120])
+            .range([height2b, 0]);
+
+        const line2a = d3.line()
+            .x(d => xScale2(d.t))
+            .y(d => yScale2a(d.mechIdx))
+            .curve(d3.curveMonotoneX);
+
+        const line2b = d3.line()
+            .x(d => xScale2(d.t))
+            .y(d => yScale2b(d.revIdx))
+            .curve(d3.curveMonotoneX);
+
+        // Chart 2a: Mechanism
+        const svg2a = d3.select("#chart2a")
+            .attr("width", width2 + margin2.left + margin2.right)
+            .attr("height", height2a + margin2.top + margin2.bottom);
+
+        const g2a = svg2a.append("g")
+            .attr("transform", `translate(${margin2.left},${margin2.top})`);
+
+        // Chart 2b: Revenue
+        const svg2b = d3.select("#chart2b")
+            .attr("width", width2 + margin2.left + margin2.right)
+            .attr("height", height2b + margin2.top + margin2.bottom);
+
+        const g2b = svg2b.append("g")
+            .attr("transform", `translate(${margin2.left},${margin2.top})`);
+
+        // Initialize axes
+        const yAxis2a = d3.axisLeft(yScale2a)
+            .ticks(3)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g2a.append("g")
+            .attr("class", "axis")
+            .call(yAxis2a);
+
+        g2a.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height2a / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Механика (индекс)");
+
+        const xAxis2 = d3.axisBottom(xScale2)
+            .ticks(5)
+            .tickValues([1, 40, 80, 120, 160])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis2b = d3.axisLeft(yScale2b)
+            .ticks(3)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g2b.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height2b})`)
+            .call(xAxis2);
+
+        g2b.append("g")
+            .attr("class", "axis")
+            .call(yAxis2b);
+
+        g2b.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width2 / 2)
+            .attr("y", height2b + 35)
+            .attr("text-anchor", "middle")
+            .text("t");
+
+        g2b.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height2b / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Выручка (индекс)");
+
+        function updateLagChart() {
+            const data = generateLagData();
+            const reactionTime = 60 + lagDays;
+
+            document.getElementById("earlySignal").textContent = 
+                `Ранний сигнал: механика падает в t≈60`;
+            document.getElementById("moneyReaction").textContent = 
+                `Деньги начинают реагировать в t≈${reactionTime}`;
+
+            // Update chart 2a
+            const path2a = g2a.selectAll(".mechanism-curve")
+                .data([data]);
+
+            const path2aEnter = path2a.enter()
+                .append("path")
+                .attr("class", "mechanism-curve line line-mechanism")
+                .attr("d", line2a);
+
+            path2a.merge(path2aEnter)
+                .transition()
+                .duration(450)
+                .attr("d", line2a);
+
+            // Shaded region
+            const shaded2a = g2a.selectAll(".shaded-region")
+                .data([{ start: 60, end: reactionTime }]);
+
+            const shaded2aEnter = shaded2a.enter()
+                .append("rect")
+                .attr("class", "shaded-region")
+                .attr("y", 0)
+                .attr("height", height2a);
+
+            shaded2a.merge(shaded2aEnter)
+                .attr("x", d => xScale2(d.start))
+                .attr("width", d => xScale2(d.end) - xScale2(d.start));
+
+            const label2a = g2a.selectAll(".shaded-label")
+                .data([{ start: 60 }]);
+
+            const label2aEnter = label2a.enter()
+                .append("text")
+                .attr("class", "shaded-label")
+                .attr("y", 15);
+
+            label2a.merge(label2aEnter)
+                .attr("x", d => xScale2(d.start) + 5)
+                .text("лаг");
+
+            // Event line
+            const event2a = g2a.selectAll(".event-line")
+                .data([reactionTime]);
+
+            const event2aEnter = event2a.enter()
+                .append("line")
+                .attr("class", "event-line")
+                .attr("x1", xScale2)
+                .attr("x2", xScale2)
+                .attr("y1", 0)
+                .attr("y2", height2a);
+
+            event2a.merge(event2aEnter)
+                .transition()
+                .duration(450)
+                .attr("x1", xScale2)
+                .attr("x2", xScale2);
+
+            const eventLabel2a = g2a.selectAll(".event-label")
+                .data([reactionTime]);
+
+            const eventLabel2aEnter = eventLabel2a.enter()
+                .append("text")
+                .attr("class", "marker-label event-label")
+                .attr("x", d => xScale2(d) + 3)
+                .attr("y", 12)
+                .text("реакция денег");
+
+            eventLabel2a.merge(eventLabel2aEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale2(d) + 3);
+
+            // Label
+            const last2a = data[data.length - 1];
+            const label2aMech = g2a.selectAll(".mechanism-label")
+                .data([last2a]);
+
+            const label2aMechEnter = label2aMech.enter()
+                .append("text")
+                .attr("class", "axis-label mechanism-label")
+                .attr("x", d => xScale2(d.t) + 5)
+                .attr("y", d => yScale2a(d.mechIdx) - 5)
+                .text("механика");
+
+            label2aMech.merge(label2aMechEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale2(d.t) + 5)
+                .attr("y", d => yScale2a(d.mechIdx) - 5);
+
+            // Update chart 2b
+            const path2b = g2b.selectAll(".revenue-curve")
+                .data([data]);
+
+            const path2bEnter = path2b.enter()
+                .append("path")
+                .attr("class", "revenue-curve line line-revenue")
+                .attr("d", line2b);
+
+            path2b.merge(path2bEnter)
+                .transition()
+                .duration(450)
+                .attr("d", line2b);
+
+            // Shaded region
+            const shaded2b = g2b.selectAll(".shaded-region")
+                .data([{ start: 60, end: reactionTime }]);
+
+            const shaded2bEnter = shaded2b.enter()
+                .append("rect")
+                .attr("class", "shaded-region")
+                .attr("y", 0)
+                .attr("height", height2b);
+
+            shaded2b.merge(shaded2bEnter)
+                .attr("x", d => xScale2(d.start))
+                .attr("width", d => xScale2(d.end) - xScale2(d.start));
+
+            // Event line
+            const event2b = g2b.selectAll(".event-line")
+                .data([reactionTime]);
+
+            const event2bEnter = event2b.enter()
+                .append("line")
+                .attr("class", "event-line")
+                .attr("x1", xScale2)
+                .attr("x2", xScale2)
+                .attr("y1", 0)
+                .attr("y2", height2b);
+
+            event2b.merge(event2bEnter)
+                .transition()
+                .duration(450)
+                .attr("x1", xScale2)
+                .attr("x2", xScale2);
+
+            // Label
+            const last2b = data[data.length - 1];
+            const label2b = g2b.selectAll(".revenue-label")
+                .data([last2b]);
+
+            const label2bEnter = label2b.enter()
+                .append("text")
+                .attr("class", "axis-label revenue-label")
+                .attr("x", d => xScale2(d.t) + 5)
+                .attr("y", d => yScale2b(d.revIdx) - 5)
+                .text("выручка");
+
+            label2b.merge(label2bEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale2(d.t) + 5)
+                .attr("y", d => yScale2b(d.revIdx) - 5);
+        }
+
+        // Sliders for calculator 2
+        document.getElementById("lagSlider").addEventListener("input", function() {
+            lagDays = parseInt(this.value);
+            document.getElementById("lagValue").textContent = lagDays;
+            updateLagChart();
+        });
+
+        document.getElementById("mechStrengthSlider").addEventListener("input", function() {
+            mechStrength = parseInt(this.value) / 100;
+            document.getElementById("mechStrengthValue").textContent = mechStrength.toFixed(2);
+            updateLagChart();
+        });
+
+        document.getElementById("compensationSlider").addEventListener("input", function() {
+            compensation = parseInt(this.value) / 100;
+            document.getElementById("compensationValue").textContent = compensation.toFixed(2);
+            updateLagChart();
+        });
+
+        // Initial render
+        updateWindowChart();
+        updateLagChart();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чеклисты и operating</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .artifacts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .artifacts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .artifact-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .artifact-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .artifact-card-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .artifact-card-content ul {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .artifact-card-content li {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .checklist-checkbox {
+            flex-shrink: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid #999;
+            border-radius: 3px;
+            background: #ffffff;
+            margin-top: 0.2rem;
+            position: relative;
+        }
+
+        .checklist-item:hover .checklist-checkbox {
+            border-color: #1a1a1a;
+        }
+
+        .checklist-label {
+            flex: 1;
+        }
+
+        .checklist-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .during-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .during-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .during-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .during-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .stop-rule {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .stop-rule:last-child {
+            border-bottom: none;
+        }
+
+        .stop-rule-signal {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .stop-rule-why {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stop-rule-action {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+        }
+
+        .stop-rule-action strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .monitoring-section {
+            margin-bottom: 2rem;
+        }
+
+        .monitoring-section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .communication-box {
+            border: 2px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background: #fafafa;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+        }
+
+        .communication-box h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .communication-step {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .communication-step:before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .communication-box {
+            counter-reset: step-counter;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .warning-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #fafafa;
+            border-left: 3px solid #999;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Чеклисты и operating</h1>
+        <p class="subtitle">Эксперимент — часть эксплуатации системы.</p>
+        <p class="insight">Хороший эксперимент — это не отчёт. Это управление риском и мониторинг.</p>
+
+        <h2>Минимальный набор артефактов</h2>
+        <div class="artifacts-grid">
+            <div class="artifact-card">
+                <div class="artifact-card-title">One-pager эксперимента (1 экран)</div>
+                <div class="artifact-card-content">
+                    <ul>
+                        <li>Изменение в терминах механизма (не фичи)</li>
+                        <li>Ожидаемый рычаг (price/volume/mix/pressure/time)</li>
+                        <li>Primary метрика (1–2), guardrails (3–5), окно и лаг</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="artifact-card">
+                <div class="artifact-card-title">План мониторинга (primary + guardrails)</div>
+                <div class="artifact-card-content">
+                    <ul>
+                        <li>Что смотрим ежедневно (sanity checks)</li>
+                        <li>Что смотрим на short window (7–14 дней)</li>
+                        <li>Что смотрим на long window (60+ дней)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="artifact-card">
+                <div class="artifact-card-title">План окна и лага (short/long)</div>
+                <div class="artifact-card-content">
+                    <ul>
+                        <li>Short window для ранних сигналов (7–14 дней)</li>
+                        <li>Long window для устойчивых эффектов (60+ дней)</li>
+                        <li>Ожидаемый лаг (поведенческий/рыночный/системный)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="artifact-card">
+                <div class="artifact-card-title">Правило решения (roll/iterate/stop)</div>
+                <div class="artifact-card-content">
+                    <ul>
+                        <li>Критерии для rollout (primary + guardrails стабильны)</li>
+                        <li>Критерии для итерации (нужен другой дизайн)</li>
+                        <li>Критерии для остановки (guardrails сработали, риск неприемлемый)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>Чеклист ДО запуска</h2>
+
+        <div class="checklist-section">
+            <h3>3.1 Гипотеза и механизм</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Гипотеза сформулирована в терминах механизма (не фичи)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Указан ожидаемый рычаг (price/volume/mix/pressure/time)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описана причина изменения (почему рычаг сдвинется)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определены ожидаемые риски (каннибализация, перегруз, микс, лаг)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описано, как контролируем риски (guardrails, дизайн, окно)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определён ожидаемый лаг (поведенческий/рыночный/системный)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны потенциальные перетоки (каннибализация, displacement)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описано, что мониторим по соседним поверхностям/сегментам</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>3.2 Риски и артефакты</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Проверена сезонность (сравнение одинаковых дней недели, baseline adjustment)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Проверены параллельные тесты (пересечения, изоляция групп)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Проверена стабильность контроля / baseline (control group stability)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описано, что будет считаться "стоп-сигналом" (guardrail пороги)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Проверены внешние шоки (рынок, конкуренция, технические проблемы)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны артефакты окна (short vs long, зависимость от окна)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны риски proxy drift (ранний сигнал не следует primary)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны риски distribution shift (среднее растёт, хвосты падают)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны риски масштабных эффектов (test vs rollout)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Описаны риски латентных эффектов (поздние последствия, усталость)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>3.3 Дизайн и сегменты</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Рандомизация корректна (группы независимы, размер достаточен)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Стратификация выполнена (если сегменты сильно различаются)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определено short окно (7–14 дней) для ранних сигналов</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определено long окно (60+ дней) для устойчивых эффектов</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Учтена интерференция (если группы не независимы)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Проверены пересечения с параллельными тестами</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определён baseline model (ожидаемое поведение до запуска)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Определены контрольные сегменты/поверхности</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Мощность рассчитана (достаточный размер выборки)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Учтена необратимость (если решение необратимо, окно длиннее лага)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>3.4 Инструментация</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Все метрики логируются (primary, diagnostic, guardrails)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Гранулярность достаточна (день, сегмент, распределения)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Change log фиксирует все изменения (время, параметры, события)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Время запуска зафиксировано</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Параметры системы зафиксированы (floors, limits, constraints)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Внешние события логируются (рынок, технические проблемы)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Инструментация проверена (метрики считаются корректно)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Дашборды настроены (primary, guardrails, diagnostic)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>3.5 Метрики (primary/diagnostic/guardrails)</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Primary ≤ 2 (не больше двух primary метрик)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Primary чётко определена до запуска</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Есть разложение price/volume/mix (diagnostic метрики)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Guardrails определены до запуска (3–5 метрик)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Guardrails не меняются после начала теста</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Пороги тревоги для guardrails зафиксированы</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Ранние сигналы определены (coverage, showConv, pressure proxy)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Поздние сигналы определены (retention, risk accumulation)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Распределения и хвосты включены (не только среднее)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Сегментный анализ включен (не только агрегаты)</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Чеклист ВО ВРЕМЯ эксперимента</h2>
+        <p class="warning-note">Не делать выводы раньше времени. Короткое окно ловит адаптацию, а не устойчивый эффект.</p>
+
+        <div class="during-grid">
+            <div class="during-card">
+                <div class="during-card-title">Первые дни (sanity)</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Метрики считаются корректно (sanity check)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Группы разделены корректно (нет утечек)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Контроль стабилен (baseline не "плавает")</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет технических проблем (latency, delivery)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Ранние сигналы (proxy) в ожидаемом диапазоне</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Guardrails не сработали (нет критических ухудшений)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет внешних шоков (рынок, сезонность, параллельные тесты)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Change log проверен (нет незапланированных изменений)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="during-card">
+                <div class="during-card-title">На short window (7–14 дней)</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Primary показывает направление (рост/падение/нейтрально)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Разложение на price/volume/mix понятно</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Guardrails стабильны (нет критических ухудшений)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Ранние сигналы (proxy) согласуются с primary</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет сильной каннибализации (total revenue не падает)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Распределения стабильны (нет резкого distribution shift)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Контроль стабилен (baseline не дрейфует)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет артефактов окна (эффект не зависит только от выбора окна)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="during-card">
+                <div class="during-card-title">На long window (60+ дней)</div>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Primary эффект устойчив (не ослабевает со временем)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Guardrails стабильны (особенно поздние: retention, risk)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет накопления усталости (fatigue proxy не растёт)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Нет латентных эффектов (поздние последствия не проявляются)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Short vs long window согласуются (нет расхождения)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Risk accumulation под контролем (risk не растёт быстрее revenue)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Микс стабилен (нет резких композиционных сдвигов)</div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-checkbox"></div>
+                        <div class="checklist-label">Эффект не зависит от окна (вывод стабилен при разных окнах)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Stop rules — когда останавливать эксперимент</h2>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Guardrail резко ухудшился</div>
+            <div class="stop-rule-why">Критическое ухудшение guardrail указывает на скрытую деградацию системы, которая может проявиться позже в primary метрике.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если guardrail критичен. Если guardrail некритичен — Reduce (ограничить масштаб) и мониторить.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Risk/pressure proxy растёт быстрее денег</div>
+            <div class="stop-rule-why">Накопление риска и давления без соответствующего роста revenue указывает на перегруз и будущую деградацию.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если risk неприемлемый. Иначе — Reduce и мониторить risk accumulation.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Контроль нестабилен (baseline drift)</div>
+            <div class="stop-rule-why">Нестабильный baseline делает выводы ненадёжными. Эффект может быть артефактом внешних факторов.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop, если baseline критически нестабилен. Проверить внешние факторы (рынок, сезонность, параллельные тесты).</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Сильная каннибализация / системный минус</div>
+            <div class="stop-rule-why">Рост в тестовом сегменте компенсируется падением в остальной системе. Total revenue не растёт или падает.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если total revenue падает. Иначе — Segment (изолировать сегмент) и мониторить соседние.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Системная деградация (латентная) при "выигрыше" теста</div>
+            <div class="stop-rule-why">Test segment показывает рост, но системные guardrails ухудшаются (retention, quality, risk). Латентная деградация проявится позже.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если деградация критична. Иначе — Iterate (изменить дизайн) с учётом guardrails.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Технические проблемы / latency</div>
+            <div class="stop-rule-why">Технические проблемы искажают метрики и делают выводы ненадёжными. Delivery, latency, ошибки влияют на результаты.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop, если проблемы критичны. После исправления — перезапустить тест или продлить окно.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Эффект полностью зависит от окна (нестабилен)</div>
+            <div class="stop-rule-why">Short window показывает один результат, long window — другой. Эффект нестабилен, выводы ненадёжны.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop, если эффект полностью зависит от окна. Проверить лаг и артефакты. Возможно — Iterate с другим дизайном окна.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Микс резко изменился</div>
+            <div class="stop-rule-why">Резкий композиционный сдвиг может маскировать деградацию. Среднее растёт, но качество падает.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если микс критически ухудшился. Проверить quality proxy и distribution tails.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Распределение/хвосты ухудшились</div>
+            <div class="stop-rule-why">Среднее может расти, пока хвосты деградируют. Distribution shift указывает на скрытую деградацию качества.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert, если хвосты критически ухудшились. Проверить coverage, quality proxy, сегментный анализ.</div>
+        </div>
+
+        <div class="stop-rule">
+            <div class="stop-rule-signal">Primary падает, guardrails ухудшаются</div>
+            <div class="stop-rule-why">Одновременное падение primary и ухудшение guardrails указывает на системный негативный эффект.</div>
+            <div class="stop-rule-action"><strong>Действие:</strong> Stop/Revert немедленно. Эффект отрицательный и неустойчив.</div>
+        </div>
+
+        <h2>Чеклист ПОСЛЕ решения (rollout monitoring)</h2>
+
+        <div class="monitoring-section">
+            <div class="monitoring-section-title">Что мониторим первые 72 часа</div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Revenue index (стабильность эффекта при выкатке)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Price proxy (стабильность цены, нет резких падений)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Volume/shows (стабильность объёма, нет резких падений)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Guardrails (особенно ранние: coverage, showConv, pressure proxy)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Mix proxy (стабильность микса, нет резких сдвигов)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Fatigue proxy (нет резкого накопления усталости)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Технические метрики (latency, delivery, ошибки)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Сравнение с тестом (эффект при выкатке соответствует тесту)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="monitoring-section">
+            <div class="monitoring-section-title">Что мониторим 2–4 недели</div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Revenue index (устойчивость эффекта, нет ослабления)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Guardrails (особенно поздние: retention proxy, risk accumulation)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Fatigue proxy (накопление усталости, frequency tail)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Mix/quality proxy (стабильность качества, нет деградации)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Price vs volume (стабильность trade-off, нет эластичности)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Распределения/хвосты (стабильность, нет distribution shift)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Сезонность/рынок (внешние факторы не искажают эффект)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Масштабные эффекты (saturation, конкуренция, масштаб)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="monitoring-section">
+            <div class="monitoring-section-title">Какие алерты ставим</div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Guardrail ухудшился на X% от baseline (порог тревоги)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Risk/pressure proxy растёт быстрее revenue (накопление риска)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Revenue падает на X% от ожидаемого (эффект ослабевает)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Mix резко изменился (композиционный сдвиг)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Distribution shift (хвосты ухудшились)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Технические проблемы (latency, delivery, ошибки)</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Коммуникация результата</h2>
+
+        <div class="communication-box">
+            <h3>Как писать итог эксперимента (6 предложений)</h3>
+            <div class="communication-step">
+                <strong>Что изменили:</strong> Описание изменения в терминах механизма (давление, цена, формат, качество, частота), а не фичи.
+            </div>
+            <div class="communication-step">
+                <strong>Что увидели по primary:</strong> Направление изменения (рост/падение/нейтрально) и величина эффекта в окне оценки. Сравнение short vs long window.
+            </div>
+            <div class="communication-step">
+                <strong>Разложение:</strong> Вклад компонентов — price effect (рост/падение цены), volume effect (изменение объёма), mix/quality effect (сдвиг микса или качества). Какой рычаг доминирует.
+            </div>
+            <div class="communication-step">
+                <strong>Guardrails:</strong> Что ухудшилось (если ухудшилось), что осталось стабильным. Ранние сигналы (coverage, showConv, pressure proxy) и поздние (retention, risk accumulation).
+            </div>
+            <div class="communication-step">
+                <strong>Окно и лаг:</strong> Short window vs long window. Если выводы расходятся — почему. Ожидаемый лаг и когда эффект проявился полностью.
+            </div>
+            <div class="communication-step">
+                <strong>Решение и что мониторим дальше:</strong> Катить / итерация / продолжить / откат. Какой риск принимаем. Что мониторим после выкатки (guardrails, risk, масштабные эффекты).
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Операционное качество эксперимента важнее, чем "значимость" его результата.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обрезанная ось и преувеличенный эффект — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 3.2 / Модуль 3</div>
+            <h1>Обрезанная ось и преувеличенный эффект</h1>
+            <p class="subtitle">Когда визуальное усиление подменяет аналитический вывод</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В аналитике часто возникает ситуация, когда есть метрика с относительно малым изменением, но аналитик строит график с обрезанной осью Y, и эффект выглядит резким и значительным. Визуально создаётся ощущение «критического эффекта», хотя абсолютная величина изменения может быть небольшой.
+                </p>
+                <p>
+                    Типичные кейсы, где обрезанная ось может преувеличить эффект:
+                </p>
+                <ul>
+                    <li>Конверсия: изменение на 0.5% выглядит как резкий скачок на обрезанной оси</li>
+                    <li>CTR: небольшое улучшение визуально усиливается обрезкой</li>
+                    <li>Доля: изменения в процентах выглядят драматично на узком масштабе</li>
+                    <li>Retention: малые изменения в долях выглядят значительными</li>
+                    <li>Продуктовые и монетизационные метрики: эффект визуально преувеличен</li>
+                </ul>
+                <p>
+                    Проблема не в том, что обрезанная ось всегда неправильна, а в том, что её влияние на восприятие эффекта часто не осознаётся. График начинает искажать решение, если визуальное усиление не соотнесено с реальной значимостью эффекта.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: обрезанная ось без контекста</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Обрезанная ось создаёт драматичный эффект</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis (truncated, starting from 48) -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="20" y="55" font-size="10" fill="#666">52</text>
+                            <text x="20" y="150" font-size="10" fill="#666">50</text>
+                            <text x="20" y="250" font-size="10" fill="#666">48</text>
+                            <!-- Break indicator -->
+                            <line x1="30" y1="240" x2="40" y2="240" stroke="#d32f2f" stroke-width="2"/>
+                            <line x1="30" y1="245" x2="40" y2="245" stroke="#d32f2f" stroke-width="2"/>
+                            <!-- Baseline -->
+                            <line x1="80" y1="200" x2="200" y2="200" stroke="#666" stroke-width="2"/>
+                            <!-- Small change (looks dramatic) -->
+                            <line x1="200" y1="200" x2="200" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                            <line x1="200" y1="100" x2="520" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="300" y="90" font-size="11" fill="#1a1a1a" font-weight="500">Эффект +2%</text>
+                            <text x="300" y="105" font-size="10" fill="#d32f2f">Выглядит критичным</text>
+                            <text x="100" y="50" font-size="11" fill="#d32f2f">Обрезанная ось</text>
+                            <text x="100" y="65" font-size="10" fill="#666">48-52 (без нуля)</text>
+                            <!-- Warning -->
+                            <text x="300" y="40" font-size="12" fill="#d32f2f" text-anchor="middle">Визуально драматично</text>
+                            <text x="300" y="55" font-size="10" fill="#666" text-anchor="middle">Но эффект всего +2%</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Обрезанная ось усиливает визуальный контраст, но не сообщает, насколько эффект велик на самом деле.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    График с осью Y, начинающейся не с нуля, делает малое изменение визуально драматичным. Эффект выглядит как резкий скачок, хотя абсолютная величина изменения может быть небольшой. Визуально создаётся ощущение «критического эффекта», но читатель не понимает реального масштаба изменения относительно возможного диапазона метрики.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Глаз считывает относительную высоту, а не абсолютную величину изменения</h3>
+                        <p>
+                            Человеческий глаз воспринимает визуальную относительную высоту изменений, а не их абсолютную величину. Если эффект занимает большую долю визуального пространства графика из-за обрезанной оси, он воспринимается как значительный, даже если его абсолютная величина мала. Визуальное впечатление подменяет аналитическую оценку.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Обрезанная ось скрывает масштаб эффекта</h3>
+                        <p>
+                            Невозможно понять, велик ли эффект относительно возможного диапазона метрики. Изменение на 2% может быть критичным для конверсии, но несущественным для выручки. Обрезанная ось не показывает, где находится эффект в контексте всего возможного диапазона метрики, и читатель не может оценить его реальную значимость.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Зритель не понимает, является ли усиление намеренным аргументом или побочным эффектом</h3>
+                        <p>
+                            Если обрезанная ось не обозначена явно, читатель не понимает, является ли визуальное усиление намеренным аналитическим аргументом или просто побочным эффектом визуализации. Это создаёт неопределённость: можно ли доверять визуальному впечатлению, или оно искажено масштабом? Неосознанное усиление подрывает доверие к графику.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: осознанное использование обрезанной оси</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Явно обозначенная обрезка с полным контекстом</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis (truncated, but with break indicator) -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="20" y="55" font-size="10" fill="#666">52</text>
+                            <text x="20" y="150" font-size="10" fill="#666">50</text>
+                            <text x="20" y="250" font-size="10" fill="#666">48</text>
+                            <!-- Explicit break indicator -->
+                            <line x1="30" y1="240" x2="40" y2="240" stroke="#0284c7" stroke-width="2"/>
+                            <line x1="30" y1="245" x2="40" y2="245" stroke="#0284c7" stroke-width="2"/>
+                            <text x="10" y="260" font-size="9" fill="#0284c7">0</text>
+                            <!-- Full scale reference (small, on the side) -->
+                            <line x1="500" y1="50" x2="500" y2="200" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="2,2"/>
+                            <text x="505" y="55" font-size="9" fill="#999">100</text>
+                            <text x="505" y="200" font-size="9" fill="#999">0</text>
+                            <!-- Baseline -->
+                            <line x1="80" y1="200" x2="200" y2="200" stroke="#666" stroke-width="2"/>
+                            <!-- Effect (same as before, but with context) -->
+                            <line x1="200" y1="200" x2="200" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                            <line x1="200" y1="100" x2="520" y2="100" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="300" y="90" font-size="11" fill="#1a1a1a" font-weight="500">Эффект +2%</text>
+                            <text x="300" y="105" font-size="10" fill="#0284c7">От 50% до 52%</text>
+                            <text x="100" y="50" font-size="11" fill="#0284c7">Обрезанная ось</text>
+                            <text x="100" y="65" font-size="10" fill="#666">48-52 (явно обозначена)</text>
+                            <text x="100" y="80" font-size="10" fill="#666">Полный диапазон: 0-100%</text>
+                            <!-- Conclusion -->
+                            <text x="300" y="40" font-size="11" fill="#0284c7" text-anchor="middle">Эффект осознан</text>
+                            <text x="300" y="55" font-size="10" fill="#666" text-anchor="middle">Масштаб явно указан</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Обрезанная ось допустима, когда её эффект осознан, обозначен и соотнесён с порогом решения.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Тот же график с явно обозначенной обрезкой и указанием полного диапазона показывает, что эффект осознан и масштаб явно указан. Читатель понимает, что визуальное усиление намеренное и соотнесено с порогом решения. Обрезанная ось допустима, когда её влияние на восприятие эффекта осознано и явно обозначено, а не скрыто.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Переоценивать эффект как «критичный» на основе визуального впечатления от обрезанной оси, не проверяя его абсолютную величину. Спешно выкатывать изменения, потому что график выглядит драматично. Давить на решение визуальной драматичностью, не понимая, что эффект может быть небольшим в абсолютных величинах.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Проверять эффект на полной шкале, понимая его абсолютную величину и место в возможном диапазоне метрики. Соотносить визуальное усиление с бизнес-порогами, понимая, что обрезанная ось усиливает визуальный контраст, но не делает эффект больше. Делать явной роль масштаба в аргументе, явно обозначая обрезку и объясняя, почему она используется.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Обрезанная ось усиливает аргумент, но не делает эффект больше. Если усиление не осознано, оно искажает решение. Обрезанная ось допустима, когда её влияние на восприятие эффекта осознано, явно обозначено и соотнесено с порогом решения. Визуальное усиление должно быть частью аналитического аргумента, а не скрытым искажением.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>С какого значения начинается ось Y? Если не с нуля, явно ли это обозначено?</li>
+                    <li>Понимаю ли я абсолютную величину эффекта, а не только его визуальную относительную высоту?</li>
+                    <li>Осознаю ли я, что визуальный эффект усилен масштабом, и соотнесён ли этот масштаб с порогом решения?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

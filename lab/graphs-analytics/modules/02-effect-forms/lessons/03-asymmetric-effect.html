@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Асимметричный эффект: когда рост и падение читаются по-разному — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .core-idea {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+            max-width: 700px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .visual-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .form-visual {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .form-visual:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-visual-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .explanation-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .explanation-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .explanation-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .explanation-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .explanation-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .mistakes-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .mistakes-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .mistakes-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .decision-item h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .decision-item p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .decision-item p:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-question {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-question strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-question p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-question p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../02-effect-forms.html" class="back-to-module">← К модулю</a>
+
+        <header>
+            <div class="kicker">Урок 3 / Модуль 2</div>
+            <h1>Почему рост и падение выглядят по-разному</h1>
+        </header>
+
+        <main>
+            <div class="core-idea">
+                Направление имеет значение: один и тот же абсолютный эффект требует разных решений в зависимости от знака — "плюс" и "минус" это не симметричные решения.
+            </div>
+
+            <section class="visual-section">
+                <h2>Визуальные паттерны асимметрии</h2>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Симметричный вид, асимметричное решение</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="350" y2="100" stroke="#666" stroke-width="2" stroke-dasharray="4,4"/>
+                            <!-- Up arrow -->
+                            <line x1="150" y1="100" x2="150" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+                            <polygon points="150,50 145,60 155,60" fill="#1a1a1a"/>
+                            <!-- Down arrow -->
+                            <line x1="250" y1="100" x2="250" y2="150" stroke="#1a1a1a" stroke-width="3"/>
+                            <polygon points="250,150 245,140 255,140" fill="#1a1a1a"/>
+                            <!-- Labels -->
+                            <text x="150" y="40" font-size="12" fill="#1a1a1a">Рост</text>
+                            <text x="250" y="165" font-size="12" fill="#1a1a1a">Падение</text>
+                            <text x="200" y="115" font-size="11" fill="#666">Одинаковая величина</text>
+                            <text x="200" y="130" font-size="11" fill="#d32f2f">Разные решения</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Пороги решения: граница отката vs граница выкатки</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="350" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Loss boundary (close to baseline) -->
+                            <line x1="50" y1="110" x2="350" y2="110" stroke="#d32f2f" stroke-width="2" stroke-dasharray="4,4"/>
+                            <!-- Gain boundary (far from baseline) -->
+                            <line x1="50" y1="60" x2="350" y2="60" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,4"/>
+                            <!-- Small drop -->
+                            <line x1="150" y1="100" x2="150" y2="105" stroke="#d32f2f" stroke-width="3"/>
+                            <!-- Small gain -->
+                            <line x1="250" y1="100" x2="250" y2="95" stroke="#0284c7" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="60" y="115" font-size="11" fill="#d32f2f">Граница отката</text>
+                            <text x="60" y="65" font-size="11" fill="#0284c7">Граница выкатки</text>
+                            <text x="150" y="120" font-size="11" fill="#d32f2f">Малое падение → откат</text>
+                            <text x="250" y="88" font-size="11" fill="#0284c7">Маленький рост → не катим</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-visual">
+                    <div class="form-visual-title">Обратимость и риск</div>
+                    <div class="mini-graph">
+                        <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Baseline -->
+                            <line x1="50" y1="100" x2="350" y2="100" stroke="#666" stroke-width="2"/>
+                            <!-- Reversible gain -->
+                            <line x1="100" y1="100" x2="100" y2="70" stroke="#0284c7" stroke-width="3"/>
+                            <line x1="100" y1="70" x2="150" y2="100" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,4"/>
+                            <!-- Irreversible loss -->
+                            <line x1="200" y1="100" x2="200" y2="130" stroke="#d32f2f" stroke-width="3"/>
+                            <line x1="200" y1="130" x2="250" y2="130" stroke="#d32f2f" stroke-width="3"/>
+                            <!-- Labels -->
+                            <text x="100" y="60" font-size="11" fill="#0284c7">Рост</text>
+                            <text x="120" y="85" font-size="10" fill="#666">Обратимо</text>
+                            <text x="200" y="145" font-size="11" fill="#d32f2f">Падение</text>
+                            <text x="220" y="145" font-size="10" fill="#d32f2f">Необратимо</text>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <section class="explanation-section">
+                <h2>Где появляется в аналитике</h2>
+                <p>
+                    Асимметрия эффекта проявляется во всех областях аналитики, где одно и то же абсолютное изменение требует разных действий в зависимости от направления.
+                </p>
+                <ul>
+                    <li>
+                        <strong>Монетизация:</strong> Падение выручки на 2% требует немедленного отката, рост на 2% не всегда оправдывает выкатку. Причина: риск потери пользователей необратим, а выгода может быть временной.
+                    </li>
+                    <li>
+                        <strong>Эксперименты:</strong> Нарушение guardrail на 1% останавливает тест, рост primary на 1% не гарантирует выкатку. Причина: guardrails защищают систему от деградации, primary показывает возможность улучшения.
+                    </li>
+                    <li>
+                        <strong>Продуктовые метрики:</strong> Падение retention на 0.5% критично, рост на 0.5% может быть шумом. Причина: потеря пользователей дороже, чем небольшой прирост вовлечённости.
+                    </li>
+                </ul>
+                <p>
+                    Один и тот же дельта приводит к разным действиям, потому что стоимость ошибки асимметрична: цена ложного выката (деградация системы) выше, чем цена пропущенного улучшения (упущенная выгода).
+                </p>
+            </section>
+
+            <section class="mistakes-section">
+                <h2>Типичные ошибки</h2>
+                <ul>
+                    <li>
+                        <strong>Одинаковый порог для роста и падения:</strong> Использование одного критерия (например, "статзначимо") для решений о выкатке и откате. Не учитывается, что падение требует более строгого контроля.
+                    </li>
+                    <li>
+                        <strong>Празднование малого роста при игнорировании риска падения:</strong> Фокус на положительной дельте без оценки того, не увеличился ли риск негативного эффекта. Маленький плюс не компенсирует возросшую вероятность минуса.
+                    </li>
+                    <li>
+                        <strong>Скрытие асимметрии усреднением или масштабом:</strong> Использование симметричного масштаба или усреднение разнонаправленных эффектов, что создаёт ложное впечатление симметрии решений.
+                    </li>
+                </ul>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+
+                <div class="decision-item">
+                    <h3>Положительный эффект</h3>
+                    <p>
+                        Когда эффект положительный, решение зависит не только от величины, но и от риска обратного эффекта и обратимости.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Катить изменение, потому что "эффект положительный". Игнорировать, что маленький рост может не оправдывать риск, или что эффект может быть необратимым при откате.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Какова цена ошибки, если эффект окажется ложным? Обратим ли эффект при откате? Превышает ли выгода риск деградации системы?</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <h3>Отрицательный эффект</h3>
+                    <p>
+                        Когда эффект отрицательный, решение должно учитывать необратимость потерь и скорость деградации, а не только статистическую значимость.
+                    </p>
+                    <div class="wrong-decision">
+                        <p><strong>Неправильное решение:</strong> Продолжать тест, потому что "эффект нестатзначим" или "маленький минус". Игнорировать, что уже нарушена граница допустимого падения, даже если оно нестатзначимо.</p>
+                    </div>
+                    <div class="right-question">
+                        <p><strong>Правильный вопрос:</strong> Нарушена ли граница отката? Обратимо ли падение, если продолжить тест? Какова цена продолжения эксперимента при текущем тренде?</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    В аналитике знак эффекта — это не симметрия: падение и рост требуют разных порогов и разных решений. Граница отката должна быть строже границы выкатки, потому что цена ложного выката выше, чем цена пропущенного улучшения.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Самопроверка</h2>
+                <ul>
+                    <li>Определил ли я отдельные пороги для положительного и отрицательного эффекта?</li>
+                    <li>Оценил ли я обратимость эффекта и стоимость ошибки при неправильном решении?</li>
+                    <li>Не скрываю ли я асимметрию через усреднение или выбор симметричного масштаба?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

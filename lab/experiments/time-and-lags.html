@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Время и лаги</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro {
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-box {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 1rem;
+            border-left: 3px solid #1a1a1a;
+            background: #fafafa;
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #1a1a1a;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .bullets {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .bullets li {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .bullets li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .simulator-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .controls-panel {
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .control-slider {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-value {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .radio-option label {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .windows-panel {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .windows-panel h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .windows-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .window-stat {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .window-stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .window-stat-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .diagnosis {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1a1a1a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .diagnosis-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        table th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e8e8e8;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e8e8e8;
+            color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        table tr:hover {
+            background: #fafafa;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Время и лаги</h1>
+        <p class="subtitle">Причины раньше. Деньги позже.</p>
+        <p class="insight">Окно оценки — часть дизайна эксперимента, а не "параметр отчёта".</p>
+
+        <h2>3 источника лага</h2>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">Поведение пользователя</div>
+                <div class="card-item">
+                    <strong>Как проявляется:</strong> Привыкание к новому формату, накопление усталости от частоты,
+                    возврат пользователей после адаптации. Эффект может проявиться через недели.
+                </div>
+                <div class="card-item">
+                    <strong>Ранние сигналы:</strong> Frequency distribution, session depth, return rate, attention proxy.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Рынок</div>
+                <div class="card-item">
+                    <strong>Как проявляется:</strong> Конкуренция адаптируется к изменениям, сезонность маскирует эффекты,
+                    спрос реагирует с задержкой на изменения в предложении. Циклы могут быть неделями.
+                </div>
+                <div class="card-item">
+                    <strong>Ранние сигналы:</strong> Competition intensity, baseline drift, seasonality-adjusted metrics,
+                    market share proxy.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Система</div>
+                <div class="card-item">
+                    <strong>Как проявляется:</strong> Ограничения по доставке, кэширование решений, инерция аукциона,
+                    накопление технического долга. Эффекты могут накапливаться постепенно.
+                </div>
+                <div class="card-item">
+                    <strong>Ранние сигналы:</strong> Latency, fill rate, error rate, cache hit rate, delivery constraints.
+                </div>
+            </div>
+        </div>
+
+        <h2>Ошибка окна</h2>
+
+        <div class="intro">
+            <p>
+                Короткое окно ловит адаптацию и шум. Ранние метрики могут показывать временные эффекты: пользователи
+                ещё не привыкли, система ещё не адаптировалась, рынок ещё не отреагировал. Короткое окно часто даёт
+                ложные сигналы — либо переоценку эффекта (адаптация выглядит как рост), либо недооценку (эффект ещё не
+                проявился).
+            </p>
+            <p>
+                Длинное окно ловит режим и хвосты. Поздние эффекты — усталость, накопление риска, деградация механизма —
+                видны только в длинном окне. Но длинное окно может захватывать внешние изменения (сезонность, шоки),
+                которые маскируют истинный эффект эксперимента.
+            </p>
+        </div>
+
+        <div class="rule-box">
+            Если решение необратимо — окно должно быть длиннее, чем лаг.
+        </div>
+
+        <h2>Окно меняет вывод</h2>
+
+        <div class="simulator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Сценарий</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioDelayed" name="scenario" value="delayed" checked>
+                            <label for="scenarioDelayed">Delayed win</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioEarlyLate" name="scenario" value="earlylate">
+                            <label for="scenarioEarlyLate">Early win, late loss</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioSilence" name="scenario" value="silence">
+                            <label for="scenarioSilence">Long silence</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Lag strength</label>
+                    <input type="range" id="lagSlider" class="control-slider" min="0" max="100" value="50">
+                    <span class="control-value" id="lagValue">50</span>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Noise</label>
+                    <input type="range" id="noiseSlider" class="control-slider" min="0" max="100" value="30">
+                    <span class="control-value" id="noiseValue">30</span>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Pressure coupling</label>
+                    <input type="range" id="pressureSlider" class="control-slider" min="0" max="100" value="40">
+                    <span class="control-value" id="pressureValue">40</span>
+                </div>
+            </div>
+
+            <svg id="windowChart"></svg>
+            <div class="windows-panel">
+                <h3>Вывод по окнам</h3>
+                <div class="windows-stats">
+                    <div class="window-stat">
+                        <div class="window-stat-label">Uplift (short window)</div>
+                        <div class="window-stat-value" id="upliftShort">+0%</div>
+                    </div>
+                    <div class="window-stat">
+                        <div class="window-stat-label">Uplift (long window)</div>
+                        <div class="window-stat-value" id="upliftLong">+0%</div>
+                    </div>
+                </div>
+                <div class="diagnosis" id="diagnosis">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+            <p class="chart-caption">
+                Короткое окно может пропустить поздние эффекты. Длинное окно показывает полную картину, но может захватить внешние изменения.
+            </p>
+        </div>
+
+        <h2>Как выбирать окно (правила)</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ситуация</th>
+                    <th>Минимальное окно</th>
+                    <th>Guardrails</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Изменения давления</td>
+                    <td>30+ дней (накопление усталости)</td>
+                    <td>Fatigue proxy, frequency distribution, retention</td>
+                </tr>
+                <tr>
+                    <td>Изменения цены/рынка</td>
+                    <td>Окно кратно сезонности (минимум 2 цикла)</td>
+                    <td>Baseline control, seasonality-adjusted metrics, market share</td>
+                </tr>
+                <tr>
+                    <td>Изменения формата</td>
+                    <td>14+ дней (привыкание пользователей)</td>
+                    <td>Distribution tails, coverage, attention proxy</td>
+                </tr>
+                <tr>
+                    <td>Изменения частоты</td>
+                    <td>21+ дней (возврат пользователей)</td>
+                    <td>Frequency buckets, return rate, session depth</td>
+                </tr>
+                <tr>
+                    <td>Изменения качества</td>
+                    <td>14+ дней (микс стабилизируется)</td>
+                    <td>Coverage, composition shift, quality proxies</td>
+                </tr>
+                <tr>
+                    <td>Изменения механизма доставки</td>
+                    <td>7+ дней (кэш/инерция системы)</td>
+                    <td>Latency, fill rate, error rate, cache hit rate</td>
+                </tr>
+                <tr>
+                    <td>Изменения в аукционе</td>
+                    <td>14+ дней (адаптация конкуренции)</td>
+                    <td>Competition intensity, CPM distribution, win rate</td>
+                </tr>
+                <tr>
+                    <td>Изменения в сегментации</td>
+                    <td>21+ дней (стабилизация сегментов)</td>
+                    <td>Segment stability, cross-segment effects, composition</td>
+                </tr>
+                <tr>
+                    <td>Необратимые изменения</td>
+                    <td>Окно > лаг + 50% (запас на неопределённость)</td>
+                    <td>Long-term proxy, risk accumulation, regime change detection</td>
+                </tr>
+                <tr>
+                    <td>Изменения с высоким риском</td>
+                    <td>Окно > 2x ожидаемый лаг</td>
+                    <td>Early warning signals, guardrails на каждый слой, late effects window</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Красные флаги</h2>
+
+        <ul class="bullets">
+            <li>Short uplift есть, long uplift хуже — ранний эффект не устойчив</li>
+            <li>Proxy улучшается раньше денег, но risk тоже растёт — скрытая деградация</li>
+            <li>Контроль "плавает" (нестабильный baseline) — внешние факторы маскируют эффект</li>
+            <li>Разница по сегментам усиливается — эффект не универсален, может быть артефакт</li>
+            <li>Позднее окно ухудшается без изменения рынка — подозрение на усталость/накопление риска</li>
+            <li>Эффект есть в short window, но исчезает в long window — адаптация или компенсация</li>
+            <li>Revenue растёт, но proxy падает — механизм ломается, деньги временные</li>
+            <li>Long window показывает противоположный эффект short window — лаг маскировал истину</li>
+            <li>Разница между окнами больше, чем эффект в short window — окно слишком короткое</li>
+            <li>Risk растёт быстрее revenue — система деградирует, эффект неустойчив</li>
+        </ul>
+
+        <p class="final-quote">
+            Время — это не фон эксперимента. Время — это механизм эксперимента.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+
+    <script>
+        // Chart setup
+        const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+        const width = 800;
+        const height = 450;
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const svg = d3.select('#windowChart')
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .style('max-width', '100%')
+            .style('height', 'auto');
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 180])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([innerHeight, 0]);
+
+        // Helper functions
+        function sigmoid(x, k = 1) {
+            return 1 / (1 + Math.exp(-k * (x - 0.5)));
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        // Generate data
+        function generateData(scenario, lagStrength, noiseLevel, pressureCoupling) {
+            const data = [];
+            const lag = lagStrength / 100;
+            const noise = noiseLevel / 100;
+            const pressure = pressureCoupling / 100;
+            const launch = 40;
+            const shortStart = 55;
+            const shortEnd = 85;
+            const longStart = 55;
+            const longEnd = 150;
+            const decisionPoint = 90;
+
+            for (let t = 1; t <= 180; t++) {
+                const tSinceLaunch = Math.max(0, t - launch);
+
+                // Base revenue with small wave
+                const baseRevenue = 0.5 + 0.01 * Math.sin(t / 20);
+
+                // Noise component
+                const noiseComponent = noise * (
+                    0.3 * Math.sin(t / 7) +
+                    0.2 * Math.sin(t / 13) +
+                    0.1 * Math.sin(t / 23)
+                );
+
+                let revenue, proxyEarly, risk;
+
+                if (scenario === 'delayed') {
+                    // Delayed win: эффект приходит позже
+                    const effectLag = lag * 50;
+                    const effectStrength = tSinceLaunch > effectLag ? 
+                        (tSinceLaunch - effectLag) * 0.003 : 0;
+                    revenue = clamp(baseRevenue + effectStrength * (1 - sigmoid(tSinceLaunch / 80, 1.5)) + noiseComponent, 0.45, 0.75);
+                    
+                    // Proxy растёт раньше
+                    const proxyEffect = tSinceLaunch > effectLag * 0.6 ? 
+                        (tSinceLaunch - effectLag * 0.6) * 0.004 : 0;
+                    proxyEarly = clamp(0.5 + proxyEffect * (1 - sigmoid(tSinceLaunch / 70, 1.5)), 0.45, 0.7);
+                    
+                    risk = 0.2 + pressure * 0.1 + tSinceLaunch * 0.0003;
+                } else if (scenario === 'earlylate') {
+                    // Early win, late loss: ранний плюс, поздний минус
+                    const earlyBoost = t < 110 ? 0.05 * (1 - sigmoid(tSinceLaunch / 30, 2)) : 0;
+                    const latePenalty = t > 110 ? (t - 110) * 0.002 * (1 + pressure) : 0;
+                    revenue = clamp(baseRevenue + earlyBoost - latePenalty + noiseComponent, 0.45, 0.7);
+                    
+                    proxyEarly = clamp(0.5 + earlyBoost * 0.8, 0.45, 0.65);
+                    
+                    risk = 0.2 + pressure * 0.15 + (t > 100 ? (t - 100) * 0.003 : 0);
+                } else { // silence
+                    // Long silence: долго ровно, потом резкий срыв
+                    const breakPoint = 120;
+                    const silenceRevenue = baseRevenue + noiseComponent;
+                    const postBreakRevenue = t > breakPoint ? 
+                        silenceRevenue - (t - breakPoint) * 0.004 * (1 + pressure) : silenceRevenue;
+                    revenue = clamp(postBreakRevenue, 0.4, 0.65);
+                    
+                    proxyEarly = clamp(0.5 + noiseComponent * 0.5, 0.45, 0.6);
+                    
+                    risk = 0.2 + pressure * 0.1 + (t > 100 ? (t - 100) * 0.002 : 0) + 
+                           (t > breakPoint ? (t - breakPoint) * 0.005 : 0);
+                }
+
+                risk = clamp(risk, 0.15, 0.95);
+                revenue = clamp(revenue, 0.4, 0.8);
+                proxyEarly = clamp(proxyEarly, 0.4, 0.75);
+
+                data.push({ t, revenue, proxyEarly, risk });
+            }
+
+            return data;
+        }
+
+        // Calculate uplifts
+        function calculateUplifts(data, shortStart, shortEnd, longStart, longEnd) {
+            const baseline = data[39].revenue; // t=40 (launch)
+
+            const shortData = data.filter(d => d.t >= shortStart && d.t <= shortEnd);
+            const longData = data.filter(d => d.t >= longStart && d.t <= longEnd);
+
+            const shortAvg = shortData.reduce((sum, d) => sum + d.revenue, 0) / shortData.length;
+            const longAvg = longData.reduce((sum, d) => sum + d.revenue, 0) / longData.length;
+
+            const upliftShort = ((shortAvg - baseline) / baseline) * 100;
+            const upliftLong = ((longAvg - baseline) / baseline) * 100;
+
+            return { upliftShort, upliftLong };
+        }
+
+        // Generate diagnosis
+        function generateDiagnosis(upliftShort, upliftLong, scenario, lagStrength, pressureCoupling) {
+            const diagnosis = [];
+
+            if (scenario === 'delayed') {
+                if (upliftShort < 2 && upliftLong > 5) {
+                    diagnosis.push('Short window misleading: эффект ещё не проявился. Long window показывает истинный рост.');
+                } else if (upliftShort > 0 && upliftLong > upliftShort) {
+                    diagnosis.push('Short window ok, но неполный. Long window подтверждает и усиливает эффект.');
+                } else {
+                    diagnosis.push('Эффект проявляется постепенно. Long window необходим для полной оценки.');
+                }
+                diagnosis.push('Проверь: proxy_early должен расти раньше revenue. Если risk растёт — есть давление.');
+            } else if (scenario === 'earlylate') {
+                if (upliftShort > 3 && upliftLong < upliftShort) {
+                    diagnosis.push('Short window misleading: ранний эффект не устойчив. Long window раскрывает деградацию.');
+                } else if (upliftLong < 0) {
+                    diagnosis.push('Long window reveals decay: эффект обращается в ущерб. Нельзя катить без изменений.');
+                } else {
+                    diagnosis.push('Ранний эффект есть, но поздний ущерб. Long window критичен для решения.');
+                }
+                diagnosis.push('Проверь: risk должен расти быстрее revenue. Если так — давление создаёт долгосрочный ущерб.');
+            } else { // silence
+                if (Math.abs(upliftShort) < 2 && upliftLong < -3) {
+                    diagnosis.push('Long silence: short window показывает "ровно", но long window раскрывает срыв.');
+                } else if (upliftLong < upliftShort) {
+                    diagnosis.push('Long window reveals decay: долгая тишина скрывала накопление риска.');
+                } else {
+                    diagnosis.push('Эффект долго не проявляется, затем резкий срыв. Long window необходим.');
+                }
+                diagnosis.push('Проверь: risk должен расти заранее, до падения revenue. Это сигнал накопления проблемы.');
+            }
+
+            if (pressureCoupling > 60 && upliftLong < upliftShort) {
+                diagnosis.push('Высокое pressure coupling создаёт поздний ущерб. Снизь давление или улучши механизм.');
+            }
+
+            if (lagStrength > 70 && upliftShort < 2) {
+                diagnosis.push('Сильный lag: эффект ещё не проявился в short window. Расширь окно или дождись проявления.');
+            }
+
+            return diagnosis;
+        }
+
+        // Line generators
+        const revenueLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        const proxyLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.proxyEarly))
+            .curve(d3.curveMonotoneX);
+
+        const riskLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Update function
+        function updateChart() {
+            const scenario = document.querySelector('input[name="scenario"]:checked').value;
+            const lagStrength = parseInt(document.getElementById('lagSlider').value);
+            const noiseLevel = parseInt(document.getElementById('noiseSlider').value);
+            const pressureCoupling = parseInt(document.getElementById('pressureSlider').value);
+
+            // Update values
+            document.getElementById('lagValue').textContent = lagStrength;
+            document.getElementById('noiseValue').textContent = noiseLevel;
+            document.getElementById('pressureValue').textContent = pressureCoupling;
+
+            const data = generateData(scenario, lagStrength, noiseLevel, pressureCoupling);
+            const { upliftShort, upliftLong } = calculateUplifts(data, 55, 85, 55, 150);
+            const diagnosis = generateDiagnosis(upliftShort, upliftLong, scenario, lagStrength, pressureCoupling);
+
+            // Clear previous
+            g.selectAll('*').remove();
+
+            const shortStart = 55;
+            const shortEnd = 85;
+            const longStart = 55;
+            const longEnd = 150;
+
+            // Short window
+            g.append('rect')
+                .attr('x', xScale(shortStart))
+                .attr('y', 0)
+                .attr('width', xScale(shortEnd) - xScale(shortStart))
+                .attr('height', innerHeight)
+                .attr('fill', '#f0f0f0')
+                .attr('opacity', 0.3);
+
+            g.append('text')
+                .attr('x', (xScale(shortStart) + xScale(shortEnd)) / 2)
+                .attr('y', innerHeight + 25)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('short window');
+
+            // Long window
+            g.append('rect')
+                .attr('x', xScale(longStart))
+                .attr('y', 0)
+                .attr('width', xScale(longEnd) - xScale(longStart))
+                .attr('height', innerHeight)
+                .attr('fill', '#fff5f5')
+                .attr('opacity', 0.2);
+
+            g.append('text')
+                .attr('x', (xScale(longStart) + xScale(longEnd)) / 2)
+                .attr('y', innerHeight + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('long window');
+
+            // Launch marker
+            g.append('line')
+                .attr('x1', xScale(40))
+                .attr('x2', xScale(40))
+                .attr('y1', 0)
+                .attr('y2', innerHeight)
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '2,2')
+                .attr('opacity', 0.6);
+
+            g.append('text')
+                .attr('x', xScale(40))
+                .attr('y', innerHeight + 25)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('launch');
+
+            // Decision point marker
+            g.append('line')
+                .attr('x1', xScale(90))
+                .attr('x2', xScale(90))
+                .attr('y1', 0)
+                .attr('y2', innerHeight)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3')
+                .attr('opacity', 0.7);
+
+            g.append('text')
+                .attr('x', xScale(90))
+                .attr('y', innerHeight + 25)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('decision point');
+
+            // Lines
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', revenueLine);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('d', proxyLine);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', riskLine);
+
+            // Labels
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].proxyEarly) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('proxy_early');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].risk) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('risk');
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(xScale).ticks(9).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(yScale).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Update uplifts
+            document.getElementById('upliftShort').textContent = 
+                (upliftShort >= 0 ? '+' : '') + upliftShort.toFixed(1) + '%';
+            document.getElementById('upliftLong').textContent = 
+                (upliftLong >= 0 ? '+' : '') + upliftLong.toFixed(1) + '%';
+
+            // Update diagnosis
+            const diagnosisEl = document.getElementById('diagnosis');
+            diagnosisEl.innerHTML = diagnosis.map(item => 
+                `<div class="diagnosis-item">${item}</div>`
+            ).join('');
+        }
+
+        // Initial render
+        updateChart();
+
+        // Event listeners
+        document.getElementById('lagSlider').addEventListener('input', updateChart);
+        document.getElementById('noiseSlider').addEventListener('input', updateChart);
+        document.getElementById('pressureSlider').addEventListener('input', updateChart);
+        d3.selectAll('input[name="scenario"]').on('change', updateChart);
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateChart, 250);
+        });
+    </script>
+</body>
+</html>
+
+

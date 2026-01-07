@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метрики инвентаря</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .metrics-table th,
+        .metrics-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .metrics-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .metrics-table td {
+            color: #2c3e50;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .calculator-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .calculator-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .calculator-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .control-value {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .calculator-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-diagnosis {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .quality-mix-chart {
+            margin-top: 1rem;
+            height: 60px;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .traps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .traps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .traps-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .trap-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .trap-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .trap-card-text {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .trap-card-text strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e8e8e8;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Метрики инвентаря</h1>
+        <p class="subtitle">Инвентарь измеряется прохождением через цепочку, а качество — распределениями.</p>
+
+        <div class="intro">
+            <p>
+                Метрики инвентаря отвечают на вопрос "где течёт" и "что реально доступно". Они показывают, сколько возможностей превращается в запросы, сколько запросов получают ответы, сколько ответов становятся показами. Это метрики прохождения через цепочку: opportunities → requests → responses → shows.
+            </p>
+            <p>
+                Метрики качества отвечают "насколько ценны эти возможности". Они показывают распределение внимания, эффективность по сегментам, хвосты распределения. Это метрики ценности: attention proxy, effective shows, quality-weighted inventory, composition shares.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Словарь: 12 метрик инвентаря</div>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Метрика</th>
+                        <th>Формула</th>
+                        <th>Интерпретация</th>
+                        <th>Риск неправильного использования</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Opportunities</td>
+                        <td>Количество возможностей показать рекламу</td>
+                        <td>Общий объём инвентаря, доступного системе</td>
+                        <td>Считать, что больше opportunities = больше выручки (игнорируя качество и потери)</td>
+                    </tr>
+                    <tr>
+                        <td>Request rate</td>
+                        <td>Доля opportunities, ставших requests</td>
+                        <td>Сколько возможностей система запрашивает</td>
+                        <td>Оптимизировать только request rate, игнорируя качество возможностей</td>
+                    </tr>
+                    <tr>
+                        <td>Response ratio</td>
+                        <td>responses / requests</td>
+                        <td>Доступность спроса на запросы</td>
+                        <td>Путать низкий response ratio с "плохим рынком" (может быть delivery bottleneck)</td>
+                    </tr>
+                    <tr>
+                        <td>Show ratio</td>
+                        <td>shows / responses</td>
+                        <td>Конверсия ответов в показы</td>
+                        <td>Оптимизировать show ratio без учёта конкуренции и приоритетов</td>
+                    </tr>
+                    <tr>
+                        <td>ShowConv</td>
+                        <td>shows / opportunities</td>
+                        <td>Общая конверсия возможностей в показы</td>
+                        <td>Смотреть только на showConv, не разлагая на слои (request_rate × response_ratio × show_ratio)</td>
+                    </tr>
+                    <tr>
+                        <td>Coverage proxy</td>
+                        <td>Доля opportunities, дошедших до show</td>
+                        <td>Общая доступность инвентаря</td>
+                        <td>Радоваться росту coverage, игнорируя падение качества</td>
+                    </tr>
+                    <tr>
+                        <td>Effective shows</td>
+                        <td>Показы с вниманием (прокси: attention proxy)</td>
+                        <td>Доля показов, которые реально видны пользователю</td>
+                        <td>Считать все shows равными, игнорируя внимание</td>
+                    </tr>
+                    <tr>
+                        <td>Effective inventory</td>
+                        <td>Quality-weighted opportunities (sum share_i × quality_i)</td>
+                        <td>Инвентарь, взвешенный по качеству</td>
+                        <td>Считать объём без учёта качества распределения</td>
+                    </tr>
+                    <tr>
+                        <td>Pressure proxy</td>
+                        <td>Frequency / плотность размещения</td>
+                        <td>Как часто и плотно система касается пользователя</td>
+                        <td>Путать pressure с coverage (больше pressure ≠ больше coverage)</td>
+                    </tr>
+                    <tr>
+                        <td>Saturation proxy</td>
+                        <td>Рост показов без роста эффекта</td>
+                        <td>Система упирается в потолок эффективности</td>
+                        <td>Продолжать дожимать показы при насыщении</td>
+                    </tr>
+                    <tr>
+                        <td>Variance / tails</td>
+                        <td>p10 / p50 / p90 эффективности</td>
+                        <td>Края распределения эффективности</td>
+                        <td>Смотреть только на среднее, игнорируя хвосты (система ломается внизу)</td>
+                    </tr>
+                    <tr>
+                        <td>Composition shares</td>
+                        <td>Доли high / mid / low quality в инвентаре</td>
+                        <td>Распределение качества в общем объёме</td>
+                        <td>Радоваться росту объёма, игнорируя сдвиг в сторону low-quality</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Разложение showConv по слоям</div>
+            <div class="chart-container">
+                <svg id="decompositionChart"></svg>
+                <p class="chart-caption">Когда падает showConv — важно знать, какой множитель просел.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Inventory Funnel Calculator</div>
+            <div class="calculator-panel">
+                <div class="calculator-controls">
+                    <div class="control-group">
+                        <label class="control-label">Opportunities</label>
+                        <input type="number" id="opportunitiesInput" class="control-input" value="100000" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Request rate (%)</label>
+                        <input type="range" id="requestRateSlider" class="control-slider" min="0" max="100" value="80">
+                        <div class="control-value" id="requestRateValue">80%</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Response ratio (%)</label>
+                        <input type="range" id="responseRatioSlider" class="control-slider" min="0" max="100" value="75">
+                        <div class="control-value" id="responseRatioValue">75%</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Show ratio (%)</label>
+                        <input type="range" id="showRatioSlider" class="control-slider" min="0" max="100" value="90">
+                        <div class="control-value" id="showRatioValue">90%</div>
+                    </div>
+                </div>
+                <div class="calculator-output" id="funnelOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Quality-weighted Inventory</div>
+            <div class="calculator-panel">
+                <div class="calculator-controls">
+                    <div class="control-group">
+                        <label class="control-label">Share high (%)</label>
+                        <input type="range" id="shareHighSlider" class="control-slider" min="0" max="100" value="50">
+                        <div class="control-value" id="shareHighValue">50%</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Share mid (%)</label>
+                        <input type="range" id="shareMidSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="shareMidValue">30%</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Quality high (0-1)</label>
+                        <input type="range" id="qualityHighSlider" class="control-slider" min="0" max="100" value="90">
+                        <div class="control-value" id="qualityHighValue">0.90</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Quality mid (0-1)</label>
+                        <input type="range" id="qualityMidSlider" class="control-slider" min="0" max="100" value="60">
+                        <div class="control-value" id="qualityMidValue">0.60</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Quality low (0-1)</label>
+                        <input type="range" id="qualityLowSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="qualityLowValue">0.30</div>
+                    </div>
+                </div>
+                <div class="calculator-output" id="qualityOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Must-have мониторинг инвентаря</div>
+            <ul class="checklist">
+                <li>Request rate: доля opportunities, ставших requests — ранний индикатор доступности</li>
+                <li>Response ratio: responses/requests — доступность спроса, индикатор delivery bottleneck</li>
+                <li>Show ratio: shows/responses — конверсия ответов в показы, индикатор конкуренции</li>
+                <li>ShowConv: shows/opportunities — общая конверсия, итоговый индикатор прохождения</li>
+                <li>Attention proxy: время/скролл/видимость — внимание пользователя к контексту</li>
+                <li>Tails (p10/p50/p90): края распределения эффективности — система ломается внизу</li>
+                <li>Composition shares: доли high/mid/low quality — сдвиг в распределении качества</li>
+                <li>Frequency proxy: частота касаний рекламой — индикатор усталости</li>
+                <li>Saturation proxy: рост показов без роста эффекта — система упирается в потолок</li>
+                <li>High-pressure сегмент: эффективность в сегментах с высокой частотой — деградация первым</li>
+                <li>Лаг реакции денег: время между механикой и revenue — короткое окно врет</li>
+                <li>Дрейф baseline: постепенное изменение базовой линии — скрытая деградация</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Типовые ловушки</div>
+            <div class="traps-grid">
+                <div class="trap-card">
+                    <div class="trap-card-title">Смотрим только shows</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> Shows не показывают, где теряется инвентарь. Opportunities могут расти, но shows не растут.
+                        <br><strong>Как правильно:</strong> Смотреть цепочку: opportunities → requests → responses → shows. Разлагать showConv на слои.
+                    </div>
+                </div>
+                <div class="trap-card">
+                    <div class="trap-card-title">Смотрим только CPM</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> CPM может расти, компенсируя падение объёма или качества. Это компенсация, не успех.
+                        <br><strong>Как правильно:</strong> Смотреть CPM вместе с объёмом и качеством. Проверять attention proxy, effective shows.
+                    </div>
+                </div>
+                <div class="trap-card">
+                    <div class="trap-card-title">Путаем coverage и pressure</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> Coverage — доступность, pressure — частота. Больше pressure ≠ больше coverage.
+                        <br><strong>Как правильно:</strong> Разделять метрики: coverage proxy для доступности, frequency proxy для давления.
+                    </div>
+                </div>
+                <div class="trap-card">
+                    <div class="trap-card-title">Среднее вместо хвостов</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> Среднее маскирует проблемы в хвостах. Система ломается внизу (p10), пока среднее выглядит терпимо.
+                        <br><strong>Как правильно:</strong> Смотреть p10/p50/p90, variance, сегменты отдельно.
+                    </div>
+                </div>
+                <div class="trap-card">
+                    <div class="trap-card-title">Окна без лагов</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> Короткое окно скрывает проблемы через лаг. Механика падает, но деньги ещё не реагируют.
+                        <br><strong>Как правильно:</strong> Фиксировать окна и лаги. Мониторить ранние сигналы (attention proxy, showConv) на окне лагов.
+                    </div>
+                </div>
+                <div class="trap-card">
+                    <div class="trap-card-title">Нет change log</div>
+                    <div class="trap-card-text">
+                        <strong>Почему плохо:</strong> Без журнала изменений невозможно понять, что вызвало падение. Эффекты смешиваются.
+                        <br><strong>Как правильно:</strong> Вести change log: когда что изменили, какой эффект ожидали, что получили.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./hidden-inventory.html" class="next-card">
+                    <div class="next-card-title">Скрытый инвентарь →</div>
+                    <div class="next-card-text">Когда возможности есть, а показов нет.</div>
+                </a>
+                <a href="./inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Усталость инвентаря →</div>
+                    <div class="next-card-text">Когда повторение съедает эффективность.</div>
+                </a>
+                <a href="../operating/dashboard-spec.html" class="next-card">
+                    <div class="next-card-title">Operating: Dashboard Spec →</div>
+                    <div class="next-card-text">Как должен выглядеть дашборд монетизации.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Инвентарю</a>
+            <p class="footer-note">Инвентарь измеряется прохождением через цепочку, а качество — распределениями.</p>
+        </div>
+    </div>
+
+    <script>
+        // Decomposition chart
+        function generateDecompositionChart() {
+            const container = d3.select('#decompositionChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 200 - margin.top - margin.bottom;
+
+            d3.select('#decompositionChart').selectAll('*').remove();
+
+            const svg = d3.select('#decompositionChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Data
+            const requestRate = 0.80;
+            const responseRatio = 0.75;
+            const showRatio = 0.90;
+            const showConv = requestRate * responseRatio * showRatio;
+
+            const data = [
+                { name: 'Request rate', value: requestRate },
+                { name: 'Response ratio', value: responseRatio },
+                { name: 'Show ratio', value: showRatio },
+                { name: 'ShowConv', value: showConv }
+            ];
+
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.name))
+                .range([0, width])
+                .padding(0.2);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Bars
+            g.selectAll('rect')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('x', d => x(d.name))
+                .attr('y', d => y(d.value))
+                .attr('width', x.bandwidth())
+                .attr('height', d => height - y(d.value))
+                .attr('fill', (d, i) => i === 3 ? '#1f2a37' : '#999');
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+        }
+
+        // Funnel calculator
+        function updateFunnelCalculator() {
+            const opportunities = parseInt(document.getElementById('opportunitiesInput').value) || 100000;
+            const requestRate = parseInt(document.getElementById('requestRateSlider').value) / 100;
+            const responseRatio = parseInt(document.getElementById('responseRatioSlider').value) / 100;
+            const showRatio = parseInt(document.getElementById('showRatioSlider').value) / 100;
+
+            const requests = Math.round(opportunities * requestRate);
+            const responses = Math.round(requests * responseRatio);
+            const shows = Math.round(responses * showRatio);
+            const showConv = requestRate * responseRatio * showRatio;
+
+            let diagnosis = '';
+            if (responseRatio < 0.5) {
+                diagnosis = 'Падает на delivery. Response ratio низкий — проверь доступность спроса, latency, технические метрики.';
+            } else if (showRatio < 0.7) {
+                diagnosis = 'Падает на конкуренции/приоритете. Show ratio низкий — проверь конкуренцию возможностей, приоритеты, crowding proxy.';
+            } else if (requestRate < 0.6) {
+                diagnosis = 'Падает на раннем этапе. Request rate низкий — проверь, почему не все opportunities становятся requests.';
+            } else {
+                diagnosis = 'Цепочка работает нормально. Все слои в норме.';
+            }
+
+            document.getElementById('funnelOutput').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">Requests</div>
+                        <div class="output-metric-value">${requests.toLocaleString()}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Responses</div>
+                        <div class="output-metric-value">${responses.toLocaleString()}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Shows</div>
+                        <div class="output-metric-value">${shows.toLocaleString()}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">ShowConv</div>
+                        <div class="output-metric-value">${(showConv * 100).toFixed(1)}%</div>
+                    </div>
+                </div>
+                <div class="output-diagnosis">${diagnosis}</div>
+            `;
+        }
+
+        document.getElementById('opportunitiesInput').addEventListener('input', updateFunnelCalculator);
+        document.getElementById('requestRateSlider').addEventListener('input', (e) => {
+            document.getElementById('requestRateValue').textContent = e.target.value + '%';
+            updateFunnelCalculator();
+        });
+        document.getElementById('responseRatioSlider').addEventListener('input', (e) => {
+            document.getElementById('responseRatioValue').textContent = e.target.value + '%';
+            updateFunnelCalculator();
+        });
+        document.getElementById('showRatioSlider').addEventListener('input', (e) => {
+            document.getElementById('showRatioValue').textContent = e.target.value + '%';
+            updateFunnelCalculator();
+        });
+
+        // Quality-weighted calculator
+        function updateQualityCalculator() {
+            const shareHigh = parseInt(document.getElementById('shareHighSlider').value);
+            const shareMid = parseInt(document.getElementById('shareMidSlider').value);
+            const shareLow = Math.max(0, 100 - shareHigh - shareMid);
+
+            const qualityHigh = parseInt(document.getElementById('qualityHighSlider').value) / 100;
+            const qualityMid = parseInt(document.getElementById('qualityMidSlider').value) / 100;
+            const qualityLow = parseInt(document.getElementById('qualityLowSlider').value) / 100;
+
+            const effectiveInventory = (shareHigh / 100) * qualityHigh + (shareMid / 100) * qualityMid + (shareLow / 100) * qualityLow;
+
+            let qualityHint = '';
+            if (shareLow > 40) {
+                qualityHint = 'Деградация микса: доля low-quality высока.';
+            } else if (shareHigh < 30) {
+                qualityHint = 'Composition shift: доля high-quality падает.';
+            } else {
+                qualityHint = 'Качество распределения в норме.';
+            }
+
+            // Update share low display
+            const shareLowDisplay = document.getElementById('shareLowValue');
+            if (shareLowDisplay) {
+                shareLowDisplay.textContent = shareLow + '%';
+            }
+
+            // Generate mix chart
+            const container = d3.select('#qualityMixChart');
+            container.selectAll('*').remove();
+
+            const mixWidth = 200;
+            const mixHeight = 20;
+            const mixSvg = container.append('svg')
+                .attr('width', mixWidth)
+                .attr('height', mixHeight);
+
+            const mixX = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, mixWidth]);
+
+            let xPos = 0;
+            if (shareHigh > 0) {
+                mixSvg.append('rect')
+                    .attr('x', xPos)
+                    .attr('y', 0)
+                    .attr('width', mixX(shareHigh))
+                    .attr('height', mixHeight)
+                    .attr('fill', '#1f2a37');
+                xPos += mixX(shareHigh);
+            }
+            if (shareMid > 0) {
+                mixSvg.append('rect')
+                    .attr('x', xPos)
+                    .attr('y', 0)
+                    .attr('width', mixX(shareMid))
+                    .attr('height', mixHeight)
+                    .attr('fill', '#777');
+                xPos += mixX(shareMid);
+            }
+            if (shareLow > 0) {
+                mixSvg.append('rect')
+                    .attr('x', xPos)
+                    .attr('y', 0)
+                    .attr('width', mixX(shareLow))
+                    .attr('height', mixHeight)
+                    .attr('fill', '#aaa');
+            }
+
+            document.getElementById('qualityOutput').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">Share low</div>
+                        <div class="output-metric-value">${shareLow}%</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Effective inventory</div>
+                        <div class="output-metric-value">${(effectiveInventory * 100).toFixed(0)}</div>
+                    </div>
+                </div>
+                <div class="output-diagnosis">
+                    <strong>Качество распределения:</strong> ${qualityHint}
+                </div>
+                <div class="quality-mix-chart" id="qualityMixChart"></div>
+            `;
+
+            // Regenerate mix chart
+            setTimeout(() => {
+                const container = d3.select('#qualityMixChart');
+                container.selectAll('*').remove();
+
+                const mixWidth = 200;
+                const mixHeight = 20;
+                const mixSvg = container.append('svg')
+                    .attr('width', mixWidth)
+                    .attr('height', mixHeight);
+
+                const mixX = d3.scaleLinear()
+                    .domain([0, 100])
+                    .range([0, mixWidth]);
+
+                let xPos = 0;
+                if (shareHigh > 0) {
+                    mixSvg.append('rect')
+                        .attr('x', xPos)
+                        .attr('y', 0)
+                        .attr('width', mixX(shareHigh))
+                        .attr('height', mixHeight)
+                        .attr('fill', '#1f2a37');
+                    xPos += mixX(shareHigh);
+                }
+                if (shareMid > 0) {
+                    mixSvg.append('rect')
+                        .attr('x', xPos)
+                        .attr('y', 0)
+                        .attr('width', mixX(shareMid))
+                        .attr('height', mixHeight)
+                        .attr('fill', '#777');
+                    xPos += mixX(shareMid);
+                }
+                if (shareLow > 0) {
+                    mixSvg.append('rect')
+                        .attr('x', xPos)
+                        .attr('y', 0)
+                        .attr('width', mixX(shareLow))
+                        .attr('height', mixHeight)
+                        .attr('fill', '#aaa');
+                }
+            }, 10);
+        }
+
+        document.getElementById('shareHighSlider').addEventListener('input', (e) => {
+            document.getElementById('shareHighValue').textContent = e.target.value + '%';
+            updateQualityCalculator();
+        });
+        document.getElementById('shareMidSlider').addEventListener('input', (e) => {
+            document.getElementById('shareMidValue').textContent = e.target.value + '%';
+            updateQualityCalculator();
+        });
+        document.getElementById('qualityHighSlider').addEventListener('input', (e) => {
+            document.getElementById('qualityHighValue').textContent = (parseInt(e.target.value) / 100).toFixed(2);
+            updateQualityCalculator();
+        });
+        document.getElementById('qualityMidSlider').addEventListener('input', (e) => {
+            document.getElementById('qualityMidValue').textContent = (parseInt(e.target.value) / 100).toFixed(2);
+            updateQualityCalculator();
+        });
+        document.getElementById('qualityLowSlider').addEventListener('input', (e) => {
+            document.getElementById('qualityLowValue').textContent = (parseInt(e.target.value) / 100).toFixed(2);
+            updateQualityCalculator();
+        });
+
+        // Initial render
+        generateDecompositionChart();
+        updateFunnelCalculator();
+        updateQualityCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateDecompositionChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

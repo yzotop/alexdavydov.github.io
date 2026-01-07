@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пороги и ограничения</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .control-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .control-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .control-value {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .output-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-conclusion {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .signals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .signals-table th,
+        .signals-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .signals-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .signals-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e8e8e8;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Пороги и ограничения</h1>
+        <p class="subtitle">Ограничения могут одновременно поднимать CPM и снижать объём.</p>
+
+        <div class="intro">
+            <p>
+                В аукционной системе ограничения создают "непродаваемый" хвост. Floors (минимальные пороги цены), caps (лимиты на частоту или объём), policy constraints (ограничения по брендам или категориям) — всё это отсекает часть инвентаря от продажи. Система не может продать то, что не проходит через ограничения, даже если есть спрос.
+            </p>
+            <p>
+                Рост CPM на ограничениях часто выглядит как успех, но может быть просто срез объёма. Когда вы поднимаете floor, вы отсекаете низкоценовые заявки, средняя цена растёт, но объём падает. Если потеря объёма больше, чем выигрыш в цене, revenue падает. Важно измерять trade-off: CPM, volume, revenue вместе, а не по отдельности.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Какие бывают ограничения</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Floors (минимальная цена/порог)</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Отсекает заявки ниже порога. Поднимает среднюю цену, но режет fill rate и объём.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> CPM↑, volume↓, fill proxy↓, response ratio↓, lost_to_constraints↑.
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Радоваться росту CPM, не замечая падения объёма и revenue.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Budget / pacing limits</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Ограничивает расход бюджета в единицу времени. Создаёт искусственный дефицит спроса.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> CPM↑ (если лимит жёсткий), volume↓, win-rate proxy↓, сезонность внутри дня/недели.
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Приписывать колебания CPM изменениям спроса, а не pacing механике.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Frequency caps</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Ограничивает частоту показов одному пользователю. Снижает pressure, но режет coverage.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Volume↓, quality proxy↑ (меньше fatigue), coverage↓, variance↓ (срез хвоста).
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Считать рост quality успехом, не замечая падения coverage и revenue.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Inventory caps / supply gating</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Ограничивает доступный инвентарь для продажи. Создаёт искусственный дефицит supply.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> CPM↑, volume↓, hidden inventory↑, response ratio↓, delivery bottleneck.
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Приписывать рост CPM росту спроса, а не ограничению supply.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Policy / brand constraints</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Исключает определённые категории, бренды или типы рекламы. Создаёт "запретные зоны".
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Volume↓, fill proxy↓, mix shift (больше разрешённых категорий), variance↓.
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Не понимать, что падение volume — это не падение спроса, а срез по policy.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Latency/timeouts (тех. ограничения)</div>
+                    <div class="card-item">
+                        <strong>Что делает:</strong> Отсекает запросы, которые не укладываются в таймаут. Создаёт потери на уровне delivery.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит в метриках:</strong> Volume↓, response ratio↓, timeout rate↑, delivery bottleneck, hidden inventory↑.
+                    </div>
+                    <div class="card-item">
+                        <strong>Главная ловушка интерпретации:</strong> Приписывать падение volume изменениям спроса, а не техническим ограничениям.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Trade-off: CPM vs Volume при росте floor</div>
+            <div class="chart-container">
+                <svg id="tradeoffChart"></svg>
+                <p class="chart-caption">Floor поднимает цену, но режет объём. Оптимум там, где максимум R.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Ограничения как потеря в цепочке (loss to constraints)</div>
+            <div class="chart-container">
+                <svg id="lossChart"></svg>
+                <p class="chart-caption">В ограниченном режиме рост спроса не превращается в объём.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Микс меняется из-за среза хвоста</div>
+            <div class="chart-container">
+                <svg id="mixChart"></svg>
+                <p class="chart-caption">Ограничения могут улучшать среднее качество, но снижать покрытие.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Ограничения: что вы покупаете</div>
+            <div class="interactive-panel">
+                <div class="controls-group">
+                    <div class="control-group">
+                        <label class="control-label">Floor level</label>
+                        <input type="range" id="floorSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="floorValue">30</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Limit intensity</label>
+                        <input type="range" id="limitSlider" class="control-slider" min="0" max="100" value="20">
+                        <div class="control-value" id="limitValue">20</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Protect quality (reduce pressure)</label>
+                        <div class="control-checkbox">
+                            <input type="checkbox" id="protectQuality">
+                            <label for="protectQuality" style="font-size: 0.9rem; color: #666;">Включить</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="output-panel" id="outputPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Сигналы ограниченного режима</div>
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>Симптом</th>
+                        <th>Что это означает</th>
+                        <th>Что проверить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPM↑, volume↓</td>
+                        <td>Классический trade-off: цена растёт, объём падает</td>
+                        <td>Проверить revenue (CPM × Volume), lost_to_constraints, fill proxy</td>
+                    </tr>
+                    <tr>
+                        <td>response ratio↓</td>
+                        <td>Меньше запросов превращается в ответы — ограничения режут fill</td>
+                        <td>Проверить floors, caps, policy constraints, latency/timeouts</td>
+                    </tr>
+                    <tr>
+                        <td>fill proxy↓</td>
+                        <td>Меньше инвентаря продаётся — ограничения блокируют продажи</td>
+                        <td>Проверить floors, limits, hidden inventory, delivery bottleneck</td>
+                    </tr>
+                    <tr>
+                        <td>lost_to_constraints↑</td>
+                        <td>Растёт доля потерь из-за ограничений — система пережата</td>
+                        <td>Проверить все типы ограничений, сравнить с контрольными сегментами</td>
+                    </tr>
+                    <tr>
+                        <td>variance↓ (срез хвоста)</td>
+                        <td>Распределение становится уже — ограничения отрезают хвосты</td>
+                        <td>Проверить хвосты распределений, сегменты, mix shift</td>
+                    </tr>
+                    <tr>
+                        <td>mix стал "чище", но coverage хуже</td>
+                        <td>Ограничения отсекли low-quality, но снизили покрытие</td>
+                        <td>Проверить coverage, quality proxy, revenue (может падать)</td>
+                    </tr>
+                    <tr>
+                        <td>рост спроса без роста revenue</td>
+                        <td>Спрос есть, но ограничения не дают превратить его в объём</td>
+                        <td>Проверить lost_to_constraints, fill proxy, response ratio</td>
+                    </tr>
+                    <tr>
+                        <td>сегменты расходятся</td>
+                        <td>Ограничения по-разному влияют на разные сегменты</td>
+                        <td>Проверить сегменты отдельно, найти, где ограничения жёстче</td>
+                    </tr>
+                    <tr>
+                        <td>лаг усилился</td>
+                        <td>Ограничения создают задержки в delivery или обработке</td>
+                        <td>Проверить latency, timeouts, delivery metrics, технические ограничения</td>
+                    </tr>
+                    <tr>
+                        <td>инвентарь "есть", но не продаётся</td>
+                        <td>Hidden inventory — инвентарь есть, но ограничения блокируют продажу</td>
+                        <td>Проверить hidden inventory, delivery bottleneck, floors/limits</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, но revenue↓</td>
+                        <td>Маскировка: цена растёт, но потеря объёма больше выигрыша в цене</td>
+                        <td>Проверить revenue = CPM × Volume, lost_to_constraints, trade-off</td>
+                    </tr>
+                    <tr>
+                        <td>win-rate proxy↓</td>
+                        <td>Меньше запросов выигрывают аукцион — ограничения режут доступный спрос</td>
+                        <td>Проверить floors, caps, budget limits, competition intensity</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Как безопасно работать с floor/лимитами</div>
+            <ul class="checklist">
+                <li>Всегда смотреть trade-off (CPM, volume, revenue) — не судить по одному числу</li>
+                <li>Измерять lost_to_constraints — знать, сколько теряется из-за ограничений</li>
+                <li>Проверять сегменты и хвосты — ограничения могут по-разному влиять на разные части распределения</li>
+                <li>Фиксировать окна и лаги — изменения могут проявляться с задержкой</li>
+                <li>Не судить по CPM — рост CPM может быть компенсацией за падение объёма</li>
+                <li>Если микс улучшился, проверь coverage — улучшение качества может идти за счёт покрытия</li>
+                <li>Вводить guardrails на revenue и quality — не допускать падения revenue или критического падения quality</li>
+                <li>Делать пошаговые изменения — не менять всё сразу, чтобы видеть эффект каждого шага</li>
+                <li>Сравнивать с контрольными сегментами — если есть сегменты без ограничений, сравнивать с ними</li>
+                <li>Логировать изменения (change log) — фиксировать, когда и какие ограничения вводились</li>
+                <li>Проверять delivery (timeouts) как отдельный слой — технические ограничения могут маскироваться под рыночные</li>
+                <li>После изменения дать системе стабилизироваться — не делать выводы сразу, подождать несколько дней</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./demand-shocks.html" class="next-card">
+                    <div class="next-card-title">Шоки спроса →</div>
+                    <div class="next-card-text">Сезонность и внешние события.</div>
+                </a>
+                <a href="./price-elasticity.html" class="next-card">
+                    <div class="next-card-title">Эластичность →</div>
+                    <div class="next-card-text">Эластичность и пределы цены.</div>
+                </a>
+                <a href="../inventory/hidden-inventory.html" class="next-card">
+                    <div class="next-card-title">Инвентарь: скрытые потери →</div>
+                    <div class="next-card-text">Когда возможности есть, а показов нет.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Рынку</a>
+            <p class="footer-note">Ограничения могут одновременно поднимать CPM и снижать объём.</p>
+        </div>
+    </div>
+
+    <script>
+        // Trade-off chart
+        function generateTradeoffChart() {
+            const container = d3.select('#tradeoffChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 350 - margin.top - margin.bottom;
+
+            d3.select('#tradeoffChart').selectAll('*').remove();
+
+            const svg = d3.select('#tradeoffChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: floor x in [0..1]
+            const n = 30;
+            const data = [];
+            let maxRevenue = 0;
+            let optFloor = 0;
+            for (let i = 0; i <= n; i++) {
+                const x = i / n;
+                // CPM = 0.55 + 0.45*(1-exp(-3x))
+                const cpm = 0.55 + 0.45 * (1 - Math.exp(-3 * x));
+                // Volume = 1.0 - 0.55*(x^1.6)
+                const volume = 1.0 - 0.55 * Math.pow(x, 1.6);
+                // Revenue = CPM * Volume (normalize to 0..1)
+                const revenue = cpm * volume;
+                if (revenue > maxRevenue) {
+                    maxRevenue = revenue;
+                    optFloor = x;
+                }
+                data.push({ x, cpm, volume, revenue });
+            }
+
+            // Normalize revenue to 0..1
+            const revenueMax = d3.max(data, d => d.revenue);
+            const revenueMin = d3.min(data, d => d.revenue);
+            data.forEach(d => {
+                d.revenueNorm = (d.revenue - revenueMin) / (revenueMax - revenueMin);
+            });
+
+            const x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1.1])
+                .range([height, 0]);
+
+            // Vertical line at optimum
+            g.append('line')
+                .attr('x1', x(optFloor))
+                .attr('x2', x(optFloor))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '4,4');
+
+            g.append('text')
+                .attr('x', x(optFloor) + 5)
+                .attr('y', 15)
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('оптимум floor');
+
+            // Lines
+            const lineCPM = d3.line()
+                .x(d => x(d.x))
+                .y(d => y(d.cpm))
+                .curve(d3.curveMonotoneX);
+
+            const lineVolume = d3.line()
+                .x(d => x(d.x))
+                .y(d => y(d.volume))
+                .curve(d3.curveMonotoneX);
+
+            const lineRevenue = d3.line()
+                .x(d => x(d.x))
+                .y(d => y(d.revenueNorm))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineCPM);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineVolume);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '3,3')
+                .attr('d', lineRevenue);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('floor level');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].cpm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('CPM index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].volume) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('Volume index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenueNorm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#666')
+                .text('Revenue index');
+        }
+
+        // Loss chart
+        function generateLossChart() {
+            const container = d3.select('#lossChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#lossChart').selectAll('*').remove();
+
+            const svg = d3.select('#lossChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: t=1..180
+            const n = 180;
+            const constrainedStart = 90;
+            const constrainedEnd = 150;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Demand: waves + growth
+                const demand = 0.70 + 0.15 * Math.sin(t / 20) + 0.10 * (1 - 1 / (1 + Math.exp(-(t - 60) / 15)));
+
+                // Lost to constraints: sigmoid(demand - threshold) * floor_factor
+                const threshold = 0.75;
+                const floorFactor = t > constrainedStart ? 0.35 * (1 - 1 / (1 + Math.exp(-(t - constrainedStart) / 8))) : 0;
+                const lostShare = demand > threshold ? (demand - threshold) * floorFactor : 0;
+
+                // Delivered volume = demand*(1-lost) * smooth
+                const smooth = 0.95 + 0.05 * Math.sin(t / 25);
+                const delivered = demand * (1 - lostShare) * smooth;
+
+                data.push({ t, demand, lostShare, delivered });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1.1])
+                .range([height, 0]);
+
+            // Shaded region for constrained mode
+            g.append('rect')
+                .attr('x', x(constrainedStart))
+                .attr('y', 0)
+                .attr('width', x(constrainedEnd) - x(constrainedStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(constrainedStart) + x(constrainedEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('ограниченный режим');
+
+            // Lines
+            const lineDemand = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.demand))
+                .curve(d3.curveMonotoneX);
+
+            const lineLost = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.lostShare))
+                .curve(d3.curveMonotoneX);
+
+            const lineDelivered = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.delivered))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineDemand);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineLost);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineDelivered);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].demand) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('demand proxy');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].lostShare) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('lost_to_constraints share');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].delivered) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('delivered volume');
+        }
+
+        // Mix chart
+        function generateMixChart() {
+            const container = d3.select('#mixChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#mixChart').selectAll('*').remove();
+
+            const svg = d3.select('#mixChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: shares for 3 quality levels
+            const n = 180;
+            const floorStart = 90;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Before floor: balanced mix
+                // After floor: low share drops, high share grows
+                const floorEffect = t > floorStart ? 0.30 * (1 - 1 / (1 + Math.exp(-(t - floorStart) / 10))) : 0;
+
+                // Low-quality share: drops
+                const lowShare = 0.35 - floorEffect * 0.20;
+
+                // Mid share: stable
+                const midShare = 0.40;
+
+                // High-quality share: grows
+                const highShare = 0.25 + floorEffect * 0.20;
+
+                data.push({ t, lowShare, midShare, highShare });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Lines
+            const lineLow = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.lowShare))
+                .curve(d3.curveMonotoneX);
+
+            const lineMid = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.midShare))
+                .curve(d3.curveMonotoneX);
+
+            const lineHigh = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.highShare))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineLow);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#777')
+                .attr('stroke-width', 2)
+                .attr('d', lineMid);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineHigh);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('время');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].lowShare) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('low-quality share');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].midShare) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#777')
+                .text('mid share');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].highShare) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('high-quality share');
+        }
+
+        // Interactive calculator
+        function updateCalculator() {
+            const floor = parseInt(document.getElementById('floorSlider').value) / 100;
+            const limit = parseInt(document.getElementById('limitSlider').value) / 100;
+            const protectQuality = document.getElementById('protectQuality').checked;
+
+            // Deterministic formulas
+            // CPM = f(floor, demand, limits) with plateau
+            const baseCPM = 0.60;
+            const cpmFromFloor = 0.35 * (1 - Math.exp(-3 * floor));
+            const cpmFromLimit = 0.15 * limit;
+            const cpmIndex = Math.min(1.0, baseCPM + cpmFromFloor + cpmFromLimit);
+
+            // Volume = base * g(floor, limits) (drops)
+            const baseVolume = 0.85;
+            const volumeDropFromFloor = 0.50 * Math.pow(floor, 1.5);
+            const volumeDropFromLimit = 0.25 * limit;
+            const volumeIndex = Math.max(0.3, baseVolume - volumeDropFromFloor - volumeDropFromLimit);
+
+            // Lost share grows with floor and limits
+            const lostShare = Math.min(0.6, 0.15 + 0.35 * floor + 0.20 * limit);
+
+            // Quality: slightly grows if protect-quality is on (less pressure)
+            const baseQuality = 0.70;
+            const qualityDropFromPressure = (floor + limit * 0.5) * 0.15;
+            const qualityBoostFromProtect = protectQuality ? 0.10 : 0;
+            const qualityIndex = Math.max(0.4, Math.min(1.0, baseQuality - qualityDropFromPressure + qualityBoostFromProtect));
+
+            // Revenue = CPM * Volume * (slightly) * Quality
+            const revenueIndex = cpmIndex * volumeIndex * (0.95 + 0.05 * qualityIndex);
+
+            // Diagnosis
+            let diagnosis = '';
+            if (cpmIndex > 0.75 && volumeIndex > 0.70 && revenueIndex > 0.65) {
+                diagnosis = 'Здоровый режим. CPM, volume и revenue в балансе.';
+            } else if (cpmIndex > 0.80 && volumeIndex < 0.50) {
+                diagnosis = 'Пережатый режим (срез объёма). CPM высокий, но volume критически низкий.';
+            } else if (cpmIndex > 0.75 && revenueIndex < 0.60) {
+                diagnosis = 'Маскировка (CPM↑, R↓). Цена растёт, но revenue падает из-за потери объёма.';
+            } else {
+                diagnosis = 'Смешанный режим. Проверь trade-off между CPM, volume и revenue.';
+            }
+
+            document.getElementById('outputPanel').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">CPM index</div>
+                        <div class="output-metric-value">${(cpmIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Volume index</div>
+                        <div class="output-metric-value">${(volumeIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Quality index</div>
+                        <div class="output-metric-value">${(qualityIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Revenue index</div>
+                        <div class="output-metric-value">${(revenueIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Lost-to-constraints share</div>
+                        <div class="output-metric-value">${(lostShare * 100).toFixed(0)}%</div>
+                    </div>
+                </div>
+                <div class="output-conclusion">${diagnosis}</div>
+            `;
+        }
+
+        document.getElementById('floorSlider').addEventListener('input', (e) => {
+            document.getElementById('floorValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('limitSlider').addEventListener('input', (e) => {
+            document.getElementById('limitValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('protectQuality').addEventListener('change', () => {
+            updateCalculator();
+        });
+
+        // Initial render
+        generateTradeoffChart();
+        generateLossChart();
+        generateMixChart();
+        updateCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateTradeoffChart();
+                generateLossChart();
+                generateMixChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

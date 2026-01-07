@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Роль эксперимента</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro {
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 3rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .chain-container {
+            margin: 3rem 0;
+            padding: 2rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            overflow-x: auto;
+        }
+
+        .chain {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 600px;
+            padding: 1rem 0;
+        }
+
+        .chain-badge {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #ffffff;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+
+        .chain-arrow {
+            font-size: 1.2rem;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .scenario-controls {
+            margin-bottom: 1.5rem;
+        }
+
+        .scenario-radio {
+            display: inline-block;
+            margin-right: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .scenario-radio input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .scenario-radio label {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interpretation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .success-list {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .success-list li {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .success-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Роль эксперимента</h1>
+        <p class="subtitle">Эксперимент — инструмент наблюдения, не доказательства.</p>
+        <p class="insight">В монетизации важнее понять механизм изменения, чем "поймать дельту".</p>
+
+        <div class="intro">
+            <p>
+                Эксперимент в монетизации — это не способ "доказать успех фичи", а инструмент диагностики механизма системы.
+                Одинаковая дельта в выручке может означать здоровый рост или скрытую деградацию. Важно не "выросло ли",
+                а "за счёт чего" и "какой ценой".
+            </p>
+        </div>
+
+        <h2>Три плохих вопроса</h2>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">«Эта фича увеличила выручку?»</div>
+                <div class="card-item">
+                    <strong>Почему плохо:</strong> Выручка — итог, который может расти за счёт компенсации ценой,
+                    скрытого насыщения или рыночных артефактов.
+                </div>
+                <div class="card-item">
+                    <strong>Как переформулировать:</strong> "Какой рычаг сдвинулся и за счёт чего? Price или volume?
+                    Механика или рынок? Здоровый рост или компенсация?"
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">«CTR вырос — значит хорошо?»</div>
+                <div class="card-item">
+                    <strong>Почему плохо:</strong> CTR может расти при падении объёма, композиционном сдвиге или
+                    вытеснении других форматов. Одна метрика почти всегда лжёт.
+                </div>
+                <div class="card-item">
+                    <strong>Как переформулировать:</strong> "Какая часть воронки изменилась? Opportunities, shows, clicks?
+                    Не вытеснил ли один формат другой? Не упал ли объём при росте CTR?"
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">«Значимо — значит можно катить?»</div>
+                <div class="card-item">
+                    <strong>Почему плохо:</strong> Статистическая значимость не говорит о практической полезности,
+                    устойчивости эффекта, конфликте метрик или скрытых рисках.
+                </div>
+                <div class="card-item">
+                    <strong>Как переформулировать:</strong> "Какая цена эффекта? Какой риск? Есть ли конфликт метрик?
+                    Что будет через месяц? Какой guardrail сработал?"
+                </div>
+            </div>
+        </div>
+
+        <h2>Правильная единица анализа</h2>
+
+        <div class="chain-container">
+            <div class="chain">
+                <div class="chain-badge">Гипотеза</div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-badge">Механизм</div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-badge">Риск</div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-badge">Метрики</div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-badge">Лаг</div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-badge">Решение</div>
+            </div>
+        </div>
+
+        <p class="intro">
+            Эксперимент начинается с гипотезы о механизме, а не с вопроса "выросло ли".
+            Механизм определяет риски. Метрики показывают реакцию с лагом. Решение принимается на основе траектории,
+            а не точки.
+        </p>
+
+        <h2>Дельта vs Механизм</h2>
+
+        <div class="chart-container">
+            <div class="scenario-controls">
+                <div class="scenario-radio">
+                    <input type="radio" id="scenario1" name="scenario" value="healthy" checked>
+                    <label for="scenario1">Healthy gain</label>
+                </div>
+                <div class="scenario-radio">
+                    <input type="radio" id="scenario2" name="scenario" value="pressure">
+                    <label for="scenario2">Pressure win</label>
+                </div>
+                <div class="scenario-radio">
+                    <input type="radio" id="scenario3" name="scenario" value="patch">
+                    <label for="scenario3">Short-term patch</label>
+                </div>
+            </div>
+            <svg id="comparisonChart"></svg>
+            <div class="interpretation" id="interpretation">
+                <!-- Content will be populated by JS -->
+            </div>
+            <p class="chart-caption">
+                Одинаковая дельта в выручке может быть получена разными способами. Важно читать механизм, а не итог.
+            </p>
+        </div>
+
+        <h2>Выход: что считать успехом эксперимента</h2>
+
+        <ul class="success-list">
+            <li>Ясная гипотеза в терминах механизма: какой рычаг сдвигается и за счёт чего</li>
+            <li>Заранее описанные primary и guardrail метрики: что смотрим и что защищаем</li>
+            <li>Ожидаемый лаг и окно наблюдения: когда ждать реакции и как долго смотреть</li>
+            <li>Проверка на артефакты: seasonality, auction competition, pressure artifacts</li>
+            <li>Интерпретация через разложение рычагов: price vs volume, механизм vs рынок</li>
+            <li>Решение: катить/не катить/доработать/повторить с другим дизайном — на основе механизма, а не дельты</li>
+        </ul>
+
+        <p class="final-quote">
+            Эксперимент не снимает ответственность. Он делает ответственность осознанной.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+
+    <script>
+        // Chart setup
+        const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+        const width = 800;
+        const height = 400;
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const svg = d3.select('#comparisonChart')
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .style('max-width', '100%')
+            .style('height', 'auto');
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 120])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([innerHeight, 0]);
+
+        // Generate deterministic data for scenarios
+        function generateData(scenario) {
+            const data = [];
+            const decisionPoint = 60;
+
+            for (let t = 1; t <= 120; t++) {
+                let revenue, risk;
+
+                if (scenario === 'healthy') {
+                    // Healthy gain: moderate revenue growth, low risk
+                    revenue = 0.45 + 0.0015 * t + 0.0001 * Math.sin(t / 10);
+                    risk = 0.2 + 0.0005 * t;
+                } else if (scenario === 'pressure') {
+                    // Pressure win: fast revenue growth, fast risk growth
+                    const pressureStart = 20;
+                    const pressureEffect = t > pressureStart ? 0.002 * (t - pressureStart) : 0;
+                    revenue = 0.45 + 0.002 * t + pressureEffect;
+                    risk = 0.2 + 0.003 * t + (t > pressureStart ? 0.002 * (t - pressureStart) : 0);
+                } else { // patch
+                    // Short-term patch: revenue jumps then stabilizes, risk continues growing
+                    const jumpEnd = 40;
+                    if (t <= jumpEnd) {
+                        revenue = 0.45 + 0.003 * t;
+                    } else {
+                        revenue = 0.45 + 0.003 * jumpEnd + 0.0002 * (t - jumpEnd);
+                    }
+                    risk = 0.2 + 0.001 * t + (t > jumpEnd ? 0.002 * (t - jumpEnd) : 0);
+                }
+
+                // Clamp values
+                revenue = Math.min(0.75, Math.max(0.45, revenue));
+                risk = Math.min(0.95, Math.max(0.2, risk));
+
+                data.push({ t, revenue, risk });
+            }
+
+            return data;
+        }
+
+        // Line generators
+        const revenueLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        const riskLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Interpretation texts
+        const interpretations = {
+            healthy: 'Выручка растёт умеренно, риск почти не меняется. Это здоровый рост: система не перегружается, механизм стабилен. Можно катить с уверенностью.',
+            pressure: 'Выручка растёт быстро, но риск растёт ещё быстрее. Это перегруз: система работает на пределе, механизм деградирует. Нужно снижать давление или дорабатывать дизайн.',
+            patch: 'Выручка подскакивает и стабилизируется, но риск продолжает расти. Это ложная победа: краткосрочный эффект маскирует долгосрочную деградацию. Нельзя катить без изменений.'
+        };
+
+        // Update function
+        function updateChart(scenario) {
+            const data = generateData(scenario);
+
+            // Clear previous
+            g.selectAll('*').remove();
+
+            // Decision point line
+            g.append('line')
+                .attr('x1', xScale(60))
+                .attr('x2', xScale(60))
+                .attr('y1', 0)
+                .attr('y2', innerHeight)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', xScale(60))
+                .attr('y', innerHeight + 25)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('decision point');
+
+            // Revenue line
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', revenueLine);
+
+            // Risk line
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', riskLine);
+
+            // Labels
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScale(data[data.length - 1].risk) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('risk');
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(xScale).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(yScale).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Update interpretation
+            document.getElementById('interpretation').textContent = interpretations[scenario];
+        }
+
+        // Initial render
+        updateChart('healthy');
+
+        // Event listeners
+        d3.selectAll('input[name="scenario"]').on('change', function() {
+            const scenario = this.value;
+            updateChart(scenario);
+        });
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const currentScenario = document.querySelector('input[name="scenario"]:checked').value;
+                updateChart(currentScenario);
+            }, 250);
+        });
+    </script>
+</body>
+</html>
+
+

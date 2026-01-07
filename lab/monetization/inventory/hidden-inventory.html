@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скрытый инвентарь</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .loss-map-container {
+            margin: 3rem 0;
+            padding: 2rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            overflow-x: auto;
+        }
+
+        .loss-map {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 800px;
+            padding: 1rem 0;
+        }
+
+        .loss-step {
+            flex: 1;
+            text-align: center;
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #ffffff;
+        }
+
+        .loss-step-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .loss-step-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1f2a37;
+            margin-bottom: 0.5rem;
+        }
+
+        .loss-arrow {
+            flex-shrink: 0;
+            text-align: center;
+            position: relative;
+            width: 120px;
+        }
+
+        .loss-arrow-line {
+            font-size: 1.5rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .loss-arrow-label {
+            font-size: 0.8rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .loss-arrow-percent {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1f2a37;
+            margin-top: 0.25rem;
+        }
+
+        .loss-map-note {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 900px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-list {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-list li {
+            margin-bottom: 0.4rem;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .triage-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .triage-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .triage-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .triage-section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .triage-section-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .triage-section-list {
+            padding-left: 1.25rem;
+        }
+
+        .triage-section-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .proxy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .proxy-table th,
+        .proxy-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .proxy-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .proxy-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Скрытый инвентарь</h1>
+        <p class="subtitle">Возможность ≠ доступность. Доступность ≠ показ.</p>
+
+        <div class="intro">
+            <p>
+                Скрытый инвентарь возникает, когда возможности посчитаны, но не становятся show. Система видит opportunities, но они не превращаются в запросы, ответы или показы. Это выглядит как "рынок плохой / спрос упал", хотя механизм ломается внутри — в delivery, конкуренции, timing.
+            </p>
+            <p>
+                Главная идея: "Нужно измерять не объём, а прохождение через ступени." Если opportunities растут, но shows не растут — инвентарь скрыт. Если requests растут, но responses падают — проблема в delivery. Если responses есть, но shows не растут — проблема в конкуренции или приоритетах.
+            </p>
+            <p>
+                Скрытый инвентарь живёт в потерях между ступенями цепочки. Важно не только "сколько opportunities", но и "где теряются" — на каком шаге цепочки теряется больше всего возможностей.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Карта потерь</div>
+            <div class="loss-map-container">
+                <div class="loss-map">
+                    <div class="loss-step">
+                        <div class="loss-step-title">Opportunities</div>
+                        <div class="loss-step-value">100%</div>
+                    </div>
+                    <div class="loss-arrow">
+                        <div class="loss-arrow-line">→</div>
+                        <div class="loss-arrow-label">loss A: не запросили</div>
+                        <div class="loss-arrow-percent">-20%</div>
+                    </div>
+                    <div class="loss-step">
+                        <div class="loss-step-title">Requests</div>
+                        <div class="loss-step-value">80%</div>
+                    </div>
+                    <div class="loss-arrow">
+                        <div class="loss-arrow-line">→</div>
+                        <div class="loss-arrow-label">loss B: не ответили</div>
+                        <div class="loss-arrow-percent">-20%</div>
+                    </div>
+                    <div class="loss-step">
+                        <div class="loss-step-title">Responses</div>
+                        <div class="loss-step-value">60%</div>
+                    </div>
+                    <div class="loss-arrow">
+                        <div class="loss-arrow-line">→</div>
+                        <div class="loss-arrow-label">loss C: не показали</div>
+                        <div class="loss-arrow-percent">-15%</div>
+                    </div>
+                    <div class="loss-step">
+                        <div class="loss-step-title">Shows</div>
+                        <div class="loss-step-value">45%</div>
+                    </div>
+                </div>
+                <p class="loss-map-note">Скрытый инвентарь живёт в loss B и loss C.</p>
+                <p class="loss-map-note">Оптимизация shows без понимания loss-слоя — риск каннибализации.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Три типа скрытого инвентаря</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Delivery bottleneck</div>
+                    <div class="card-item">
+                        <strong>Симптомы:</strong> Requests есть, responses падают. Response ratio снижается, latency растёт, система не справляется с объёмом запросов.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Response ratio: responses/requests — доступность спроса</li>
+                            <li>Latency proxy: время ответа, таймауты</li>
+                            <li>Saturation on delivery: не упирается ли система в потолок</li>
+                        </ul>
+                    </div>
+                    <div class="card-item">
+                        <strong>Безопасное действие:</strong> Оптимизировать delivery без роста pressure, проверить технические метрики.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Competition / prioritization</div>
+                    <div class="card-item">
+                        <strong>Симптомы:</strong> Responses есть, shows не растут. Несколько возможностей конкурируют за одно внимание, приоритеты не позволяют показать все.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Конкуренция возможностей: не конкурируют ли форматы/места</li>
+                            <li>Приоритеты: не блокируют ли приоритеты показ</li>
+                            <li>Crowding proxy: рост возможностей без роста внимания</li>
+                        </ul>
+                    </div>
+                    <div class="card-item">
+                        <strong>Безопасное действие:</strong> Проверить приоритеты и конкуренцию, не дожимать давление дальше.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Timing / attention mismatch</div>
+                    <div class="card-item">
+                        <strong>Симптомы:</strong> Opportunities растут, но showConv падает. Возможности появляются "не в внимание" — слишком рано, слишком поздно, без контекста.
+                    </div>
+                    <div class="card-item">
+                        <strong>Что проверить:</strong>
+                        <ul class="card-list">
+                            <li>Внимание/видимость proxy: время/скролл/видимость контекста</li>
+                            <li>Ранний/поздний timing: когда появляется возможность относительно контента</li>
+                            <li>Хвосты: не падает ли p10 эффективности</li>
+                        </ul>
+                    </div>
+                    <div class="card-item">
+                        <strong>Безопасное действие:</strong> Проверить timing и внимание, не увеличивать частоту без улучшения контекста.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Фанел прохождения инвентаря во времени</div>
+            <div class="chart-container">
+                <svg id="funnelChart"></svg>
+                <p class="chart-caption">Если верх растёт, а низ нет — инвентарь становится скрытым.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Где течёт: loss decomposition</div>
+            <div class="chart-container">
+                <svg id="lossChart"></svg>
+                <p class="chart-caption">Важно не только 'сколько', но и 'где потеряли'.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">ShowConv vs Pressure (опасный дожим)</div>
+            <div class="chart-container">
+                <svg id="showconvChart"></svg>
+                <p class="chart-caption">Дожим может временно поднять shows, но ухудшить качество и конверсию.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Triage: где скрыт инвентарь?</div>
+            <div class="interactive-panel">
+                <div class="triage-controls">
+                    <div class="control-group">
+                        <label class="control-label">Что наблюдаете?</label>
+                        <select id="symptomSelect" class="control-input">
+                            <option value="opportunities-up-shows-flat">opportunities↑, shows↔</option>
+                            <option value="requests-up-responses-down">requests↑, responses↓</option>
+                            <option value="responses-flat-shows-down">responses↔, shows↓</option>
+                            <option value="showconv-down-opportunities-flat">showConv↓ при opportunities↔</option>
+                            <option value="revenue-down-opportunities-up">revenue↓ при opportunities↑</option>
+                            <option value="cpm-up-shows-down">CPM↑, shows↓</option>
+                            <option value="variance-up-segments">variance↑ по сегментам</option>
+                            <option value="lag-effect">эффект появляется с лагом</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="triage-output" id="triageOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Прокси скрытого инвентаря</div>
+            <table class="proxy-table">
+                <thead>
+                    <tr>
+                        <th>Прокси</th>
+                        <th>Формулировка (словами)</th>
+                        <th>Что означает</th>
+                        <th>Где смотреть</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Response ratio</td>
+                        <td>responses/requests</td>
+                        <td>Доступность спроса на запросы</td>
+                        <td>Requests → Responses</td>
+                    </tr>
+                    <tr>
+                        <td>Show ratio</td>
+                        <td>shows/responses</td>
+                        <td>Конверсия ответов в показы</td>
+                        <td>Responses → Shows</td>
+                    </tr>
+                    <tr>
+                        <td>ShowConv</td>
+                        <td>shows/opportunities</td>
+                        <td>Конверсия возможностей в показы</td>
+                        <td>Opportunities → Shows</td>
+                    </tr>
+                    <tr>
+                        <td>Coverage proxy</td>
+                        <td>Доля opportunities, дошедших до show</td>
+                        <td>Общая доступность инвентаря</td>
+                        <td>Opportunities → Shows</td>
+                    </tr>
+                    <tr>
+                        <td>Crowding proxy</td>
+                        <td>Рост возможностей без роста внимания</td>
+                        <td>Конкуренция возможностей за внимание</td>
+                        <td>Opportunities → Shows</td>
+                    </tr>
+                    <tr>
+                        <td>Attention proxy</td>
+                        <td>Время/скролл/видимость контекста</td>
+                        <td>Внимание пользователя к контексту</td>
+                        <td>Shows → Clicks</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency proxy</td>
+                        <td>Частота касаний рекламой</td>
+                        <td>Усталость от повторения</td>
+                        <td>Shows → Clicks</td>
+                    </tr>
+                    <tr>
+                        <td>Tail drop</td>
+                        <td>p10 по эффективности</td>
+                        <td>Деградация в хвостах распределения</td>
+                        <td>Все шаги</td>
+                    </tr>
+                    <tr>
+                        <td>Segment divergence</td>
+                        <td>Расхождение по сегментам</td>
+                        <td>Проблемы в отдельных сегментах</td>
+                        <td>Все шаги</td>
+                    </tr>
+                    <tr>
+                        <td>Latency/timeout proxy</td>
+                        <td>Время ответа, таймауты</td>
+                        <td>Технические проблемы в delivery</td>
+                        <td>Requests → Responses</td>
+                    </tr>
+                    <tr>
+                        <td>Stability of baseline</td>
+                        <td>Дрейф базовой линии</td>
+                        <td>Постепенное изменение системы</td>
+                        <td>Все шаги</td>
+                    </tr>
+                    <tr>
+                        <td>Lag marker</td>
+                        <td>Поздняя реакция revenue</td>
+                        <td>Лаг между механикой и деньгами</td>
+                        <td>Shows → Revenue</td>
+                    </tr>
+                    <tr>
+                        <td>Loss decomposition</td>
+                        <td>Разложение потерь по слоям</td>
+                        <td>Где именно теряется инвентарь</td>
+                        <td>Все шаги</td>
+                    </tr>
+                    <tr>
+                        <td>Competition index</td>
+                        <td>Индекс конкуренции возможностей</td>
+                        <td>Сколько возможностей конкурируют за внимание</td>
+                        <td>Responses → Shows</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Если скрытый инвентарь — что делать</div>
+            <ul class="checklist">
+                <li>Локализовать loss-слой (A/B/C) — на каком шаге цепочки теряется больше всего</li>
+                <li>Проверить delivery здоровье (requests→responses) — не проблемы ли в технике</li>
+                <li>Проверить конкуренцию возможностей (responses→shows) — не конкурируют ли форматы/места</li>
+                <li>Проверить timing/внимание (opportunities→showConv) — не слишком ли рано/поздно появляется инвентарь</li>
+                <li>Смотреть сегменты/хвосты — не маскирует ли среднее проблемы в отдельных сегментах</li>
+                <li>Избегать дожима давления как первого шага — это может усугубить проблему</li>
+                <li>Фиксировать t0, окно, лаг — когда началось, на каком окне смотреть, какой лаг</li>
+                <li>Вводить guardrails по quality/pressure — установить пороги, не превышать их</li>
+                <li>Проверять восстановление ранними сигналами — мониторить response ratio, showConv, хвосты</li>
+                <li>Обновить алерты (loss_B/loss_C) — добавить новые прокси в мониторинг</li>
+                <li>Проверить компенсацию — не маскирует ли рост CPM падение объёма</li>
+                <li>Оценить долгосрочный эффект — на окне лагов, не на коротком окне</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Усталость инвентаря →</div>
+                    <div class="next-card-text">Как повторение снижает эффективность возможностей.</div>
+                </a>
+                <a href="./inventory-quality.html" class="next-card">
+                    <div class="next-card-title">Качество инвентаря →</div>
+                    <div class="next-card-text">Почему одинаковые показы не равны.</div>
+                </a>
+                <a href="../operating/incidents.html" class="next-card">
+                    <div class="next-card-title">Operating: Инциденты →</div>
+                    <div class="next-card-text">Диагностика и runbook для монетизации.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Инвентарю</a>
+            <p class="footer-note">Возможность ≠ доступность. Доступность ≠ показ.</p>
+        </div>
+    </div>
+
+    <script>
+        // Hidden inventory triage map
+        const hiddenInvTriageMap = {
+            'opportunities-up-shows-flat': {
+                layer: 'Loss B или Loss C',
+                checks: [
+                    'Проверить response ratio: не падает ли доступность спроса',
+                    'Проверить show ratio: не падает ли конверсия responses в shows',
+                    'Проверить showConv: не падает ли конверсия opportunities в shows',
+                    'Проверить delivery здоровье: не проблемы ли в requests→responses',
+                    'Проверить конкуренцию: не конкурируют ли возможности за внимание',
+                    'Проверить timing/внимание: не слишком ли рано/поздно появляется инвентарь'
+                ],
+                safe: [
+                    'Оптимизировать delivery без роста pressure',
+                    'Проверить приоритеты и конкуренцию возможностей',
+                    'Проверить timing и внимание к контексту'
+                ],
+                dont: 'Не дожимать давление — это может усугубить проблему.'
+            },
+            'requests-up-responses-down': {
+                layer: 'Loss B (delivery bottleneck)',
+                checks: [
+                    'Проверить response ratio: не падает ли доступность спроса',
+                    'Проверить latency/timeout proxy: не проблемы ли в технике',
+                    'Проверить saturation on delivery: не упирается ли система в потолок',
+                    'Проверить технические метрики: error rate, latency, availability',
+                    'Проверить сегменты: не проблемы ли в отдельных сегментах',
+                    'Проверить stability of baseline: не дрейф ли базовой линии'
+                ],
+                safe: [
+                    'Оптимизировать delivery без роста pressure',
+                    'Проверить технические метрики и логи',
+                    'Остановить вмешательства до локализации проблемы'
+                ],
+                dont: 'Не трогать другие слои — проблема в delivery.'
+            },
+            'responses-flat-shows-down': {
+                layer: 'Loss C (competition/prioritization)',
+                checks: [
+                    'Проверить show ratio: не падает ли конверсия responses в shows',
+                    'Проверить конкуренцию возможностей: не конкурируют ли форматы/места',
+                    'Проверить приоритеты: не блокируют ли приоритеты показ',
+                    'Проверить crowding proxy: не рост ли возможностей без роста внимания',
+                    'Проверить competition index: сколько возможностей конкурируют',
+                    'Проверить сегменты: не проблемы ли в отдельных сегментах'
+                ],
+                safe: [
+                    'Проверить приоритеты и конкуренцию возможностей',
+                    'Не дожимать давление дальше',
+                    'Проверить composition shift: не выросла ли доля low-quality'
+                ],
+                dont: 'Не дожимать давление — это усугубит конкуренцию.'
+            },
+            'showconv-down-opportunities-flat': {
+                layer: 'Loss A или Loss C (timing/attention)',
+                checks: [
+                    'Проверить showConv: не падает ли конверсия opportunities в shows',
+                    'Проверить timing/внимание: не слишком ли рано/поздно появляется инвентарь',
+                    'Проверить attention proxy: не падает ли внимание к контексту',
+                    'Проверить хвосты (p10): не деградирует ли нижний дециль',
+                    'Проверить frequency proxy: не усталость ли от повторения',
+                    'Проверить coverage proxy: не падает ли доля opportunities, дошедших до show'
+                ],
+                safe: [
+                    'Проверить timing и внимание к контексту',
+                    'Не увеличивать частоту без улучшения контекста',
+                    'Проверить хвосты и сегменты отдельно'
+                ],
+                dont: 'Не увеличивать частоту показов — это усугубит усталость.'
+            },
+            'revenue-down-opportunities-up': {
+                layer: 'Loss B или Loss C (компенсация)',
+                checks: [
+                    'Проверить компенсацию: не маскирует ли рост CPM падение объёма',
+                    'Проверить response ratio: не падает ли доступность спроса',
+                    'Проверить showConv: не падает ли конверсия opportunities в shows',
+                    'Проверить лаг: не слишком ли короткое окно скрывает проблемы',
+                    'Проверить хвосты: не деградирует ли p10 эффективности',
+                    'Проверить сегменты: не маскирует ли среднее проблемы'
+                ],
+                safe: [
+                    'Проверить компенсацию и лаг',
+                    'Проверить ранние сигналы: response ratio, showConv',
+                    'Остановить вмешательства до локализации'
+                ],
+                dont: 'Не радоваться росту CPM — это компенсация, не успех.'
+            },
+            'cpm-up-shows-down': {
+                layer: 'Loss C (компенсация ценой)',
+                checks: [
+                    'Проверить компенсацию: не маскирует ли рост CPM падение объёма',
+                    'Проверить showConv: не падает ли конверсия opportunities в shows',
+                    'Проверить response ratio: не падает ли доступность спроса',
+                    'Проверить конкуренцию: не конкурируют ли возможности',
+                    'Проверить quality proxy: не падает ли качество инвентаря',
+                    'Проверить хвосты: не деградирует ли p10 эффективности'
+                ],
+                safe: [
+                    'Проверить компенсацию и quality proxy',
+                    'Не дожимать давление дальше',
+                    'Проверить ранние сигналы: showConv, response ratio'
+                ],
+                dont: 'Не радоваться росту CPM — это компенсация, не успех.'
+            },
+            'variance-up-segments': {
+                layer: 'Loss в отдельных сегментах',
+                checks: [
+                    'Проверить segment divergence: не расходится ли эффективность по сегментам',
+                    'Проверить хвосты (p10/p90): не деградирует ли нижний дециль',
+                    'Проверить loss decomposition по сегментам: где теряется больше всего',
+                    'Проверить high-pressure сегмент: не деградирует ли первым',
+                    'Проверить coverage proxy по сегментам: не падает ли в отдельных сегментах',
+                    'Проверить competition index по сегментам: не конкурируют ли возможности'
+                ],
+                safe: [
+                    'Проверить сегменты отдельно, не смотреть только на среднее',
+                    'Проверить хвосты и края распределения',
+                    'Защитить хвосты (p10) от деградации'
+                ],
+                dont: 'Не игнорировать сегменты — среднее маскирует проблемы.'
+            },
+            'lag-effect': {
+                layer: 'Loss с лагом (компенсация или скрытая деградация)',
+                checks: [
+                    'Проверить лаг: не слишком ли короткое окно скрывает проблемы',
+                    'Проверить компенсацию: не маскирует ли рост CPM падение объёма',
+                    'Проверить ранние сигналы: response ratio, showConv, хвосты',
+                    'Проверить delayed revenue response: не лаг ли между механикой и деньгами',
+                    'Проверить stability of baseline: не дрейф ли базовой линии',
+                    'Проверить change log: не смешались ли эффекты изменений'
+                ],
+                safe: [
+                    'Проверить лаг и компенсацию',
+                    'Проверить ранние сигналы на окне лагов',
+                    'Остановить вмешательства до оценки эффекта'
+                ],
+                dont: 'Не игнорировать "тишину" — это компенсация или лаг, не успех.'
+            }
+        };
+
+        // Update triage
+        function updateTriage() {
+            const symptom = document.getElementById('symptomSelect').value;
+            const triage = hiddenInvTriageMap[symptom];
+
+            document.getElementById('triageOutput').innerHTML = `
+                <div class="triage-section">
+                    <div class="triage-section-title">Вероятный слой потери</div>
+                    <div class="triage-section-text">${triage.layer}</div>
+                </div>
+                <div class="triage-section">
+                    <div class="triage-section-title">Первые проверки</div>
+                    <ul class="triage-section-list">
+                        ${triage.checks.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="triage-section">
+                    <div class="triage-section-title">Что можно сделать безопасно</div>
+                    <ul class="triage-section-list">
+                        ${triage.safe.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="triage-section">
+                    <div class="triage-section-title">Чего нельзя делать</div>
+                    <div class="triage-section-text">${triage.dont}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('symptomSelect').addEventListener('change', updateTriage);
+        updateTriage();
+
+        // Funnel chart
+        function generateFunnelChart() {
+            const container = d3.select('#funnelChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#funnelChart').selectAll('*').remove();
+
+            const svg = d3.select('#funnelChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const growthStart = 60;
+            const bottleneckStart = 85;
+            const bottleneckEnd = 135;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Opportunities: grow (linear + sigmoid)
+                const sigmoid = t > growthStart ? 0.3 * (1 - 1 / (1 + Math.exp(-(t - growthStart) / 10))) : 0;
+                const opportunities = 0.5 + 0.001 * t + sigmoid;
+
+                // Requests: grow slower
+                const requests = 0.4 + 0.0008 * t + sigmoid * 0.8;
+
+                // Responses: drop in middle (bottleneck)
+                const bottleneck = t > bottleneckStart && t < bottleneckEnd ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - bottleneckStart) / 5))) * (1 - 1 / (1 + Math.exp((t - bottleneckEnd) / 5))) : 0;
+                const responses = 0.35 + 0.0006 * t + sigmoid * 0.6 - bottleneck;
+
+                // Shows: hit ceiling + depend on responses
+                const shows = Math.min(0.45, responses * 0.9);
+
+                data.push({ t, opportunities, requests, responses, shows });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.25, 1.0])
+                .range([height, 0]);
+
+            // Shaded region for hidden inventory period
+            g.append('rect')
+                .attr('x', x(bottleneckStart))
+                .attr('y', 0)
+                .attr('width', x(bottleneckEnd) - x(bottleneckStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(bottleneckStart) + x(bottleneckEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('период скрытого инвентаря');
+
+            // Lines
+            const line = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.opportunities))
+                .curve(d3.curveMonotoneX);
+
+            const lineRequests = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.requests))
+                .curve(d3.curveMonotoneX);
+
+            const lineResponses = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.responses))
+                .curve(d3.curveMonotoneX);
+
+            const lineShows = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.shows))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineRequests);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#aaa')
+                .attr('stroke-width', 2)
+                .attr('d', lineResponses);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineShows);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].opportunities) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('opportunities');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].requests) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('requests');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].responses) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#aaa')
+                .text('responses');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].shows) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('shows');
+        }
+
+        // Loss decomposition chart
+        function generateLossChart() {
+            const container = d3.select('#lossChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#lossChart').selectAll('*').remove();
+
+            const svg = d3.select('#lossChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data for several time points
+            const timePoints = [30, 60, 90, 120, 150, 180];
+            const data = [];
+            timePoints.forEach(t => {
+                // Loss A: moderately stable
+                const lossA = 0.20 + 0.02 * Math.sin(t / 20);
+
+                // Loss B: grows in bottleneck period
+                const lossBBase = 0.20;
+                const lossBGrowth = t > 85 && t < 135 ? 0.15 * (1 - 1 / (1 + Math.exp(-(t - 85) / 8))) * (1 - 1 / (1 + Math.exp((t - 135) / 8))) : 0;
+                const lossB = lossBBase + lossBGrowth;
+
+                // Loss C: slightly grows with competition
+                const lossCBase = 0.15;
+                const lossCGrowth = t > 100 ? 0.08 * (1 - 1 / (1 + Math.exp(-(t - 100) / 10))) : 0;
+                const lossC = lossCBase + lossCGrowth;
+
+                data.push({ t, lossA, lossB, lossC });
+            });
+
+            const x = d3.scaleBand()
+                .domain(timePoints.map(d => d.toString()))
+                .range([0, width])
+                .padding(0.2);
+
+            const y = d3.scaleLinear()
+                .domain([0, 0.6])
+                .range([height, 0]);
+
+            // Stacked bars
+            const stack = d3.stack()
+                .keys(['lossA', 'lossB', 'lossC'])
+                .order(d3.stackOrderNone)
+                .offset(d3.stackOffsetNone);
+
+            const series = stack(data);
+
+            const color = d3.scaleOrdinal()
+                .domain(['lossA', 'lossB', 'lossC'])
+                .range(['#ccc', '#1f2a37', '#999']);
+
+            g.selectAll('.layer')
+                .data(series)
+                .enter()
+                .append('g')
+                .attr('class', 'layer')
+                .attr('fill', d => color(d.key))
+                .selectAll('rect')
+                .data(d => d)
+                .enter()
+                .append('rect')
+                .attr('x', d => x(d.data.t.toString()))
+                .attr('y', d => y(d[1]))
+                .attr('height', d => y(d[0]) - y(d[1]))
+                .attr('width', x.bandwidth());
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Legend
+            const legend = g.append('g')
+                .attr('transform', `translate(${width - 80}, 10)`);
+
+            ['lossA', 'lossB', 'lossC'].forEach((key, i) => {
+                const legendRow = legend.append('g')
+                    .attr('transform', `translate(0, ${i * 20})`);
+
+                legendRow.append('rect')
+                    .attr('width', 12)
+                    .attr('height', 12)
+                    .attr('fill', color(key));
+
+                legendRow.append('text')
+                    .attr('x', 18)
+                    .attr('y', 9)
+                    .attr('font-size', '10px')
+                    .attr('fill', '#2c3e50')
+                    .text(key === 'lossA' ? 'loss A' : key === 'lossB' ? 'loss B' : 'loss C');
+            });
+        }
+
+        // ShowConv vs Pressure chart
+        function generateShowconvChart() {
+            const container = d3.select('#showconvChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#showconvChart').selectAll('*').remove();
+
+            const svg = d3.select('#showconvChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: inverted U curve
+            const n = 50;
+            const data = [];
+            for (let i = 0; i <= n; i++) {
+                const pressure = i / n;
+                // Inverted U: grows first, then drops
+                const showConv = 0.4 + 0.5 * pressure - 0.8 * pressure * pressure;
+                data.push({ pressure, showConv });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Annotation: squeeze zone
+            const squeezeStart = 0.5;
+            const squeezeEnd = 0.8;
+            g.append('rect')
+                .attr('x', x(squeezeStart))
+                .attr('y', 0)
+                .attr('width', x(squeezeEnd) - x(squeezeStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(squeezeStart) + x(squeezeEnd)) / 2)
+                .attr('y', height / 2)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('дожим скрытого инвентаря');
+
+            // Line
+            const line = d3.line()
+                .x(d => x(d.pressure))
+                .y(d => y(d.showConv))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('pressure proxy');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('showConv');
+        }
+
+        // Initial render
+        generateFunnelChart();
+        generateLossChart();
+        generateShowconvChart();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateFunnelChart();
+                generateLossChart();
+                generateShowconvChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

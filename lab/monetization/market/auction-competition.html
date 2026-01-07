@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аукцион и конкуренция</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .control-value {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .output-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-conclusion {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .scenarios-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .scenarios-table th,
+        .scenarios-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .scenarios-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .scenarios-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e8e8e8;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Аукцион и конкуренция</h1>
+        <p class="subtitle">CPM — это не цена. Это сигнал конкуренции за внимание.</p>
+
+        <div class="intro">
+            <p>
+                Аукцион — это механизм распределения ограниченного внимания. Система получает запросы на показ рекламы, конкуренты предлагают цены, аукцион выбирает победителя. CPM — это не цена, которую вы "устанавливаете", а результат конкуренции: сколько участников, какова их готовность платить, каково качество инвентаря.
+            </p>
+            <p>
+                CPM растёт не "потому что хорошо", а потому что усилилась конкуренция или появились ограничения. Рост CPM может означать рост спроса, но может означать и компенсацию за падение объёма, или ограничения на минимальную цену. Важно читать CPM вместе с volume и quality, а не изолированно.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Что реально влияет на CPM</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Спрос</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Количество конкурирующих заявок растёт, больше участников аукциона.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↑, volume↔ или ↑, quality↔.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Считать рост CPM успехом (может быть просто больше конкурентов).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Качество инвентаря</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Высококачественный инвентарь привлекает больше спроса и более высокие ставки.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↑, quality↑, attention proxy↑.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Путать рост CPM из-за качества с ростом из-за конкуренции.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Ограничения</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Floors, caps, лимиты на минимальную/максимальную цену или показы.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↑, но volume↓ или не растёт, price "не идёт" при росте спроса.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Считать рост CPM признаком здоровья (может быть ограничение блокирует рост объёма).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Микс инвентаря</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Изменение состава инвентаря: больше high-quality или больше low-quality.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↔, но variance↑, сегменты расходятся.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Считать стабильный CPM признаком стабильности (может быть composition shift).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Давление / частота</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Рост частоты показов, давления на пользователя.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↑, но quality↓, attention proxy↓, fatigue↑.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Радоваться росту CPM, игнорируя падение качества (компенсация).
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Внешние шоки</div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> Сезонность, новости, изменения политики, праздники.
+                    </div>
+                    <div class="card-item">
+                        <strong>Типичный симптом:</strong> CPM↑ или ↓ везде, без изменений в продукте, синхронно по сегментам.
+                    </div>
+                    <div class="card-item">
+                        <strong>Ошибка интерпретации:</strong> Приписывать шок эффекту внутренних изменений.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">CPM vs Competition Intensity</div>
+            <div class="chart-container">
+                <svg id="competitionChart"></svg>
+                <p class="chart-caption">После определённого уровня конкуренции рост CPM замедляется.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">CPM и Quality расходятся</div>
+            <div class="chart-container">
+                <svg id="divergenceChart"></svg>
+                <p class="chart-caption">CPM может расти на фоне деградации качества.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Один CPM — разные рынки</div>
+            <div class="chart-container">
+                <svg id="segmentsChart"></svg>
+                <p class="chart-caption">Цена без контекста ничего не говорит.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Что происходит в аукционе?</div>
+            <div class="interactive-panel">
+                <div class="controls-group">
+                    <div class="control-group">
+                        <label class="control-label">Сила спроса</label>
+                        <input type="range" id="demandSlider" class="control-slider" min="0" max="100" value="50">
+                        <div class="control-value" id="demandValue">50</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Ограничения</label>
+                        <input type="range" id="constraintsSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="constraintsValue">30</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Качество инвентаря</label>
+                        <input type="range" id="qualitySlider" class="control-slider" min="0" max="100" value="70">
+                        <div class="control-value" id="qualityValue">70</div>
+                    </div>
+                </div>
+                <div class="output-panel" id="outputPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Типовые сценарии CPM</div>
+            <table class="scenarios-table">
+                <thead>
+                    <tr>
+                        <th>Что видите</th>
+                        <th>Что это значит</th>
+                        <th>Что проверить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPM↑, volume↑</td>
+                        <td>Рост спроса и объёма — здоровый рост</td>
+                        <td>Проверить quality proxy, не падает ли внимание</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, volume↓</td>
+                        <td>Компенсация или ограничения — цена растёт, объём падает</td>
+                        <td>Проверить floors/constraints, quality proxy, hidden inventory</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, quality↓</td>
+                        <td>Маскировка деградации — цена компенсирует падение качества</td>
+                        <td>Проверить attention proxy, composition shift, pressure</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↔, revenue↓</td>
+                        <td>Объём падает при стабильной цене — механика, не рынок</td>
+                        <td>Проверить volume, hidden inventory, quality, delivery</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↓ везде</td>
+                        <td>Рыночный шок или сезонность — внешний фактор</td>
+                        <td>Проверить change log, сезонность, внешние события</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑ только в сегменте</td>
+                        <td>Микс или качество — не рынок, а механика</td>
+                        <td>Проверить сегменты, composition shift, quality по сегментам</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↔, variance↑</td>
+                        <td>Среднее стабильно, распределение меняется — mix shift</td>
+                        <td>Проверить хвосты, сегменты, composition shares</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑ с лагом</td>
+                        <td>Цена реагирует позже — компенсация за раннее падение объёма</td>
+                        <td>Проверить лаги, ранние сигналы, change log</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, showConv↓</td>
+                        <td>Цена растёт, но конверсия падает — насыщение или качество</td>
+                        <td>Проверить saturation proxy, quality proxy, pressure</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑ без change log</td>
+                        <td>Цена растёт без изменений — вероятен рынок или шок</td>
+                        <td>Проверить сезонность, внешние события, competition intensity</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Как правильно читать CPM</div>
+            <ul class="checklist">
+                <li>CPM ≠ цель — это сигнал, а не KPI для оптимизации</li>
+                <li>Всегда смотреть volume и quality — CPM без контекста ничего не говорит</li>
+                <li>Проверять микс — не выросла ли доля low-quality в общем инвентаре</li>
+                <li>Проверять сегменты — не маскирует ли среднее проблемы в отдельных сегментах</li>
+                <li>Сравнивать окна — день/неделя/месяц, не делать вывод по одному дню</li>
+                <li>Проверять лаги — цена может реагировать позже объёма</li>
+                <li>Искать компенсацию — рост CPM может маскировать падение объёма или качества</li>
+                <li>Сверяться с inventory metrics — coverage, quality mix, pressure proxy</li>
+                <li>Проверять saturation — не упирается ли система в потолок</li>
+                <li>Не принимать решений по одному числу — смотреть CPM вместе с volume, quality, сегментами</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="./floor-and-constraints.html" class="next-card">
+                    <div class="next-card-title">Пороги и ограничения →</div>
+                    <div class="next-card-text">Когда цена упирается в ограничения.</div>
+                </a>
+                <a href="./demand-shocks.html" class="next-card">
+                    <div class="next-card-title">Шоки спроса →</div>
+                    <div class="next-card-text">Сезонность и внешние события.</div>
+                </a>
+                <a href="./price-elasticity.html" class="next-card">
+                    <div class="next-card-title">Price Elasticity →</div>
+                    <div class="next-card-text">Эластичность и пределы цены.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Рынку</a>
+            <p class="footer-note">CPM — это не цена. Это сигнал конкуренции за внимание.</p>
+        </div>
+    </div>
+
+    <script>
+        // Competition chart
+        function generateCompetitionChart() {
+            const container = d3.select('#competitionChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#competitionChart').selectAll('*').remove();
+
+            const svg = d3.select('#competitionChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: increasing with plateau
+            const n = 50;
+            const data = [];
+            for (let i = 0; i <= n; i++) {
+                const competition = i / n;
+                // Increasing with plateau after ~0.7
+                const cpm = competition < 0.7 ? 0.3 + 0.6 * competition : 0.72 + 0.15 * (1 - 1 / (1 + Math.exp(-(competition - 0.7) * 10)));
+                data.push({ competition, cpm });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([0, 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.2, 1.0])
+                .range([height, 0]);
+
+            // Line
+            const line = d3.line()
+                .x(d => x(d.competition))
+                .y(d => y(d.cpm))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('competition proxy');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('CPM index');
+        }
+
+        // Divergence chart
+        function generateDivergenceChart() {
+            const container = d3.select('#divergenceChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#divergenceChart').selectAll('*').remove();
+
+            const svg = d3.select('#divergenceChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const divergenceStart = 90;
+            const divergenceEnd = 150;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // CPM: grows
+                const cpmGrowth = t > 60 ? 0.20 * (1 - 1 / (1 + Math.exp(-(t - 60) / 12))) : 0;
+                const cpm = 0.80 + cpmGrowth;
+
+                // Quality: drops
+                const qualityDrop = t > divergenceStart ? 0.25 * (1 - 1 / (1 + Math.exp(-(t - divergenceStart) / 10))) : 0;
+                const quality = 0.75 - qualityDrop;
+
+                data.push({ t, cpm, quality });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.5, 1.1])
+                .range([height, 0]);
+
+            // Shaded region for divergence
+            g.append('rect')
+                .attr('x', x(divergenceStart))
+                .attr('y', 0)
+                .attr('width', x(divergenceEnd) - x(divergenceStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(divergenceStart) + x(divergenceEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('расхождение');
+
+            // Lines
+            const lineCPM = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.cpm))
+                .curve(d3.curveMonotoneX);
+
+            const lineQuality = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.quality))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineCPM);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineQuality);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].cpm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('CPM index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].quality) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('Quality proxy');
+        }
+
+        // Segments chart
+        function generateSegmentsChart() {
+            const container = d3.select('#segmentsChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#segmentsChart').selectAll('*').remove();
+
+            const svg = d3.select('#segmentsChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: different segments reach same CPM differently
+            const n = 180;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                // Low competition: lower base, slower growth
+                const lowBase = 0.70;
+                const lowGrowth = t > 80 ? 0.15 * (1 - 1 / (1 + Math.exp(-(t - 80) / 15))) : 0;
+                const low = lowBase + lowGrowth;
+
+                // Mid competition: medium base, medium growth
+                const midBase = 0.75;
+                const midGrowth = t > 70 ? 0.18 * (1 - 1 / (1 + Math.exp(-(t - 70) / 12))) : 0;
+                const mid = midBase + midGrowth;
+
+                // High competition: higher base, faster growth, then plateaus
+                const highBase = 0.80;
+                const highGrowth = t > 60 ? 0.20 * (1 - 1 / (1 + Math.exp(-(t - 60) / 10))) : 0;
+                const highPlateau = t > 120 ? 0.05 * (1 - 1 / (1 + Math.exp(-(t - 120) / 8))) : 0;
+                const high = Math.min(1.0, highBase + highGrowth - highPlateau);
+
+                data.push({ t, low, mid, high });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.65, 1.05])
+                .range([height, 0]);
+
+            // Lines
+            const lineLow = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.low))
+                .curve(d3.curveMonotoneX);
+
+            const lineMid = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.mid))
+                .curve(d3.curveMonotoneX);
+
+            const lineHigh = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.high))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 2)
+                .attr('d', lineLow);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#777')
+                .attr('stroke-width', 2)
+                .attr('d', lineMid);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineHigh);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].low) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('low competition');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].mid) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#777')
+                .text('mid competition');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].high) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('high competition');
+        }
+
+        // Interactive calculator
+        function updateCalculator() {
+            const demand = parseInt(document.getElementById('demandSlider').value) / 100;
+            const constraints = parseInt(document.getElementById('constraintsSlider').value) / 100;
+            const quality = parseInt(document.getElementById('qualitySlider').value) / 100;
+
+            // Deterministic formulas
+            // CPM grows from demand and constraints
+            const cpmFromDemand = demand * 0.4;
+            const cpmFromConstraints = constraints * 0.3;
+            const cpmFromQuality = quality * 0.2;
+            const cpmIndex = Math.min(1.0, 0.60 + cpmFromDemand + cpmFromConstraints + cpmFromQuality);
+
+            // Volume drops from constraints
+            const volumeFromConstraints = constraints * 0.25;
+            const volumeFromQuality = quality * 0.15;
+            const volumeIndex = Math.max(0.5, 0.80 - volumeFromConstraints + volumeFromQuality);
+
+            // Quality depends on pressure (inverse of constraints/demand ratio)
+            const pressureRatio = (constraints + demand * 0.5) / 1.5;
+            const qualityDropFromPressure = pressureRatio * 0.20;
+            const qualityIndex = Math.max(0.4, quality - qualityDropFromPressure);
+
+            // Revenue = CPM * Volume * Quality (index-wise)
+            const revenueIndex = cpmIndex * volumeIndex * qualityIndex;
+
+            // Diagnosis
+            let diagnosis = '';
+            if (cpmIndex > 0.75 && volumeIndex > 0.75 && qualityIndex > 0.65) {
+                diagnosis = 'Здоровый рост. CPM, volume и quality растут вместе.';
+            } else if (cpmIndex > 0.75 && volumeIndex < 0.70) {
+                diagnosis = 'Ограниченный рынок. CPM растёт, но volume падает из-за ограничений.';
+            } else if (cpmIndex > 0.75 && qualityIndex < 0.60) {
+                diagnosis = 'Маскировка деградации. CPM растёт, компенсируя падение quality.';
+            } else {
+                diagnosis = 'Смешанный сценарий. Проверь volume и quality отдельно.';
+            }
+
+            document.getElementById('outputPanel').innerHTML = `
+                <div class="output-metrics">
+                    <div class="output-metric">
+                        <div class="output-metric-label">CPM index</div>
+                        <div class="output-metric-value">${(cpmIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Volume index</div>
+                        <div class="output-metric-value">${(volumeIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Quality index</div>
+                        <div class="output-metric-value">${(qualityIndex * 100).toFixed(0)}</div>
+                    </div>
+                    <div class="output-metric">
+                        <div class="output-metric-label">Revenue index</div>
+                        <div class="output-metric-value">${(revenueIndex * 100).toFixed(0)}</div>
+                    </div>
+                </div>
+                <div class="output-conclusion">${diagnosis}</div>
+            `;
+        }
+
+        document.getElementById('demandSlider').addEventListener('input', (e) => {
+            document.getElementById('demandValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('constraintsSlider').addEventListener('input', (e) => {
+            document.getElementById('constraintsValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('qualitySlider').addEventListener('input', (e) => {
+            document.getElementById('qualityValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        // Initial render
+        generateCompetitionChart();
+        generateDivergenceChart();
+        generateSegmentsChart();
+        updateCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateCompetitionChart();
+                generateDivergenceChart();
+                generateSegmentsChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

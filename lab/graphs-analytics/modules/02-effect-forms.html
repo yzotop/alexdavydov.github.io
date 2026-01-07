@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 2. Форма эффекта задаёт вывод — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-course {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-course:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .module-intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .module-intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .key-idea {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .key-idea h2 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .key-idea p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .lessons-list {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .lesson-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .lesson-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .lesson-item.available {
+            border-color: #1a1a1a;
+        }
+
+        .lesson-item.in-development {
+            opacity: 0.7;
+        }
+
+        .lesson-number {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .lesson-item.available .lesson-title a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .lesson-item.available .lesson-title a:hover {
+            border-bottom-color: #1a1a1a;
+        }
+
+        .lesson-item.in-development .lesson-title {
+            color: #666;
+        }
+
+        .lesson-status {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .practice-note {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .practice-note p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .practice-note a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .practice-note a:hover {
+            border-bottom-color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-to-course">← К курсу</a>
+
+        <header>
+            <div class="kicker">Модуль 2</div>
+            <h1>Форма эффекта задаёт вывод</h1>
+            <p class="subtitle">Форма эффекта предшествует расчёту и определяет интерпретацию</p>
+        </header>
+
+        <main>
+            <section class="module-intro">
+                <h2>О модуле</h2>
+                <p>
+                    Этот модуль учит распознавать и называть формы эффектов — аналитические примитивы, которые описывают, как изменение выглядит на графике. Форма эффекта предшествует расчёту: она определяет, какие метрики считать и как интерпретировать результат.
+                </p>
+                <p>
+                    График отражает форму эффекта, а не наоборот. Прежде чем считать среднюю дельту или статистическую значимость, нужно понять форму: как эффект выглядит во времени, стабилен ли он, нарастает или исчезает. Форма определяет, можно ли принимать решение и какие метрики релевантны.
+                </p>
+            </section>
+
+            <section class="lessons-list">
+                <h2>Уроки модуля</h2>
+
+                <div class="lesson-item available">
+                    <div class="lesson-number">Урок 1</div>
+                    <div class="lesson-title">
+                        <a href="./02-effect-forms/lessons/01-three-basic-forms.html">Три формы эффекта, которые читают как аргумент</a>
+                    </div>
+                </div>
+
+                <div class="lesson-item available">
+                    <div class="lesson-number">Урок 2</div>
+                    <div class="lesson-title">
+                        <a href="./02-effect-forms/lessons/02-plateau-noise-false-no-effect.html">Когда форма создаёт иллюзию отсутствия эффекта</a>
+                    </div>
+                </div>
+
+                <div class="lesson-item available">
+                    <div class="lesson-number">Урок 3</div>
+                    <div class="lesson-title">
+                        <a href="./02-effect-forms/lessons/03-asymmetric-effect.html">Почему рост и падение выглядят по-разному</a>
+                    </div>
+                </div>
+
+                <div class="lesson-item available">
+                    <div class="lesson-number">Урок 4</div>
+                    <div class="lesson-title">
+                        <a href="./02-effect-forms/lessons/04-scale-as-argument.html">Как масштаб усиливает или скрывает эффект</a>
+                    </div>
+                </div>
+
+                <div class="lesson-item in-development">
+                    <div class="lesson-number">Урок 5</div>
+                    <div class="lesson-title">Временной профиль эффекта</div>
+                    <div class="lesson-status">Контент в разработке</div>
+                </div>
+
+                <div class="lesson-item in-development">
+                    <div class="lesson-number">Урок 6</div>
+                    <div class="lesson-title">Когда форма вводит в заблуждение</div>
+                    <div class="lesson-status">Контент в разработке</div>
+                </div>
+            </section>
+
+            <section class="practice-note">
+                <h2>Практика</h2>
+                <p>
+                    Практика применения форм эффектов и визуальных аргументов доступна в модулях основного курса.
+                </p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

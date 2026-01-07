@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturation</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            stroke: #ddd;
+            stroke-width: 1;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .line-response {
+            stroke: #2f3e4e;
+        }
+
+        .line-risk {
+            stroke: #999;
+            stroke-dasharray: 4, 3;
+            opacity: 0.7;
+        }
+
+        .line-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .reference-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.5;
+        }
+
+        .reference-label {
+            font-size: 9px;
+            fill: #aaa;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Pressure</a>
+        <h1>Saturation</h1>
+        <p class="subtitle">More pressure, less response.</p>
+        <p class="insight">Beyond a point, added force no longer moves the system.</p>
+
+        <p class="explanation">
+            Saturation is a limit of influence. Early pressure changes the distribution. Later pressure mostly increases stress, not movement. The system becomes harder to move — and easier to break.
+        </p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+        </div>
+
+        <p class="interpretation">
+            When the response saturates, optimizing harder can backfire. The signal stops improving. The risk keeps rising.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Back to Pressure</a>
+            <p class="footer-note">Pressure meets limits.</p>
+        </div>
+    </div>
+
+    <script>
+        // Parameters
+        const k = 4.0; // saturation rate
+        const alpha = 1.3; // risk exponent
+        const nPoints = 201;
+        const pStar = 0.55; // saturation zone reference
+
+        // Generate data
+        const data = [];
+        for (let i = 0; i <= nPoints; i++) {
+            const p = i / nPoints;
+            const response = 1 - Math.exp(-k * p);
+            const risk = Math.pow(p, alpha); // already normalized to [0,1]
+            data.push({ p, response, risk });
+        }
+
+        // Set up dimensions
+        const margin = { top: 40, right: 60, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 360 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+
+        // Line generators
+        const responseLine = d3.line()
+            .x(d => xScale(d.p))
+            .y(d => yScale(d.response))
+            .curve(d3.curveMonotoneX);
+
+        const riskLine = d3.line()
+            .x(d => xScale(d.p))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Draw reference line
+        const refX = xScale(pStar);
+        g.append("line")
+            .attr("class", "reference-line")
+            .attr("x1", refX)
+            .attr("x2", refX)
+            .attr("y1", 0)
+            .attr("y2", height);
+
+        g.append("text")
+            .attr("class", "reference-label")
+            .attr("x", refX)
+            .attr("y", height + 8)
+            .attr("text-anchor", "middle")
+            .text("saturation zone");
+
+        // Draw response line
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-response")
+            .attr("d", responseLine);
+
+        // Draw risk line
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-risk")
+            .attr("d", riskLine);
+
+        // Add labels near the right end
+        const lastPoint = data[data.length - 1];
+        const labelX = xScale(1) - 5;
+        
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", labelX)
+            .attr("y", yScale(lastPoint.response) - 5)
+            .attr("text-anchor", "end")
+            .text("response");
+
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", labelX)
+            .attr("y", yScale(lastPoint.risk) - 5)
+            .attr("text-anchor", "end")
+            .text("risk");
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        // Y-axis
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        // Axis labels
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("pressure p");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("normalized scale");
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эластичность</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            padding: 1.25rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.75rem;
+            font-style: italic;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .card-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.75rem;
+        }
+
+        .card-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+
+        .card-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .control-value {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .output-panel {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .output-metric {
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .output-metric-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .output-metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .output-recommendation {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-left: 3px solid #1f2a37;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .signals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .signals-table th,
+        .signals-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .signals-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .signals-table td {
+            color: #2c3e50;
+        }
+
+        .checklist {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+        }
+
+        .next-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .next-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .next-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+        }
+
+        .next-card:hover {
+            border-color: #999;
+        }
+
+        .next-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-card-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e8e8e8;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #1f2a37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        
+        <h1>Эластичность</h1>
+        <p class="subtitle">Если цена растёт, а выручка нет — вы упёрлись в эластичность.</p>
+
+        <div class="intro">
+            <p>
+                Эластичность — это реакция объёма (и качества) на изменение цены/давления. Если вы поднимаете CPM, а volume падает сильнее, чем растёт цена, revenue падает. Если вы увеличиваете давление (частота, coverage), а качество падает быстрее, чем растёт объём, revenue тоже падает.
+            </p>
+            <p>
+                В монетизации важно не "выше CPM", а "максимум revenue при устойчивом качестве". Система может быть в трёх режимах: inelastic (можно поднимать цену почти без потери объёма), elastic (рост цены режет объём), broken (качество ломается, revenue падает). Оптимум цены зависит от режима системы.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Три режима</div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-title">Inelastic</div>
+                    <div class="card-subtitle">Цена ↑, объём почти ↔</div>
+                    <div class="card-item">
+                        <strong>Когда бывает:</strong> Высокий спрос, дефицит качественного инвентаря, ограниченная конкуренция.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> CPM растёт, volume почти не падает, revenue растёт. Система может "взять" рост цены.
+                    </div>
+                    <ul class="card-list">
+                        <li>Проверить, не упирается ли в constraints (floors/limits)</li>
+                        <li>Проверить quality proxies (не падает ли внимание)</li>
+                        <li>Проверить сегменты (не маскирует ли среднее проблемы)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Elastic</div>
+                    <div class="card-subtitle">Цена ↑, объём ↓</div>
+                    <div class="card-item">
+                        <strong>Когда бывает:</strong> Спрос ограничен, много заменителей, плохой инвентарь, высокая конкуренция.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> CPM растёт, volume падает, revenue может расти до определённого уровня, потом падает. Есть оптимум цены.
+                    </div>
+                    <ul class="card-list">
+                        <li>Проверить price vs volume decomposition</li>
+                        <li>Проверить quality proxies (не падает ли качество)</li>
+                        <li>Найти оптимум revenue (максимум по цене)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Broken</div>
+                    <div class="card-subtitle">Цена/давление ↑, качество ↓↓, revenue ↓</div>
+                    <div class="card-item">
+                        <strong>Когда бывает:</strong> Перегрев, усталость, скрытые потери, высокое давление, деградация качества.
+                    </div>
+                    <div class="card-item">
+                        <strong>Как выглядит:</strong> CPM может расти, но volume и quality падают сильнее, revenue падает. Система "ломается".
+                    </div>
+                    <ul class="card-list">
+                        <li>Проверить pressure/fatigue (частота, усталость)</li>
+                        <li>Проверить hidden inventory (скрытые потери)</li>
+                        <li>Снизить давление / убрать хвост / чинить качество</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Кривая спроса: price vs volume</div>
+            <div class="chart-container">
+                <svg id="demandChart"></svg>
+                <p class="chart-caption">Одна и та же цена даёт разный объём при разном режиме.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Оптимум revenue</div>
+            <div class="chart-container">
+                <svg id="optimumChart"></svg>
+                <p class="chart-caption">Оптимум цены зависит от режима системы.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Price vs Pressure: разные рычаги</div>
+            <div class="chart-container">
+                <svg id="heatmapChart"></svg>
+                <p class="chart-caption">При высоком давлении цена перестаёт спасать.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Найди оптимум</div>
+            <div class="interactive-panel">
+                <div class="controls-group">
+                    <div class="control-group">
+                        <label class="control-label">Сила спроса</label>
+                        <input type="range" id="demandSlider" class="control-slider" min="0" max="100" value="60">
+                        <div class="control-value" id="demandValue">60</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Качество инвентаря</label>
+                        <input type="range" id="qualitySlider" class="control-slider" min="0" max="100" value="70">
+                        <div class="control-value" id="qualityValue">70</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Давление</label>
+                        <input type="range" id="pressureSlider" class="control-slider" min="0" max="100" value="30">
+                        <div class="control-value" id="pressureValue">30</div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Цена (индекс)</label>
+                        <input type="range" id="priceSlider" class="control-slider" min="60" max="160" value="100">
+                        <div class="control-value" id="priceValue">100</div>
+                    </div>
+                </div>
+                <div class="output-panel" id="outputPanel">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Сигналы высокой эластичности</div>
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>Симптом</th>
+                        <th>Что означает</th>
+                        <th>Что делать</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPM↑, volume↓</td>
+                        <td>Классический trade-off: цена растёт, объём падает</td>
+                        <td>Разложить price vs volume, найти оптимум revenue</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, showConv↓</td>
+                        <td>Цена растёт, но конверсия падает — насыщение или качество</td>
+                        <td>Проверить saturation proxy, quality proxy, pressure</td>
+                    </tr>
+                    <tr>
+                        <td>CPM↑, quality↓</td>
+                        <td>Цена компенсирует падение качества — маскировка деградации</td>
+                        <td>Проверить attention proxy, composition shift, pressure</td>
+                    </tr>
+                    <tr>
+                        <td>variance↑</td>
+                        <td>Распределение становится шире — хвосты реагируют по-разному</td>
+                        <td>Проверить сегменты, хвосты, composition shares</td>
+                    </tr>
+                    <tr>
+                        <td>high-pressure сегмент↓</td>
+                        <td>Сегмент с высоким давлением падает сильнее</td>
+                        <td>Проверить pressure по сегментам, снизить давление в проблемных</td>
+                    </tr>
+                    <tr>
+                        <td>рост floor/constraints + падение coverage</td>
+                        <td>Ограничения поднимают цену, но режут объём</td>
+                        <td>Проверить lost_to_constraints, trade-off CPM vs volume</td>
+                    </tr>
+                    <tr>
+                        <td>усталость (frequency tail растёт)</td>
+                        <td>Частота показов растёт, эффективность падает</td>
+                        <td>Проверить frequency caps, fatigue curve, spacing</td>
+                    </tr>
+                    <tr>
+                        <td>скрытый инвентарь (loss_B/loss_C растут)</td>
+                        <td>Инвентарь есть, но не продаётся — потери в цепочке</td>
+                        <td>Проверить hidden inventory, delivery bottleneck, constraints</td>
+                    </tr>
+                    <tr>
+                        <td>revenue максимум и потом спад (в динамике)</td>
+                        <td>Revenue достигла максимума и начала падать — упёрлись в эластичность</td>
+                        <td>Найти оптимум revenue, снизить цену/давление, чинить качество</td>
+                    </tr>
+                    <tr>
+                        <td>лаг усилился</td>
+                        <td>Система реагирует медленнее — перегрев или ограничения</td>
+                        <td>Проверить latency, timeouts, delivery metrics, технические ограничения</td>
+                    </tr>
+                    <tr>
+                        <td>сегменты расходятся</td>
+                        <td>Одни сегменты растут, другие падают — разная эластичность</td>
+                        <td>Сегментировать решения, проверить quality/pressure по сегментам</td>
+                    </tr>
+                    <tr>
+                        <td>revenue падает при росте CPM</td>
+                        <td>Цена растёт, но revenue падает — упёрлись в эластичность</td>
+                        <td>Снизить цену/давление, чинить качество, расширить coverage</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Если упёрлись в эластичность</div>
+            <ul class="checklist">
+                <li>Разложить price vs volume — понять, что именно падает</li>
+                <li>Проверить constraints (floors/limits) — не блокируют ли они объём</li>
+                <li>Проверить quality proxies (tails, composition) — не падает ли качество</li>
+                <li>Проверить pressure/fatigue — не перегрета ли система</li>
+                <li>Проверить hidden inventory — не теряется ли инвентарь в цепочке</li>
+                <li>Выбрать рычаг: уменьшить давление / поднять качество / расширить coverage</li>
+                <li>Задать guardrails (quality, pressure) — не допускать критического падения</li>
+                <li>Тестировать малыми шагами — не менять всё сразу</li>
+                <li>Держать окна и лаги — не делать вывод сразу</li>
+                <li>Сегментировать решения — разные сегменты могут требовать разных действий</li>
+                <li>Логировать изменения (change log) — фиксировать, что менялось</li>
+                <li>Мониторить восстановление ранними сигналами — quality, pressure, hidden inventory</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Куда дальше</div>
+            <div class="next-cards">
+                <a href="../inventory/inventory-quality.html" class="next-card">
+                    <div class="next-card-title">Инвентарь: качество →</div>
+                    <div class="next-card-text">Почему одинаковые показы не равны.</div>
+                </a>
+                <a href="../inventory/inventory-fatigue.html" class="next-card">
+                    <div class="next-card-title">Инвентарь: усталость →</div>
+                    <div class="next-card-text">Когда повторение съедает эффективность.</div>
+                </a>
+                <a href="../operating/playbooks.html" class="next-card">
+                    <div class="next-card-title">Operating: playbooks →</div>
+                    <div class="next-card-text">Что делать, когда метрика пошла не туда.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Рынку</a>
+            <p class="footer-note">Если цена растёт, а выручка нет — вы упёрлись в эластичность.</p>
+        </div>
+    </div>
+
+    <script>
+        // Demand curve chart
+        function generateDemandChart() {
+            const container = d3.select('#demandChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#demandChart').selectAll('*').remove();
+
+            const svg = d3.select('#demandChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: price 0.6..1.6
+            const n = 50;
+            const data = [];
+            for (let i = 0; i <= n; i++) {
+                const price = 0.6 + (i / n) * 1.0;
+                // Inelastic: volume падает слабо
+                const volumeInelastic = 1.0 - 0.10 * (price - 1.0);
+                // Elastic: volume падает сильнее
+                const volumeElastic = 1.0 - 0.35 * (price - 1.0) - 0.10 * Math.pow(price - 1.0, 2);
+                // Broken: volume падает + quality падает дополнительно
+                const qualityPenalty = 1.0 - 0.15 * (1.0 / (1.0 + Math.exp(-5 * (price - 1.0))));
+                const volumeBroken = volumeElastic * qualityPenalty;
+
+                data.push({ price, volumeInelastic, volumeElastic, volumeBroken });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([0.6, 1.6])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1.1])
+                .range([height, 0]);
+
+            // Lines
+            const lineInelastic = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.volumeInelastic))
+                .curve(d3.curveMonotoneX);
+
+            const lineElastic = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.volumeElastic))
+                .curve(d3.curveMonotoneX);
+
+            const lineBroken = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.volumeBroken))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineInelastic);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineElastic);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '3,3')
+                .attr('d', lineBroken);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('price index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].volumeInelastic) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('inelastic');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].volumeElastic) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('elastic');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].volumeBroken) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#666')
+                .text('broken');
+        }
+
+        // Optimum revenue chart
+        function generateOptimumChart() {
+            const container = d3.select('#optimumChart').node().parentElement;
+            const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#optimumChart').selectAll('*').remove();
+
+            const svg = d3.select('#optimumChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data: same price range
+            const n = 50;
+            const data = [];
+            let maxElastic = 0;
+            let maxBroken = 0;
+            let optElastic = 1.0;
+            let optBroken = 1.0;
+
+            for (let i = 0; i <= n; i++) {
+                const price = 0.6 + (i / n) * 1.0;
+                
+                // Inelastic: revenue = price * volume
+                const volumeInelastic = 1.0 - 0.10 * (price - 1.0);
+                const revenueInelastic = price * volumeInelastic;
+
+                // Elastic: revenue = price * volume
+                const volumeElastic = 1.0 - 0.35 * (price - 1.0) - 0.10 * Math.pow(price - 1.0, 2);
+                const revenueElastic = price * volumeElastic;
+                if (revenueElastic > maxElastic) {
+                    maxElastic = revenueElastic;
+                    optElastic = price;
+                }
+
+                // Broken: revenue = price * volume * quality_penalty
+                const qualityPenalty = 1.0 - 0.15 * (1.0 / (1.0 + Math.exp(-5 * (price - 1.0))));
+                const volumeBroken = volumeElastic * qualityPenalty;
+                const revenueBroken = price * volumeBroken * qualityPenalty;
+                if (revenueBroken > maxBroken) {
+                    maxBroken = revenueBroken;
+                    optBroken = price;
+                }
+
+                data.push({ price, revenueInelastic, revenueElastic, revenueBroken });
+            }
+
+            // Normalize to 0..1
+            const maxRevenue = d3.max(data, d => Math.max(d.revenueInelastic, d.revenueElastic, d.revenueBroken));
+            data.forEach(d => {
+                d.revenueInelasticNorm = d.revenueInelastic / maxRevenue;
+                d.revenueElasticNorm = d.revenueElastic / maxRevenue;
+                d.revenueBrokenNorm = d.revenueBroken / maxRevenue;
+            });
+
+            const x = d3.scaleLinear()
+                .domain([0.6, 1.6])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, 1.1])
+                .range([height, 0]);
+
+            // Vertical lines for optimum
+            g.append('line')
+                .attr('x1', x(optElastic))
+                .attr('x2', x(optElastic))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '4,4');
+
+            g.append('line')
+                .attr('x1', x(optBroken))
+                .attr('x2', x(optBroken))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#666')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '4,4');
+
+            g.append('text')
+                .attr('x', x(optElastic) + 5)
+                .attr('y', 15)
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('optimum elastic');
+
+            g.append('text')
+                .attr('x', x(optBroken) + 5)
+                .attr('y', 30)
+                .attr('font-size', '10px')
+                .attr('fill', '#666')
+                .text('optimum broken');
+
+            // Lines
+            const lineInelastic = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.revenueInelasticNorm))
+                .curve(d3.curveMonotoneX);
+
+            const lineElastic = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.revenueElasticNorm))
+                .curve(d3.curveMonotoneX);
+
+            const lineBroken = d3.line()
+                .x(d => x(d.price))
+                .y(d => y(d.revenueBrokenNorm))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineInelastic);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineElastic);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '3,3')
+                .attr('d', lineBroken);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('price index');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenueInelasticNorm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('revenue inelastic');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenueElasticNorm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('revenue elastic');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenueBrokenNorm) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#666')
+                .text('revenue broken');
+        }
+
+        // Heatmap chart
+        function generateHeatmapChart() {
+            const container = d3.select('#heatmapChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#heatmapChart').selectAll('*').remove();
+
+            const svg = d3.select('#heatmapChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate grid: 20x20
+            const gridSize = 20;
+            const priceMin = 0.6;
+            const priceMax = 1.6;
+            const pressureMin = 0;
+            const pressureMax = 100;
+
+            const data = [];
+            let maxRevenue = 0;
+            let minRevenue = Infinity;
+
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const price = priceMin + (i / (gridSize - 1)) * (priceMax - priceMin);
+                    const pressure = pressureMin + (j / (gridSize - 1)) * (pressureMax - pressureMin);
+
+                    // Volume depends on price and pressure
+                    const volumeBase = 1.0 - 0.35 * (price - 1.0) - 0.10 * Math.pow(price - 1.0, 2);
+                    const pressurePenalty = (pressure / 100) * 0.25;
+                    const volume = volumeBase * (1 - pressurePenalty);
+
+                    // Quality penalty from pressure
+                    const qualityPenalty = 1.0 - 0.20 * (pressure / 100);
+
+                    // Revenue = price * volume * quality
+                    const revenue = price * volume * qualityPenalty;
+                    maxRevenue = Math.max(maxRevenue, revenue);
+                    minRevenue = Math.min(minRevenue, revenue);
+
+                    data.push({ price, pressure, revenue });
+                }
+            }
+
+            // Normalize revenue to 0..1
+            data.forEach(d => {
+                d.revenueNorm = (d.revenue - minRevenue) / (maxRevenue - minRevenue);
+            });
+
+            const x = d3.scaleLinear()
+                .domain([priceMin, priceMax])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([pressureMin, pressureMax])
+                .range([height, 0]);
+
+            const cellWidth = width / gridSize;
+            const cellHeight = height / gridSize;
+
+            // Color scale (grayscale)
+            const colorScale = d3.scaleSequential(d3.interpolateGreys)
+                .domain([0, 1]);
+
+            // Draw cells
+            g.selectAll('.cell')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('class', 'cell')
+                .attr('x', d => x(d.price) - cellWidth / 2)
+                .attr('y', d => y(d.pressure) - cellHeight / 2)
+                .attr('width', cellWidth)
+                .attr('height', cellHeight)
+                .attr('fill', d => colorScale(d.revenueNorm))
+                .attr('stroke', '#ffffff')
+                .attr('stroke-width', 0.5);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height + 35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('price index');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', -35)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('pressure proxy');
+        }
+
+        // Interactive calculator
+        function updateCalculator() {
+            const demand = parseInt(document.getElementById('demandSlider').value) / 100;
+            const quality = parseInt(document.getElementById('qualitySlider').value) / 100;
+            const pressure = parseInt(document.getElementById('pressureSlider').value) / 100;
+            const price = parseInt(document.getElementById('priceSlider').value) / 100;
+
+            // Determine regime
+            let regime = 'elastic';
+            if (demand > 0.7 && quality > 0.7 && pressure < 0.4) {
+                regime = 'inelastic';
+            } else if (pressure > 0.6 || quality < 0.5) {
+                regime = 'broken';
+            }
+
+            // Volume calculation
+            let volume;
+            if (regime === 'inelastic') {
+                volume = 1.0 - 0.10 * (price - 1.0);
+            } else if (regime === 'elastic') {
+                volume = 1.0 - 0.35 * (price - 1.0) - 0.10 * Math.pow(price - 1.0, 2);
+            } else { // broken
+                const baseVolume = 1.0 - 0.35 * (price - 1.0) - 0.10 * Math.pow(price - 1.0, 2);
+                const qualityPenalty = 1.0 - 0.15 * (1.0 / (1.0 + Math.exp(-5 * (price - 1.0))));
+                volume = baseVolume * qualityPenalty;
+            }
+
+            // Adjust for demand and quality
+            volume = volume * (0.7 + 0.3 * demand) * (0.8 + 0.2 * quality);
+
+            // Quality index
+            const pressurePenalty = pressure * 0.20;
+            const brokenPenalty = regime === 'broken' ? 0.15 : 0;
+            const qualityIndex = Math.max(0.3, quality * (1 - pressurePenalty - brokenPenalty));
+
+            // Revenue = price * volume * quality_index (normalize to 0..1)
+            const revenue = price * volume * qualityIndex;
+            const revenueIndex = Math.min(1.0, revenue / 1.2);
+
+            // Recommendation
+            let recommendation = '';
+            if (regime === 'inelastic') {
+                recommendation = 'Можно поднимать цену — система может взять рост.';
+            } else if (regime === 'elastic') {
+                recommendation = 'Лучше чинить качество — оптимум revenue зависит от режима.';
+            } else { // broken
+                recommendation = 'Снизить давление / убрать хвост — система перегрета.';
+            }
+
+            document.getElementById('outputPanel').innerHTML = `
+                <div class="output-metric">
+                    <div class="output-metric-label">Volume index</div>
+                    <div class="output-metric-value">${(volume * 100).toFixed(0)}</div>
+                </div>
+                <div class="output-metric">
+                    <div class="output-metric-label">Quality index</div>
+                    <div class="output-metric-value">${(qualityIndex * 100).toFixed(0)}</div>
+                </div>
+                <div class="output-metric">
+                    <div class="output-metric-label">Revenue index</div>
+                    <div class="output-metric-value">${(revenueIndex * 100).toFixed(0)}</div>
+                </div>
+                <div class="output-metric">
+                    <div class="output-metric-label">Режим</div>
+                    <div class="output-metric-value">${regime}</div>
+                </div>
+                <div class="output-recommendation">${recommendation}</div>
+            `;
+        }
+
+        document.getElementById('demandSlider').addEventListener('input', (e) => {
+            document.getElementById('demandValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('qualitySlider').addEventListener('input', (e) => {
+            document.getElementById('qualityValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('pressureSlider').addEventListener('input', (e) => {
+            document.getElementById('pressureValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        document.getElementById('priceSlider').addEventListener('input', (e) => {
+            document.getElementById('priceValue').textContent = e.target.value;
+            updateCalculator();
+        });
+
+        // Initial render
+        generateDemandChart();
+        generateOptimumChart();
+        generateHeatmapChart();
+        updateCalculator();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateDemandChart();
+                generateOptimumChart();
+                generateHeatmapChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

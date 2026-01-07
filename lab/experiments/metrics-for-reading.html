@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метрики для чтения эксперимента</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        table th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e8e8e8;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e8e8e8;
+            color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        table tr:hover {
+            background: #fafafa;
+        }
+
+        .simulator-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .controls-panel {
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .control-slider {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-value {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .radio-option label {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .interpretation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .interpretation-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .template-box {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+        }
+
+        .template-box h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .template-section {
+            margin-bottom: 1rem;
+        }
+
+        .template-section strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .bullets {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .bullets li {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .bullets li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Метрики для чтения эксперимента</h1>
+        <p class="subtitle">Кто врёт первым.</p>
+        <p class="insight">Деньги — поздний сигнал. Guardrails — ваша страховка.</p>
+
+        <h2>Три роли метрик</h2>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">Primary (цель)</div>
+                <div class="card-item">
+                    <strong>Что это:</strong> Метрика, которую хотим улучшить. Обычно это revenue или его proxy.
+                </div>
+                <div class="card-item">
+                    <strong>Как выбрать:</strong> Одна-две метрики максимум. Чётко определена до теста. Измерима и устойчива.
+                </div>
+                <div class="card-item">
+                    <strong>Типичная ошибка:</strong> Слишком много primary метрик или выбор после теста.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Diagnostic (объяснение)</div>
+                <div class="card-item">
+                    <strong>Что это:</strong> Метрики, которые объясняют, почему изменилось. Декомпозиция на рычаги.
+                </div>
+                <div class="card-item">
+                    <strong>Как выбрать:</strong> Price vs volume vs mix. Ранние сигналы (coverage, showConv, pressure proxy).
+                </div>
+                <div class="card-item">
+                    <strong>Типичная ошибка:</strong> Смотреть только итог, не разлагать на компоненты.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Guardrails (защита)</div>
+                <div class="card-item">
+                    <strong>Что это:</strong> Метрики, которые нельзя ухудшать. Защита от скрытой деградации.
+                </div>
+                <div class="card-item">
+                    <strong>Как выбрать:</strong> Заранее, до теста. Устойчивость, retention, quality proxies, risk indicators.
+                </div>
+                <div class="card-item">
+                    <strong>Типичная ошибка:</strong> Отсутствие guardrails или выбор после того, как они сработали.
+                </div>
+            </div>
+        </div>
+
+        <h2>Ранние vs поздние сигналы</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Сигнал</th>
+                    <th>Тип</th>
+                    <th>Что может означать</th>
+                    <th>Что проверить</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Coverage / fill-like proxy</td>
+                    <td>Ранний</td>
+                    <td>Доступность инвентаря, заполнение воронки</td>
+                    <td>Decomposition по слоям, constraints, delivery bottlenecks</td>
+                </tr>
+                <tr>
+                    <td>ShowConv / eligible-to-show conversion</td>
+                    <td>Ранний</td>
+                    <td>Эффективность конверсии в показы, механизм отбора</td>
+                    <td>Pressure proxy, quality mix, frequency distribution</td>
+                </tr>
+                <tr>
+                    <td>Pressure/frequency tail proxy</td>
+                    <td>Ранний</td>
+                    <td>Накопление давления, усталость инвентаря</td>
+                    <td>Distribution tails, frequency buckets, fatigue indicators</td>
+                </tr>
+                <tr>
+                    <td>Quality/mix proxy</td>
+                    <td>Ранний</td>
+                    <td>Сдвиг качества инвентаря, композиционные изменения</td>
+                    <td>Composition shift, quality-weighted metrics, segment analysis</td>
+                </tr>
+                <tr>
+                    <td>Price proxy (auction price index)</td>
+                    <td>Ранний</td>
+                    <td>Изменения в конкуренции, спросе, ограничениях</td>
+                    <td>Volume decomposition, competition intensity, constraints</td>
+                </tr>
+                <tr>
+                    <td>Variance/volatility</td>
+                    <td>Ранний</td>
+                    <td>Нестабильность системы, накопление риска</td>
+                    <td>Distribution spread, quantile analysis, stability metrics</td>
+                </tr>
+                <tr>
+                    <td>Distribution tail shift</td>
+                    <td>Ранний</td>
+                    <td>Изменения в хвостах, вытеснение сегментов</td>
+                    <td>Quantile comparison, coverage changes, segment stability</td>
+                </tr>
+                <tr>
+                    <td>Revenue</td>
+                    <td>Поздний</td>
+                    <td>Итоговый эффект, компенсация всех факторов</td>
+                    <td>Decomposition на price/volume/mix, guardrails, risk</td>
+                </tr>
+                <tr>
+                    <td>Retention / satisfaction proxy</td>
+                    <td>Поздний</td>
+                    <td>Долгосрочное влияние на пользователей</td>
+                    <td>Lag window, cohort analysis, fatigue accumulation</td>
+                </tr>
+                <tr>
+                    <td>Risk accumulation</td>
+                    <td>Поздний</td>
+                    <td>Накопление скрытых проблем, деградация механизма</td>
+                    <td>Long-term proxy, late effects window, guardrail trends</td>
+                </tr>
+                <tr>
+                    <td>Regime change indicators</td>
+                    <td>Поздний</td>
+                    <td>Смена режима системы, переход в новое состояние</td>
+                    <td>Baseline drift, structural breaks, long-term stability</td>
+                </tr>
+                <tr>
+                    <td>Fatigue accumulation</td>
+                    <td>Поздний</td>
+                    <td>Накопление усталости, снижение эффективности</td>
+                    <td>Frequency distribution, return rate, attention proxy</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Декомпозиция дельты</h2>
+
+        <div class="simulator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Сценарий</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioPrice" name="scenario" value="price" checked>
+                            <label for="scenarioPrice">Price-led</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioVolume" name="scenario" value="volume">
+                            <label for="scenarioVolume">Volume-led</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioMix" name="scenario" value="mix">
+                            <label for="scenarioMix">Mix shift</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="scenarioHidden" name="scenario" value="hidden">
+                            <label for="scenarioHidden">Hidden degradation</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Pressure</label>
+                    <input type="range" id="pressureSlider" class="control-slider" min="0" max="100" value="50">
+                    <span class="control-value" id="pressureValue">50</span>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Market</label>
+                    <input type="range" id="marketSlider" class="control-slider" min="0" max="100" value="60">
+                    <span class="control-value" id="marketValue">60</span>
+                </div>
+            </div>
+
+            <svg id="decompositionChart"></svg>
+            <div class="interpretation" id="interpretation">
+                <!-- Content will be populated by JS -->
+            </div>
+            <p class="chart-caption">
+                Одинаковая дельта revenue может быть получена разными способами. Важно разложить на компоненты и проверить guardrails.
+            </p>
+        </div>
+
+        <h2>Мини-шаблон для отчёта</h2>
+
+        <div class="template-box">
+            <h3>Структура отчёта по эксперименту</h3>
+            
+            <div class="template-section">
+                <strong>Что меняли:</strong> Описание изменения в терминах механизма (давление, цена, формат, качество, частота).
+            </div>
+
+            <div class="template-section">
+                <strong>Primary итог:</strong> Направление изменения (рост/падение/нейтрально) и величина эффекта в окне оценки.
+            </div>
+
+            <div class="template-section">
+                <strong>Разложение:</strong> Вклад компонентов — price effect (рост/падение цены), volume effect (изменение объёма), mix/quality effect (сдвиг микса или качества).
+            </div>
+
+            <div class="template-section">
+                <strong>Guardrails:</strong> Что ухудшилось (если ухудшилось), что осталось стабильным. Ранние сигналы (coverage, showConv, pressure proxy) и поздние (retention, risk accumulation).
+            </div>
+
+            <div class="template-section">
+                <strong>Риски:</strong> Лаг (когда эффект проявится полностью), усталость (накопление давления), перераспределение (каннибализация, вытеснение), артефакты (сезонность, шоки рынка).
+            </div>
+
+            <div class="template-section">
+                <strong>Решение:</strong> Катить (эффект устойчив, guardrails в порядке), продолжить (нужно больше времени для оценки), итерация (нужен другой дизайн), откат (guardrails сработали или эффект отрицательный).
+            </div>
+        </div>
+
+        <h2>Частые ошибки выбора метрик</h2>
+
+        <ul class="bullets">
+            <li>Слишком много primary метрик — невозможно принять решение, когда они конфликтуют</li>
+            <li>Отсутствие guardrails — нет защиты от скрытой деградации, проблемы обнаруживаются поздно</li>
+            <li>Смотреть только средние — пропускаются изменения в распределениях, хвостах, сегментах</li>
+            <li>Игнорировать распределения/хвосты — среднее может расти, пока хвосты деградируют</li>
+            <li>Путать proxy с целью — proxy это инструмент диагностики, не сама цель</li>
+            <li>Интерпретировать price без volume — рост цены может компенсироваться падением объёма</li>
+            <li>Вывод по короткому окну — ранние эффекты могут быть адаптацией, поздние — усталостью</li>
+            <li>Игнорировать микс — композиционный сдвиг может маскировать истинный эффект</li>
+            <li>Переносить метрики из теста в прод без проверки — метрики могут работать по-разному в разных контекстах</li>
+            <li>"Значимость" вместо решения — статистическая значимость не говорит о практической полезности и устойчивости</li>
+        </ul>
+
+        <p class="final-quote">
+            Метрики — это язык системы. Guardrails — ваша грамматика.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+
+    <script>
+        // Chart setup
+        const margin = { top: 20, right: 80, bottom: 40, left: 50 };
+        const width = 800;
+        const height = 600;
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        const barHeight = 200;
+        const lineHeight = innerHeight - barHeight - 40;
+
+        const svg = d3.select('#decompositionChart')
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .style('max-width', '100%')
+            .style('height', 'auto');
+
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Scales for bars
+        const barXScale = d3.scaleBand()
+            .domain(['Δprice', 'Δvolume', 'Δmix'])
+            .range([0, innerWidth])
+            .padding(0.3);
+
+        const barYScale = d3.scaleLinear()
+            .domain([-0.15, 0.15])
+            .range([barHeight, 0]);
+
+        // Scales for lines
+        const xScale = d3.scaleLinear()
+            .domain([1, 120])
+            .range([0, innerWidth]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([lineHeight, 0])
+            .nice();
+
+        // Helper functions
+        function sigmoid(x, k = 1) {
+            return 1 / (1 + Math.exp(-k * (x - 0.5)));
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        // Generate decomposition data
+        function generateDecomposition(scenario, pressure, market) {
+            const p = pressure / 100;
+            const m = market / 100;
+
+            let deltaPrice, deltaVolume, deltaMix;
+
+            if (scenario === 'price') {
+                // Price-led: цена ↑, объём ↘
+                deltaPrice = 0.08 + m * 0.04;
+                deltaVolume = -0.05 - p * 0.03;
+                deltaMix = 0.01;
+            } else if (scenario === 'volume') {
+                // Volume-led: объём ↑, цена ↘/↔
+                deltaPrice = -0.02 + m * 0.01;
+                deltaVolume = 0.10 + (1 - p) * 0.03;
+                deltaMix = 0.01;
+            } else if (scenario === 'mix') {
+                // Mix shift: сдвиг микса, среднее ↔, хвосты меняются
+                deltaPrice = 0.02;
+                deltaVolume = -0.01;
+                deltaMix = 0.06 - p * 0.02;
+            } else { // hidden
+                // Hidden degradation: revenue ↑, но guardrail ↓ и risk ↑
+                deltaPrice = 0.05 + m * 0.02;
+                deltaVolume = 0.03;
+                deltaMix = -0.02;
+            }
+
+            const deltaRevenue = deltaPrice + deltaVolume + deltaMix;
+
+            return { deltaPrice, deltaVolume, deltaMix, deltaRevenue };
+        }
+
+        // Generate time series data
+        function generateTimeSeries(scenario, pressure, market) {
+            const data = [];
+            const p = pressure / 100;
+            const m = market / 100;
+            const launch = 30;
+            const evalStart = 50;
+            const evalEnd = 80;
+
+            for (let t = 1; t <= 120; t++) {
+                const tSinceLaunch = Math.max(0, t - launch);
+
+                let revenue, guardrail, risk;
+
+                if (scenario === 'price') {
+                    // Price-led: revenue растёт, guardrail слегка ухудшается при high pressure
+                    const priceEffect = 0.5 + 0.001 * t + (tSinceLaunch > 0 ? 0.002 * tSinceLaunch : 0);
+                    revenue = clamp(priceEffect + m * 0.1, 0.5, 0.75);
+                    guardrail = clamp(0.6 - p * 0.1 * (tSinceLaunch > 20 ? 0.5 : 0), 0.5, 0.7);
+                    risk = 0.2 + p * 0.1 + tSinceLaunch * 0.0005;
+                } else if (scenario === 'volume') {
+                    // Volume-led: revenue растёт, guardrail стабилен
+                    const volumeEffect = 0.5 + 0.0015 * t + (tSinceLaunch > 0 ? 0.003 * tSinceLaunch : 0);
+                    revenue = clamp(volumeEffect, 0.5, 0.8);
+                    guardrail = clamp(0.6 + 0.0002 * t, 0.55, 0.65);
+                    risk = 0.2 + p * 0.05;
+                } else if (scenario === 'mix') {
+                    // Mix shift: revenue не всегда большой, guardrail/variance меняются
+                    const mixEffect = 0.5 + 0.0005 * t + (tSinceLaunch > 0 ? 0.001 * tSinceLaunch : 0);
+                    revenue = clamp(mixEffect, 0.48, 0.65);
+                    guardrail = clamp(0.6 - p * 0.15 * (tSinceLaunch > 15 ? 0.7 : 0), 0.45, 0.65);
+                    risk = 0.2 + p * 0.12 + tSinceLaunch * 0.0008;
+                } else { // hidden
+                    // Hidden degradation: revenue растёт в окне, guardrail падает позже, risk растёт всегда
+                    const earlyBoost = t < evalEnd ? 0.04 * (1 - sigmoid(tSinceLaunch / 25, 1.5)) : 0;
+                    const latePenalty = t > evalEnd ? (t - evalEnd) * 0.001 : 0;
+                    revenue = clamp(0.5 + earlyBoost - latePenalty + m * 0.1, 0.48, 0.72);
+                    guardrail = clamp(0.6 - (t > evalEnd ? (t - evalEnd) * 0.002 : 0) - p * 0.1, 0.4, 0.65);
+                    risk = 0.2 + p * 0.15 + tSinceLaunch * 0.001;
+                }
+
+                risk = clamp(risk, 0.15, 0.95);
+                revenue = clamp(revenue, 0.45, 0.85);
+                guardrail = clamp(guardrail, 0.4, 0.75);
+
+                data.push({ t, revenue, guardrail, risk });
+            }
+
+            return data;
+        }
+
+        // Generate interpretation
+        function generateInterpretation(scenario, deltaPrice, deltaVolume, deltaMix, deltaRevenue) {
+            const interpretation = [];
+
+            if (scenario === 'price') {
+                interpretation.push('Режим: Price-led. Revenue растёт за счёт роста цены, но объём падает.');
+                interpretation.push('Проверь: guardrail может ухудшаться при высоком pressure. Если volume падает сильно — эффект неустойчив.');
+                interpretation.push('Решение: катить, если guardrail стабилен и volume падение умеренное. Иначе — ограничить давление или итерация.');
+            } else if (scenario === 'volume') {
+                interpretation.push('Режим: Volume-led. Revenue растёт за счёт роста объёма, цена стабильна.');
+                interpretation.push('Проверь: guardrail должен быть стабилен. Если так — это здоровый рост.');
+                interpretation.push('Решение: катить, если guardrail в порядке. Это устойчивый эффект.');
+            } else if (scenario === 'mix') {
+                interpretation.push('Режим: Mix shift. Сдвиг микса доминирует, revenue может быть не большой.');
+                interpretation.push('Проверь: guardrail и variance могут меняться. Смотри на распределения, не только среднее.');
+                interpretation.push('Решение: катить, если guardrail стабилен и эффект устойчив. Иначе — проверить композицию.');
+            } else { // hidden
+                interpretation.push('Режим: Hidden degradation. Revenue растёт в окне, но guardrail падает позже, risk растёт.');
+                interpretation.push('Проверь: позднее окно (после evaluation) покажет деградацию. Risk растёт быстрее revenue.');
+                interpretation.push('Решение: не катить без изменений. Нужна итерация или откат, если guardrail критичен.');
+            }
+
+            return interpretation;
+        }
+
+        // Line generators
+        const revenueLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        const guardrailLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.guardrail))
+            .curve(d3.curveMonotoneX);
+
+        const riskLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.risk))
+            .curve(d3.curveMonotoneX);
+
+        // Update function
+        function updateChart() {
+            const scenario = document.querySelector('input[name="scenario"]:checked').value;
+            const pressure = parseInt(document.getElementById('pressureSlider').value);
+            const market = parseInt(document.getElementById('marketSlider').value);
+
+            // Update values
+            document.getElementById('pressureValue').textContent = pressure;
+            document.getElementById('marketValue').textContent = market;
+
+            const decomposition = generateDecomposition(scenario, pressure, market);
+            const timeSeries = generateTimeSeries(scenario, pressure, market);
+            const interpretation = generateInterpretation(
+                scenario,
+                decomposition.deltaPrice,
+                decomposition.deltaVolume,
+                decomposition.deltaMix,
+                decomposition.deltaRevenue
+            );
+
+            // Clear previous
+            g.selectAll('*').remove();
+
+            // Bars section
+            const barData = [
+                { name: 'Δprice', value: decomposition.deltaPrice },
+                { name: 'Δvolume', value: decomposition.deltaVolume },
+                { name: 'Δmix', value: decomposition.deltaMix }
+            ];
+
+            // Zero line for bars
+            g.append('line')
+                .attr('x1', 0)
+                .attr('x2', innerWidth)
+                .attr('y1', barYScale(0))
+                .attr('y2', barYScale(0))
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '2,2')
+                .attr('opacity', 0.5);
+
+            // Bars
+            barData.forEach(d => {
+                const bar = g.append('rect')
+                    .attr('x', barXScale(d.name))
+                    .attr('y', d.value > 0 ? barYScale(d.value) : barYScale(0))
+                    .attr('width', barXScale.bandwidth())
+                    .attr('height', Math.abs(barYScale(d.value) - barYScale(0)))
+                    .attr('fill', d.value > 0 ? '#1f2a37' : '#999')
+                    .attr('opacity', 0.7);
+
+                // Labels
+                g.append('text')
+                    .attr('x', barXScale(d.name) + barXScale.bandwidth() / 2)
+                    .attr('y', d.value > 0 ? barYScale(d.value) - 5 : barYScale(d.value) + 15)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '11px')
+                    .attr('fill', '#1a1a1a')
+                    .text((d.value > 0 ? '+' : '') + (d.value * 100).toFixed(1) + '%');
+            });
+
+            // Total revenue label
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', barHeight + 20)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '12px')
+                .attr('font-weight', '500')
+                .attr('fill', '#1a1a1a')
+                .text(`Δrevenue: ${(decomposition.deltaRevenue > 0 ? '+' : '')}${(decomposition.deltaRevenue * 100).toFixed(1)}%`);
+
+            // Divider line
+            g.append('line')
+                .attr('x1', 0)
+                .attr('x2', innerWidth)
+                .attr('y1', barHeight + 30)
+                .attr('y2', barHeight + 30)
+                .attr('stroke', '#e8e8e8')
+                .attr('stroke-width', 1);
+
+            // Lines section (shifted down)
+            const lineOffset = barHeight + 40;
+
+            // Evaluation window
+            g.append('rect')
+                .attr('x', xScale(50))
+                .attr('y', lineOffset)
+                .attr('width', xScale(80) - xScale(50))
+                .attr('height', lineHeight)
+                .attr('fill', '#f0f0f0')
+                .attr('opacity', 0.3);
+
+            g.append('text')
+                .attr('x', (xScale(50) + xScale(80)) / 2)
+                .attr('y', lineOffset + lineHeight + 20)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('evaluation window');
+
+            // Launch marker
+            g.append('line')
+                .attr('x1', xScale(30))
+                .attr('x2', xScale(30))
+                .attr('y1', lineOffset)
+                .attr('y2', lineOffset + lineHeight)
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '2,2')
+                .attr('opacity', 0.6);
+
+            g.append('text')
+                .attr('x', xScale(30))
+                .attr('y', lineOffset + lineHeight + 20)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('launch');
+
+            // Create scales for lines (shifted)
+            const yScaleShifted = d3.scaleLinear()
+                .domain([0, 1])
+                .range([lineOffset + lineHeight, lineOffset])
+                .nice();
+
+            // Lines
+            g.append('path')
+                .datum(timeSeries)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', revenueLine.y(d => yScaleShifted(d.revenue)));
+
+            g.append('path')
+                .datum(timeSeries)
+                .attr('fill', 'none')
+                .attr('stroke', '#666')
+                .attr('stroke-width', 2)
+                .attr('d', guardrailLine.y(d => yScaleShifted(d.guardrail)));
+
+            g.append('path')
+                .datum(timeSeries)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', riskLine.y(d => yScaleShifted(d.risk)));
+
+            // Labels for lines
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScaleShifted(timeSeries[timeSeries.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScaleShifted(timeSeries[timeSeries.length - 1].guardrail) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#666')
+                .text('guardrail');
+
+            g.append('text')
+                .attr('x', innerWidth - 10)
+                .attr('y', yScaleShifted(timeSeries[timeSeries.length - 1].risk) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('risk');
+
+            // Axes for lines
+            g.append('g')
+                .attr('transform', `translate(0,${lineOffset + lineHeight})`)
+                .call(d3.axisBottom(xScale).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .attr('transform', `translate(0,${lineOffset})`)
+                .call(d3.axisLeft(yScaleShifted).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Update interpretation
+            const interpretationEl = document.getElementById('interpretation');
+            interpretationEl.innerHTML = interpretation.map(item => 
+                `<div class="interpretation-item">${item}</div>`
+            ).join('');
+        }
+
+        // Initial render
+        updateChart();
+
+        // Event listeners
+        document.getElementById('pressureSlider').addEventListener('input', updateChart);
+        document.getElementById('marketSlider').addEventListener('input', updateChart);
+        d3.selectAll('input[name="scenario"]').on('change', updateChart);
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateChart, 250);
+        });
+    </script>
+</body>
+</html>
+
+

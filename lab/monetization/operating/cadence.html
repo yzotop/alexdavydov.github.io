@@ -1,0 +1,996 @@
+прове<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ритм</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .calendar-box {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            background: #fafafa;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 900px) {
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .calendar-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-column-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-column-time {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.75rem;
+        }
+
+        .calendar-column-list {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .calendar-column-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .interactive-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        @media (min-width: 900px) {
+            .interactive-panel {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .metrics-output {
+            padding: 1.25rem;
+            background: #fafafa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+
+        .metrics-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .metrics-section-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .metrics-list {
+            padding-left: 1.25rem;
+        }
+
+        .metrics-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .metrics-list.forbidden {
+            color: #999;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .cooldown-card {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            background: #fafafa;
+        }
+
+        .cooldown-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .cooldown-card-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .cooldown-card-list {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+        }
+
+        .cooldown-card-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .errors-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .errors-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .errors-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .error-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .error-card-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-card-item {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Ритм контроля</h1>
+        <p class="subtitle">Разные горизонты — разные метрики.</p>
+
+        <div class="intro">
+            <p>
+                Ошибка №1: судить систему по короткому окну. Метрики шумят, лаги скрывают эффекты, сезонность маскирует тренды. Короткое окно даёт ложные сигналы и провоцирует ненужные действия.
+            </p>
+            <p>
+                Ритм = (сигналы ранние) + (итоги поздние) + (пауза после изменений). Ранние сигналы (механика, давление) смотрим каждый день. Итоги (выручка) — на окне лагов. После изменений — пауза до стабилизации.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Операционный календарь</div>
+            <div class="calendar-box">
+                <div class="calendar-grid">
+                    <div class="calendar-column">
+                        <div class="calendar-column-title">Утро</div>
+                        <div class="calendar-column-time">5 минут</div>
+                        <ul class="calendar-column-list">
+                            <li>Воронка requests → responses → shows (цела ли)</li>
+                            <li>Show rate vs вчера (не упал ли)</li>
+                            <li>Coverage и доступность инвентаря</li>
+                            <li>Прокси-давление (частота, плотность)</li>
+                            <li>Аномалии в сегментах (выбросы)</li>
+                            <li>Cooldown после вчерашнего релиза (не трогать)</li>
+                            <li>Технические метрики (error rate, latency)</li>
+                            <li>Алерты раннего предупреждения</li>
+                        </ul>
+                    </div>
+                    <div class="calendar-column">
+                        <div class="calendar-column-title">Неделя</div>
+                        <div class="calendar-column-time">30 минут</div>
+                        <ul class="calendar-column-list">
+                            <li>Windowing: выбор окна для выводов</li>
+                            <li>Лаги: сигнал vs деньги (где разрыв)</li>
+                            <li>Сегментация: хвосты и дисперсия</li>
+                            <li>Конфликтные метрики (CPM ↑, revenue ↓)</li>
+                            <li>Здоровье экспериментов (стабильность)</li>
+                            <li>Траектории во времени (скрытое насыщение)</li>
+                            <li>Baseline и guardrails (не вышли ли)</li>
+                            <li>Сезонность и внешние факторы</li>
+                            <li>Проверка алертов (ложные тревоги)</li>
+                        </ul>
+                    </div>
+                    <div class="calendar-column">
+                        <div class="calendar-column-title">Месяц</div>
+                        <div class="calendar-column-time">2 часа</div>
+                        <ul class="calendar-column-list">
+                            <li>Regime drift: смена режима работы</li>
+                            <li>Saturation map: карта насыщения</li>
+                            <li>Аудит определений метрик (не устарели ли)</li>
+                            <li>Review порогов и алертов (качество)</li>
+                            <li>Долгосрочные тренды (дрейф, не шум)</li>
+                            <li>Сравнение сегментов (не растёт ли дисперсия)</li>
+                            <li>Проверка компенсаций (цена vs объём)</li>
+                            <li>Постмортемы инцидентов (паттерны)</li>
+                            <li>Обновление плейбуков (новые паттерны)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Подбери горизонт и метрики</div>
+            <div class="interactive-panel">
+                <div class="controls-group">
+                    <div class="control-group">
+                        <label class="control-label">Горизонт</label>
+                        <select id="horizonSelect" class="control-input">
+                            <option value="day">День</option>
+                            <option value="week">Неделя</option>
+                            <option value="month">Месяц</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Цель</label>
+                        <select id="goalSelect" class="control-input">
+                            <option value="stability">Стабильность</option>
+                            <option value="growth">Рост</option>
+                            <option value="diagnosis">Диагностика</option>
+                            <option value="experiments">Эксперименты</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="metrics-output" id="metricsOutput">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Окна сглаживания меняют вывод</div>
+            <div class="chart-container">
+                <svg id="windowChart"></svg>
+                <p class="chart-caption">Окно — это фильтр. Фильтр меняет решение.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Лаги: сигнал раньше денег</div>
+            <div class="chart-container">
+                <svg id="lagChart"></svg>
+                <p class="chart-caption">Сигнал покупает время реакции.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Cooldown после изменений</div>
+            <div class="cooldown-card">
+                <div class="cooldown-card-title">Что такое cooldown</div>
+                <p class="cooldown-card-text">
+                    Cooldown — это пауза после изменения системы, в течение которой нельзя делать новые изменения и нельзя судить об эффекте по итоговым метрикам. Это время нужно для стабилизации механизмов и проявления эффектов через лаги.
+                </p>
+                <div class="cooldown-card-title">Почему нужен</div>
+                <p class="cooldown-card-text">
+                    Система монетизации имеет лаги: механические изменения проявляются в деньгах через 7–14 дней. Если менять систему каждый день, невозможно понять, что сработало, а что ухудшило. Cooldown даёт время для стабилизации и оценки эффекта.
+                </p>
+                <div class="cooldown-card-title">Минимальные правила</div>
+                <ul class="cooldown-card-list">
+                    <li>Не меняйте больше одного рычага в окне лагов (7–14 дней)</li>
+                    <li>Фиксируйте t0 (момент изменения) и ожидаемый t_money (когда эффект проявится в деньгах)</li>
+                    <li>Не принимайте решения по итогу раньше t_money</li>
+                    <li>Мониторьте ранние сигналы (механика, давление) каждый день, но не действуйте по ним</li>
+                    <li>После t_money оцените эффект на окне 7–14 дней, затем принимайте решение о следующем изменении</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Типовые ошибки ритма</div>
+            <div class="errors-grid">
+                <div class="error-card">
+                    <div class="error-card-title">Смотрим revenue каждый час</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Паника из-за часовых колебаний, ненужные действия.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Revenue смотреть на окне лагов (7–14 дней), ранние сигналы — каждый день.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Сравниваем разные окна</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Выводы меняются в зависимости от окна, нет единой картины.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Фиксировать окно для каждой метрики: сигналы — день, итоги — неделя/месяц.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Меняем конфиг каждый день</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Невозможно понять, что сработало, система нестабильна.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Cooldown после изменений: один рычаг в окне лагов, пауза до оценки.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Игнорируем сегменты</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Среднее маскирует проблемы в отдельных сегментах.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Смотреть метрики по сегментам отдельно, проверять дисперсию и хвосты.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Сезонность = эффект</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Естественные колебания принимаются за эффект изменений.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Сравнивать с предыдущим периодом и baseline, учитывать сезонность.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Один алерт на всех</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Алерт срабатывает слишком часто или слишком редко, не учитывает сегменты.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Сегментировать алерты, настроить пороги и окна для каждого слоя отдельно.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Ритм контроля делает систему предсказуемее — даже когда мир шумит.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Разные горизонты — разные метрики.</p>
+        </div>
+    </div>
+
+    <script>
+        // Cadence map
+        const cadenceMap = {
+            day: {
+                stability: {
+                    primary: ['Show rate', 'Воронка requests → shows', 'Прокси-давление', 'Технические метрики'],
+                    secondary: ['Coverage', 'Аномалии в сегментах', 'Алерты раннего предупреждения', 'Cooldown статус'],
+                    forbidden: [
+                        { metric: 'Revenue', reason: 'Лаги скрывают эффекты, шум маскирует тренды' },
+                        { metric: 'CPM', reason: 'Короткое окно даёт ложные сигналы из-за компенсаций' },
+                        { metric: 'RPM', reason: 'Составная метрика требует окна лагов для оценки' }
+                    ]
+                },
+                growth: {
+                    primary: ['Show rate', 'Воронка requests → shows', 'Прокси-давление', 'Coverage'],
+                    secondary: ['Технические метрики', 'Аномалии в сегментах', 'Алерты раннего предупреждения', 'Cooldown статус'],
+                    forbidden: [
+                        { metric: 'Revenue', reason: 'Рост выручки проявляется через лаги, не на дне' },
+                        { metric: 'CPM', reason: 'Короткое окно не показывает долгосрочный эффект' },
+                        { metric: 'RPM', reason: 'Составная метрика требует окна лагов' }
+                    ]
+                },
+                diagnosis: {
+                    primary: ['Воронка requests → shows', 'Show rate', 'Технические метрики', 'Аномалии в сегментах'],
+                    secondary: ['Прокси-давление', 'Coverage', 'Алерты раннего предупреждения', 'Cooldown статус'],
+                    forbidden: [
+                        { metric: 'Revenue', reason: 'Диагностика по итогу на дне даёт ложные выводы' },
+                        { metric: 'CPM', reason: 'Короткое окно не показывает причину проблемы' },
+                        { metric: 'RPM', reason: 'Составная метрика требует окна лагов для диагностики' }
+                    ]
+                },
+                experiments: {
+                    primary: ['Show rate', 'Воронка requests → shows', 'Прокси-давление', 'Технические метрики'],
+                    secondary: ['Coverage', 'Аномалии в сегментах', 'Алерты раннего предупреждения', 'Cooldown статус'],
+                    forbidden: [
+                        { metric: 'Revenue', reason: 'Эффект эксперимента проявляется через лаги, не на дне' },
+                        { metric: 'CPM', reason: 'Короткое окно не показывает эффект эксперимента' },
+                        { metric: 'RPM', reason: 'Составная метрика требует окна лагов для оценки эксперимента' }
+                    ]
+                }
+            },
+            week: {
+                stability: {
+                    primary: ['Windowing: выбор окна', 'Лаги: сигнал vs деньги', 'Сегментация: хвосты', 'Baseline и guardrails'],
+                    secondary: ['Конфликтные метрики', 'Траектории во времени', 'Сезонность', 'Проверка алертов'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для итоговых метрик' },
+                        { metric: 'CPM без учёта компенсаций', reason: 'Нужно смотреть вместе с объёмом' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует проблемы в сегментах' }
+                    ]
+                },
+                growth: {
+                    primary: ['Windowing: выбор окна', 'Лаги: сигнал vs деньги', 'Траектории во времени', 'Baseline и guardrails'],
+                    secondary: ['Сегментация: хвосты', 'Конфликтные метрики', 'Сезонность', 'Проверка алертов'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для оценки роста' },
+                        { metric: 'CPM без учёта объёма', reason: 'Рост цены может компенсировать падение объёма' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует рост в отдельных сегментах' }
+                    ]
+                },
+                diagnosis: {
+                    primary: ['Windowing: выбор окна', 'Лаги: сигнал vs деньги', 'Сегментация: хвосты', 'Конфликтные метрики'],
+                    secondary: ['Траектории во времени', 'Baseline и guardrails', 'Сезонность', 'Проверка алертов'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для диагностики' },
+                        { metric: 'CPM без разложения', reason: 'Нужно разложить на компоненты' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует проблему в сегментах' }
+                    ]
+                },
+                experiments: {
+                    primary: ['Windowing: выбор окна', 'Лаги: сигнал vs деньги', 'Здоровье экспериментов', 'Baseline и guardrails'],
+                    secondary: ['Траектории во времени', 'Сегментация: хвосты', 'Сезонность', 'Проверка алертов'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Эффект эксперимента проявляется через лаги' },
+                        { metric: 'CPM без учёта объёма', reason: 'Нужно смотреть вместе с объёмом' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует эффект в сегментах' }
+                    ]
+                }
+            },
+            month: {
+                stability: {
+                    primary: ['Regime drift: смена режима', 'Saturation map: карта насыщения', 'Долгосрочные тренды', 'Review порогов и алертов'],
+                    secondary: ['Сравнение сегментов', 'Проверка компенсаций', 'Постмортемы инцидентов', 'Обновление плейбуков'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для долгосрочной оценки' },
+                        { metric: 'CPM без учёта трендов', reason: 'Нужно учитывать долгосрочные тренды' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует долгосрочные изменения в сегментах' }
+                    ]
+                },
+                growth: {
+                    primary: ['Regime drift: смена режима', 'Долгосрочные тренды', 'Saturation map: карта насыщения', 'Review порогов и алертов'],
+                    secondary: ['Сравнение сегментов', 'Проверка компенсаций', 'Постмортемы инцидентов', 'Обновление плейбуков'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для оценки роста' },
+                        { metric: 'CPM без учёта трендов', reason: 'Нужно учитывать долгосрочные тренды' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует рост в отдельных сегментах' }
+                    ]
+                },
+                diagnosis: {
+                    primary: ['Regime drift: смена режима', 'Долгосрочные тренды', 'Сравнение сегментов', 'Review порогов и алертов'],
+                    secondary: ['Saturation map: карта насыщения', 'Проверка компенсаций', 'Постмортемы инцидентов', 'Обновление плейбуков'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Слишком короткое окно для диагностики' },
+                        { metric: 'CPM без разложения', reason: 'Нужно разложить на компоненты и тренды' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует проблему в сегментах' }
+                    ]
+                },
+                experiments: {
+                    primary: ['Regime drift: смена режима', 'Долгосрочные тренды', 'Review порогов и алертов', 'Обновление плейбуков'],
+                    secondary: ['Saturation map: карта насыщения', 'Сравнение сегментов', 'Проверка компенсаций', 'Постмортемы инцидентов'],
+                    forbidden: [
+                        { metric: 'Revenue на окне 1 день', reason: 'Эффект эксперимента проявляется через лаги' },
+                        { metric: 'CPM без учёта трендов', reason: 'Нужно учитывать долгосрочные тренды' },
+                        { metric: 'RPM без сегментации', reason: 'Среднее маскирует эффект в сегментах' }
+                    ]
+                }
+            }
+        };
+
+        // Update metrics
+        function updateMetrics() {
+            const horizon = document.getElementById('horizonSelect').value;
+            const goal = document.getElementById('goalSelect').value;
+            const metrics = cadenceMap[horizon][goal];
+
+            document.getElementById('metricsOutput').innerHTML = `
+                <div class="metrics-section">
+                    <div class="metrics-section-title">Primary (3–4 метрики)</div>
+                    <ul class="metrics-list">
+                        ${metrics.primary.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="metrics-section">
+                    <div class="metrics-section-title">Secondary (3–4 метрики)</div>
+                    <ul class="metrics-list">
+                        ${metrics.secondary.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="metrics-section">
+                    <div class="metrics-section-title">Запрещено (2–3 метрики)</div>
+                    <ul class="metrics-list forbidden">
+                        ${metrics.forbidden.map(item => `<li><strong>${item.metric}:</strong> ${item.reason}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        document.getElementById('horizonSelect').addEventListener('change', updateMetrics);
+        document.getElementById('goalSelect').addEventListener('change', updateMetrics);
+        updateMetrics();
+
+        // Window smoothing chart
+        function generateWindowChart() {
+            const container = d3.select('#windowChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#windowChart').selectAll('*').remove();
+
+            const svg = d3.select('#windowChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                const drift = t > 90 ? 0.05 * (1 - 1 / (1 + Math.exp(-(t - 90) / 10))) : 0;
+                const raw = 0.78 + 0.03 * Math.sin(t / 6) + 0.02 * Math.sin(t / 17) - drift;
+                data.push({ t, raw });
+            }
+
+            // Calculate moving averages
+            data.forEach((d, i) => {
+                const ma7Start = Math.max(0, i - 3);
+                const ma7End = Math.min(n - 1, i + 3);
+                const ma7Sum = d3.sum(data.slice(ma7Start, ma7End + 1), d => d.raw);
+                d.ma7 = ma7Sum / (ma7End - ma7Start + 1);
+
+                const ma28Start = Math.max(0, i - 14);
+                const ma28End = Math.min(n - 1, i + 14);
+                const ma28Sum = d3.sum(data.slice(ma28Start, ma28End + 1), d => d.raw);
+                d.ma28 = ma28Sum / (ma28End - ma28Start + 1);
+            });
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.65, 0.85])
+                .range([height, 0]);
+
+            // Shaded regions
+            const silenceStart = 40;
+            const silenceEnd = 70;
+            g.append('rect')
+                .attr('x', x(silenceStart))
+                .attr('y', 0)
+                .attr('width', x(silenceEnd) - x(silenceStart))
+                .attr('height', height)
+                .attr('fill', '#f0f0f0')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(silenceStart) + x(silenceEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('тишина');
+
+            const driftStart = 90;
+            const driftEnd = 180;
+            g.append('rect')
+                .attr('x', x(driftStart))
+                .attr('y', 0)
+                .attr('width', x(driftEnd) - x(driftStart))
+                .attr('height', height)
+                .attr('fill', '#fff5e6')
+                .attr('opacity', 0.5);
+
+            g.append('text')
+                .attr('x', (x(driftStart) + x(driftEnd)) / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .attr('fill', '#999')
+                .text('дрейф');
+
+            // Lines
+            const line = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.raw))
+                .curve(d3.curveMonotoneX);
+
+            const lineMA7 = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.ma7))
+                .curve(d3.curveMonotoneX);
+
+            const lineMA28 = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.ma28))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1)
+                .attr('d', line);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1.5)
+                .attr('d', lineMA7);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineMA28);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].raw) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#ccc')
+                .text('raw');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].ma7) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('MA7');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].ma28) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('MA28');
+        }
+
+        // Lag chart
+        function generateLagChart() {
+            const container = d3.select('#lagChart').node().parentElement;
+            const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+            const width = Math.min(container.clientWidth, 800) - margin.left - margin.right;
+            const height = 300 - margin.top - margin.bottom;
+
+            d3.select('#lagChart').selectAll('*').remove();
+
+            const svg = d3.select('#lagChart')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Generate data
+            const n = 180;
+            const t0 = 70;
+            const t1 = 95;
+            const data = [];
+            for (let t = 1; t <= n; t++) {
+                const signalDrop = t > t0 ? 0.1 * (1 - 1 / (1 + Math.exp(-(t - t0) / 5))) : 0;
+                const revenueDrop = t > t1 ? 0.08 * (1 - 1 / (1 + Math.exp(-(t - t1) / 5))) : 0;
+                const signal = 0.78 + 0.03 * Math.sin(t / 6) - signalDrop;
+                const revenue = 0.95 + 0.01 * Math.sin(t / 10) - revenueDrop;
+                data.push({ t, signal, revenue });
+            }
+
+            const x = d3.scaleLinear()
+                .domain([1, n])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0.65, 1.0])
+                .range([height, 0]);
+
+            // Vertical lines
+            g.append('line')
+                .attr('x1', x(t0))
+                .attr('x2', x(t0))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#999')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(t0))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('t0: деградация');
+
+            g.append('line')
+                .attr('x1', x(t1))
+                .attr('x2', x(t1))
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '3,3');
+
+            g.append('text')
+                .attr('x', x(t1))
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('t1: реакция денег');
+
+            // Lines
+            const lineSignal = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.signal))
+                .curve(d3.curveMonotoneX);
+
+            const lineRevenue = d3.line()
+                .x(d => x(d.t))
+                .y(d => y(d.revenue))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2)
+                .attr('d', lineSignal);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#1f2a37')
+                .attr('stroke-width', 2)
+                .attr('d', lineRevenue);
+
+            // Axes
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `t${d}`))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .attr('font-size', '11px')
+                .attr('color', '#999');
+
+            // Labels
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].signal) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#999')
+                .text('early signal (showRate)');
+
+            g.append('text')
+                .attr('x', width - 10)
+                .attr('y', y(data[data.length - 1].revenue) + 5)
+                .attr('text-anchor', 'end')
+                .attr('font-size', '10px')
+                .attr('fill', '#1f2a37')
+                .text('revenue');
+        }
+
+        // Initial render
+        generateWindowChart();
+        generateLagChart();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                generateWindowChart();
+                generateLagChart();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

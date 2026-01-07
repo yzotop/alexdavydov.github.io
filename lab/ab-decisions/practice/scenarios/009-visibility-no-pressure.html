@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рост видимости без роста давления</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .graph-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2rem;
+        }
+
+        .chart-section {
+            margin-bottom: 2rem;
+        }
+
+        .chart-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        .line-control {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+            opacity: 0.6;
+        }
+
+        .line-test {
+            stroke: #1f2a37;
+        }
+
+        .line-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .annotation {
+            font-size: 12px;
+            fill: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .annotation-line {
+            stroke: #1a1a1a;
+            stroke-width: 1.5;
+            opacity: 0.8;
+            stroke-dasharray: 2, 2;
+        }
+
+        .annotation-box {
+            fill: #ffffff;
+            stroke: #1a1a1a;
+            stroke-width: 1;
+            rx: 3;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .analysis ul {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .analysis li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .related-topics {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-topics h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .related-topics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-topics li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-topics a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-topics a:hover {
+            border-color: #999;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Рост видимости без роста давления</h1>
+        <p class="subtitle">Рост выручки за счёт изменения позиции рекламного блока и роста видимости, без увеличения количества рекламы.</p>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-1" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Что именно дало эффект</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Изменили позицию рекламного блока в тестовой группе: перенесли его выше в иерархии экрана, ближе к началу контента, где он становится видимым раньше.
+            </p>
+            <p>
+                Эксперимент длился 10 дней. Трафик стабильный, сезонных эффектов не наблюдалось. Контрольная группа без изменений — блок остаётся на прежней позиции.
+            </p>
+            <p>
+                В тестовой группе выручка выросла на 3–6%, CPM остался практически без изменений (~+0.1%), рекламное давление не изменилось. Заметен рост видимости блока (show rate) на ~25–30% и рост монетизируемых показов.
+            </p>
+        </section>
+
+        <section class="graph-container">
+            <div class="chart-section">
+                <svg id="chart-revenue-clean"></svg>
+            </div>
+            <div class="chart-section">
+                <svg id="chart-cpm-clean"></svg>
+            </div>
+            <div class="chart-section">
+                <svg id="chart-showrate-clean"></svg>
+            </div>
+            <div class="chart-section">
+                <svg id="chart-pressure-clean"></svg>
+            </div>
+        </section>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Есть ли эффект и когда он начинается?</li>
+                <li>За счёт чего выросла выручка при стабильном CPM и давлении?</li>
+                <li>Почему show rate вырос так сильно, а давление не изменилось?</li>
+                <li>Как изменение позиции влияет на видимость без изменения количества блоков?</li>
+                <li>Можно ли катить в прод? Какие guardrails важны?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <div class="graph-container">
+                    <div class="chart-section">
+                        <svg id="chart-revenue-annotated"></svg>
+                    </div>
+                    <div class="chart-section">
+                        <svg id="chart-cpm-annotated"></svg>
+                    </div>
+                    <div class="chart-section">
+                        <svg id="chart-showrate-annotated"></svg>
+                    </div>
+                    <div class="chart-section">
+                        <svg id="chart-pressure-annotated"></svg>
+                    </div>
+                </div>
+
+                <p>
+                    На графике видно, что выручка стабильно растёт с начала эксперимента, в то время как CPM остаётся практически неизменным, а рекламное давление не меняется. Одновременно резко растёт show rate — доля реально увиденных показов блока.
+                </p>
+
+                <p>
+                    <strong>Механизм эффекта:</strong> Изменение позиции рекламного блока повышает его видимость без изменения количества рекламы на странице. Блок, перенесённый выше в иерархии экрана, становится видимым раньше и чаще, что приводит к:
+                </p>
+                <ul>
+                    <li><strong>Росту show rate:</strong> Блок чаще попадает в зону видимости пользователя, потому что находится выше и раньше появляется при скролле.</li>
+                    <li><strong>Росту монетизируемых показов:</strong> Больше показов становятся реально видимыми и приносят выручку.</li>
+                    <li><strong>Эффективному использованию существующего спроса:</strong> Тот же спрос на рекламу монетизируется лучше, потому что блок виден чаще.</li>
+                </ul>
+
+                <p>
+                    <strong>Почему CPM не изменился:</strong> Структура спроса и конкуренция остались прежними. Изменилась не цена, а видимость блока — больше показов стали реально видимыми, что увеличило объём монетизируемых показов при той же цене.
+                </p>
+
+                <p>
+                    <strong>Почему давление не изменилось:</strong> Количество рекламных блоков на странице осталось прежним. Изменилась только позиция одного блока — он стал выше, но общее количество рекламы не увеличилось. Пользователь видит столько же рекламы, просто один блок стал видимым чаще.
+                </p>
+
+                <p>
+                    <strong>Важное наблюдение:</strong> Рост показов может опережать рост кликов, что приводит к локальному снижению CTR блока. Это не проблема, если общая выручка растёт — важно, что больше показов становятся видимыми и монетизируются.
+                </p>
+
+                <p>
+                    <strong>Порядок проверки:</strong>
+                </p>
+                <ol>
+                    <li>Show rate блока — вырос ли процент реально увиденных показов?</li>
+                    <li>Monetizable shows — вырос ли объём монетизируемых показов?</li>
+                    <li>CTR блока — не упал ли слишком сильно (может быть локальное снижение при росте показов)?</li>
+                    <li>Guardrails — не ухудшились ли пользовательские метрики (конверсия в скролл, глубина сессии, время в контенте)?</li>
+                    <li>Разрезы по платформам — эффект может отличаться на разных устройствах.</li>
+                </ol>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «Выручка выросла, значит можно катить. Изменение позиции всегда работает.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Рост выручки на 3–6% при стабильном CPM и давлении указывает на эффект через рост видимости блока. Изменение позиции повысило show rate на ~25–30%, что увеличило объём монетизируемых показов без изменения цены или давления. Это эффективный способ монетизации существующего спроса через оптимизацию видимости. Можно катить в прод при условии, что guardrails (пользовательские метрики) не ухудшились.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что «изменение позиции всегда даёт такой эффект» — результат зависит от структуры контента и паттернов скролла пользователей. Нельзя утверждать, что «CTR не важен» — локальное снижение CTR при росте показов нормально, но нужно проверить, что общая выручка растёт. Нельзя утверждать, что «эффект будет одинаковым на всех поверхностях» — на разных платформах эффект может отличаться.
+                </div>
+            </div>
+        </section>
+
+        <section class="related-topics">
+            <h3>Связанные темы</h3>
+            <ul>
+                <li><a href="../../monetization/metrics/revenue.html">Выручка: декомпозиция на price × volume</a></li>
+                <li><a href="../../monetization/metrics/show-fill-rate.html">Show rate и видимость как ранние индикаторы</a></li>
+                <li><a href="../lessons/01-price-vs-money.html">Lesson 1: Цена ≠ деньги — эффект через объём</a></li>
+                <li><a href="./008-lazy-load-via-funnel.html">Сценарий 008: Lazy Load — рост через воронку</a></li>
+            </ul>
+        </section>
+
+        <nav class="scenario-nav">
+            <a href="./008-lazy-load-via-funnel.html">← Предыдущий сценарий</a>
+            <a href="../index.html">К практикуму</a>
+            <a href="./010-more-shows-less-revenue.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script>
+        // Generate deterministic data for scenario 009 (visibility no pressure)
+        const days = 10;
+        const data = [];
+
+        // Control: stable
+        const controlRevenue = 100;
+        const controlCPM = 150;
+        const controlShowRate = 0.60;
+        const controlPressure = 0.25;
+
+        // Test: Revenue +3-6%, CPM ~0%, Show Rate +25-30%, Pressure stable
+        for (let d = 1; d <= days; d++) {
+            const revenueGrowth = 1 + 0.045 * (1 - Math.exp(-d / 3));
+            const testRevenue = controlRevenue * revenueGrowth;
+            const testCPM = controlCPM * (1 + 0.001 * Math.sin(d / 3));
+            const showRateGrowth = 1 + 0.27 * (1 - Math.exp(-d / 3));
+            const testShowRate = controlShowRate * showRateGrowth;
+            const testPressure = controlPressure * (1 + 0.01 * Math.sin(d / 5));
+
+            data.push({
+                day: d,
+                controlRevenue: controlRevenue,
+                testRevenue: testRevenue,
+                controlCPM: controlCPM,
+                testCPM: testCPM,
+                controlShowRate: controlShowRate,
+                testShowRate: testShowRate,
+                controlPressure: controlPressure,
+                testPressure: testPressure
+            });
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 60, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 200 - margin.top - margin.bottom;
+
+        const xScale = d3.scaleLinear().domain([1, days]).range([0, width]);
+
+        // Revenue chart
+        const revSvgClean = d3.select("#chart-revenue-clean")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const revGClean = revSvgClean.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const revYScale = d3.scaleLinear().domain([99, 106]).range([height, 0]);
+        const revLine = d3.line().x(d => xScale(d.day)).y(d => revYScale(d.revenue)).curve(d3.curveMonotoneX);
+
+        revGClean.append("path").datum(data.map(d => ({ day: d.day, revenue: d.controlRevenue }))).attr("class", "line line-control").attr("d", revLine);
+        revGClean.append("path").datum(data.map(d => ({ day: d.day, revenue: d.testRevenue }))).attr("class", "line line-test").attr("d", revLine);
+        revGClean.append("text").attr("class", "line-label").attr("x", xScale(days) - 5).attr("y", revYScale(data[data.length - 1].testRevenue) - 5).attr("text-anchor", "end").text("Revenue (тест)");
+
+        const revXAxis = d3.axisBottom(xScale).ticks(3).tickValues([1, 5, 10]).tickSize(4).tickPadding(8);
+        const revYAxis = d3.axisLeft(revYScale).ticks(3).tickValues([99, 100, 105]).tickSize(4).tickPadding(8);
+
+        revGClean.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(revXAxis);
+        revGClean.append("g").attr("class", "axis").call(revYAxis);
+        revGClean.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Revenue (индекс)");
+        revGClean.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+        // CPM chart
+        const cpmSvgClean = d3.select("#chart-cpm-clean")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const cpmGClean = cpmSvgClean.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const cpmYScale = d3.scaleLinear().domain([149.8, 150.2]).range([height, 0]);
+        const cpmLine = d3.line().x(d => xScale(d.day)).y(d => cpmYScale(d.cpm)).curve(d3.curveMonotoneX);
+
+        cpmGClean.append("path").datum(data.map(d => ({ day: d.day, cpm: d.controlCPM }))).attr("class", "line line-control").attr("d", cpmLine);
+        cpmGClean.append("path").datum(data.map(d => ({ day: d.day, cpm: d.testCPM }))).attr("class", "line line-test").attr("d", cpmLine);
+
+        const cpmXAxis = d3.axisBottom(xScale).ticks(3).tickValues([1, 5, 10]).tickSize(4).tickPadding(8);
+        const cpmYAxis = d3.axisLeft(cpmYScale).ticks(3).tickValues([149.8, 150, 150.2]).tickSize(4).tickPadding(8);
+
+        cpmGClean.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(cpmXAxis);
+        cpmGClean.append("g").attr("class", "axis").call(cpmYAxis);
+        cpmGClean.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("CPM");
+        cpmGClean.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+        // Show Rate chart
+        const srSvgClean = d3.select("#chart-showrate-clean")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const srGClean = srSvgClean.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const srYScale = d3.scaleLinear().domain([0.58, 0.78]).range([height, 0]);
+        const srLine = d3.line().x(d => xScale(d.day)).y(d => srYScale(d.showRate)).curve(d3.curveMonotoneX);
+
+        srGClean.append("path").datum(data.map(d => ({ day: d.day, showRate: d.controlShowRate }))).attr("class", "line line-control").attr("d", srLine);
+        srGClean.append("path").datum(data.map(d => ({ day: d.day, showRate: d.testShowRate }))).attr("class", "line line-test").attr("d", srLine);
+        srGClean.append("text").attr("class", "line-label").attr("x", xScale(days) - 5).attr("y", srYScale(data[data.length - 1].testShowRate) - 5).attr("text-anchor", "end").text("Show Rate (тест)");
+
+        const srXAxis = d3.axisBottom(xScale).ticks(3).tickValues([1, 5, 10]).tickSize(4).tickPadding(8);
+        const srYAxis = d3.axisLeft(srYScale).ticks(3).tickValues([0.60, 0.65, 0.76]).tickSize(4).tickPadding(8);
+
+        srGClean.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(srXAxis);
+        srGClean.append("g").attr("class", "axis").call(srYAxis);
+        srGClean.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Show Rate");
+        srGClean.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+        // Pressure chart
+        const pressSvgClean = d3.select("#chart-pressure-clean")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const pressGClean = pressSvgClean.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+        const pressYScale = d3.scaleLinear().domain([0.24, 0.26]).range([height, 0]);
+        const pressLine = d3.line().x(d => xScale(d.day)).y(d => pressYScale(d.pressure)).curve(d3.curveMonotoneX);
+
+        pressGClean.append("path").datum(data.map(d => ({ day: d.day, pressure: d.controlPressure }))).attr("class", "line line-control").attr("d", pressLine);
+        pressGClean.append("path").datum(data.map(d => ({ day: d.day, pressure: d.testPressure }))).attr("class", "line line-test").attr("d", pressLine);
+
+        const pressXAxis = d3.axisBottom(xScale).ticks(3).tickValues([1, 5, 10]).tickSize(4).tickPadding(8);
+        const pressYAxis = d3.axisLeft(pressYScale).ticks(3).tickValues([0.24, 0.25, 0.26]).tickSize(4).tickPadding(8);
+
+        pressGClean.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(pressXAxis);
+        pressGClean.append("g").attr("class", "axis").call(pressYAxis);
+        pressGClean.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Pressure");
+        pressGClean.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+        // Annotated versions
+        function createAnnotatedCharts() {
+            // Revenue annotated
+            const revSvgAnnot = d3.select("#chart-revenue-annotated")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const revGAnnot = revSvgAnnot.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+            revGAnnot.append("path").datum(data.map(d => ({ day: d.day, revenue: d.controlRevenue }))).attr("class", "line line-control").attr("d", revLine);
+            revGAnnot.append("path").datum(data.map(d => ({ day: d.day, revenue: d.testRevenue }))).attr("class", "line line-test").attr("d", revLine);
+
+            const annotX = xScale(7);
+            const annotY = revYScale(data[6].testRevenue);
+            revGAnnot.append("line").attr("class", "annotation-line").attr("x1", annotX).attr("x2", annotX + 50).attr("y1", annotY).attr("y2", annotY - 30);
+            revGAnnot.append("rect").attr("class", "annotation-box").attr("x", annotX + 55).attr("y", annotY - 45).attr("width", 120).attr("height", 30);
+            revGAnnot.append("text").attr("class", "annotation").attr("x", annotX + 115).attr("y", annotY - 25).attr("text-anchor", "middle").text("Revenue ↑ +3-6%");
+
+            revGAnnot.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(revXAxis);
+            revGAnnot.append("g").attr("class", "axis").call(revYAxis);
+            revGAnnot.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Revenue (индекс)");
+            revGAnnot.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+            // CPM annotated
+            const cpmSvgAnnot = d3.select("#chart-cpm-annotated")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const cpmGAnnot = cpmSvgAnnot.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+            cpmGAnnot.append("path").datum(data.map(d => ({ day: d.day, cpm: d.controlCPM }))).attr("class", "line line-control").attr("d", cpmLine);
+            cpmGAnnot.append("path").datum(data.map(d => ({ day: d.day, cpm: d.testCPM }))).attr("class", "line line-test").attr("d", cpmLine);
+            cpmGAnnot.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(cpmXAxis);
+            cpmGAnnot.append("g").attr("class", "axis").call(cpmYAxis);
+            cpmGAnnot.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("CPM");
+            cpmGAnnot.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+            // Show Rate annotated
+            const srSvgAnnot = d3.select("#chart-showrate-annotated")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const srGAnnot = srSvgAnnot.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+            srGAnnot.append("path").datum(data.map(d => ({ day: d.day, showRate: d.controlShowRate }))).attr("class", "line line-control").attr("d", srLine);
+            srGAnnot.append("path").datum(data.map(d => ({ day: d.day, showRate: d.testShowRate }))).attr("class", "line line-test").attr("d", srLine);
+
+            const srAnnotX = xScale(7);
+            const srAnnotY = srYScale(data[6].testShowRate);
+            srGAnnot.append("line").attr("class", "annotation-line").attr("x1", srAnnotX).attr("x2", srAnnotX + 50).attr("y1", srAnnotY).attr("y2", srAnnotY - 30);
+            srGAnnot.append("rect").attr("class", "annotation-box").attr("x", srAnnotX + 55).attr("y", srAnnotY - 45).attr("width", 160).attr("height", 30);
+            srGAnnot.append("text").attr("class", "annotation").attr("x", srAnnotX + 135).attr("y", srAnnotY - 25).attr("text-anchor", "middle").text("Show Rate ↑ +25-30%");
+
+            srGAnnot.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(srXAxis);
+            srGAnnot.append("g").attr("class", "axis").call(srYAxis);
+            srGAnnot.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Show Rate");
+            srGAnnot.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+
+            // Pressure annotated
+            const pressSvgAnnot = d3.select("#chart-pressure-annotated")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const pressGAnnot = pressSvgAnnot.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+            pressGAnnot.append("path").datum(data.map(d => ({ day: d.day, pressure: d.controlPressure }))).attr("class", "line line-control").attr("d", pressLine);
+            pressGAnnot.append("path").datum(data.map(d => ({ day: d.day, pressure: d.testPressure }))).attr("class", "line line-test").attr("d", pressLine);
+            pressGAnnot.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(pressXAxis);
+            pressGAnnot.append("g").attr("class", "axis").call(pressYAxis);
+            pressGAnnot.append("text").attr("class", "axis-label").attr("x", -height / 2).attr("y", -35).attr("text-anchor", "middle").attr("transform", "rotate(-90)").text("Pressure");
+            pressGAnnot.append("text").attr("class", "axis-label").attr("x", width / 2).attr("y", height + 25).attr("text-anchor", "middle").text("Дни эксперимента");
+        }
+
+        const details = document.querySelector('details');
+        if (details) {
+            details.addEventListener('toggle', function() {
+                if (details.open && !document.getElementById('chart-revenue-annotated').hasChildNodes()) {
+                    createAnnotatedCharts();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>График без сообщения: как заголовок превращает данные в вывод</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .chart-example {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-title-bad {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .chart-title-good {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: #ffffff;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 250px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>График без сообщения: как заголовок превращает данные в вывод</h1>
+        <p class="subtitle">Один корректный график может привести к разным решениям в зависимости от того, как сформулировано сообщение.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                A/B-тест завершён. Эксперимент длился 14 дней, трафик стабильный. В тестовой группе изменили механику показа рекламы. Результаты готовы: выручка выросла на 2.7%, конверсия на 2.2%, удержание снизилось на 1.4%.
+            </p>
+            <p>
+                График построен корректно: все данные точны, масштаб адекватен, метрики согласованы. Нужно представить результаты стейкхолдерам для принятия решения: запускать в прод, откатывать или дорабатывать.
+            </p>
+            <p>
+                График экспортирован из BI-системы с заголовком по умолчанию. Все числа на месте. Но решение зависит от того, как прочитают график.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: график без сообщения</h2>
+            <p>
+                Типичный график с нейтральным заголовком: название метрики или общее описание, без указания на вывод или действие. График показывает данные, но не направляет к решению.
+            </p>
+            <p>
+                Такие заголовки обычно получаются при экспорте из BI-систем или автоматической генерации графиков. Заголовок описывает, что показано, но не говорит, что это значит для решения.
+            </p>
+
+            <div class="chart-example">
+                <div class="chart-title-bad">Revenue: Control vs Test</div>
+                <svg class="chart-svg" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="200" x2="550" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="150" x2="550" y2="150" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="100" x2="550" y2="100" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="205" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="155" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="105" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="100" y="215" font-size="10" fill="#666" text-anchor="middle">День 1</text>
+                    <text x="300" y="215" font-size="10" fill="#666" text-anchor="middle">День 7</text>
+                    <text x="500" y="215" font-size="10" fill="#666" text-anchor="middle">День 14</text>
+                    
+                    <!-- Control line (dashed, gray) -->
+                    <polyline points="100,180 150,175 200,170 250,168 300,165 350,163 400,160 450,158 500,155" 
+                              fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+                    
+                    <!-- Test line (solid, darker) -->
+                    <polyline points="100,175 150,170 200,165 250,162 300,160 350,157 400,155 450,152 500,150" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                    
+                    <!-- Legend -->
+                    <line x1="400" y1="30" x2="420" y2="30" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+                    <text x="430" y="35" font-size="11" fill="#666">Control</text>
+                    <line x1="480" y1="30" x2="500" y2="30" stroke="#1a1a1a" stroke-width="2"/>
+                    <text x="510" y="35" font-size="11" fill="#666">Test</text>
+                </svg>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример графика без сообщения: заголовок описывает данные, но не формирует вывод.
+            </p>
+            <p>
+                <strong>Почему этот график не направляет интерпретацию:</strong> Заголовок "Revenue: Control vs Test" только описывает, что показано. Читатель должен самостоятельно вычислить дельту (примерно 2.7%), оценить её значимость, учесть другие метрики (удержание упало на 1.4%), принять решение. Разные стейкхолдеры могут прийти к разным выводам: один увидит "рост есть — катим", другой — "рост мал — нужны данные", третий — "компромисс — дорабатываем".
+            </p>
+            <p>
+                <strong>Почему график не работает как аргумент:</strong> График технически корректен, но не формулирует вывод. Он не говорит, что произошло, что это значит, что делать дальше. Каждый читатель должен проделать аналитическую работу самостоятельно, что замедляет принятие решения и увеличивает риск разных интерпретаций.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такой график не формирует решение по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Заголовок не направляет интерпретацию:</strong> Нейтральный заголовок оставляет график открытым для разных интерпретаций. Один стейкхолдер может увидеть "рост 2.7% — это хорошо", другой — "рост небольшой, нужно больше данных", третий — "рост есть, но удержание упало". График показывает данные, но не помогает выбрать правильную интерпретацию для решения. Каждый читатель должен самостоятельно определить, что важно и что делать дальше.
+                </li>
+                <li>
+                    <strong>Вывод неявен и требует вычислений:</strong> Чтобы понять, какое решение принять, нужно прочитать график, вычислить дельту, сравнить с ожиданиями, оценить компромиссы. Заголовок не помогает: он не указывает на главный вывод, не выделяет ключевой сигнал, не связывает данные с действием. Читатель должен проделать всю аналитическую работу самостоятельно, что замедляет принятие решения и увеличивает риск разных интерпретаций.
+                </li>
+                <li>
+                    <strong>График не отвечает на вопрос решения:</strong> Решение требует понимания: есть ли эффект, значим ли он, какие компромиссы. График показывает траектории, но заголовок не формулирует ответ. Нужно мысленно связать визуальную форму с вопросом решения, что требует дополнительной когнитивной нагрузки. График остаётся набором данных, а не аргументом для действия.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: график с сообщением</h2>
+            <p>
+                Переработанный график: заголовок формулирует вывод, минимальное выделение делает заключение явным, сообщение направляет к решению.
+            </p>
+            <p>
+                Используются: заголовок как сообщение (формулирует главный вывод), минимальное выделение (ключевые числа или тренды), связь с действием (что делать дальше). Заголовок превращает данные в вывод.
+            </p>
+
+            <div class="chart-example">
+                <div class="chart-title-good">Выручка выросла на 2.7%, удержание снизилось на 1.4%</div>
+                <svg class="chart-svg" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="200" x2="550" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="150" x2="550" y2="150" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="100" x2="550" y2="100" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="205" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="155" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="105" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="100" y="215" font-size="10" fill="#666" text-anchor="middle">День 1</text>
+                    <text x="300" y="215" font-size="10" fill="#666" text-anchor="middle">День 7</text>
+                    <text x="500" y="215" font-size="10" fill="#666" text-anchor="middle">День 14</text>
+                    
+                    <!-- Control line (dashed, gray) -->
+                    <polyline points="100,180 150,175 200,170 250,168 300,165 350,163 400,160 450,158 500,155" 
+                              fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+                    
+                    <!-- Test line (solid, darker) -->
+                    <polyline points="100,175 150,170 200,165 250,162 300,160 350,157 400,155 450,152 500,150" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                    
+                    <!-- Delta annotation -->
+                    <line x1="500" y1="150" x2="500" y2="155" stroke="#1a1a1a" stroke-width="1.5"/>
+                    <text x="510" y="152" font-size="11" fill="#1a1a1a" font-weight="500">+2.7%</text>
+                    
+                    <!-- Legend -->
+                    <line x1="400" y1="30" x2="420" y2="30" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+                    <text x="430" y="35" font-size="11" fill="#666">Control</text>
+                    <line x1="480" y1="30" x2="500" y2="30" stroke="#1a1a1a" stroke-width="2"/>
+                    <text x="510" y="35" font-size="11" fill="#666">Test</text>
+                </svg>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанный график: заголовок формулирует вывод, сообщение направляет к решению.
+            </p>
+            <p>
+                <strong>Как заголовок работает как аргумент:</strong> Заголовок "Выручка выросла на 2.7%, удержание снизилось на 1.4%" формулирует вывод явно. Читатель сразу видит: есть эффект по выручке, но есть компромисс по удержанию. Не нужно вычислять дельту, не нужно искать другие метрики — вывод в заголовке. Решение становится очевидным: рост выручки есть, но нужно оценить компромисс с удержанием.
+            </p>
+            <p>
+                <strong>Как снижается когнитивная нагрузка:</strong> Заголовок выполняет аналитическую работу за читателя. Вместо "прочитать график → вычислить дельту → найти другие метрики → оценить компромисс → принять решение" читатель сразу видит вывод и может сосредоточиться на решении, а не на вычислениях. График становится инструментом принятия решения, а не набором данных для анализа.
+            </p>
+        </section>
+
+        <section class="comparison-block">
+            <h3>Одинаковые данные → разное решение</h3>
+            <p>
+                Данные не изменились: те же значения выручки, тот же период, те же линии. Расчёты не изменились: дельта 2.7% осталась той же. Но интерпретация изменилась, потому что изменилось сообщение.
+            </p>
+            <p>
+                В первом случае график требует аналитической работы: читатель должен сам вычислить вывод. Во втором случае график формулирует вывод явно: читатель сразу видит, что произошло и что это значит.
+            </p>
+            <p>
+                Это показывает, что заголовок — не просто подпись. Заголовок — часть аналитического рассуждения. Он определяет, как читатель интерпретирует данные и какое решение примет.
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>График работает как аргумент, когда заголовок формулирует вывод, а не описывает данные.</strong> Заголовок превращает визуальную форму в сообщение: что произошло, что это значит, что делать дальше. Минимальное выделение делает ключевой сигнал явным. График не просто показывает данные — он формирует правильную интерпретацию и направляет к решению.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>График не работает как аргумент, когда заголовок нейтрален и не направляет интерпретацию.</strong> Если заголовок только описывает, что показано, если вывод неявен и требует вычислений, если график не отвечает на вопрос решения — график остаётся набором данных, а не инструментом принятия решения, даже если все расчёты корректны.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Формулирует ли заголовок вывод, а не описывает данные?</li>
+                <li>Явно ли заключение без дополнительных вычислений?</li>
+                <li>Направляет ли график к решению, а не просто показывает траектории?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./pivot-table.html">← Предыдущий урок</a>
+            <a href="./pie-over-time.html">Следующий урок →</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цвет в таблице: когда он помогает думать, а когда мешает — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-course {
+            display: inline-block;
+            margin-left: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-course:hover {
+            color: #1a1a1a;
+        }
+
+        .module-badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .table-container {
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        table.before-table {
+            border: 1px solid #e8e8e8;
+        }
+
+        table.after-table {
+            border: 1px solid #1a1a1a;
+        }
+
+        th, td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border: 1px solid #e8e8e8;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        table.after-table th {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .before-table td.color-mixed-1 {
+            background-color: #ffcccc;
+        }
+
+        .before-table td.color-mixed-2 {
+            background-color: #ff9999;
+        }
+
+        .before-table td.color-mixed-3 {
+            background-color: #ffffcc;
+        }
+
+        .before-table td.color-mixed-4 {
+            background-color: #ccffcc;
+        }
+
+        .before-table td.color-mixed-5 {
+            background-color: #99ff99;
+        }
+
+        .before-table td.color-mixed-6 {
+            background-color: #ccccff;
+        }
+
+        .before-table td.color-mixed-7 {
+            background-color: #9999ff;
+        }
+
+        .after-table td.delta-positive-strong {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            font-weight: 500;
+        }
+
+        .after-table td.delta-positive-weak {
+            background-color: #f1f8e9;
+            color: #33691e;
+        }
+
+        .after-table td.delta-negative-strong {
+            background-color: #ffebee;
+            color: #b71c1c;
+            font-weight: 500;
+        }
+
+        .after-table td.delta-negative-weak {
+            background-color: #fce4ec;
+            color: #880e4f;
+        }
+
+        .after-table td.delta-neutral {
+            background-color: #ffffff;
+            color: #666;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .lesson-nav {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .lesson-nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .lesson-nav a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <a href="../../../../index.html" class="back-to-home">← На главную</a>
+            <a href="../../index.html" class="back-to-course">← Назад к курсу</a>
+        </div>
+
+        <div class="module-badge">Модуль 1 · Урок 1.2</div>
+
+        <header>
+            <div class="kicker">Урок 1.2 / Модуль 1</div>
+            <h1>Когда цвет в таблице помогает, а когда мешает</h1>
+            <p class="subtitle">Цвет — это не украшение. Цвет — это семантический сигнал, который должен кодировать одно ясное аналитическое значение.</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    A/B-тест завершён. Эксперимент длился 14 дней, трафик стабильный. В тестовой группе изменили механику показа рекламы. Результаты разбиты по сегментам: Desktop, Mobile, Tablet. Нужно принять решение: запускать в прод, откатывать или дорабатывать.
+                </p>
+                <p>
+                    Таблица содержит дельты по метрикам: выручка, RPM, конверсия, удержание. Стейкхолдеры должны понять, где эффект есть, а где его нет. Цвет добавлен, чтобы "сделать таблицу понятнее".
+                </p>
+                <p>
+                    Таблица экспортирована из системы аналитики с условным форматированием по умолчанию. Все числа корректны. Но решение неочевидно.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: вводящая в заблуждение цветная таблица</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Типичная цветная таблица в стиле heatmap</div>
+                    <div class="table-container">
+                        <table class="before-table">
+                            <thead>
+                                <tr>
+                                    <th>Сегмент</th>
+                                    <th>Revenue Δ</th>
+                                    <th>RPM Δ</th>
+                                    <th>Conversion Δ</th>
+                                    <th>Retention Δ</th>
+                                    <th>Shows Δ</th>
+                                    <th>CTR Δ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Desktop</td>
+                                    <td class="color-mixed-5">+3.2%</td>
+                                    <td class="color-mixed-4">+1.8%</td>
+                                    <td class="color-mixed-6">+2.5%</td>
+                                    <td class="color-mixed-2">-1.1%</td>
+                                    <td class="color-mixed-3">+0.3%</td>
+                                    <td class="color-mixed-7">+1.9%</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile</td>
+                                    <td class="color-mixed-4">+1.5%</td>
+                                    <td class="color-mixed-3">+0.2%</td>
+                                    <td class="color-mixed-5">+2.8%</td>
+                                    <td class="color-mixed-1">-2.3%</td>
+                                    <td class="color-mixed-2">-0.8%</td>
+                                    <td class="color-mixed-6">+1.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Tablet</td>
+                                    <td class="color-mixed-2">-0.5%</td>
+                                    <td class="color-mixed-1">-1.2%</td>
+                                    <td class="color-mixed-3">+0.1%</td>
+                                    <td class="color-mixed-4">+0.8%</td>
+                                    <td class="color-mixed-1">-2.1%</td>
+                                    <td class="color-mixed-4">+0.5%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="visual-block-caption">
+                        Пример проблемной цветной таблицы: цвет применён ко всем метрикам, семантика неясна, сравнение затруднено.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Типичная цветная таблица в стиле heatmap: много ячеек окрашено, цвет применён к нескольким метрикам одновременно, цветовая шкала неявная или неясная, положительные и отрицательные эффекты визуально смешаны. Такие таблицы обычно получаются при использовании стандартных настроек условного форматирования в системах аналитики или электронных таблицах. Цвет применяется автоматически ко всем числовым значениям без разбора их аналитического смысла.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Цветовая перегрузка мешает быстрому сравнению</h3>
+                        <p>
+                            Когда цвет применён ко многим ячейкам одновременно, глаз не может быстро выделить значимые различия. Все ячейки привлекают внимание одинаково, независимо от того, важны ли они для решения. Чтобы найти сегменты с реальным эффектом, нужно последовательно сканировать каждую строку и столбец, сравнивая не только числа, но и оттенки цвета, что увеличивает когнитивную нагрузку. Невозможно быстро определить, где эффект значим, где он положительный, где отрицательный.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Смешанная семантика цвета путает интерпретацию</h3>
+                        <p>
+                            В одной таблице цвет может означать и "большое значение", и "положительное изменение", и "отрицательное изменение", и просто "отличается от среднего". Невозможно понять, что именно кодирует цвет в каждой конкретной ячейке: величину эффекта, его знак, или просто числовое значение. Положительные и отрицательные дельты могут быть окрашены в похожие оттенки, что делает невозможным быстрое различение успешных и проблемных сегментов. Цвет становится шумом, а не сигналом.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Невозможно извлечь ясное решение из таблицы</h3>
+                        <p>
+                            Решение требует понимания: в каких сегментах эффект значим, где он положительный, где отрицательный, где его нет. Цветная таблица показывает все значения, но не структурирует их так, чтобы ответ на вопрос решения был виден сразу. Нужно мысленно перегруппировать данные по сегментам, отделить значимые эффекты от шума, сопоставить знаки изменений — всё это замедляет принятие решения и увеличивает риск ошибки интерпретации. Таблица блокирует принятие решения, даже если все числа корректны.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: цвет как аналитический акцент</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Переработанная таблица с ясной семантикой цвета</div>
+                    <div class="table-container">
+                        <table class="after-table">
+                            <thead>
+                                <tr>
+                                    <th>Сегмент</th>
+                                    <th>Revenue Δ</th>
+                                    <th>RPM Δ</th>
+                                    <th>Conversion Δ</th>
+                                    <th>Retention Δ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Desktop</strong></td>
+                                    <td class="delta-positive-strong">+3.2%</td>
+                                    <td class="delta-positive-weak">+1.8%</td>
+                                    <td class="delta-positive-strong">+2.5%</td>
+                                    <td class="delta-negative-weak">-1.1%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mobile</strong></td>
+                                    <td class="delta-positive-weak">+1.5%</td>
+                                    <td class="delta-neutral">+0.2%</td>
+                                    <td class="delta-positive-strong">+2.8%</td>
+                                    <td class="delta-negative-strong">-2.3%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tablet</strong></td>
+                                    <td class="delta-negative-weak">-0.5%</td>
+                                    <td class="delta-negative-weak">-1.2%</td>
+                                    <td class="delta-neutral">+0.1%</td>
+                                    <td class="delta-positive-weak">+0.8%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="visual-block-caption">
+                        Переработанная таблица: цвет кодирует только дельту, семантика ясна, значимые эффекты выделены, решение видно сразу.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Переработанная таблица: цвет применён только к одному аналитическому измерению (дельта), цветовая шкала имеет ясное, фиксированное значение, нейтральные или незначимые значения визуально спокойны, внимание направлено на различия, требующие действия. Используется минимальное количество цвета, семантика цвета согласована, поддержка сравнения и ранжирования. Цвет кодирует только знак и величину дельты, не отвлекая на другие измерения.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Блокировка принятия решения из-за цветовой перегрузки и смешанной семантики, которая мешает быстро выделить значимые различия. Риск ошибки интерпретации из-за невозможности понять, что именно кодирует цвет в каждой ячейке. Замедление принятия решения из-за необходимости мысленно перегруппировать данные и отделить значимые эффекты от шума.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Быстрое определение сегментов с реальным эффектом за один взгляд благодаря ясной семантике цвета, которая кодирует только дельту. Снижение риска ошибки благодаря фиксированному значению цветовой шкалы, которая позволяет быстро различать успешные и проблемные сегменты. Уверенность в решении благодаря очевидности того, где действие требуется, а где нет.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Цветная таблица работает, когда цвет кодирует ровно одно аналитическое значение. Цвет применяется только к одному измерению (например, дельта), цветовая шкала имеет фиксированное значение (например, зелёный = положительная дельта, красный = отрицательная, белый = нейтральная), нейтральные значения визуально спокойны. Таблица позволяет за один взгляд определить, где эффект есть, где его нет, где требуется действие. Цветная таблица не работает, когда цвет применяется к нескольким измерениям одновременно. Если цвет означает и величину, и знак, и просто "отличается", если положительные и отрицательные эффекты визуально смешаны, если цветовая шкала неявна — таблица блокирует принятие решения, даже если все числа корректны. Цвет становится шумом, а не сигналом.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Кодирует ли цвет ровно одно аналитическое значение?</li>
+                    <li>Можно ли определить сегменты с реальным эффектом за 10 секунд?</li>
+                    <li>Понятно ли, где действие не требуется?</li>
+                </ul>
+            </section>
+        </main>
+
+        <nav class="lesson-nav">
+            <a href="./01-ab-test-table.html">← Предыдущий урок</a>
+            <a href="./03-pivot-table.html">Следующий урок →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus: Математика монетизации</title>
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .lead {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .route-map {
+            margin-bottom: 4rem;
+        }
+
+        .route-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (min-width: 768px) {
+            .route-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .route-grid {
+                grid-template-columns: repeat(8, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        .route-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: border-color 0.2s ease;
+            background: #ffffff;
+        }
+
+        .route-card:hover {
+            border-color: #999;
+        }
+
+        .route-card-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .route-card-tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .route-card-description {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        .route-arrow {
+            display: none;
+            font-size: 1.5rem;
+            color: #ccc;
+            text-align: center;
+            align-self: center;
+            padding: 0 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .route-arrow {
+                display: block;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .route-arrow {
+                display: block;
+            }
+        }
+
+        .route-arrow-mobile {
+            display: block;
+            font-size: 1.5rem;
+            color: #ccc;
+            text-align: center;
+            padding: 0.5rem 0;
+        }
+
+        @media (min-width: 768px) {
+            .route-arrow-mobile {
+                display: none;
+            }
+        }
+
+        .capabilities-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 4rem;
+            max-width: 700px;
+        }
+
+        .capabilities-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .capabilities-panel p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .capabilities-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #888;
+            margin-top: 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .back-link.secondary {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 1rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        /* Special layout for wide screens: inline with arrows */
+        @media (min-width: 1200px) {
+            .route-map-inline {
+                display: flex;
+                align-items: flex-start;
+                gap: 0;
+            }
+
+            .route-map-inline .route-card {
+                flex: 1;
+            }
+
+            .route-map-inline .route-arrow {
+                flex: 0 0 auto;
+                padding: 0 0.75rem;
+                margin-top: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <header>
+            <div class="kicker">Основной курс</div>
+            <h1>Syllabus: Математика монетизации</h1>
+        <p class="subtitle">Маршрут по главам: от языка к системе.</p>
+
+        <div class="lead">
+            <p>
+                Это рекомендуемый путь для изучения механики монетизации и экспериментов.
+            </p>
+        </div>
+
+        <p class="anchor-sentence">
+            Сначала определяем язык. Потом — учимся читать систему.
+        </p>
+
+        <div class="route-map">
+            <div class="route-map-inline">
+                <a href="./metrics/index.html" class="route-card">
+                    <div class="route-card-title">Метрики</div>
+                    <div class="route-card-tagline">Start</div>
+                    <div class="route-card-description">
+                        Определения, декомпозиция, калькуляторы 'за счёт чего'.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./pressure/index.html" class="route-card">
+                    <div class="route-card-title">Давление</div>
+                    <div class="route-card-tagline">Mechanics</div>
+                    <div class="route-card-description">
+                        Насыщение, пороги, скрытая деградация механики.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./time/index.html" class="route-card">
+                    <div class="route-card-title">Время</div>
+                    <div class="route-card-tagline">Lags</div>
+                    <div class="route-card-description">
+                        Лаги, тишина, дрейф, смена режима, окно наблюдения.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./inventory/index.html" class="route-card">
+                    <div class="route-card-title">Инвентарь</div>
+                    <div class="route-card-tagline">Opportunities</div>
+                    <div class="route-card-description">
+                        Цепочка монетизации, качество, скрытый инвентарь, усталость.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./experiments/index.html" class="route-card">
+                    <div class="route-card-title">Эксперименты</div>
+                    <div class="route-card-tagline">Patterns</div>
+                    <div class="route-card-description">
+                        Паттерны воздействия + треки: давление/время/решения.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./market/index.html" class="route-card">
+                    <div class="route-card-title">Рынок</div>
+                    <div class="route-card-tagline">Price & Demand</div>
+                    <div class="route-card-description">
+                        Цена, спрос, конкуренция, ограничения, сезонность, эластичность.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./operating/index.html" class="route-card">
+                    <div class="route-card-title">Operating</div>
+                    <div class="route-card-tagline">Practice</div>
+                    <div class="route-card-description">
+                        Сигналы, алерты, инциденты, плейбуки, ритм контроля.
+                    </div>
+                </a>
+                <div class="route-arrow">→</div>
+                <div class="route-arrow-mobile">↓</div>
+
+                <a href="./experiments/anatomy-of-experiment.html" class="route-card">
+                    <div class="route-card-title">Эталонный разбор</div>
+                    <div class="route-card-tagline">Flagship</div>
+                    <div class="route-card-description">
+                        Один эксперимент как траектория причин.
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="capabilities-panel">
+            <div class="capabilities-title">Что вы сможете делать после маршрута</div>
+            <p>Декомпозировать выручку на механизм и цену.</p>
+            <p>Видеть насыщение раньше, чем падают деньги.</p>
+            <p>Отличать лаг от эффекта.</p>
+            <p>Понимать цепочку монетизации и где теряется инвентарь.</p>
+            <p>Читать эксперимент как траекторию, а не как дельту.</p>
+            <p>Эксплуатировать систему: сигналы, алерты, инциденты, плейбуки.</p>
+            <p>Принимать решения под неопределённостью с минимальным будущим сожалением.</p>
+            <p>Это переносимо между продуктами и рынками.</p>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px; max-width: 700px;">
+            <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; margin-bottom: 1rem;">
+                Это маршрут по главам курса. Для полного оглавления с прямыми ссылками на все уроки перейдите на главную страницу курса.
+            </p>
+            <a href="./index.html" class="back-link" style="font-weight: 500;">Открыть оглавление курса →</a>
+        </div>
+        <div class="footer" style="margin-top: 2rem;">
+            <a href="./index.html" class="back-link">← к курсу</a>
+            <p class="footer-note" style="margin-top: 1rem;">Маршрут важнее слайда.</p>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

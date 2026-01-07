@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Давление ≠ количество рекламы</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .regime-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .regime-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 3px;
+        }
+
+        .regime-button:hover {
+            border-color: #999;
+        }
+
+        .regime-button.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .point {
+            transition: cx 0.45s ease, cy 0.45s ease;
+        }
+
+        .point-regime-a {
+            fill: #1f2a37;
+            fill-opacity: 0.3;
+            stroke: #1f2a37;
+            stroke-width: 1.5;
+        }
+
+        .point-regime-b {
+            fill: #999;
+            fill-opacity: 0.4;
+            stroke: #666;
+            stroke-width: 1.5;
+        }
+
+        .annotation-text {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .annotation-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.6;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .read-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .read-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .read-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .read-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #999;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Давление ≠ количество рекламы</h1>
+        <p class="subtitle">Сила, а не счётчик.</p>
+        <p class="insight">Одинаковый ad load может давать разный эффект — потому что давление живёт в механике.</p>
+
+        <p class="explanation">
+            Количество рекламы — это сколько единиц вы попытались показать. Давление — это насколько это меняет траекторию пользователя и конверсию в показ.
+        </p>
+
+        <p class="thesis">
+            <strong>Давление проявляется в падении конверсии в показ раньше, чем в выручке.</strong>
+        </p>
+
+        <p class="explanation">
+            Можно увеличить ad load и не увеличить давление, если вы открыли новый reachable инвентарь. Можно не менять ad load, но увеличить давление, если показы стали чаще и ближе друг к другу.
+        </p>
+
+        <div class="chart-container">
+            <div class="regime-toggle">
+                <button class="regime-button active" data-regime="A">Режим A: открыли инвентарь</button>
+                <button class="regime-button" data-regime="B">Режим B: сжали внимание</button>
+            </div>
+            <svg id="chart"></svg>
+            <p class="chart-caption">
+                Давление — это не X. Это то, что происходит с Y.
+            </p>
+            <div class="read-panel">
+                <div class="read-panel-title">Как читать давление</div>
+                <p>Смотрите на show conversion / show rate.</p>
+                <p>Смотрите на частоту и расстояние между показами.</p>
+                <p>Смотрите на конкуренцию форматов и видимость.</p>
+                <p>Ad load — это отчёт. Давление — это поведение.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Давление — это то, как система перестраивает вероятности: дойдёт ли ответ до показа, как распределится внимание, насколько быстро наступит усталость.
+        </p>
+
+        <p class="interpretation">
+            Поэтому давление лучше искать в ранних сигналах: show rate, частоте, насыщении и конкуренции. Выручка придёт позже.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Давление — причина. Ad load — след.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к давлению</a>
+            <p class="footer-note">Давление — это изменение вероятностей, а не счётчик.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate deterministic datasets
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        const datasetA = [];
+        const datasetB = [];
+        const nPoints = 40;
+
+        for (let i = 0; i < nPoints; i++) {
+            const t = i / (nPoints - 1);
+            const adLoad = 0.45 + 0.45 * t;
+            
+            // Jitter
+            const xJitter = 0.008 * Math.sin(i * 1.3);
+            const yJitterA = 0.006 * Math.cos(i * 1.1);
+            const yJitterB = 0.006 * Math.cos(i * 1.2);
+
+            // Dataset A: opened inventory (low pressure)
+            const showA = 0.84 - 0.03 * (adLoad - 0.45) + 0.01 * Math.sin(i * 0.7);
+            datasetA.push({
+                adLoad: clamp(adLoad + xJitter, 0.40, 0.95),
+                showConv: clamp(showA + yJitterA, 0.75, 0.88)
+            });
+
+            // Dataset B: compressed attention (high pressure)
+            const threshold = 0.03 * (1 / (1 + Math.exp(-(i - 22) / 3)));
+            const showB = 0.78 - 0.10 * (adLoad - 0.45) - threshold + 0.008 * Math.sin(i * 0.6);
+            datasetB.push({
+                adLoad: clamp(adLoad + xJitter, 0.40, 0.95),
+                showConv: clamp(showB + yJitterB, 0.55, 0.82)
+            });
+        }
+
+        // Set up dimensions
+        const margin = { top: 40, right: 80, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0.40, 0.95])
+            .range([0, width]);
+
+        const yScale = d3.scaleLinear()
+            .domain([0.55, 0.90])
+            .range([height, 0]);
+
+        // Current regime
+        let currentRegime = "A";
+
+        function updateChart(regime) {
+            const data = regime === "A" ? datasetA : datasetB;
+
+            // Update points
+            const points = g.selectAll(".point")
+                .data(data, (d, i) => i);
+
+            // Enter
+            const pointsEnter = points.enter()
+                .append("circle")
+                .attr("class", d => `point point-regime-${regime.toLowerCase()}`)
+                .attr("r", 3.5)
+                .attr("cx", d => xScale(d.adLoad))
+                .attr("cy", d => yScale(d.showConv));
+
+            // Update
+            points.merge(pointsEnter)
+                .transition()
+                .duration(450)
+                .attr("cx", d => xScale(d.adLoad))
+                .attr("cy", d => yScale(d.showConv));
+
+            // Exit
+            points.exit().remove();
+        }
+
+        // Initial render
+        updateChart("A");
+
+        // Add annotations
+        const refX = xScale(0.7);
+        g.append("line")
+            .attr("class", "annotation-line")
+            .attr("x1", refX - 30)
+            .attr("x2", refX + 30)
+            .attr("y1", height + 10)
+            .attr("y2", height + 10);
+
+        g.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", refX)
+            .attr("y", height + 25)
+            .attr("text-anchor", "middle")
+            .text("один и тот же ad load");
+
+        g.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", width - 5)
+            .attr("y", yScale(0.85) - 5)
+            .attr("text-anchor", "end")
+            .text("низкое давление");
+
+        g.append("text")
+            .attr("class", "annotation-text")
+            .attr("x", width - 5)
+            .attr("y", yScale(0.65) + 5)
+            .attr("text-anchor", "end")
+            .text("высокое давление");
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(4)
+            .tickValues([0.4, 0.6, 0.8, 0.9])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        // Y-axis
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(4)
+            .tickValues([0.6, 0.7, 0.8, 0.9])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        // Axis labels
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("Ad load");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Show conversion");
+
+        // Toggle buttons
+        d3.selectAll(".regime-button").on("click", function() {
+            const regime = this.getAttribute("data-regime");
+            currentRegime = regime;
+            
+            d3.selectAll(".regime-button")
+                .classed("active", false);
+            
+            d3.select(this)
+                .classed("active", true);
+            
+            updateChart(regime);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

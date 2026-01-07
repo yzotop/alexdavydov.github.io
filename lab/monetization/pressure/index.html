@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Давление и насыщение</title>
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .concept-block {
+            max-width: 700px;
+            margin-bottom: 4rem;
+            padding: 1.5rem;
+            border-left: 2px solid #e8e8e8;
+        }
+
+        .concept-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .concept-block strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .exhibits {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .exhibits {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .exhibit-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: border-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .exhibit-card:hover {
+            border-color: #999;
+        }
+
+        .exhibit-card.coming-next {
+            opacity: 0.7;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .exhibit-card.coming-next:hover {
+            border-color: #e0e0e0;
+        }
+
+        .exhibit-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .exhibit-tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .exhibit-description {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .coming-next-label {
+            font-size: 0.8rem;
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .closing {
+            max-width: 700px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 1rem;">
+            <a href="../index.html" class="back-link">← к курсу</a>
+        </div>
+        <h1>Давление и насыщение</h1>
+        <p class="subtitle">Почему больше — не значит лучше.</p>
+
+        <div class="intro">
+            <p>
+                В рекламных системах рост выручки часто пытаются получить через увеличение давления: больше показов, плотнее размещение, агрессивнее частота.
+            </p>
+            <p>
+                Но давление — это не количество рекламы. Это сила, с которой система меняет поведение пользователей, конверсию в показ и доступность инвентаря.
+            </p>
+        </div>
+
+        <p class="anchor-sentence">
+            Давление меняет траектории раньше, чем деньги.
+        </p>
+
+        <div class="concept-block">
+            <p>
+                Давление: влияет на show rate раньше CPM, меняет конкуренцию форматов, накапливает усталость, почти всегда имеет нелинейный эффект.
+            </p>
+            <p>
+                <strong>Saturation — это не точка. Это процесс.</strong>
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Уроки раздела</h2>
+        </div>
+        <div class="exhibits">
+            <a href="./pressure-is-not-adload.html" class="exhibit-card">
+                <div class="exhibit-title">Давление ≠ количество рекламы</div>
+                <div class="exhibit-tagline">Сила, а не счётчик.</div>
+                <div class="exhibit-description">Почему одинаковый ad load может иметь разный эффект и как давление проявляется через метрики.</div>
+            </a>
+
+            <a href="./saturation.html" class="exhibit-card">
+                <div class="exhibit-title">Saturation</div>
+                <div class="exhibit-tagline">Убывающая отдача.</div>
+                <div class="exhibit-description">Почему каждый следующий показ стоит дороже предыдущего.</div>
+            </a>
+
+            <a href="./hidden-saturation.html" class="exhibit-card">
+                <div class="exhibit-title">Hidden Saturation</div>
+                <div class="exhibit-tagline">Когда деньги ещё растут.</div>
+                <div class="exhibit-description">Как система деградирует до того, как это видно в выручке.</div>
+            </a>
+
+            <a href="./thresholds.html" class="exhibit-card">
+                <div class="exhibit-title">Thresholds</div>
+                <div class="exhibit-tagline">Пороги.</div>
+                <div class="exhibit-description">Почему небольшие изменения внезапно ломают систему.</div>
+            </a>
+
+            <a href="./intervention.html" class="exhibit-card">
+                <div class="exhibit-title">Intervention</div>
+                <div class="exhibit-tagline">Что можно и что нельзя делать.</div>
+                <div class="exhibit-description">Как вмешиваться, когда система близка к насыщению.</div>
+            </a>
+        </div>
+
+        <p class="closing">
+            Давление — основной источник роста и основной источник риска в рекламной монетизации. Понимание saturation важнее оптимизации метрик.
+        </p>
+
+        <p class="footer-note" style="margin-top: 1rem; margin-bottom: 0;">
+            Система устаёт раньше отчётов.
+        </p>
+
+            </main>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e8e8e8;">
+            <p class="footer-note" style="font-size: 0.85rem; color: #999; font-style: italic;">Давление — это цена краткосрочного роста.</p>
+        </footer>
+    </div>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

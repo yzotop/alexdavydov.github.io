@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метрики монетизации</title>
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
+        .intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .anchor-sentence {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+        }
+
+        .metric-map {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .metric-map {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .metric-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-box {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            background: #fafafa;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .metric-arrow {
+            width: 2px;
+            height: 20px;
+            background: #999;
+            margin: 0 auto;
+        }
+
+        .metric-explanation {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .metric-explanation strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .tier-section {
+            margin-bottom: 3rem;
+        }
+
+        .tier-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .tier-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid #e8e8e8;
+        }
+
+        .tier-metrics {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .exhibits {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .exhibits {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .exhibit-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: border-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .exhibit-card:hover {
+            border-color: #999;
+        }
+
+        .exhibit-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .exhibit-tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .exhibit-description {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .closing {
+            max-width: 700px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .emphasis {
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 1rem;">
+            <a href="../index.html" class="back-link">← к курсу</a>
+        </div>
+        <h1>Метрики монетизации</h1>
+        <p class="subtitle">Как читать деньги в рекламной системе.</p>
+
+        
+                <h1>Метрики монетизации</h1>
+                <p class="subtitle">Как читать деньги в рекламной системе.</p>
+
+        <div class="intro">
+            <p>
+                Метрики монетизации — это проекции одной и той же системы на разные оси. Они не объясняют выручку по отдельности, но вместе дают карту рычагов.
+            </p>
+            <p>
+                Здесь мы фиксируем базовые определения и связи: что именно считается, из каких событий/счетчиков это собирается, и какие метрики раньше сигнализируют о проблемах.
+            </p>
+        </div>
+
+        <p class="anchor-sentence">
+            Метрики — тени структуры. Структура важнее.
+        </p>
+
+        <div class="section">
+            <h2 class="section-title">Карта метрик</h2>
+            <div class="metric-map">
+                <div class="metric-flow">
+                    <div class="metric-box">Users</div>
+                    <div class="metric-arrow"></div>
+                    <div class="metric-box">Inventory</div>
+                    <div class="metric-arrow"></div>
+                    <div class="metric-box">Show Rate</div>
+                    <div class="metric-arrow"></div>
+                    <div class="metric-box">CTR</div>
+                    <div class="metric-arrow"></div>
+                    <div class="metric-box">CPM</div>
+                    <div class="metric-arrow"></div>
+                    <div class="metric-box">Revenue</div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
+                        <div class="metric-box" style="font-size: 0.85rem; opacity: 0.8;">RPM / ARPU</div>
+                        <div style="font-size: 0.75rem; color: #999; text-align: center; margin-top: 0.5rem;">views of Revenue</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="metric-explanation">
+                        <strong>Users:</strong> сколько людей приносит внимание
+                    </div>
+                    <div class="metric-explanation">
+                        <strong>Inventory:</strong> сколько потенциальных мест для показа
+                    </div>
+                    <div class="metric-explanation">
+                        <strong>Show Rate:</strong> доля монетизируемых показов среди возможностей
+                    </div>
+                    <div class="metric-explanation">
+                        <strong>CTR:</strong> как внимание распределяется между показами
+                    </div>
+                    <div class="metric-explanation">
+                        <strong>CPM:</strong> цена за внимание в аукционе/продаже
+                    </div>
+                    <div class="metric-explanation">
+                        <strong>Revenue:</strong> итоговый поток ценности
+                    </div>
+                </div>
+            </div>
+            <p class="emphasis" style="max-width: 700px; margin-top: 1.5rem;">
+                Выручка появляется не из CPM. Она появляется из траектории системы.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Что важнее и почему</h2>
+            
+            <div class="tier-section">
+                <div class="tier-title">Ранние сигналы</div>
+                <div class="tier-content">
+                    <div class="tier-metrics">Show Rate, Fill Rate, Pressure / ad load</div>
+                    Эти метрики часто реагируют раньше денег и помогают увидеть насыщение.
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-title">Рынок и внимание</div>
+                <div class="tier-content">
+                    <div class="tier-metrics">CTR, CPM</div>
+                    Показывают, сколько внимания есть и по какой цене оно продаётся.
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-title">Итог</div>
+                <div class="tier-content">
+                    <div class="tier-metrics">Revenue, RPM, ARPU</div>
+                    Полезны для контроля результата, но часто запаздывают.
+                </div>
+            </div>
+
+            <p class="anchor-sentence" style="margin-top: 2rem;">
+                Одна метрика почти всегда лжёт. Система лжёт реже.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Уроки раздела</h2>
+            <div class="exhibits">
+                <a href="./revenue.html" class="exhibit-card">
+                    <div class="exhibit-title">Выручка</div>
+                    <div class="exhibit-tagline">Итог, а не рычаг.</div>
+                    <div class="exhibit-description">Что такое выручка, почему она запаздывает, и что скрывает.</div>
+                </a>
+
+                <a href="./cpm.html" class="exhibit-card">
+                    <div class="exhibit-title">CPM</div>
+                    <div class="exhibit-tagline">Цена и её иллюзии.</div>
+                    <div class="exhibit-description">Почему CPM может расти, когда система деградирует.</div>
+                </a>
+
+                <a href="./show-fill-rate.html" class="exhibit-card">
+                    <div class="exhibit-title">Show rate & Fill rate</div>
+                    <div class="exhibit-tagline">Давление и доступность.</div>
+                    <div class="exhibit-description">Ранние сигналы: где система перестаёт монетизироваться.</div>
+                </a>
+
+                <a href="./metric-decomposition.html" class="exhibit-card">
+                    <div class="exhibit-title">Разложение выручки</div>
+                    <div class="exhibit-tagline">Карта рычагов.</div>
+                    <div class="exhibit-description">Как понимать вклад пользователей, показов, внимания и цены.</div>
+                </a>
+
+                <a href="./calculators.html" class="exhibit-card">
+                    <div class="exhibit-title">Калькуляторы</div>
+                    <div class="exhibit-tagline">Покрутить систему.</div>
+                    <div class="exhibit-description">Интерактивные примеры расчётов и сценарии.</div>
+                </a>
+            </div>
+        </div>
+
+            </main>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e8e8e8;">
+            <p class="footer-note" style="font-size: 0.85rem; color: #999; font-style: italic;">Монетизация — это динамика, а не таблица.</p>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

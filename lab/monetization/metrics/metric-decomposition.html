@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Разложение выручки</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .scenario-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .scenario-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 3px;
+        }
+
+        .scenario-button:hover {
+            border-color: #999;
+        }
+
+        .scenario-button.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .bar {
+            transition: x 0.45s ease, width 0.45s ease;
+        }
+
+        .bar-positive {
+            fill: #1f2a37;
+        }
+
+        .bar-negative {
+            fill: #bbb;
+            opacity: 0.6;
+        }
+
+        .bar-total {
+            fill: #2f3e4e;
+            stroke: #1a1a1a;
+            stroke-width: 1.5;
+        }
+
+        .bar-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+
+        .component-label {
+            font-size: 10px;
+            fill: #2c3e50;
+            font-weight: 400;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .system-costs {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cost-item {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .cost-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Разложение выручки</h1>
+        <p class="subtitle">Карта рычагов, а не формула.</p>
+        <p class="insight">Чтобы понять, почему изменилась выручка, её нужно разложить на механизмы.</p>
+
+        <p class="explanation">
+            Выручка — итог. Но итог можно разложить на компоненты: пользователи, достижимый инвентарь, конверсия в показ, внимание и цена.
+        </p>
+
+        <p class="thesis">
+            <strong>Один и тот же рост выручки может быть достигнут разными путями — с разной ценой для системы.</strong>
+        </p>
+
+        <p class="explanation">
+            Ниже — разложение "до/после", где видно, какой вклад дал каждый компонент.
+        </p>
+
+        <div class="chart-container">
+            <div class="scenario-toggle">
+                <button class="scenario-button active" data-scenario="A">Сценарий A: рост из-за показов</button>
+                <button class="scenario-button" data-scenario="B">Сценарий B: рост из-за цены</button>
+            </div>
+            <svg id="chart"></svg>
+            <p class="chart-caption">
+                Разные пути к выручке имеют разные побочные эффекты.
+            </p>
+            <div class="system-costs" id="system-costs">
+                <div class="cost-item">
+                    <strong>Риск насыщения:</strong> <span id="risk">medium</span>
+                </div>
+                <div class="cost-item">
+                    <strong>Опциональность:</strong> <span id="optionality">wide</span>
+                </div>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Сценарий A увеличивает выручку через достижимые показы и конверсию в показ. Это обычно ближе к "здоровому" росту.
+        </p>
+
+        <p class="interpretation">
+            Сценарий B делает выручку через цену, пока механика деградирует. Это может работать коротко, но повышает риск насыщения.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Важно не только "сколько". Важно — "за счёт чего".
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к метрикам</a>
+            <p class="footer-note">Разложение — это карта рычагов.</p>
+        </div>
+    </div>
+
+    <script>
+        // Scenario data
+        const scenarios = {
+            A: {
+                components: [
+                    { name: "Пользователи", value: 0.8 },
+                    { name: "Инвентарь", value: 0.6 },
+                    { name: "Конверсия в показ", value: 2.7 },
+                    { name: "Внимание", value: 0.4 },
+                    { name: "Цена", value: 0.2 }
+                ],
+                risk: "medium",
+                optionality: "wide"
+            },
+            B: {
+                components: [
+                    { name: "Пользователи", value: 0.3 },
+                    { name: "Инвентарь", value: -0.7 },
+                    { name: "Конверсия в показ", value: -1.4 },
+                    { name: "Внимание", value: -0.2 },
+                    { name: "Цена", value: 6.1 }
+                ],
+                risk: "high",
+                optionality: "narrow"
+            }
+        };
+
+        // Calculate totals
+        scenarios.A.total = scenarios.A.components.reduce((sum, c) => sum + c.value, 0);
+        scenarios.B.total = scenarios.B.components.reduce((sum, c) => sum + c.value, 0);
+
+        // Set up dimensions
+        const margin = { top: 40, right: 80, bottom: 60, left: 120 };
+        const width = 800 - margin.left - margin.right;
+        const height = 320 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([-6, 6])
+            .range([0, width]);
+
+        const yScale = d3.scaleBand()
+            .domain([...scenarios.A.components.map((_, i) => i), "total"])
+            .range([0, height])
+            .padding(0.3);
+
+        // Zero line
+        const zeroX = xScale(0);
+        g.append("line")
+            .attr("x1", zeroX)
+            .attr("x2", zeroX)
+            .attr("y1", 0)
+            .attr("y2", height)
+            .attr("stroke", "#ddd")
+            .attr("stroke-width", 1);
+
+        // Current scenario
+        let currentScenario = "A";
+
+        function updateChart(scenario) {
+            const data = scenarios[scenario];
+            const allItems = [...data.components, { name: "Total", value: data.total }];
+
+            // Update bars
+            const bars = g.selectAll(".bar")
+                .data(allItems, (d, i) => i);
+
+            // Enter
+            const barsEnter = bars.enter()
+                .append("g")
+                .attr("class", "bar");
+
+            barsEnter.append("rect")
+                .attr("class", d => {
+                    if (d.name === "Total") return "bar-total";
+                    return d.value >= 0 ? "bar-positive" : "bar-negative";
+                })
+                .attr("y", (d, i) => yScale(i))
+                .attr("height", yScale.bandwidth())
+                .attr("x", d => d.value >= 0 ? zeroX : xScale(d.value))
+                .attr("width", d => Math.abs(xScale(d.value) - zeroX));
+
+            barsEnter.append("text")
+                .attr("class", "bar-label")
+                .attr("x", d => d.value >= 0 ? xScale(d.value) + 5 : xScale(d.value) - 5)
+                .attr("y", (d, i) => yScale(i) + yScale.bandwidth() / 2)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", d => d.value >= 0 ? "start" : "end")
+                .text(d => `${d.value >= 0 ? "+" : ""}${d.value.toFixed(1)} pp`);
+
+            barsEnter.append("text")
+                .attr("class", "component-label")
+                .attr("x", -5)
+                .attr("y", (d, i) => yScale(i) + yScale.bandwidth() / 2)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", "end")
+                .text(d => d.name);
+
+            // Update
+            bars.select("rect")
+                .transition()
+                .duration(450)
+                .attr("class", d => {
+                    if (d.name === "Total") return "bar-total";
+                    return d.value >= 0 ? "bar-positive" : "bar-negative";
+                })
+                .attr("x", d => d.value >= 0 ? zeroX : xScale(d.value))
+                .attr("width", d => Math.abs(xScale(d.value) - zeroX));
+
+            bars.select(".bar-label")
+                .transition()
+                .duration(450)
+                .attr("x", d => d.value >= 0 ? xScale(d.value) + 5 : xScale(d.value) - 5)
+                .attr("text-anchor", d => d.value >= 0 ? "start" : "end")
+                .text(d => `${d.value >= 0 ? "+" : ""}${d.value.toFixed(1)} pp`);
+
+            // Exit
+            bars.exit().remove();
+
+            // Update system costs
+            d3.select("#risk").text(data.risk);
+            d3.select("#optionality").text(data.optionality);
+        }
+
+        // Initial render
+        updateChart("A");
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickValues([-6, -3, 0, 3, 6])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 35)
+            .attr("text-anchor", "middle")
+            .text("вклад (процентные пункты)");
+
+        // Toggle buttons
+        d3.selectAll(".scenario-button").on("click", function() {
+            const scenario = this.getAttribute("data-scenario");
+            currentScenario = scenario;
+            
+            d3.selectAll(".scenario-button")
+                .classed("active", false);
+            
+            d3.select(this)
+                .classed("active", true);
+            
+            updateChart(scenario);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

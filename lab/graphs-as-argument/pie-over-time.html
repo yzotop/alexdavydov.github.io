@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доли во времени: почему pie ломает сравнение и что делать вместо</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .chart-example {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: #ffffff;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .chart-small {
+            height: 150px;
+            background: #ffffff;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .pie-svg {
+            width: 100%;
+            height: 180px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .stacked-area-svg {
+            width: 100%;
+            height: 250px;
+            background: #ffffff;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .comparison-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Доли во времени: почему pie ломает сравнение и что делать вместо</h1>
+        <p class="subtitle">Доли, показанные как несколько pie-графиков во времени, не поддерживают временное сравнение и принятие решений.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                Нужно показать, как изменилось распределение выручки по источникам трафика за последние 3 месяца: Organic, Paid, Direct. Данные есть по каждому месяцу, доли в процентах рассчитаны корректно. Абсолютные значения менее важны, чем относительные доли.
+            </p>
+            <p>
+                Решение зависит от понимания тренда и перераспределения: растёт ли доля Paid, падает ли Organic, стабильны ли доли или есть сдвиги. Нужно увидеть динамику и перераспределение, а не просто текущее состояние. Аналитик должен обнаружить тренды и перераспределение долей.
+            </p>
+            <p>
+                Графики построены как три отдельных pie-чарта, по одному на месяц. Все числа точны. Но сравнение затруднено.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: pie-графики во времени</h2>
+            <p>
+                Типичное представление: несколько pie-графиков, расположенных рядом или последовательно, каждый показывает доли на конкретный момент времени. Порядок графиков соответствует времени, но сравнение требует визуального сопоставления углов и площадей.
+            </p>
+            <p>
+                Такие графики обычно получаются при автоматической генерации отчётов или использовании стандартных шаблонов визуализации. Каждый pie-график корректен сам по себе, но структура не поддерживает временное сравнение.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #666;">BEFORE: Pie-графики во времени</div>
+                <div class="charts-row">
+                    <div>
+                        <div style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Месяц 1</div>
+                        <svg class="pie-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Pie chart: Organic 45%, Paid 35%, Direct 20% -->
+                            <path d="M 100,100 L 100,20 A 80,80 0 0,1 172,60 Z" fill="#8b9dc3" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 172,60 A 80,80 0 0,1 180,100 Z" fill="#c5d5ea" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 180,100 A 80,80 0 0,1 100,20 Z" fill="#dfe3ee" stroke="#fff" stroke-width="1"/>
+                            <text x="100" y="95" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">45%</text>
+                            <text x="100" y="50" font-size="10" fill="#666" text-anchor="middle">Organic</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Месяц 2</div>
+                        <svg class="pie-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Pie chart: Organic 42%, Paid 38%, Direct 20% -->
+                            <path d="M 100,100 L 100,20 A 80,80 0 0,1 168,64 A 80,80 0 0,1 100,100 Z" fill="#8b9dc3" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 168,64 A 80,80 0 0,1 180,100 Z" fill="#c5d5ea" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 180,100 A 80,80 0 0,1 100,20 Z" fill="#dfe3ee" stroke="#fff" stroke-width="1"/>
+                            <text x="100" y="95" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">42%</text>
+                            <text x="100" y="50" font-size="10" fill="#666" text-anchor="middle">Organic</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 0.5rem;">Месяц 3</div>
+                        <svg class="pie-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Pie chart: Organic 40%, Paid 40%, Direct 20% -->
+                            <path d="M 100,100 L 100,20 A 80,80 0 0,1 164,68 A 80,80 0 0,1 100,100 Z" fill="#8b9dc3" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 164,68 A 80,80 0 0,1 180,100 Z" fill="#c5d5ea" stroke="#fff" stroke-width="1"/>
+                            <path d="M 100,100 L 180,100 A 80,80 0 0,1 100,20 Z" fill="#dfe3ee" stroke="#fff" stroke-width="1"/>
+                            <text x="100" y="95" font-size="12" fill="#1a1a1a" text-anchor="middle" font-weight="500">40%</text>
+                            <text x="100" y="50" font-size="10" fill="#666" text-anchor="middle">Organic</text>
+                        </svg>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.85rem; color: #666; text-align: center;">
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #8b9dc3; margin-right: 0.5rem;"></span>Organic
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #c5d5ea; margin-left: 1rem; margin-right: 0.5rem;"></span>Paid
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #dfe3ee; margin-left: 1rem; margin-right: 0.5rem;"></span>Direct
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример pie-графиков во времени: каждый график корректен, но сравнение затруднено.
+            </p>
+            <p>
+                <strong>Почему сравнение секторов во времени ненадёжно:</strong> Чтобы понять, как изменилась доля Paid от месяца 1 к месяцу 3, нужно визуально сравнить углы секторов в разных pie-графиках. Глаз плохо оценивает углы: изменение с 35% до 40% визуально почти незаметно, хотя значимо для решения. Небольшие изменения (3–5%) требуют тщательного визуального сопоставления, что увеличивает риск ошибки интерпретации.
+            </p>
+            <p>
+                <strong>Почему график не поддерживает обнаружение трендов:</strong> Pie-графики показывают статические снимки в каждый момент времени. Чтобы увидеть тренд, нужно последовательно сканировать графики, сравнивать углы, запоминать значения, мысленно строить временной ряд. Невозможно быстро определить, растёт ли доля, падает или стабильна. График остаётся набором отдельных распределений, а не инструментом для понимания динамики и принятия решения.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такое представление не поддерживает временное сравнение по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Сравнение углов и площадей когнитивно дорого:</strong> Чтобы понять, как изменилась доля Mobile от месяца к месяцу, нужно визуально сравнить углы секторов в разных pie-графиках. Глаз плохо оценивает углы и площади, особенно когда секторы похожи по размеру. Небольшие изменения (например, с 40% до 43%) визуально почти незаметны, хотя могут быть значимы для решения. Каждое сравнение требует отдельного когнитивного усилия на оценку углов, что замедляет понимание тренда.
+                </li>
+                <li>
+                    <strong>Нет единой временной оси для сравнения:</strong> Pie-графики не имеют общей временной оси, по которой можно отслеживать изменение доли. Каждый график — это отдельный момент времени, и чтобы увидеть тренд, нужно мысленно соединить точки между графиками. Невозможно быстро определить, растёт ли доля, падает или стабильна. Нужно последовательно сканировать графики, сравнивать углы, запоминать значения, что увеличивает когнитивную нагрузку и риск ошибки интерпретации.
+                </li>
+                <li>
+                    <strong>Структура не отвечает на вопрос решения:</strong> Решение требует понимания: какой тренд, насколько значимы изменения, есть ли сдвиги. Pie-графики показывают доли в каждый момент, но не показывают динамику явно. Нужно мысленно построить временной ряд из отдельных снимков, что требует дополнительной аналитической работы. Графики остаются набором статических распределений, а не инструментом для понимания динамики и принятия решения.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: форма, поддерживающая временное сравнение</h2>
+            <p>
+                Переработанное представление: единая временная ось, stacked area chart (100%) показывает изменение долей во времени, сравнение явно и быстро.
+            </p>
+            <p>
+                Используются: временная ось как основа сравнения, stacked area для отслеживания изменений долей, явное выделение трендов. Форма поддерживает временное сравнение и принятие решений.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #1a1a1a;">AFTER: Stacked area chart (100%)</div>
+                <svg class="stacked-area-svg" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="200" x2="550" y2="200" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="150" x2="550" y2="150" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="100" x2="550" y2="100" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="205" font-size="10" fill="#666" text-anchor="end">0%</text>
+                    <text x="45" y="155" font-size="10" fill="#666" text-anchor="end">50%</text>
+                    <text x="45" y="105" font-size="10" fill="#666" text-anchor="end">100%</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="150" y="215" font-size="10" fill="#666" text-anchor="middle">Месяц 1</text>
+                    <text x="300" y="215" font-size="10" fill="#666" text-anchor="middle">Месяц 2</text>
+                    <text x="450" y="215" font-size="10" fill="#666" text-anchor="middle">Месяц 3</text>
+                    
+                    <!-- Stacked area: Organic (bottom layer, 45% → 42% → 40%) -->
+                    <!-- Y: 200 = 0%, 50 = 100%. Height = 150px. Organic: 200-67.5=132.5 (45%), 200-63=137 (42%), 200-60=140 (40%) -->
+                    <path d="M 150,132.5 L 300,137 L 450,140 L 450,200 L 300,200 L 150,200 Z" fill="#8b9dc3" opacity="0.8"/>
+                    
+                    <!-- Stacked area: Paid (middle layer, 35% → 38% → 40%) -->
+                    <!-- Paid: starts at Organic top, ends at 200-52.5=147.5 (35%), 200-57=143 (38%), 200-60=140 (40%) -->
+                    <path d="M 150,132.5 L 300,137 L 450,140 L 450,147.5 L 300,143 L 150,147.5 Z" fill="#c5d5ea" opacity="0.8"/>
+                    
+                    <!-- Stacked area: Direct (top layer, 20% → 20% → 20%) -->
+                    <!-- Direct: starts at Paid top, ends at 200-30=170 (20%) -->
+                    <path d="M 150,147.5 L 300,143 L 450,147.5 L 450,170 L 300,170 L 150,170 Z" fill="#dfe3ee" opacity="0.8"/>
+                    
+                    <!-- Trend annotations -->
+                    <text x="450" y="138" font-size="11" fill="#1a1a1a" font-weight="500">Organic ↓</text>
+                    <text x="450" y="145" font-size="11" fill="#1a1a1a" font-weight="500">Paid ↑</text>
+                    
+                    <!-- Legend -->
+                    <rect x="400" y="30" width="12" height="12" fill="#8b9dc3"/>
+                    <text x="420" y="40" font-size="11" fill="#666">Organic</text>
+                    <rect x="480" y="30" width="12" height="12" fill="#c5d5ea"/>
+                    <text x="500" y="40" font-size="11" fill="#666">Paid</text>
+                    <rect x="400" y="50" width="12" height="12" fill="#dfe3ee"/>
+                    <text x="420" y="60" font-size="11" fill="#666">Direct</text>
+                </svg>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанное представление: единая временная ось, тренды видны сразу.
+            </p>
+            <p>
+                <strong>Почему эта форма поддерживает временное рассуждение:</strong> Stacked area chart имеет единую временную ось, по которой можно отслеживать изменение каждой доли. Тренды видны сразу: Organic падает (45% → 40%), Paid растёт (35% → 40%), Direct стабилен (20%). Не нужно сравнивать углы или площади — направление и величина изменения очевидны визуально. График показывает динамику явно, а не требует мысленного построения временного ряда.
+            </p>
+            <p>
+                <strong>Почему тренды и перераспределение становятся видимыми:</strong> Единая временная ось позволяет видеть изменение каждой доли как непрерывную траекторию. Перераспределение между Organic и Paid видно сразу: одна доля уменьшается, другая увеличивается, общая сумма остаётся 100%. Невозможно не заметить тренд — он закодирован в форме графика. Решение становится проще: видно перераспределение с Organic на Paid, можно оценить значимость и принять решение.
+            </p>
+        </section>
+
+        <section class="comparison-block">
+            <h3>Pie vs форма, поддерживающая время</h3>
+            <p>
+                Данные идентичны: те же доли по месяцам, те же проценты, те же категории. Но сообщение меняется, потому что меняется форма.
+            </p>
+            <p>
+                В первом случае pie-графики требуют визуального сравнения углов и площадей между отдельными снимками. Во втором случае stacked area chart показывает изменение долей как непрерывные траектории на единой временной оси.
+            </p>
+            <p>
+                Время требует непрерывности, а не снимков. Pie-графики показывают статические распределения, но не показывают динамику. Stacked area chart показывает динамику явно, потому что форма соответствует аналитическому вопросу о временном изменении.
+            </p>
+            <p>
+                Это показывает, почему pie не работает как аналитический аргумент во времени: форма не соответствует вопросу. Временное сравнение требует временной оси, а не набора статических снимков.
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>Представление долей во времени работает, когда форма соответствует аналитическому вопросу о временном изменении.</strong> Единая временная ось позволяет отслеживать изменение каждой доли во времени, тренды видны сразу, сравнение не требует оценки углов или площадей. График не просто показывает доли в каждый момент — он показывает динамику и направляет к решению.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Pie-графики не работают для временного сравнения, потому что форма не соответствует вопросу.</strong> Временное сравнение требует временной оси, а не набора статических снимков. Если нет единой временной оси, если сравнение когнитивно дорого, если структура не отвечает на вопрос решения — представление блокирует понимание динамики, даже если все расчёты корректны. Pie-графики остаются набором статических распределений, а не инструментом для принятия решения.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Можно ли увидеть тренд каждой доли за 10 секунд?</li>
+                <li>Есть ли единая временная ось для сравнения?</li>
+                <li>Поддерживает ли форма временное сравнение, а не требует оценки углов?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./message-title.html">← Предыдущий урок</a>
+            <a href="./multigroup-lines.html">Следующий урок →</a>
+        </div>
+    </div>
+</body>
+</html>
+

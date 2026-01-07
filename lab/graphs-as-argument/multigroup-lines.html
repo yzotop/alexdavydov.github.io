@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мультигрупп A/B: как показать контроль и тест так, чтобы эффект читался</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .chart-example {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            background: #ffffff;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .legend-bad {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .legend-good {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #1a1a1a;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-line {
+            width: 30px;
+            height: 2px;
+            background: #999;
+        }
+
+        .legend-line-control {
+            background: #666;
+            border-bottom: 2px dashed #666;
+        }
+
+        .legend-line-test {
+            background: #1a1a1a;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 280px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-svg.after {
+            border: 1px solid #1a1a1a;
+        }
+
+        .comparison-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Мультигрупп A/B: как показать контроль и тест так, чтобы эффект читался</h1>
+        <p class="subtitle">Много похожих линий, чтение через легенду, отсутствие контраста — график не показывает эффект явно.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                A/B-тест завершён. Эксперимент длился 14 дней, трафик стабильный. Тестировали три варианта изменения механики показа рекламы: Control, Test A, Test B, Test C. Отслеживали одну метрику во времени: Revenue (или Conversion, RPM).
+            </p>
+            <p>
+                Нужно принять решение: какой вариант запускать в прод, откатывать или дорабатывать. Решение зависит от понимания: какой вариант превосходит контроль, устойчив ли эффект во времени. Все данные корректны, статистические результаты есть. Проблема не в вычислениях — проблема в визуальном сравнении.
+            </p>
+            <p>
+                График построен: 4 линии (Control + 3 тестовых варианта). Все данные точны. Но эффект неочевиден.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: много линий, чтение через легенду</h2>
+            <p>
+                Типичное представление: несколько похожих линий, все имеют одинаковый визуальный вес, различие между контрольом и тестом не выделено, чтение через легенду требует сопоставления цветов и меток.
+            </p>
+            <p>
+                Такие графики обычно получаются при автоматической генерации из BI-систем или использовании стандартных шаблонов. Все линии показаны одинаково, контраст между контрольом и тестом неявен.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #666;">BEFORE: Много линий без контраста</div>
+                <svg class="chart-svg" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="220" x2="550" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="170" x2="550" y2="170" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="120" x2="550" y2="120" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="225" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="175" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="125" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="150" y="235" font-size="10" fill="#666" text-anchor="middle">День 1</text>
+                    <text x="300" y="235" font-size="10" fill="#666" text-anchor="middle">День 7</text>
+                    <text x="450" y="235" font-size="10" fill="#666" text-anchor="middle">День 14</text>
+                    
+                    <!-- Control line (all lines look similar) -->
+                    <polyline points="100,180 150,178 200,176 250,174 300,172 350,170 400,168 450,166 500,164" 
+                              fill="none" stroke="#999" stroke-width="2"/>
+                    
+                    <!-- Test A line -->
+                    <polyline points="100,175 150,173 200,171 250,169 300,167 350,165 400,163 450,161 500,159" 
+                              fill="none" stroke="#999" stroke-width="2"/>
+                    
+                    <!-- Test B line -->
+                    <polyline points="100,170 150,168 200,166 250,164 300,162 350,160 400,158 450,156 500,154" 
+                              fill="none" stroke="#999" stroke-width="2"/>
+                    
+                    <!-- Test C line -->
+                    <polyline points="100,165 150,163 200,161 250,159 300,157 350,155 400,153 450,151 500,149" 
+                              fill="none" stroke="#999" stroke-width="2"/>
+                    
+                    <!-- Legend (required to identify lines) -->
+                    <line x1="400" y1="30" x2="420" y2="30" stroke="#999" stroke-width="2"/>
+                    <text x="430" y="35" font-size="11" fill="#666">Control</text>
+                    <line x1="480" y1="30" x2="500" y2="30" stroke="#999" stroke-width="2"/>
+                    <text x="510" y="35" font-size="11" fill="#666">Test A</text>
+                    <line x1="400" y1="50" x2="420" y2="50" stroke="#999" stroke-width="2"/>
+                    <text x="430" y="55" font-size="11" fill="#666">Test B</text>
+                    <line x1="480" y1="50" x2="500" y2="50" stroke="#999" stroke-width="2"/>
+                    <text x="510" y="55" font-size="11" fill="#666">Test C</text>
+                </svg>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример графика с множеством линий: эффект неочевиден, чтение через легенду затруднено.
+            </p>
+            <p>
+                <strong>Почему одинаковый визуальный вес скрывает логику сравнения:</strong> Все линии выглядят одинаково: одинаковый цвет, одинаковая толщина, одинаковый стиль. Контроль не выделен как точка отсчёта, тестовые варианты не выделены как объекты сравнения. Чтобы понять, какой вариант лучше контроля, нужно найти линию контроля в легенде, найти её на графике, затем найти каждую тестовую линию, сравнить их визуально. Каждое сравнение требует отдельного когнитивного усилия, что замедляет понимание эффекта.
+            </p>
+            <p>
+                <strong>Почему зритель не может быстро ответить "какой тест превосходит контроль":</strong> График показывает все линии, но не структурирует их так, чтобы сравнение было явным. Нужно последовательно сканировать график, обращаться к легенде, запоминать соответствия, мысленно группировать линии по парам (контроль vs тест). Невозможно быстро определить, где эффект есть, где его нет, какой он по знаку и величине. График остаётся набором траекторий, а не инструментом для принятия решения.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такое представление не показывает эффект явно по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Отсутствие контраста между контрольом и тестом:</strong> Все линии выглядят одинаково, контроль и тест не визуально разделены. Чтобы понять эффект, нужно найти пару линий (контроль и тест) для каждого сегмента, сопоставить их визуально, оценить разницу. Глаз вынужден прыгать между линиями, теряя контекст. Каждое сравнение требует отдельного когнитивного усилия на поиск и сопоставление, что замедляет понимание эффекта.
+                </li>
+                <li>
+                    <strong>Чтение через легенду когнитивно дорого:</strong> Чтобы понять, какая линия относится к контролю, а какая к тесту, нужно посмотреть в легенду, найти цвет, вернуться к графику, найти линию этого цвета, запомнить соответствие. Если линий много, это требует повторять процесс для каждой пары. Легенда становится барьером между данными и пониманием. Невозможно быстро определить, где эффект есть, где его нет, какой он по знаку.
+                </li>
+                <li>
+                    <strong>График не структурирован вокруг сравнения:</strong> Решение требует понимания: где эффект есть, где его нет, какой он по знаку и величине. График показывает все линии, но не структурирует их так, чтобы сравнение контроль vs тест было явным. Нужно мысленно группировать линии по парам, что требует дополнительной аналитической работы. График остаётся набором траекторий, а не инструментом для понимания эффекта и принятия решения.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: контраст контроль vs тест, прямое подписывание</h2>
+            <p>
+                Переработанный график: контроль и тест визуально разделены, прямое подписывание линий, контраст делает эффект явным, структура вокруг сравнения.
+            </p>
+            <p>
+                Используются: визуальное разделение (контроль пунктиром или светлее, тест сплошной или темнее), прямое подписывание (метки на линиях, а не только в легенде), контраст (разница между контроль и тест очевидна). График структурирован вокруг сравнения, а не вокруг данных.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #1a1a1a;">AFTER: Контраст контроль vs тест, визуальная иерархия</div>
+                <svg class="chart-svg after" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="220" x2="550" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="170" x2="550" y2="170" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="120" x2="550" y2="120" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="225" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="175" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="125" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="150" y="235" font-size="10" fill="#666" text-anchor="middle">День 1</text>
+                    <text x="300" y="235" font-size="10" fill="#666" text-anchor="middle">День 7</text>
+                    <text x="450" y="235" font-size="10" fill="#666" text-anchor="middle">День 14</text>
+                    
+                    <!-- Control line (dashed, lighter, de-emphasized) -->
+                    <polyline points="100,180 150,178 200,176 250,174 300,172 350,170 400,168 450,166 500,164" 
+                              fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+                    <text x="510" y="167" font-size="10" fill="#999">Control</text>
+                    
+                    <!-- Test A line (solid, darker, emphasized - best performer) -->
+                    <polyline points="100,165 150,163 200,161 250,159 300,157 350,155 400,153 450,151 500,149" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
+                    <text x="510" y="152" font-size="11" fill="#1a1a1a" font-weight="500">Test A ↑</text>
+                    
+                    <!-- Test B line (solid, medium, less emphasized) -->
+                    <polyline points="100,170 150,168 200,166 250,164 300,162 350,160 400,158 450,156 500,154" 
+                              fill="none" stroke="#666" stroke-width="2" opacity="0.8"/>
+                    <text x="510" y="157" font-size="10" fill="#666">Test B</text>
+                    
+                    <!-- Test C line (solid, lighter, least emphasized) -->
+                    <polyline points="100,175 150,173 200,171 250,169 300,167 350,165 400,163 450,161 500,159" 
+                              fill="none" stroke="#999" stroke-width="1.5" opacity="0.7"/>
+                    <text x="510" y="162" font-size="10" fill="#999">Test C</text>
+                </svg>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанный график: контраст явный, прямое подписывание, эффект читается сразу.
+            </p>
+            <p>
+                <strong>Как визуальная иерархия кодирует логику сравнения:</strong> Контроль визуально деэмфазирован (пунктир, светлее, тоньше) — он служит точкой отсчёта, а не объектом внимания. Test A выделен (сплошная, темнее, толще) — он превосходит контроль, это ключевой сигнал. Test B и Test C показаны менее заметно — они не превосходят контроль или превосходят слабо. Визуальная иерархия кодирует аналитическую иерархию: что важно для решения, что является контекстом.
+            </p>
+            <p>
+                <strong>Как снижается когнитивная нагрузка:</strong> Прямое подписывание линий убирает необходимость чтения через легенду. Контраст между контроль и тест делает сравнение явным без дополнительных вычислений. Визуальная иерархия показывает, где эффект есть, где его нет, какой он по знаку. Читатель сразу видит: Test A превосходит контроль, эффект устойчив во времени. График становится инструментом принятия решения, а не набором траекторий для анализа.
+            </p>
+        </section>
+
+        <section class="comparison-block">
+            <h3>Много линий ≠ много информации</h3>
+            <p>
+                Больше линий увеличивает шум, а не инсайты. Когда все линии имеют одинаковый визуальный вес, каждая линия привлекает внимание одинаково, что рассеивает фокус и замедляет понимание эффекта.
+            </p>
+            <p>
+                Сравнение требует иерархии, а не симметрии. Контроль должен быть визуально привилегирован как точка отсчёта: он деэмфазирован, но явно присутствует. Тестовые варианты должны быть ранжированы по важности для решения: лучший вариант выделен, остальные показаны как контекст.
+            </p>
+            <p>
+                Это превращает график в инструмент решения, а не в набор данных. Когда визуальная иерархия кодирует аналитическую иерархию, читатель сразу видит, что важно, что неважно, где эффект есть, где его нет. График формирует правильное сравнение и направляет к решению.
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>График мультигрупп A/B работает, когда логика сравнения явна, а контраст контроль vs тест закодирован визуально.</strong> Контроль визуально деэмфазирован как точка отсчёта, ключевые тестовые варианты выделены, прямое подписывание убирает необходимость чтения через легенду, визуальная иерархия кодирует аналитическую иерархию. График не просто показывает траектории — он формирует правильное сравнение и направляет к решению.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>График мультигрупп A/B не работает, когда все группы визуально равны.</strong> Если отсутствует контраст между контроль и тест, если нужно читать через легенду, если график не структурирован вокруг сравнения — график блокирует понимание эффекта, даже если все данные корректны. Контраст контроль vs тест должен быть закодирован визуально, а не выведен из легенды. График остаётся набором траекторий, а не инструментом для принятия решения.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Явно ли разделение между контроль и тест без чтения легенды?</li>
+                <li>Можно ли увидеть эффект в каждом сегменте за 10 секунд?</li>
+                <li>Структурирован ли график вокруг сравнения, а не вокруг данных?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./pie-over-time.html">← Предыдущий урок</a>
+            <a href="./honest-time-axis.html">Следующий урок →</a>
+        </div>
+    </div>
+</body>
+</html>
+

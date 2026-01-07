@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анатомия эксперимента</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+            margin-top: 3rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .summary-card {
+            border: 2px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            background: #fafafa;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+        }
+
+        .summary-value {
+            color: #1a1a1a;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .bullets {
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .bullets li {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .bullets li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .formula-box {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            background: #fafafa;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #1a1a1a;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        table th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 2px solid #e8e8e8;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e8e8e8;
+            color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        table tr:hover {
+            background: #fafafa;
+        }
+
+        .risk-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .risk-item:last-child {
+            border-bottom: none;
+        }
+
+        .risk-title {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .risk-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-mitigation {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+        }
+
+        .risk-mitigation strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .metric-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .metric-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .metric-card-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .metric-card-content ul {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .metric-card-content li {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .steps {
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .step-title {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .step-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .decision-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .decision-cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .decision-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            background: #ffffff;
+        }
+
+        .decision-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .decision-card-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .decision-card-content strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .final-quote {
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        @media (max-width: 600px) {
+            .summary-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+
+        <h1>Анатомия эксперимента</h1>
+        <p class="subtitle">Эталонный разбор: от гипотезы до решения.</p>
+        <p class="insight">Если эксперимент нельзя описать так — его нельзя интерпретировать.</p>
+
+        <div class="summary-card">
+            <div class="summary-row">
+                <div class="summary-label">Изменение</div>
+                <div class="summary-value">Увеличение давления на инвентарь через повышение частоты показов в высокоценных сегментах</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Ожидаемый рычаг</div>
+                <div class="summary-value">Volume (рост показов) и Price (рост конкуренции), компенсация через Mix (сдвиг в высококачественные сегменты)</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Primary метрика</div>
+                <div class="summary-value">Revenue index (нормализованная выручка), Revenue per user</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Guardrails</div>
+                <div class="summary-value">Quality proxy (состав инвентаря), Frequency tail (доля высокочастотных показов), Retention proxy (возврат пользователей), Risk index (накопление усталости)</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Окно оценки</div>
+                <div class="summary-value">Long (60 дней) — требуется время для накопления эффекта давления и оценки устойчивости качества</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Ожидаемый лаг</div>
+                <div class="summary-value">Поведенческий (7–14 дней — привыкание), системный (3–5 дней — инерция аукциона), рыночный (конкуренция адаптируется в течение 10–20 дней)</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Основной риск</div>
+                <div class="summary-value">Перегруз (накопление усталости через частоту) и Mix shift (вытеснение низкочастотных сегментов высокочастотными)</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Решение по итогам</div>
+                <div class="summary-value">Iterate (доработать дизайн с ограничением частоты в хвостах) — revenue растёт, но guardrails показывают накопление риска</div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>1) Гипотеза</h2>
+
+            <h3>Как выглядит плохая гипотеза</h3>
+            <ul class="bullets">
+                <li>Формулируется в терминах фичи, а не механизма: "включить новую рекламную сеть" вместо "увеличить доступность инвентаря"</li>
+                <li>Не указывает ожидаемый рычаг и причину: "это увеличит выручку" без объяснения, за счёт чего</li>
+                <li>Не учитывает риски и способы их контроля: гипотеза только про рост, без упоминания guardrails</li>
+            </ul>
+
+            <h3>Как выглядит хорошая гипотеза</h3>
+            <ul class="bullets">
+                <li>Формулируется в терминах механизма: изменение давления, цены, доступности, формата, частоты</li>
+                <li>Указывает конкретный рычаг и причину: "объём увеличится, потому что расширится доступность инвентаря"</li>
+                <li>Включает ожидаемые риски и способы контроля: "риск усталости контролируем через frequency tail proxy"</li>
+            </ul>
+
+            <div class="formula-box">
+                Если мы изменим [механизм], то [рычаг] изменится так-то, потому что [причина], при этом мы ожидаем риск [X], который контролируем [guardrails].
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>2) Механизм</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Механизм</th>
+                        <th>Что должно измениться</th>
+                        <th>Как проверить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Изменение давления</td>
+                        <td>Частота показов, доля высокочастотных сегментов, накопление усталости</td>
+                        <td>Frequency distribution, pressure proxy, fatigue indicators, coverage изменения</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение доступности инвентаря</td>
+                        <td>Coverage, fill rate, eligible-to-show conversion, потеря в цепочке</td>
+                        <td>Decomposition по слоям воронки, lost-to-constraints share, delivery bottlenecks</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение цены/конкуренции</td>
+                        <td>CPM index, auction price, конкуренция за внимание, ограничения (floors)</td>
+                        <td>Price vs volume decomposition, competition intensity proxy, constraint indicators</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение формата (внимание)</td>
+                        <td>CTR, engagement proxy, глубина просмотра, время на странице</td>
+                        <td>ShowConv, attention metrics, distribution shift в engagement, displacement indicators</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение частоты/усталости</td>
+                        <td>Frequency tail, возврат пользователей, retention proxy, накопление риска</td>
+                        <td>Frequency buckets, cohort analysis, fatigue accumulation, late effects window</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение латентного риска</td>
+                        <td>Risk index, guardrail degradation, скрытая деградация качества</td>
+                        <td>Long-term proxy, late effects, guardrail trends, distribution tails</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение микса</td>
+                        <td>Composition shift, качество инвентаря, сегментные доли, variance</td>
+                        <td>Segment analysis, quality-weighted metrics, distribution spread, coverage changes</td>
+                    </tr>
+                    <tr>
+                        <td>Изменение времени/лагов</td>
+                        <td>Задержка эффекта, адаптация, накопление, режимные переходы</td>
+                        <td>Short vs long window comparison, lag indicators, baseline drift, regime change signals</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>3) Риски и артефакты</h2>
+
+            <div class="risk-item">
+                <div class="risk-title">Каннибализация</div>
+                <div class="risk-desc">Рост в тестовом сегменте компенсируется падением в остальной системе. Revenue теста растёт, total revenue не меняется.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Смотреть total revenue, не только test segment. Декомпозиция по сегментам. Мониторинг соседних поверхностей как guardrail.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Вытеснение (displacement)</div>
+                <div class="risk-desc">Рост показов в одном месте ценой падения глубины просмотра, дочиток, времени на странице. CTR растёт, engagement падает.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Engagement proxy как guardrail. Проверка distribution shift в глубине просмотра. Мониторинг displacement indicators.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Нестабильный baseline</div>
+                <div class="risk-desc">Контрольная группа "плавает" из-за внешних факторов (рынок, сезонность, параллельные тесты). Выводы искажаются.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Baseline model (ожидание). Контрольные сегменты. Проверка стабильности control group. Учёт сезонности и шоков.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Параллельные тесты</div>
+                <div class="risk-desc">Несколько тестов одновременно меняют систему. Эффекты интерферируют, выводы становятся неверными.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Мониторинг пересечений тестов. Стратификация по экспериментам. Изоляция групп или последовательный запуск.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Сезонность</div>
+                <div class="risk-desc">Рыночные циклы (день недели, праздники, периоды) маскируют эффект или создают ложный эффект.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Сравнение одинаковых дней недели. Baseline adjustment. Окно кратно сезонности. Контрольные сегменты.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Лаг</div>
+                <div class="risk-desc">Эффект проявляется позже, чем окно оценки. Короткое окно ловит адаптацию, а не устойчивый эффект.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Long window (60+ дней для поведенческих эффектов). Ранние сигналы (proxy). Мониторинг late effects. Ожидаемый лаг в дизайне.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Proxy drift</div>
+                <div class="risk-desc">Ранний сигнал (proxy) меняется, но итоговая метрика не следует. Proxy перестаёт быть валидным индикатором.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Проверка корреляции proxy с primary. Мониторинг divergence. Не полагаться только на proxy, смотреть primary и guardrails.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Distribution shift</div>
+                <div class="risk-desc">Среднее растёт, но хвосты деградируют. Распределение меняется, качество падает, но средняя метрика "красивая".</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Смотреть quantiles, не только среднее. Проверка хвостов. Distribution comparison. Coverage и quality proxies.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Перегруз</div>
+                <div class="risk-desc">Краткосрочный рост revenue через давление → долгосрочный ущерб через усталость, деградацию качества, падение retention.</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Guardrails (frequency tail, retention, quality). Long window. Мониторинг risk accumulation. Fatigue indicators.</div>
+            </div>
+
+            <div class="risk-item">
+                <div class="risk-title">Эффект выкатки</div>
+                <div class="risk-desc">При выкатке на всю систему эффект меняется из-за масштаба, конкуренции, saturation. Тест "победил", выкатка "проиграла".</div>
+                <div class="risk-mitigation"><strong>Страховка:</strong> Постепенная выкатка (canary, staged rollout). Мониторинг на каждом этапе. Проверка saturation и масштабных эффектов.</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>4) Дизайн</h2>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" id="design1">
+                    <label for="design1">Рандомизация: группы независимы, размер достаточен для мощности (минимум 1000+ единиц на группу для поведенческих метрик)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design2">
+                    <label for="design2">Стратификация: если сегменты сильно различаются (гео, устройство, поведение), стратифицировать по ключевым признакам</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design3">
+                    <label for="design3">Длительность: short window (7–14 дней) для ранних сигналов, long window (60+ дней) для устойчивых эффектов и guardrails</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design4">
+                    <label for="design4">Окна: evaluation window (50–80 дней после launch), late effects window (100+ дней) для проверки долгосрочных эффектов</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design5">
+                    <label for="design5">Интерференция: если группы не независимы (shared inventory, общие пользователи), учитывать в дизайне и интерпретации</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design6">
+                    <label for="design6">Параллельные тесты: проверить пересечения, изолировать группы или запускать последовательно</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design7">
+                    <label for="design7">Логирование: фиксировать все изменения (change log), время запуска, параметры системы, внешние события</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design8">
+                    <label for="design8">Инструментация: логировать все метрики (primary, diagnostic, guardrails) с достаточной гранулярностью (день, сегмент, распределения)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design9">
+                    <label for="design9">Baseline: зафиксировать ожидаемое поведение (baseline model) до запуска, использовать для сравнения</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design10">
+                    <label for="design10">Контрольные сегменты: иметь стабильные контрольные группы или поверхности для проверки внешних эффектов</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design11">
+                    <label for="design11">Guardrails: определить до запуска, зафиксировать пороги тревоги, не менять после начала теста</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design12">
+                    <label for="design12">Ожидаемый лаг: указать в дизайне, когда ожидается проявление эффекта (поведенческий/рыночный/системный)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design13">
+                    <label for="design13">Мощность: рассчитать достаточный размер выборки для обнаружения ожидаемого эффекта с заданной вероятностью</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design14">
+                    <label for="design14">Необратимость: если решение необратимо (изменение формата, структуры), окно должно быть длиннее, чем лаг</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="design15">
+                    <label for="design15">Артефакты: заранее определить, как проверять сезонность, шоки рынка, параллельные изменения</label>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>5) Метрики</h2>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-card-title">Primary (1–2)</div>
+                    <div class="metric-card-content">
+                        Метрика, которую хотим улучшить. Обычно revenue или его proxy.
+                        <ul>
+                            <li>Не больше 2 primary</li>
+                            <li>Чётко определена до теста</li>
+                            <li>Измерима и устойчива</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-title">Diagnostic (разложение)</div>
+                    <div class="metric-card-content">
+                        Метрики, объясняющие, почему изменилось. Декомпозиция на рычаги.
+                        <ul>
+                            <li>Price vs volume vs mix</li>
+                            <li>Ранние сигналы (coverage, showConv)</li>
+                            <li>В отчёте всегда есть разложение</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-title">Guardrails (3–5)</div>
+                    <div class="metric-card-content">
+                        Метрики, которые нельзя ухудшать. Защита от скрытой деградации.
+                        <ul>
+                            <li>Guardrails до запуска</li>
+                            <li>Устойчивость, retention, quality</li>
+                            <li>Risk indicators</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>6) Интерпретация результатов</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Что изменилось по primary</div>
+                    <div class="step-content">Направление изменения (рост/падение/нейтрально) и величина эффекта в окне оценки. Сравнение short vs long window.</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Разложение на рычаги</div>
+                    <div class="step-content">Вклад компонентов: price effect (рост/падение цены), volume effect (изменение объёма), mix/quality effect (сдвиг микса или качества). Какой рычаг доминирует?</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Что стало с guardrails</div>
+                    <div class="step-content">Ранние сигналы (coverage, showConv, pressure proxy) и поздние (retention, risk accumulation). Что ухудшилось, что осталось стабильным?</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Проверка окна</div>
+                    <div class="step-content">Short window vs long window. Если short показывает рост, а long — падение или стабилизацию, это сигнал нестабильности или усталости.</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Проверка артефактов</div>
+                    <div class="step-content">Рынок (сезонность, шоки), давление (каннибализация, displacement), микс (композиционный сдвиг). Что могло исказить вывод?</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Формулировка решения и риск</div>
+                    <div class="step-content">Катить / итерация / продолжить / откат. Какой риск принимаем? Что мониторим после выкатки?</div>
+                </div>
+            </div>
+
+            <h3>3 типа решений</h3>
+
+            <div class="decision-cards">
+                <div class="decision-card">
+                    <div class="decision-card-title">Rollout (катим)</div>
+                    <div class="decision-card-content">
+                        <strong>Когда выбирать:</strong> Primary растёт, guardrails стабильны, разложение понятно, артефакты проверены, эффект устойчив в long window.
+                        <br><br>
+                        <strong>Что мониторить после:</strong> Guardrails (особенно поздние), risk accumulation, стабильность эффекта, сезонность, масштабные эффекты при выкатке.
+                    </div>
+                </div>
+
+                <div class="decision-card">
+                    <div class="decision-card-title">Iterate (дорабатываем)</div>
+                    <div class="decision-card-content">
+                        <strong>Когда выбирать:</strong> Primary растёт, но guardrails показывают риск или эффект неустойчив. Нужен другой дизайн (ограничения, сегментация, параметры).
+                        <br><br>
+                        <strong>Что мониторить после:</strong> Новые guardrails, изменённые параметры, проверка гипотезы о причине риска, сравнение с предыдущей итерацией.
+                    </div>
+                </div>
+
+                <div class="decision-card">
+                    <div class="decision-card-title">Stop/Revert (останавливаем/откатываем)</div>
+                    <div class="decision-card-content">
+                        <strong>Когда выбирать:</strong> Guardrails сработали (критическое ухудшение), primary падает, эффект отрицательный, риск неприемлемый.
+                        <br><br>
+                        <strong>Что мониторить после:</strong> Восстановление guardrails, возврат к baseline, проверка долгосрочных последствий, анализ причин неудачи.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>7) После выката: мониторинг</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Что мониторим</th>
+                        <th>Почему</th>
+                        <th>Какой сигнал тревоги</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Guardrail метрики</td>
+                        <td>Защита от скрытой деградации, особенно поздние guardrails (retention, risk)</td>
+                        <td>Ухудшение на 5%+ от baseline или выход за порог тревоги, установленный в дизайне</td>
+                    </tr>
+                    <tr>
+                        <td>Риск/усталость</td>
+                        <td>Накопление давления, frequency tail, fatigue accumulation могут проявиться поздно</td>
+                        <td>Risk index растёт быстрее revenue, frequency tail увеличивается, fatigue indicators ухудшаются</td>
+                    </tr>
+                    <tr>
+                        <td>Микс/качество</td>
+                        <td>Композиционный сдвиг может маскировать деградацию, среднее растёт, хвосты падают</td>
+                        <td>Distribution shift, quality proxy падает, coverage ухудшается, variance растёт</td>
+                    </tr>
+                    <tr>
+                        <td>Стабильность цены/volume</td>
+                        <td>Рост цены может компенсироваться падением объёма, эффект неустойчив</td>
+                        <td>Price растёт, volume падает, revenue стабилизируется или падает, эластичность достигнута</td>
+                    </tr>
+                    <tr>
+                        <td>Сезонность/рынок</td>
+                        <td>Внешние факторы могут искажать эффект, особенно при выкатке на всю систему</td>
+                        <td>Baseline drift, контрольные сегменты расходятся, сезонные паттерны меняются</td>
+                    </tr>
+                    <tr>
+                        <td>Распределения/хвосты</td>
+                        <td>Среднее может расти, пока хвосты деградируют, качество падает скрыто</td>
+                        <td>Quantiles расходятся, хвосты ухудшаются, distribution spread увеличивается</td>
+                    </tr>
+                    <tr>
+                        <td>Каннибализация</td>
+                        <td>Рост в одном месте компенсируется падением в другом, total revenue не растёт</td>
+                        <td>Test segment растёт, соседние сегменты падают, total revenue стабилен или падает</td>
+                    </tr>
+                    <tr>
+                        <td>Латентные эффекты</td>
+                        <td>Эффекты могут проявиться поздно (усталость, деградация, режимные переходы)</td>
+                        <td>Late effects window показывает ухудшение, guardrails падают после выкатки, risk накапливается</td>
+                    </tr>
+                    <tr>
+                        <td>Масштабные эффекты</td>
+                        <td>При выкатке на всю систему эффект может измениться из-за saturation, конкуренции, масштаба</td>
+                        <td>Эффект в тесте больше, чем при выкатке, saturation достигнута, конкуренция адаптировалась</td>
+                    </tr>
+                    <tr>
+                        <td>Стабильность эффекта</td>
+                        <td>Эффект должен быть устойчивым во времени, не только в окне оценки</td>
+                        <td>Эффект ослабевает со временем, revenue возвращается к baseline, guardrails продолжают ухудшаться</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <p class="final-quote">
+            Эксперимент заканчивается не отчётом, а решением и мониторингом.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к курсу экспериментов</a>
+        </div>
+    </div>
+</body>
+</html>
+

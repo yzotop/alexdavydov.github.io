@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ось времени: как она незаметно искажает выводы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .chart-example {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            background: #ffffff;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .axis-bad {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            font-size: 0.85rem;
+            color: #c00;
+        }
+
+        .axis-good {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            font-size: 0.85rem;
+            color: #060;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 280px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .chart-svg.after {
+            border: 1px solid #1a1a1a;
+        }
+
+        .comparison-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+
+        .comparison-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .argument-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .argument-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+
+        .checklist-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .checklist-block h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist-block li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .nav-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-bottom a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-bottom a:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+        </div>
+
+        <h1>Ось времени: как она незаметно искажает выводы</h1>
+        <p class="subtitle">Сломанная или вводящая в заблуждение временная ось, отсутствие дат, неравномерные интервалы — график искажает интерпретацию.</p>
+
+        <section class="context">
+            <h2>Контекст</h2>
+            <p>
+                A/B-тест завершён. Эксперимент длился 14 дней, но данные собраны неравномерно: есть пропуски в выходные дни (дни 6–7, 13–14), некоторые дни отсутствуют из-за технических проблем. Нужно оценить тренд выручки: растёт ли она, стабильна или падает, устойчив ли эффект.
+            </p>
+            <p>
+                Данные корректны, расчёты точны. Решение зависит от понимания тренда и динамики: как быстро меняется метрика, есть ли стабильность, как интерпретировать изменения. Проблема не в данных — проблема в том, как время представлено визуально.
+            </p>
+            <p>
+                График построен: ось X показывает время, ось Y — выручку. Все точки данных точны. Но интерпретация зависит от того, как представлена временная ось: равномерны ли интервалы, отмечены ли пропуски, указаны ли даты.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>ДО: сломанная или вводящая в заблуждение временная ось</h2>
+            <p>
+                Типичные проблемы: пропуски дат не отмечены, неравномерные интервалы между точками визуально выглядят равномерно, отсутствие дат делает невозможным понимание контекста (выходные, праздники, сезонность).
+            </p>
+            <p>
+                Такие проблемы обычно возникают при автоматической генерации графиков из BI-систем, когда временная ось строится по порядковым номерам записей, а не по реальным датам, или когда пропуски данных не учитываются.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #666;">BEFORE: Вводящая в заблуждение временная ось</div>
+                <svg class="chart-svg" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="220" x2="550" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="170" x2="550" y2="170" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="120" x2="550" y2="120" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="225" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="175" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="125" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels - UNIFORM SPACING (misleading) -->
+                    <text x="100" y="235" font-size="10" fill="#666" text-anchor="middle">День 1</text>
+                    <text x="150" y="235" font-size="10" fill="#666" text-anchor="middle">День 2</text>
+                    <text x="200" y="235" font-size="10" fill="#666" text-anchor="middle">День 3</text>
+                    <text x="250" y="235" font-size="10" fill="#666" text-anchor="middle">День 4</text>
+                    <text x="300" y="235" font-size="10" fill="#666" text-anchor="middle">День 5</text>
+                    <text x="350" y="235" font-size="10" fill="#666" text-anchor="middle">День 6</text>
+                    <text x="400" y="235" font-size="10" fill="#666" text-anchor="middle">День 7</text>
+                    <text x="450" y="235" font-size="10" fill="#666" text-anchor="middle">День 8</text>
+                    <text x="500" y="235" font-size="10" fill="#666" text-anchor="middle">День 9</text>
+                    
+                    <!-- Revenue line - data points at: day 1, 2, 3, 4, 5, 8, 9, 10, 11, 12 -->
+                    <!-- But visually shown as uniform spacing -->
+                    <polyline points="100,180 150,175 200,170 250,165 300,160 400,155 450,150 500,145 520,140" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="100" cy="180" r="3" fill="#1a1a1a"/>
+                    <circle cx="150" cy="175" r="3" fill="#1a1a1a"/>
+                    <circle cx="200" cy="170" r="3" fill="#1a1a1a"/>
+                    <circle cx="250" cy="165" r="3" fill="#1a1a1a"/>
+                    <circle cx="300" cy="160" r="3" fill="#1a1a1a"/>
+                    <!-- Gap (days 6-7) not visible -->
+                    <circle cx="400" cy="155" r="3" fill="#1a1a1a"/>
+                    <circle cx="450" cy="150" r="3" fill="#1a1a1a"/>
+                    <circle cx="500" cy="145" r="3" fill="#1a1a1a"/>
+                    <circle cx="520" cy="140" r="3" fill="#1a1a1a"/>
+                </svg>
+                <div class="axis-bad" style="margin-top: 1rem;">
+                    Ось X: День 1, День 2, День 3... (равномерные интервалы, пропуски дней 6–7 не видны)
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Пример вводящей в заблуждение временной оси: пропуски не видны, интервалы выглядят равномерно, тренд кажется более резким.
+            </p>
+            <p>
+                <strong>Почему люди предполагают равномерное временное расстояние:</strong> Глаз автоматически интерпретирует равномерные визуальные интервалы как равномерные временные интервалы. Если точки расположены на одинаковом расстоянии, читатель предполагает, что данные собраны с одинаковой частотой. Пропуски данных (выходные, технические проблемы) не видны, и график выглядит как непрерывный временной ряд.
+            </p>
+            <p>
+                <strong>Как неравномерные оси искажают восприятие скорости и направления:</strong> Если данные собраны неравномерно (например, ежедневно в будни, но не в выходные), но визуально представлены как равномерные точки, это искажает восприятие скорости изменений. Период с пропуском (выходные) визуально сжимается, что делает изменение между днями 5 и 8 более резким, чем оно есть на самом деле. Тренд кажется более сильным или более слабым, чем в реальности, что ведёт к неверным выводам об эффекте или стабильности.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Почему это не работает</h2>
+            <p>
+                Такая временная ось искажает интерпретацию по трём аналитическим причинам:
+            </p>
+            <ul>
+                <li>
+                    <strong>Пропуски данных скрыты и искажают тренд:</strong> Если в данных есть пропуски (выходные, технические проблемы, отсутствие данных), но они не отмечены на оси, график визуально показывает непрерывную линию. Резкие изменения могут выглядеть как тренд, хотя на самом деле это артефакт пропусков. Невозможно понять, является ли изменение реальным или результатом пропуска данных. Тренд искажается, что может привести к неверным выводам и решениям.
+                </li>
+                <li>
+                    <strong>Неравномерные интервалы выглядят равномерно:</strong> Если данные собраны неравномерно (например, ежедневно в будни, но не в выходные), но визуально представлены как равномерные точки, это искажает понимание скорости изменений. Периоды с большими интервалами выглядят так же, как периоды с малыми, что делает невозможным правильную оценку динамики. Невозможно понять, является ли изменение быстрым или медленным, что критично для принятия решения.
+                </li>
+                <li>
+                    <strong>Отсутствие дат блокирует понимание контекста:</strong> Решение часто зависит от контекста: выходные, праздники, сезонность, события. Если на оси нет дат, невозможно понять, что произошло в конкретный момент, почему могло измениться значение. Невозможно связать изменения с внешними событиями или внутренними процессами. График остаётся набором точек без временного контекста, что блокирует правильную интерпретацию и принятие решения.
+                </li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>ПОСЛЕ: честная временная структура</h2>
+            <p>
+                Переработанная временная ось: все даты явно указаны, пропуски отмечены, интервалы отражают реальное время, структура поддерживает правильную интерпретацию.
+            </p>
+            <p>
+                Используются: явные даты на оси, отметки пропусков (разрывы или подписи), равномерные интервалы только когда данные действительно равномерны. Временная структура честна и поддерживает правильную интерпретацию.
+            </p>
+
+            <div class="chart-example">
+                <div style="text-align: center; margin-bottom: 1rem; font-weight: 500; color: #1a1a1a;">AFTER: Честная временная структура</div>
+                <svg class="chart-svg after" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Grid lines -->
+                    <line x1="50" y1="50" x2="50" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="220" x2="550" y2="220" stroke="#e8e8e8" stroke-width="1"/>
+                    <line x1="50" y1="170" x2="550" y2="170" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    <line x1="50" y1="120" x2="550" y2="120" stroke="#e8e8e8" stroke-width="0.5" stroke-dasharray="2,2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="45" y="225" font-size="10" fill="#666" text-anchor="end">0</text>
+                    <text x="45" y="175" font-size="10" fill="#666" text-anchor="end">50k</text>
+                    <text x="45" y="125" font-size="10" fill="#666" text-anchor="end">100k</text>
+                    <text x="45" y="55" font-size="10" fill="#666" text-anchor="end">150k</text>
+                    
+                    <!-- X-axis labels - REAL DATES with gaps visible -->
+                    <text x="100" y="235" font-size="10" fill="#666" text-anchor="middle">1 янв</text>
+                    <text x="150" y="235" font-size="10" fill="#666" text-anchor="middle">2 янв</text>
+                    <text x="200" y="235" font-size="10" fill="#666" text-anchor="middle">3 янв</text>
+                    <text x="250" y="235" font-size="10" fill="#666" text-anchor="middle">4 янв</text>
+                    <text x="300" y="235" font-size="10" fill="#666" text-anchor="middle">5 янв</text>
+                    <!-- Gap indicator -->
+                    <line x1="350" y1="220" x2="380" y2="220" stroke="#c00" stroke-width="2" stroke-dasharray="3,2"/>
+                    <text x="365" y="235" font-size="9" fill="#c00" text-anchor="middle">...</text>
+                    <text x="430" y="235" font-size="10" fill="#666" text-anchor="middle">8 янв</text>
+                    <text x="480" y="235" font-size="10" fill="#666" text-anchor="middle">9 янв</text>
+                    <text x="530" y="235" font-size="10" fill="#666" text-anchor="middle">10 янв</text>
+                    
+                    <!-- Revenue line - same data, but with visible gap -->
+                    <polyline points="100,180 150,175 200,170 250,165 300,160" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                    <!-- Gap break -->
+                    <polyline points="430,155 480,150 530,145" 
+                              fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="100" cy="180" r="3" fill="#1a1a1a"/>
+                    <circle cx="150" cy="175" r="3" fill="#1a1a1a"/>
+                    <circle cx="200" cy="170" r="3" fill="#1a1a1a"/>
+                    <circle cx="250" cy="165" r="3" fill="#1a1a1a"/>
+                    <circle cx="300" cy="160" r="3" fill="#1a1a1a"/>
+                    <!-- Gap visible -->
+                    <circle cx="430" cy="155" r="3" fill="#1a1a1a"/>
+                    <circle cx="480" cy="150" r="3" fill="#1a1a1a"/>
+                    <circle cx="530" cy="145" r="3" fill="#1a1a1a"/>
+                </svg>
+                <div class="axis-good" style="margin-top: 1rem;">
+                    Ось X: 1 янв, 2 янв, 3 янв... (реальные даты, пропуски дней 6–7 отмечены разрывом)
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #999; font-style: italic;">
+                Переработанная временная ось: честная структура, правильная интерпретация.
+            </p>
+            <p>
+                <strong>Как честное временное расстояние меняет интерпретацию:</strong> Когда пропуски данных явно отмечены (разрыв на оси, подпись), читатель видит реальную структуру времени. Изменение между днём 5 и днём 8 теперь видно как изменение за 3 дня, а не за 1 день. Тренд становится более слабым и более нюансированным: изменение есть, но оно не такое резкое, как казалось. Вывод может стать слабее или более осторожным.
+            </p>
+            <p>
+                <strong>Почему эта форма поддерживает обоснованное решение:</strong> Честная временная структура позволяет правильно оценить тренд и волатильность. Читатель видит реальную скорость изменений, может связать изменения с контекстом (выходные, события), может оценить устойчивость эффекта. Решение основано на реальной динамике, а не на артефактах представления. График становится инструментом для принятия обоснованного решения, а не источником ложных выводов.
+            </p>
+        </section>
+
+        <section class="comparison-block">
+            <h3>Та же метрика — разные выводы</h3>
+            <p>
+                Данные не изменились: те же значения выручки, те же дни, те же точки. Расчёты не изменились: дельты остались теми же. Но восприятие изменилось, потому что время было неправильно представлено.
+            </p>
+            <p>
+                В первом случае неравномерные интервалы визуально выглядели равномерно, пропуски были скрыты, тренд казался более резким. Во втором случае честная временная структура показала реальную скорость изменений, пропуски явны, тренд более слабый и нюансированный.
+            </p>
+            <p>
+                Это показывает, что временная ось — часть аналитического рассуждения. Неправильное представление времени незаметно меняет выводы: тренд кажется сильнее или слабее, изменения кажутся быстрее или медленнее, эффект кажется более или менее устойчивым. Временная ось должна честно отражать структуру времени, иначе график становится источником ложных выводов, а не инструментом для принятия решения.
+            </p>
+        </section>
+
+        <section class="argument-block">
+            <h3>Извлечённое правило</h3>
+            <p>
+                <strong>Временной ряд работает как аргумент только при честном представлении времени.</strong> Все даты явно указаны, пропуски данных отмечены, интервалы между точками отражают реальное время. Временная структура поддерживает правильную интерпретацию: тренды видны корректно, контекст понятен, решения основаны на реальной динамике, а не на артефактах представления.
+            </p>
+            <p style="margin-top: 1rem;">
+                <strong>Временной ряд не работает, когда непрерывность времени подразумевается, но отсутствует.</strong> Если пропуски данных скрыты, если неравномерные интервалы выглядят равномерно, если отсутствуют даты — временная ось искажает интерпретацию, даже если все точки данных точны. Искажение времени незаметно меняет выводы: тренд кажется сильнее или слабее, изменения кажутся быстрее или медленнее. Временная ось становится источником ложных выводов, а не инструментом для понимания динамики и принятия решения.
+            </p>
+        </section>
+
+        <section class="checklist-block">
+            <h3>Проверка решения</h3>
+            <ul>
+                <li>Указаны ли все даты явно на временной оси?</li>
+                <li>Отмечены ли пропуски данных, если они есть?</li>
+                <li>Отражают ли интервалы между точками реальное время?</li>
+            </ul>
+        </section>
+
+        <div class="nav-bottom">
+            <a href="./multigroup-lines.html">← Предыдущий урок</a>
+            <a href="./kpi-signal.html">Следующий урок →</a>
+        </div>
+    </div>
+</body>
+</html>
+

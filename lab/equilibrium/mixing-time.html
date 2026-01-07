@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixing Time</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin-top: 3rem;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            stroke: #ddd;
+            stroke-width: 1;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke: #2f3e4e;
+            stroke-width: 1.5;
+        }
+
+        .line-start1 {
+            stroke: #2f3e4e;
+            stroke-width: 2;
+            opacity: 0.9;
+        }
+
+        .line-start10 {
+            stroke: #2f3e4e;
+            stroke-width: 1.5;
+            opacity: 0.7;
+        }
+
+        .line-start20 {
+            stroke: #2f3e4e;
+            stroke-width: 1;
+            opacity: 0.5;
+        }
+
+        .legend {
+            font-size: 10px;
+            fill: #666;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Equilibrium</a>
+        <h1>Mixing Time</h1>
+        <p class="subtitle">Some systems forget faster than others.</p>
+        <p class="caption">Distance to equilibrium over iterations, from different initial states.</p>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+        </div>
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // States: 1..20
+        const nStates = 20;
+        const states = Array.from({ length: nStates }, (_, i) => i + 1);
+
+        // Build transition matrix (same as convergence.html)
+        const matrix = [];
+        for (let i = 0; i < nStates; i++) {
+            const row = new Array(nStates).fill(0);
+            const state = i + 1;
+
+            // Local transitions: i-1, i, i+1 with weights (0.25, 0.5, 0.25)
+            if (state > 1) {
+                row[i - 1] = 0.25;
+            }
+            row[i] = 0.5;
+            if (state < nStates) {
+                row[i + 1] = 0.25;
+            }
+
+            // Add small probability jumps to state 1 and state 20
+            row[0] += 0.02;
+            row[nStates - 1] += 0.02;
+
+            // Renormalize row
+            const rowSum = row.reduce((a, b) => a + b, 0);
+            for (let j = 0; j < nStates; j++) {
+                row[j] = row[j] / rowSum;
+            }
+
+            matrix.push(row);
+        }
+
+        // Compute stationary distribution pi numerically
+        // Start with uniform vector, iterate v = v * P for 200 steps
+        let pi = new Array(nStates).fill(1 / nStates);
+        for (let iter = 0; iter < 200; iter++) {
+            const nextPi = new Array(nStates).fill(0);
+            for (let j = 0; j < nStates; j++) {
+                for (let i = 0; i < nStates; i++) {
+                    nextPi[j] += pi[i] * matrix[i][j];
+                }
+            }
+            pi = nextPi;
+        }
+        // Normalize (should already be normalized, but ensure)
+        const piSum = pi.reduce((a, b) => a + b, 0);
+        pi = pi.map(p => p / piSum);
+
+        // L1 distance function
+        function l1Distance(v1, v2) {
+            let sum = 0;
+            for (let i = 0; i < nStates; i++) {
+                sum += Math.abs(v1[i] - v2[i]);
+            }
+            return sum;
+        }
+
+        // Compute distance over time for different starting states
+        const maxTime = 60;
+        const initialStates = [1, 10, 20]; // states 1, 10, 20 (indices 0, 9, 19)
+
+        const trajectories = initialStates.map(startState => {
+            // Initial distribution: all mass at startState
+            let v = new Array(nStates).fill(0);
+            v[startState - 1] = 1; // convert state number to index
+
+            const distances = [];
+            for (let t = 0; t <= maxTime; t++) {
+                distances.push({
+                    t: t,
+                    distance: l1Distance(v, pi)
+                });
+
+                // Compute next distribution: v_{t+1} = v_t * P
+                if (t < maxTime) {
+                    const nextV = new Array(nStates).fill(0);
+                    for (let j = 0; j < nStates; j++) {
+                        for (let i = 0; i < nStates; i++) {
+                            nextV[j] += v[i] * matrix[i][j];
+                        }
+                    }
+                    v = nextV;
+                }
+            }
+
+            return {
+                startState: startState,
+                distances: distances
+            };
+        });
+
+        // Set up dimensions
+        const margin = { top: 50, right: 100, bottom: 50, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0, maxTime])
+            .range([0, width]);
+
+        const maxDistance = d3.max(trajectories.map(t => d3.max(t.distances.map(d => d.distance))));
+        const yScale = d3.scaleLinear()
+            .domain([0, maxDistance])
+            .nice()
+            .range([height, 0]);
+
+        // Line generator
+        const line = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.distance))
+            .curve(d3.curveMonotoneX);
+
+        // Create lines for each trajectory
+        const lineClasses = ['line-start1', 'line-start10', 'line-start20'];
+        trajectories.forEach((traj, idx) => {
+            g.append("path")
+                .datum(traj.distances)
+                .attr("class", `line ${lineClasses[idx]}`)
+                .attr("d", line);
+        });
+
+        // Add invisible overlay for tooltip
+        const overlay = g.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("fill", "transparent")
+            .style("cursor", "crosshair");
+
+        const tooltip = d3.select("#tooltip");
+
+        overlay.on("mousemove", function(event) {
+            const [mouseX] = d3.pointer(event, this);
+            const t = Math.round(xScale.invert(mouseX));
+            const clampedT = Math.max(0, Math.min(maxTime, t));
+
+            // Find nearest points for each trajectory
+            const tooltipData = trajectories.map(traj => {
+                const point = traj.distances[clampedT];
+                return {
+                    startState: traj.startState,
+                    distance: point.distance
+                };
+            });
+
+            tooltip
+                .style("opacity", 1)
+                .html(`t = ${clampedT}<br>` +
+                    tooltipData.map(d => `start=${d.startState}: ${d.distance.toFixed(4)}`).join("<br>"))
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        });
+
+        overlay.on("mouseout", function() {
+            tooltip.style("opacity", 0);
+        });
+
+        // Add legend
+        const legendX = width - 80;
+        const legendY = 20;
+        trajectories.forEach((traj, idx) => {
+            const y = legendY + idx * 15;
+            g.append("line")
+                .attr("x1", legendX)
+                .attr("x2", legendX + 20)
+                .attr("y1", y)
+                .attr("y2", y)
+                .attr("class", lineClasses[idx])
+                .attr("stroke-width", traj.startState === 1 ? 2 : traj.startState === 10 ? 1.5 : 1)
+                .attr("opacity", traj.startState === 1 ? 0.9 : traj.startState === 10 ? 0.7 : 0.5);
+
+            g.append("text")
+                .attr("class", "legend")
+                .attr("x", legendX + 25)
+                .attr("y", y)
+                .attr("dy", "0.35em")
+                .text(`start=${traj.startState}`);
+        });
+
+        // Add axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(6)
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(5)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+    </script>
+</body>
+</html>
+

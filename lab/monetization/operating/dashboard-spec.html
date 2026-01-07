@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Spec</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .intro p {
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .widget-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            background: #fafafa;
+            min-height: 120px;
+        }
+
+        .widget-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .widget-card-why {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+
+        .widget-card-action {
+            font-size: 0.85rem;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .widget-card-action strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .sparkline-container {
+            margin-top: 0.5rem;
+            height: 40px;
+        }
+
+        .windows-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .windows-table th,
+        .windows-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .windows-table th {
+            background: #fafafa;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .windows-table td {
+            color: #2c3e50;
+        }
+
+        .segments-box {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            margin-bottom: 3rem;
+            background: #fafafa;
+        }
+
+        .segments-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .segments-list {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .segments-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .segments-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .hints-list {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            padding-left: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .hints-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .errors-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 600px) {
+            .errors-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .errors-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .error-card {
+            padding: 3rem 1rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+
+        .error-card-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-card-item {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-card-item strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .final-quote {
+            font-size: 0.95rem;
+            color: #999;
+            font-style: italic;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .row-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .row-label:first-of-type {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Спека дашборда монетизации</h1>
+        <p class="subtitle">Не 'все метрики', а 'правильные вопросы'.</p>
+
+        <div class="intro">
+            <p>
+                Дашборд нужен для решений, а не для созерцания. Каждый виджет должен отвечать на конкретный вопрос и вести к действию. Если виджет не меняет решение — он лишний.
+            </p>
+            <p>
+                Структура дашборда должна отражать механику: requests → responses → shows → clicks → revenue + pressure + time. Ранние сигналы (механика) вверху, итоги (деньги) в середине, контекст (время, изменения) внизу.
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Макет: 3 ряда виджетов</div>
+            <div class="dashboard-grid">
+                <div class="row-label">Ряд 1: Health / Early</div>
+                
+                <div class="widget-card">
+                    <div class="widget-card-title">Funnel Health</div>
+                    <div class="widget-card-why">Зачем: Целостность воронки requests → responses → shows</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь delivery слой, технические метрики, логи.
+                    </div>
+                    <div class="sparkline-container" id="funnelSparkline"></div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Show rate / coverage</div>
+                    <div class="widget-card-why">Зачем: Доступность инвентаря и деградация механики</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь saturation, pressure, сегменты отдельно.
+                    </div>
+                    <div class="sparkline-container" id="showrateSparkline"></div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Pressure proxy / frequency</div>
+                    <div class="widget-card-why">Зачем: Рост давления и насыщение системы</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Останови рост давления, проверь saturation, не дожимай дальше.
+                    </div>
+                    <div class="sparkline-container" id="pressureSparkline"></div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Variance / tails (сегменты)</div>
+                    <div class="widget-card-why">Зачем: Хрупкость системы, проблемы в отдельных сегментах</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Смотри сегменты отдельно, проверь хвосты распределения.
+                    </div>
+                </div>
+
+                <div class="row-label">Ряд 2: Money / Outcomes</div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Revenue index</div>
+                    <div class="widget-card-why">Зачем: Итоговая метрика на окне лагов</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь ранние сигналы (ряд 1), не паникуй на коротком окне.
+                    </div>
+                    <div class="sparkline-container" id="revenueSparkline"></div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">CPM index</div>
+                    <div class="widget-card-why">Зачем: Цена, компенсация, аукцион</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь объём (не компенсация ли), спрос, сезонность.
+                    </div>
+                    <div class="sparkline-container" id="cpmSparkline"></div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">RPM per user index</div>
+                    <div class="widget-card-why">Зачем: Эффективность на пользователя</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь mix пользователей, сегменты, inventory per user.
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Decomposition (volume vs price)</div>
+                    <div class="widget-card-why">Зачем: Разложение выручки на компоненты</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь, не компенсация ли (цена маскирует падение объёма).
+                    </div>
+                </div>
+
+                <div class="row-label">Ряд 3: Time / Experiments</div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Lag & windowing (chosen window)</div>
+                    <div class="widget-card-why">Зачем: Выбранное окно для оценки и лаг сигнал → деньги</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь, не слишком ли короткое окно, учитывай лаг.
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Regime drift indicator</div>
+                    <div class="widget-card-why">Зачем: Смена режима работы системы</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь долгосрочные тренды, baseline drift, не шум ли.
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Active changes / change log</div>
+                    <div class="widget-card-why">Зачем: Последние вмешательства и их статус</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Проверь change log, не смешались ли эффекты, cooldown статус.
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <div class="widget-card-title">Alerts feed (только actionable)</div>
+                    <div class="widget-card-why">Зачем: Только алерты с действием, не шум</div>
+                    <div class="widget-card-action">
+                        <strong>Если краснеет:</strong> Следуй плейбуку, проверь владельца и действие.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Окна и горизонты</div>
+            <table class="windows-table">
+                <thead>
+                    <tr>
+                        <th>Виджет</th>
+                        <th>Окно по умолчанию</th>
+                        <th>Что нельзя делать</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Funnel Health</td>
+                        <td>Утро (1 день)</td>
+                        <td>Не смотреть на окне больше недели — это не тренд, а моментальный снимок.</td>
+                    </tr>
+                    <tr>
+                        <td>Show rate / coverage</td>
+                        <td>День (1–3 дня)</td>
+                        <td>Не судить по одному дню — шум. Не смотреть на окне больше месяца — это не ранний сигнал.</td>
+                    </tr>
+                    <tr>
+                        <td>Pressure proxy</td>
+                        <td>День (1–3 дня)</td>
+                        <td>Не смотреть на окне больше недели — давление меняется быстро.</td>
+                    </tr>
+                    <tr>
+                        <td>Variance / tails</td>
+                        <td>Неделя (7 дней)</td>
+                        <td>Не смотреть на окне меньше 3 дней — нужна выборка. Не смотреть на окне больше месяца — это не ранний сигнал.</td>
+                    </tr>
+                    <tr>
+                        <td>Revenue index</td>
+                        <td>Неделя / месяц (7–28 дней)</td>
+                        <td>Не судить по короткому окну (меньше 7 дней) — лаги скрывают эффекты. Не смотреть на окне меньше дня — это не итоговая метрика.</td>
+                    </tr>
+                    <tr>
+                        <td>CPM index</td>
+                        <td>Неделя (7–14 дней)</td>
+                        <td>Не судить по короткому окну — компенсации маскируют проблемы. Не смотреть без объёма — цена без объёма бессмысленна.</td>
+                    </tr>
+                    <tr>
+                        <td>RPM per user</td>
+                        <td>Неделя (7–14 дней)</td>
+                        <td>Не судить по короткому окну — mix пользователей меняется медленно. Не смотреть без сегментации — среднее маскирует проблемы.</td>
+                    </tr>
+                    <tr>
+                        <td>Decomposition</td>
+                        <td>Неделя (7–14 дней)</td>
+                        <td>Не смотреть на окне меньше недели — нужна выборка для разложения. Не смотреть без сегментов — компенсации маскируются.</td>
+                    </tr>
+                    <tr>
+                        <td>Lag & windowing</td>
+                        <td>Фиксированное (выбранное)</td>
+                        <td>Не менять окно в процессе оценки — выводы меняются. Не выбирать окно меньше лага — эффект не проявился.</td>
+                    </tr>
+                    <tr>
+                        <td>Regime drift</td>
+                        <td>Месяц (28–35 дней)</td>
+                        <td>Не смотреть на окне меньше месяца — это долгосрочный тренд. Не смотреть на окне меньше недели — это не дрейф, а шум.</td>
+                    </tr>
+                    <tr>
+                        <td>Active changes</td>
+                        <td>Моментальный снимок</td>
+                        <td>Не забывать обновлять статус — устаревшая информация хуже отсутствия информации.</td>
+                    </tr>
+                    <tr>
+                        <td>Alerts feed</td>
+                        <td>Моментальный снимок</td>
+                        <td>Не показывать не-actionable алерты — это шум. Не показывать старые алерты без обновления статуса.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Срезы (segmentation) обязательны</div>
+            <div class="segments-box">
+                <div class="segments-title">Обязательные разрезы для каждого виджета</div>
+                <ul class="segments-list">
+                    <li><strong>Платформа:</strong> desktop vs mobile (разные механики, разные паттерны)</li>
+                    <li><strong>Формат:</strong> каждый формат отдельно (mix маскирует проблемы)</li>
+                    <li><strong>Зона давления:</strong> low / mid / high (насыщение проявляется по-разному)</li>
+                    <li><strong>New vs returning:</strong> разные профили пользователей (разный инвентарь, разное внимание)</li>
+                    <li><strong>Top placements vs long tail:</strong> концентрация vs распределение (хвосты важны)</li>
+                </ul>
+                <p class="segments-note">Среднее скрывает поломку на краю.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Встроенные подсказки (action hints)</div>
+            <ul class="hints-list">
+                <li>Если showRate↓ и CPM↑ → проверь saturation/coverage, не масштабируй.</li>
+                <li>Если responses_ratio↓ → слой delivery, проверь технические метрики.</li>
+                <li>Если variance↑ при среднем ок → смотри сегменты отдельно.</li>
+                <li>Если revenue↓ при стабильном showRate → проверь компенсацию (цена vs объём).</li>
+                <li>Если pressure↑ при стабильной revenue → скрытое насыщение, не дожимай.</li>
+                <li>Если CPM↓ при стабильном fillRate → проверь спрос, сезонность, внешние факторы.</li>
+                <li>Если funnel цела, но showRate↓ → проверь saturation, pressure, сегменты.</li>
+                <li>Если revenue↓ на коротком окне → проверь лаг, не паникуй, смотри ранние сигналы.</li>
+                <li>Если variance↑ в хвостах → проверь сегменты, не игнорируй выбросы.</li>
+                <li>Если все метрики ок, но revenue↓ → проверь change log, не смешались ли эффекты.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Ошибки дашбордов</div>
+            <div class="errors-grid">
+                <div class="error-card">
+                    <div class="error-card-title">Смешали горизонты</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Revenue на дне, showRate на неделе, variance на месяце — выводы противоречат.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Фиксируй окно для каждой метрики, не меняй в процессе оценки.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Нет baseline</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Видишь метрику, но не понимаешь, норма это или отклонение.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Показывай baseline (MA long) для каждой метрики, сравнивай с ним.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Нет change log</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Revenue меняется, но непонятно почему — нет связи с изменениями.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Веди change log, показывай активные изменения на дашборде.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Нет сегментов</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Среднее ок, но отдельные сегменты просели — проблема маскируется.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Показывай обязательные срезы для каждого виджета, проверяй хвосты.
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Revenue как алерт</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Revenue краснеет каждый день — слишком поздно, слишком шумно.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Revenue — итоговая метрика, не алерт. Алерты на ранних сигналах (ряд 1).
+                    </div>
+                </div>
+
+                <div class="error-card">
+                    <div class="error-card-title">Нет владельца действий</div>
+                    <div class="error-card-item">
+                        <strong>Как выглядит:</strong> Виджет краснеет, но непонятно, кто должен действовать и что делать.
+                    </div>
+                    <div class="error-card-item">
+                        <strong>Как исправить:</strong> Каждый виджет должен иметь владельца и чёткое действие при отклонении.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="final-quote">
+            Хороший дашборд — тот, который сокращает время до правильного действия.
+        </p>
+
+        <div class="footer">
+            <a href="./index.html" class="back-link">← Назад к Operating</a>
+            <p class="footer-note">Не 'все метрики', а 'правильные вопросы'.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate sparkline data
+        function generateSparklineData(type) {
+            const n = 120;
+            const data = [];
+            for (let t = 0; t < n; t++) {
+                let value;
+                if (type === 'showrate') {
+                    // Early drop
+                    const drop = t > 60 ? 0.15 * (1 - 1 / (1 + Math.exp(-(t - 60) / 5))) : 0;
+                    value = 0.78 + 0.02 * Math.sin(t / 8) - drop;
+                } else if (type === 'revenue') {
+                    // Late reaction
+                    const drop = t > 80 ? 0.12 * (1 - 1 / (1 + Math.exp(-(t - 80) / 8))) : 0;
+                    value = 0.85 + 0.02 * Math.sin(t / 10) - drop;
+                } else if (type === 'pressure') {
+                    // Growth
+                    const growth = t > 40 ? 0.20 * (1 - 1 / (1 + Math.exp(-(t - 40) / 6))) : 0;
+                    value = 0.50 + 0.05 * Math.sin(t / 12) + growth;
+                } else if (type === 'cpm') {
+                    // Compensation
+                    const compensation = t > 70 ? 0.08 * (1 - 1 / (1 + Math.exp(-(t - 70) / 4))) : 0;
+                    value = 0.90 + 0.03 * Math.sin(t / 9) + compensation;
+                }
+                data.push({ t, value });
+            }
+            return data;
+        }
+
+        // Draw sparkline
+        function drawSparkline(containerId, data, color) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const width = container.clientWidth;
+            const height = 40;
+            const margin = { top: 2, right: 2, bottom: 2, left: 2 };
+
+            d3.select(`#${containerId}`).selectAll('*').remove();
+
+            const svg = d3.select(`#${containerId}`)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const x = d3.scaleLinear()
+                .domain([0, data.length - 1])
+                .range([0, width - margin.left - margin.right]);
+
+            const y = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.value))
+                .range([height - margin.top - margin.bottom, 0])
+                .nice();
+
+            const line = d3.line()
+                .x((d, i) => x(i))
+                .y(d => y(d.value))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', color)
+                .attr('stroke-width', 1.5)
+                .attr('d', line);
+        }
+
+        // Initial render
+        function renderSparklines() {
+            const showrateData = generateSparklineData('showrate');
+            const revenueData = generateSparklineData('revenue');
+            const pressureData = generateSparklineData('pressure');
+            const cpmData = generateSparklineData('cpm');
+
+            drawSparkline('showrateSparkline', showrateData, '#1f2a37');
+            drawSparkline('revenueSparkline', revenueData, '#1f2a37');
+            drawSparkline('pressureSparkline', pressureData, '#1f2a37');
+            drawSparkline('cpmSparkline', cpmData, '#1f2a37');
+        }
+
+        renderSparklines();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                renderSparklines();
+            }, 250);
+        });
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

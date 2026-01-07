@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A/B-тестирование: принятие решений на практике</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: #333;
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            border: 1px solid #1a1a1a;
+            color: #1a1a1a;
+        }
+
+        .cta-button.secondary:hover {
+            background: #fafafa;
+        }
+
+        .intro {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .modules-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .module-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .module-card:hover {
+            background-color: #fafafa;
+            border-color: #d8d8d8;
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .module-description {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .module-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .module-content strong {
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .module-scenarios {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .module-scenarios ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .module-scenarios li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-scenarios a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .module-scenarios a:hover {
+            border-color: #666;
+        }
+
+        .lessons-list {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .lesson-item {
+            border-bottom: 1px solid #e8e8e8;
+            padding: 1.5rem 0;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .lesson-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .practice-list {
+            margin-top: 0.5rem;
+        }
+
+        .practice-list ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .practice-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .practice-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .practice-list a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .practice-list a:hover {
+            border-color: #666;
+        }
+
+        .lesson-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .lesson-link:hover {
+            border-color: #1a1a1a;
+            background-color: #fafafa;
+        }
+
+        .checklist-section {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .related-courses {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .related-courses h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .related-courses ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .related-courses li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .related-courses li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .related-courses a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .related-courses a:hover {
+            border-color: #666;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: #1a1a1a;
+        }
+
+        .decision-flow {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .flow-card {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .flow-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-number {
+            flex-shrink: 0;
+            width: 2rem;
+            height: 2rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-content h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .flow-content p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Курс</a>
+            <a href="./syllabus.html">Программа</a>
+            <a href="./checklist.html">Чеклист</a>
+            <a href="./practice/index.html">Практика</a>
+        </div>
+
+        <div class="kicker">Основной курс №2</div>
+        <h1>A/B-тестирование: принятие решений на практике</h1>
+        <p class="subtitle">Как читать эксперименты в реальных продуктах и не принимать неправильные решения — через графики, механизмы и чеклисты.</p>
+
+        <div class="cta-buttons">
+            <a href="./syllabus.html" class="cta-button">Теория</a>
+            <a href="./practice/index.html" class="cta-button secondary">Практика</a>
+        </div>
+
+        <div class="intro">
+            <p>
+                Этот курс — не про формулы и p-value. Это про решения: когда метрики конфликтуют, эффекты приходят с лагом, сегменты спорят друг с другом, а локальная оптимизация вредит системе.
+            </p>
+        </div>
+
+        <section class="lessons-section">
+            <h2>Уроки</h2>
+            <div class="lessons-list">
+                <div class="lesson-item" id="lesson-1">
+                    <h3>Что именно дало эффект</h3>
+                    <div class="lesson-links">
+                        <a href="./lessons/01-price-vs-money.html" class="lesson-link">Цена и объём: откуда берётся выручка</a>
+                    </div>
+                    <div class="practice-list">
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 1rem; margin-bottom: 0.5rem;">Практика:</p>
+                        <ul>
+                            <li><a href="./practice/scenarios/001-cpm-up-rev-down.html">001 «CPM вырос, а выручка упала»</a></li>
+                            <li><a href="./practice/scenarios/002-rev-up-no-cpm.html">002 «Выручка выросла без роста CPM»</a></li>
+                            <li><a href="./practice/scenarios/008-lazy-load-via-funnel.html">008 «Lazy Load — рост через воронку»</a></li>
+                            <li><a href="./practice/scenarios/009-visibility-no-pressure.html">009 «Рост видимости без роста давления»</a></li>
+                            <li><a href="./practice/scenarios/010-more-shows-less-revenue.html">010 «Больше показов — меньше денег»</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="lesson-item" id="lesson-2">
+                    <h3>Можно ли масштабировать</h3>
+                    <div class="lesson-links">
+                        <a href="./lessons/03-aggregates-lie.html" class="lesson-link">Почему локальный рост ломает систему</a>
+                    </div>
+                    <div class="practice-list">
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 1rem; margin-bottom: 0.5rem;">Практика:</p>
+                        <ul>
+                            <li><a href="./practice/scenarios/005-segment-conflict-simpson.html">005 «Сегменты спорят (Simpson)»</a></li>
+                            <li><a href="./practice/scenarios/007-local-win-system-loss.html">007 «Локальная победа, системный проигрыш»</a></li>
+                            <li><a href="./practice/scenarios/011-adaptive-pressure-segments.html">011 «Адаптивное давление по сегментам»</a></li>
+                            <li><a href="./practice/scenarios/012-engagement-no-revenue.html">012 «Вовлечённость без денег»</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="lesson-item" id="lesson-3">
+                    <h3>Можно ли верить эффекту?</h3>
+                    <div class="lesson-links">
+                        <a href="./lessons/02-statistics-vs-decision.html" class="lesson-link">Когда статистика не даёт ответа</a>
+                        <a href="./lessons/04-time-matters.html" class="lesson-link">Когда рано делать выводы</a>
+                    </div>
+                    <div class="practice-list">
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 1rem; margin-bottom: 0.5rem;">Практика:</p>
+                        <ul>
+                            <li><a href="./practice/scenarios/003-stat-sig-no-impact.html">003 «Статзначимо, но бизнес-эффекта нет»</a></li>
+                            <li><a href="./practice/scenarios/004-no-effect.html">004 «Ничего не произошло — и это результат»</a></li>
+                            <li><a href="./practice/scenarios/006-window-changes-conclusion.html">006 «Окно меняет вывод»</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="lesson-item" id="lesson-4">
+                    <h3>Что делать с неудачным экспериментом?</h3>
+                    <div class="lesson-links">
+                        <a href="./lessons/05-real-decisions.html" class="lesson-link">Как принимать решение по результатам эксперимента</a>
+                    </div>
+                    <div class="practice-list">
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 1rem; margin-bottom: 0.5rem;">Практика:</p>
+                        <ul>
+                            <li><a href="./practice/scenarios/004-no-effect.html">004 «Ничего не произошло — и это результат»</a></li>
+                            <li><a href="./practice/scenarios/010-more-shows-less-revenue.html">010 «Больше показов — меньше денег»</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="checklist-section">
+            <h2>Чеклист</h2>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem; max-width: 700px;">Проверка перед принятием решения по эксперименту.</p>
+            <a href="./checklist.html" class="cta-button">Открыть чеклист</a>
+        </section>
+
+        <section class="decision-flow">
+            <h2>Как принимать решение в реальном эксперименте</h2>
+            <div class="flow-card">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-content">
+                        <h3>Сигнал vs шум</h3>
+                        <p>Есть ли реальное изменение или это флуктуации? Смотри на форму кривой, а не только на среднюю дельту. Если эффект нестабилен и CI широкие — это шум, нужны данные.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 1: Можно ли верить эффекту?</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-content">
+                        <h3>Форма эффекта</h3>
+                        <p>Step change, ramp или bounce? Это определяет устойчивость. Если эффект новизны (bounce) — не катим. Если нарастает (ramp) — ждём стабилизации. Если стабилен (step) — можно решать. <a href="./lessons/04-time-matters.html" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">→ Формы эффекта</a></p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 1: Можно ли верить эффекту?</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-content">
+                        <h3>Время и лаг</h3>
+                        <p>Окно оценки меняет вывод? Эффект приходит с задержкой? Не останавливай на первом плюсе. Фиксируй минимальную длительность заранее. Продлевай, если нестабильно.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 1: Можно ли верить эффекту?</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-content">
+                        <h3>Агрегация и сегменты</h3>
+                        <p>Total-first. Проверь сегменты: не маскирует ли агрегат разнонаправленные эффекты? Веса сегментов изменились? Если да — пересчитай мыслью "как было бы при старых весах".</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 3: Можно ли масштабировать?</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-content">
+                        <h3>Каннибализация и системный эффект</h3>
+                        <p>Локальная победа или системный проигрыш? Формат выиграл, но total упал? Это каннибализация. Решение по total revenue/RPM, не по локальным метрикам.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 3: Можно ли масштабировать?</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">6</div>
+                    <div class="flow-content">
+                        <h3>Механизм и решение</h3>
+                        <p>Какой механизм: цена / объём / микс / воронка? Согласованы ли Primary / Diagnostic / Guardrails? Если механизм понятен, эффект устойчив, guardrails в порядке — катим. Если нет — перезапуск или не катим.</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem; font-style: italic;">Тип решения 2: Что именно дало эффект?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="related-courses">
+            <h2>Связанные курсы</h2>
+            <ul>
+                <li><a href="../experiments/index.html">Математика экспериментов в монетизации</a> — теоретические основы</li>
+                <li><a href="../monetization/index.html">Математика монетизации рекламы</a> — механизмы монетизации</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <a href="../../index.html">← На главную</a>
+            <a href="./practice/index.html">Открыть практику</a>
+        </div>
+    </div>
+</body>
+</html>
+

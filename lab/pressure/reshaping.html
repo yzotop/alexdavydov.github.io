@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Reshapes Distribution</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin-top: 3rem;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .chart-section {
+            margin-bottom: 4rem;
+        }
+
+        .chart-label {
+            font-size: 12px;
+            fill: #666;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            display: none;
+        }
+
+        .bar {
+            fill: #2f3e4e;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .bar:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Pressure</a>
+        <h1>Pressure Reshapes Distribution</h1>
+        <p class="subtitle">The same states. A different shape.</p>
+        <p class="caption">Pressure shifts mass toward a subset of states.</p>
+
+        <div class="chart-container">
+            <div class="chart-section">
+                <svg id="chart-baseline"></svg>
+            </div>
+            <div class="chart-section">
+                <svg id="chart-pressured"></svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create states 1..100
+        const states = Array.from({ length: 100 }, (_, i) => i + 1);
+
+        // Baseline: uniform weights
+        const baselineWeights = states.map(() => 1);
+        const baselineSum = baselineWeights.reduce((a, b) => a + b, 0);
+        const baselineProbs = baselineWeights.map(w => w / baselineSum);
+
+        // Pressured: multiply weights by factor for states 1..20
+        const pressuredWeights = states.map(i => {
+            if (i >= 1 && i <= 20) {
+                return 1 * 4; // Factor 4 for target region
+            }
+            return 1; // Factor 1 for others
+        });
+        const pressuredSum = pressuredWeights.reduce((a, b) => a + b, 0);
+        const pressuredProbs = pressuredWeights.map(w => w / pressuredSum);
+
+        // Set up dimensions
+        const margin = { top: 30, right: 30, bottom: 30, left: 30 };
+        const width = 800 - margin.left - margin.right;
+        const height = 200 - margin.top - margin.bottom;
+
+        // Shared x-scale
+        const xScale = d3.scaleLinear()
+            .domain([1, 100])
+            .range([0, width]);
+
+        // Shared y-scale (use max of both for comparison)
+        const maxProb = Math.max(
+            d3.max(baselineProbs),
+            d3.max(pressuredProbs)
+        );
+        const yScale = d3.scaleLinear()
+            .domain([0, maxProb])
+            .nice()
+            .range([height, 0]);
+
+        // Function to create a chart
+        function createChart(containerId, data, label) {
+            const svg = d3.select(`#${containerId}`)
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Add label
+            g.append("text")
+                .attr("class", "chart-label")
+                .attr("x", 0)
+                .attr("y", -10)
+                .text(label);
+
+            // Create bars
+            const barWidth = width / 100;
+            g.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", (d, i) => xScale(i + 1) - barWidth / 2)
+                .attr("width", barWidth)
+                .attr("y", d => yScale(d))
+                .attr("height", d => height - yScale(d));
+
+            // Minimal x-axis
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(5)
+                .tickSize(0)
+                .tickPadding(8);
+
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(xAxis);
+        }
+
+        // Create both charts
+        createChart("chart-baseline", baselineProbs, "Baseline");
+        createChart("chart-pressured", pressuredProbs, "Pressured");
+    </script>
+</body>
+</html>
+

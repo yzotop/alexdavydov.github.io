@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контроль vs тест: как сделать контраст читаемым — Графики в аналитике и принятии решений</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-to-module {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-module:hover {
+            color: #1a1a1a;
+        }
+
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .context-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .context-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .context-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .context-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .before-section, .after-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .visual-block {
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .visual-block-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .visual-block-caption {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .mini-graph {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .mini-graph svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reasons-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .reason-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .reason-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reason-number {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 1rem;
+            vertical-align: top;
+        }
+
+        .reason-content {
+            display: inline-block;
+            width: calc(100% - 3.5rem);
+            vertical-align: top;
+        }
+
+        .reason-content h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .reason-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .decision-impact {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .decision-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .decision-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .wrong-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff5f5;
+            border-left: 3px solid #d32f2f;
+            border-radius: 3px;
+        }
+
+        .wrong-decision strong {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .wrong-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .wrong-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .right-decision {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 3px solid #0284c7;
+            border-radius: 3px;
+        }
+
+        .right-decision strong {
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .right-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .right-decision p:last-child {
+            margin-bottom: 0;
+        }
+
+        .extracted-rule {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #fafafa;
+            border: 2px solid #1a1a1a;
+            border-radius: 6px;
+        }
+
+        .extracted-rule h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .extracted-rule p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 400;
+        }
+
+        .self-check {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .self-check h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .self-check ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .self-check li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .self-check li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-module">← К курсу</a>
+
+        <header>
+            <div class="kicker">Урок 5.1 / Модуль 5</div>
+            <h1>Как визуально выделить контроль и тест</h1>
+            <p class="subtitle">Когда точка отсчёта теряется среди линий</p>
+        </header>
+
+        <main>
+            <section class="context-section">
+                <h2>Контекст</h2>
+                <p>
+                    В A/B-тестах и экспериментах есть контроль и один или несколько тестов. Все группы показаны на графике, но часто все линии выглядят одинаково: один стиль, один цвет, один вес. Контроль не выделен как точка отсчёта, и читателю приходится самому искать, с чем именно сравнивать.
+                </p>
+                <p>
+                    Типичные кейсы, где контроль теряется среди линий:
+                </p>
+                <ul>
+                    <li>Временные графики метрик: контроль и тесты показаны одинаковым стилем</li>
+                    <li>Cumulative metrics: все группы выглядят равнозначными</li>
+                    <li>Отчёты по экспериментам: нет визуального приоритета контроля</li>
+                    <li>Презентации результатов для стейкхолдеров: сравнение не читается напрямую</li>
+                </ul>
+                <p>
+                    Проблема не в данных, а в том, что контроль не выделен как якорь сравнения. График должен подчёркивать различие «относительно контроля», а не просто показывать несколько серий данных. Если контроль визуально не выделен, сравнение теряет смысл и решение не читается.
+                </p>
+            </section>
+
+            <section class="before-section">
+                <h2>ДО: контроль как «одна из линий»</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Все линии выглядят равнозначными</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Control line (same style as tests) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#666" stroke-width="2"/>
+                            <!-- Test 1 line (same style) -->
+                            <polyline points="50,160 150,150 250,135 350,130 450,135 550,140" 
+                                fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                            <!-- Test 2 line (same style) -->
+                            <polyline points="50,140 150,140 250,145 350,150 450,155 550,160" 
+                                fill="none" stroke="#999" stroke-width="2"/>
+                            <!-- Legend (all equal) -->
+                            <g transform="translate(400, 50)">
+                                <line x1="0" y1="0" x2="30" y2="0" stroke="#666" stroke-width="2"/>
+                                <text x="35" y="5" font-size="11" fill="#666">Контроль</text>
+                                <line x1="0" y1="20" x2="30" y2="20" stroke="#1a1a1a" stroke-width="2"/>
+                                <text x="35" y="25" font-size="11" fill="#1a1a1a">Тест 1</text>
+                                <line x1="0" y1="40" x2="30" y2="40" stroke="#999" stroke-width="2"/>
+                                <text x="35" y="45" font-size="11" fill="#999">Тест 2</text>
+                            </g>
+                            <!-- Question marks -->
+                            <text x="300" y="100" font-size="12" fill="#d32f2f" text-anchor="middle">Где контроль?</text>
+                            <text x="300" y="115" font-size="11" fill="#666" text-anchor="middle">С чем сравнивать?</text>
+                            <text x="300" y="130" font-size="10" fill="#666" text-anchor="middle">Все линии равнозначны</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        Контроль не выделен — точка отсчёта размыта.
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px;">
+                    Контроль и тесты показаны одинаковым стилем, без визуального приоритета. Нет визуального выделения того, что является базой сравнения. Читателю приходится самому искать, с чем именно сравнивать, и сравнение превращается в поиск отличий, а не в чтение эффекта относительно контроля.
+                </p>
+            </section>
+
+            <section class="reasons-section">
+                <h2>Почему это не работает</h2>
+                
+                <div class="reason-item">
+                    <span class="reason-number">1</span>
+                    <div class="reason-content">
+                        <h3>Глаз не понимает, что является базой сравнения</h3>
+                        <p>
+                            Все линии выглядят равнозначными, и глаз не понимает, что является базой сравнения. Контроль — это якорь, относительно которого читается эффект, но если он визуально не выделен, читатель не знает, с чем сравнивать. Сравнение теряет структуру и становится хаотичным поиском отличий между всеми линиями.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">2</span>
+                    <div class="reason-content">
+                        <h3>Сравнение превращается в поиск отличий, а не в чтение эффекта относительно контроля</h3>
+                        <p>
+                            Если контроль не выделен, сравнение превращается в поиск отличий между всеми линиями, а не в чтение эффекта относительно контроля. Читатель должен сам вычислять, что изменилось по сравнению с контролем, вместо того чтобы видеть это напрямую. Это увеличивает когнитивную нагрузку и создаёт риск ошибки.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="reason-item">
+                    <span class="reason-number">3</span>
+                    <div class="reason-content">
+                        <h3>Решение не считывается напрямую — его приходится вычислять вручную</h3>
+                        <p>
+                            Решение не считывается напрямую из графика — его приходится вычислять вручную, сравнивая значения контрольной и тестовой групп. График перестаёт быть аргументом для решения и становится просто набором данных, которые нужно интерпретировать. Это замедляет принятие решения и создаёт риск неправильной интерпретации.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="after-section">
+                <h2>ПОСЛЕ: контроль как визуальный якорь</h2>
+                <div class="visual-block">
+                    <div class="visual-block-title">Контроль выделен как база сравнения</div>
+                    <div class="mini-graph">
+                        <svg width="600" height="300" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Time axis -->
+                            <line x1="50" y1="250" x2="550" y2="250" stroke="#999" stroke-width="2"/>
+                            <text x="50" y="270" font-size="11" fill="#666">День 1</text>
+                            <text x="300" y="270" font-size="11" fill="#666" text-anchor="middle">День 7</text>
+                            <text x="550" y="270" font-size="11" fill="#666" text-anchor="end">День 14</text>
+                            <!-- Y axis -->
+                            <line x1="50" y1="50" x2="50" y2="250" stroke="#999" stroke-width="1"/>
+                            <text x="30" y="255" font-size="10" fill="#666">0</text>
+                            <text x="30" y="155" font-size="10" fill="#666">50</text>
+                            <text x="30" y="55" font-size="10" fill="#666">100</text>
+                            <!-- Control line (de-emphasized but clearly marked) -->
+                            <polyline points="50,150 150,145 250,140 350,140 450,145 550,150" 
+                                fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            <!-- Test 1 line (emphasized) -->
+                            <polyline points="50,160 150,150 250,135 350,130 450,135 550,140" 
+                                fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                            <!-- Test 2 line (emphasized) -->
+                            <polyline points="50,140 150,140 250,145 350,150 450,155 550,160" 
+                                fill="none" stroke="#0284c7" stroke-width="3"/>
+                            <!-- Direct labels (no legend needed) -->
+                            <text x="520" y="145" font-size="11" fill="#1a1a1a" font-weight="500">Тест 1</text>
+                            <text x="520" y="165" font-size="11" fill="#0284c7" font-weight="500">Тест 2</text>
+                            <text x="520" y="155" font-size="11" fill="#999" font-style="italic">Контроль</text>
+                            <!-- Effect indicators -->
+                            <line x1="350" y1="140" x2="350" y2="130" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="360" y="135" font-size="10" fill="#1a1a1a">+10</text>
+                            <line x1="350" y1="140" x2="350" y2="150" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,3"/>
+                            <text x="360" y="155" font-size="10" fill="#0284c7">-10</text>
+                            <!-- Conclusion -->
+                            <text x="300" y="100" font-size="11" fill="#0284c7" text-anchor="middle">Эффект читается относительно контроля</text>
+                            <text x="300" y="115" font-size="10" fill="#666" text-anchor="middle">Контроль — визуальный якорь</text>
+                        </svg>
+                    </div>
+                    <div class="visual-block-caption">
+                        График должен сразу отвечать на вопрос: «Что изменилось по сравнению с контролем?»
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; max-width: 700px; margin-top: 1rem;">
+                    Контроль визуально деэмфазирован, но явно выделен как база сравнения. Тесты читаются относительно контроля, и эффект считывается напрямую. График сразу отвечает на вопрос «Что изменилось по сравнению с контролем?», а не заставляет читателя вычислять это вручную. Контроль становится визуальным якорем, относительно которого читается весь график.
+                </p>
+            </section>
+
+            <section class="decision-impact">
+                <h2>Влияние на решение</h2>
+                
+                <div class="decision-item">
+                    <div class="wrong-decision">
+                        <p><strong>Неправильные решения:</strong> Выбирать тест «на глаз», сравнивая все линии между собой без понимания, что является базой сравнения. Недооценивать или переоценивать эффект, потому что сравнение с контролем не очевидно. Путаться при нескольких вариантах, не понимая, какой из них лучше относительно контроля.</p>
+                    </div>
+                    <div class="right-decision">
+                        <p><strong>Правильные решения:</strong> Читать эффект относительно контроля, понимая, что контроль — это якорь сравнения. Быстро понимать направление и величину изменения, потому что график сразу показывает отличие теста от контроля. Сравнивать варианты в одной системе координат, где контроль явно выделен как база.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extracted-rule">
+                <h2>Извлечённое правило</h2>
+                <p>
+                    Контроль — это якорь сравнения. Если он не выделен визуально, график перестаёт быть аргументом. График должен подчёркивать различие «относительно контроля», а не просто показывать несколько серий данных. Контроль должен быть визуально деэмфазирован, но явно выделен как база, чтобы тесты читались относительно него, а эффект считывался напрямую.
+                </p>
+            </section>
+
+            <section class="self-check">
+                <h2>Проверка решения</h2>
+                <ul>
+                    <li>Ясно ли, что является контролем? Можно ли сразу увидеть, какая линия — это база сравнения?</li>
+                    <li>Можно ли сразу увидеть отличие теста от контроля, или приходится вычислять это вручную?</li>
+                    <li>Считывается ли решение без дополнительных расчётов, или график требует интерпретации?</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturation</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .thesis strong {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            margin: 3rem 0;
+            background: #ffffff;
+        }
+
+        .controls-panel {
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #e8e8e8;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mode-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 3px;
+        }
+
+        .mode-button:hover {
+            border-color: #999;
+        }
+
+        .mode-button.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 3rem;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-today {
+            stroke: #1f2a37;
+        }
+
+        .line-later {
+            stroke: #999;
+            stroke-dasharray: 4, 4;
+        }
+
+        .marker-line {
+            stroke: #ccc;
+            stroke-width: 1;
+            stroke-dasharray: 2, 2;
+            opacity: 0.7;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 700px;
+        }
+
+        .explanation-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 600px;
+        }
+
+        .explanation-panel-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .explanation-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .explanation-panel p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #999;
+        }
+
+        .interpretation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 3rem 0;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-to-home">← На главную</a>
+
+        <h1>Saturation</h1>
+        <p class="subtitle">Убывающая отдача.</p>
+        <p class="insight">Сначала давление растит выручку почти бесплатно. Потом — дорого. Потом — разрушительно.</p>
+
+        <p class="explanation">
+            Насыщение — это момент, когда дополнительное давление перестаёт конвертироваться в полезные показы и начинает съедать механику: show rate, внимание, будущую выручку.
+        </p>
+
+        <p class="thesis">
+            <strong>Каждый следующий показ стоит дороже предыдущего — в потере будущего.</strong>
+        </p>
+
+        <p class="explanation">
+            Сaturation редко видно в CPM. Чаще — в show conversion и в разнице 'сегодня vs потом'.
+        </p>
+
+        <div class="chart-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Давление (D)</label>
+                    <div class="slider-container">
+                        <input type="range" id="pressureSlider" class="slider" min="0.20" max="1.20" step="0.01" value="0.55">
+                        <span class="slider-value" id="pressureValue">0.55</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Режим насыщения</label>
+                    <div class="mode-toggle">
+                        <button class="mode-button active" data-mode="soft">Мягкое насыщение</button>
+                        <button class="mode-button" data-mode="hard">Жёсткий порог</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-title">Давление → Выручка (сегодня)</div>
+                <svg id="chart1"></svg>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-title">Сценарий во времени: сегодня vs потом</div>
+                <svg id="chart2"></svg>
+            </div>
+
+            <p class="chart-caption">
+                Насыщение почти всегда видно в траектории раньше, чем в отчёте.
+            </p>
+
+            <div class="explanation-panel">
+                <div class="explanation-panel-title">Как распознать saturation</div>
+                <p>Вначале рост давления почти бесплатен.</p>
+                <p>Затем выручка растёт всё медленнее.</p>
+                <p>Потом начинает падать конверсия в показ (show rate proxy).</p>
+                <p>И только потом меняется выручка.</p>
+                <p>Сaturation — это динамика, а не точка.</p>
+            </div>
+        </div>
+
+        <p class="interpretation">
+            Сaturation — причина большинства 'необъяснимых' падений. Она появляется, когда система начинает платить будущим за текущую выручку.
+        </p>
+
+        <p class="interpretation">
+            Поэтому давление нужно измерять не счётчиками, а механизмами: конверсия в показ, конкуренция форматов, траектория во времени.
+        </p>
+
+        <p class="interpretation" style="font-weight: 500; margin-top: 1.5rem;">
+            Больше — не значит выше. Иногда это просто ближе к порогу.
+        </p>
+
+        <div>
+            <a href="./index.html" class="back-link">← Назад к давлению</a>
+            <p class="footer-note">Насыщение — это налог на рост.</p>
+        </div>
+    </div>
+
+    <script>
+        // Model functions
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function todayRevenue(D, mode) {
+            const u = (D - 0.20) / 1.00;
+            const g = 70 + 60 * (1 - Math.exp(-3 * u));
+
+            if (mode === 'soft') {
+                return clamp(g - 8 * u * u, 50, 135);
+            } else {
+                const threshold = 0.80;
+                const penalty = 35 * (1 / (1 + Math.exp(-(D - threshold) * 16)));
+                return clamp(g - 6 * u * u - penalty, 40, 135);
+            }
+        }
+
+        function fatigue(D) {
+            return 1 - 0.42 * (1 / (1 + Math.exp(-(D - 0.75) * 12)));
+        }
+
+        function lag(D) {
+            return 10 + 18 * (1 / (1 + Math.exp(-(D - 0.70) * 10)));
+        }
+
+        function laterRevenue(d, today, longRun, L) {
+            const alpha = 1 / (1 + Math.exp(-(d - L) / 4));
+            return today * (1 - alpha) + longRun * alpha;
+        }
+
+        // Generate curve data for chart 1
+        function generateCurveData(mode) {
+            const data = [];
+            for (let i = 0; i <= 100; i++) {
+                const D = 0.20 + (i / 100) * 1.00;
+                data.push({
+                    pressure: D,
+                    revenue: todayRevenue(D, mode)
+                });
+            }
+            return data;
+        }
+
+        // Generate time series for chart 2
+        function generateTimeSeries(D, mode) {
+            const today = todayRevenue(D, mode);
+            const longRun = today * fatigue(D);
+            const L = lag(D);
+            
+            const todayData = [];
+            const laterData = [];
+            
+            for (let d = 0; d <= 60; d++) {
+                todayData.push({ day: d, revenue: today });
+                laterData.push({ day: d, revenue: laterRevenue(d, today, longRun, L) });
+            }
+            
+            return { today: todayData, later: laterData };
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 80, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 280 - margin.top - margin.bottom;
+
+        // Chart 1: Pressure → Revenue
+        const svg1 = d3.select("#chart1")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g1 = svg1.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale1 = d3.scaleLinear()
+            .domain([0.20, 1.20])
+            .range([0, width]);
+
+        const yScale1 = d3.scaleLinear()
+            .domain([50, 140])
+            .range([height, 0]);
+
+        // Chart 2: Time series
+        const svg2 = d3.select("#chart2")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g2 = svg2.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale2 = d3.scaleLinear()
+            .domain([0, 60])
+            .range([0, width]);
+
+        const yScale2 = d3.scaleLinear()
+            .domain([50, 140])
+            .range([height, 0]);
+
+        // Line generators
+        const line1 = d3.line()
+            .x(d => xScale1(d.pressure))
+            .y(d => yScale1(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        const line2 = d3.line()
+            .x(d => xScale2(d.day))
+            .y(d => yScale2(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        // State
+        let currentPressure = 0.55;
+        let currentMode = 'soft';
+
+        // Initialize axes
+        const xAxis1 = d3.axisBottom(xScale1)
+            .ticks(4)
+            .tickValues([0.2, 0.5, 0.8, 1.1])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis1 = d3.axisLeft(yScale1)
+            .ticks(3)
+            .tickValues([60, 100, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis1);
+
+        g1.append("g")
+            .attr("class", "axis")
+            .call(yAxis1);
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 30)
+            .attr("text-anchor", "middle")
+            .text("Давление (D)");
+
+        g1.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Выручка (индекс)");
+
+        const xAxis2 = d3.axisBottom(xScale2)
+            .ticks(4)
+            .tickValues([0, 15, 30, 45, 60])
+            .tickSize(4)
+            .tickPadding(8);
+
+        const yAxis2 = d3.axisLeft(yScale2)
+            .ticks(3)
+            .tickValues([60, 100, 140])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis2);
+
+        g2.append("g")
+            .attr("class", "axis")
+            .call(yAxis2);
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", height + 30)
+            .attr("text-anchor", "middle")
+            .text("Дни");
+
+        g2.append("text")
+            .attr("class", "axis-label")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("Выручка (индекс)");
+
+        // Update functions
+        function updateChart1() {
+            const curveData = generateCurveData(currentMode);
+            const currentRevenue = todayRevenue(currentPressure, currentMode);
+
+            // Update curve
+            const path = g1.selectAll(".revenue-curve")
+                .data([curveData]);
+
+            const pathEnter = path.enter()
+                .append("path")
+                .attr("class", "revenue-curve line line-today")
+                .attr("d", line1);
+
+            path.merge(pathEnter)
+                .transition()
+                .duration(450)
+                .attr("d", line1);
+
+            // Update marker
+            const marker = g1.selectAll(".marker-line")
+                .data([currentPressure]);
+
+            const markerEnter = marker.enter()
+                .append("line")
+                .attr("class", "marker-line")
+                .attr("x1", xScale1)
+                .attr("x2", xScale1)
+                .attr("y1", 0)
+                .attr("y2", height);
+
+            marker.merge(markerEnter)
+                .transition()
+                .duration(200)
+                .attr("x1", xScale1)
+                .attr("x2", xScale1);
+
+            // Update label
+            const label = g1.selectAll(".today-label")
+                .data([{ x: currentPressure, y: currentRevenue }]);
+
+            const labelEnter = label.enter()
+                .append("text")
+                .attr("class", "axis-label today-label")
+                .attr("x", d => xScale1(d.x) + 5)
+                .attr("y", d => yScale1(d.y) - 5)
+                .text("сегодня");
+
+            label.merge(labelEnter)
+                .transition()
+                .duration(200)
+                .attr("x", d => xScale1(d.x) + 5)
+                .attr("y", d => yScale1(d.y) - 5);
+        }
+
+        function updateChart2() {
+            const timeData = generateTimeSeries(currentPressure, currentMode);
+
+            // Update today line
+            const todayPath = g2.selectAll(".today-line")
+                .data([timeData.today]);
+
+            const todayPathEnter = todayPath.enter()
+                .append("path")
+                .attr("class", "today-line line line-today")
+                .attr("d", line2);
+
+            todayPath.merge(todayPathEnter)
+                .transition()
+                .duration(450)
+                .attr("d", line2);
+
+            // Update later line
+            const laterPath = g2.selectAll(".later-line")
+                .data([timeData.later]);
+
+            const laterPathEnter = laterPath.enter()
+                .append("path")
+                .attr("class", "later-line line line-later")
+                .attr("d", line2);
+
+            laterPath.merge(laterPathEnter)
+                .transition()
+                .duration(450)
+                .attr("d", line2);
+
+            // Update labels
+            const todayLabel = g2.selectAll(".today-label")
+                .data([timeData.today[timeData.today.length - 1]]);
+
+            const todayLabelEnter = todayLabel.enter()
+                .append("text")
+                .attr("class", "axis-label today-label")
+                .attr("x", d => xScale2(d.day) + 5)
+                .attr("y", d => yScale2(d.revenue) - 5)
+                .text("сегодня");
+
+            todayLabel.merge(todayLabelEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale2(d.day) + 5)
+                .attr("y", d => yScale2(d.revenue) - 5);
+
+            const laterLabel = g2.selectAll(".later-label")
+                .data([timeData.later[timeData.later.length - 1]]);
+
+            const laterLabelEnter = laterLabel.enter()
+                .append("text")
+                .attr("class", "axis-label later-label")
+                .attr("x", d => xScale2(d.day) + 5)
+                .attr("y", d => yScale2(d.revenue) + 15)
+                .text("потом");
+
+            laterLabel.merge(laterLabelEnter)
+                .transition()
+                .duration(450)
+                .attr("x", d => xScale2(d.day) + 5)
+                .attr("y", d => yScale2(d.revenue) + 15);
+        }
+
+        function updateAll() {
+            updateChart1();
+            updateChart2();
+        }
+
+        // Slider
+        const slider = document.getElementById("pressureSlider");
+        const sliderValue = document.getElementById("pressureValue");
+
+        slider.addEventListener("input", function() {
+            currentPressure = parseFloat(this.value);
+            sliderValue.textContent = currentPressure.toFixed(2);
+            updateAll();
+        });
+
+        // Mode toggle
+        d3.selectAll(".mode-button").on("click", function() {
+            currentMode = this.getAttribute("data-mode");
+            d3.selectAll(".mode-button")
+                .classed("active", false);
+            d3.select(this)
+                .classed("active", true);
+            updateAll();
+        });
+
+        // Initial render
+        updateAll();
+    </script>
+    <script>
+        (function () {
+            const current = window.location.pathname.replace(/\/$/, "");
+            links.forEach(a => {
+                const href = a.getAttribute("href");
+                if (!href) return;
+                const normalized = href.replace(/\/$/, "");
+                if (normalized === current || current.endsWith(normalized)) {
+                    a.classList.add("active");
+                    a.setAttribute("aria-current", "page");
+                    const section = a.closest(".nav-section");
+                    if (section) section.classList.add("active-section");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

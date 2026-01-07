@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPM вырос, а выручка упала</title>
+    <script src="../assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/ab_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            color: #1a1a1a;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .context {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .context p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+
+        .think-block {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .think-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .think-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .think-block li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .think-block li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .analysis {
+            max-width: 700px;
+            margin: 3rem 0;
+        }
+
+        .analysis h3 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .analysis p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .conclusion {
+            max-width: 700px;
+            margin: 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .conclusion h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion-section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .wrong {
+            color: #c00;
+        }
+
+        .correct {
+            color: #060;
+        }
+
+        .warning {
+            color: #960;
+        }
+
+        details {
+            margin: 2rem 0;
+        }
+
+        summary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #1a1a1a;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        summary:hover {
+            background: #333;
+        }
+
+        details[open] summary {
+            margin-bottom: 2rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        .scenario-nav {
+            max-width: 700px;
+            margin: 3rem 0 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .scenario-nav a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .scenario-nav a:hover {
+            border-color: #999;
+            color: #1a1a1a;
+        }
+
+        .scenario-nav .nav-disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .chart-tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .chart-tabs-nav button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .chart-tabs-nav button:hover {
+            color: #1a1a1a;
+        }
+
+        .chart-tabs-nav button.active {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .chart-tab-content {
+            display: none;
+        }
+
+        .chart-tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-nav {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-to-home">← На главную</a>
+
+        <div class="nav-links">
+            <a href="/lab/ab-decisions/index.html">Курс</a>
+            <a href="../index.html" class="active">Практика</a>
+            <a href="../syllabus.html">Программа</a>
+            <a href="../checklist.html">Чеклист</a>
+        </div>
+
+        <h1>CPM вырос, а выручка упала</h1>
+        <p style="font-size: 0.85rem; color: #666; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+            <a href="../../index.html#lesson-1" style="color: #666; text-decoration: none; border-bottom: 1px solid #ccc;">Урок: Что именно дало эффект</a>
+        </p>
+
+        <section class="context">
+            <h2>Контекст эксперимента</h2>
+            <p>
+                Повысили минимальный floor (порог цены) на 15% в тестовой группе. Цель — улучшить среднюю цену показа и выручку.
+            </p>
+            <p>
+                Эксперимент длился 14 дней. Трафик стабилен, сезонных эффектов не наблюдалось. Контрольная группа без изменений.
+            </p>
+            <p>
+                В тестовой группе CPM вырос на 12%, но выручка упала на 3%.
+            </p>
+        </section>
+
+        <div class="chart-block">
+            <div class="chart-toolbar">
+                <button id="mode-clean" onclick="toggleMode('clean')">Clean</button>
+                <button id="mode-annotated" onclick="toggleMode('annotated')" class="active">Annotated</button>
+            </div>
+
+            <div class="chart-tabs">
+                <div class="chart-tabs-nav">
+                    <button onclick="switchTab('cpm')" class="active" id="tab-cpm">CPM</button>
+                    <button onclick="switchTab('revenue')" id="tab-revenue">Revenue</button>
+                </div>
+
+                <div id="tab-content-cpm" class="chart-tab-content active">
+                    <div class="chart" id="chart-cpm"></div>
+                </div>
+
+                <div id="tab-content-revenue" class="chart-tab-content">
+                    <div class="chart" id="chart-revenue"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="think-block">
+            <h3>Подумай</h3>
+            <ul>
+                <li>Что здесь произошло?</li>
+                <li>Есть ли эффект от изменения floor?</li>
+                <li>Можно ли катить в прод?</li>
+                <li>Какие метрики нужно проверить дополнительно?</li>
+            </ul>
+        </section>
+
+        <details>
+            <summary>Показать разбор</summary>
+
+            <section class="analysis">
+                <h3>Разбор</h3>
+
+                <p>
+                    На графике видно, что CPM действительно вырос после повышения floor. Однако выручка начала падать примерно на 5-й день эксперимента.
+                </p>
+
+                <p>
+                    <strong>Где глаз обманывается:</strong> Рост CPM создаёт впечатление успеха. Но выручка = CPM × объём показов. Если объём упал сильнее, чем вырос CPM, выручка снизится.
+                </p>
+
+                <p>
+                    <strong>Альтернативная трактовка:</strong> Floor отрезал низкоценный хвост инвентаря. CPM вырос за счёт того, что низкоценные показы перестали проходить порог. Но общий объём показов упал, потому что часть инвентаря стала непродаваемой.
+                </p>
+
+                <p>
+                    <strong>Какие метрики вводят в заблуждение:</strong> CPM сам по себе не говорит о здоровье системы. Нужно смотреть на объём показов, fill rate, lost-to-constraints share. Если fill rate упал, а lost-to-constraints вырос — это признак того, что floor слишком высокий.
+                </p>
+            </section>
+        </details>
+
+        <section class="conclusion">
+            <h3>Вывод</h3>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title wrong">❌ Неправильный вывод:</div>
+                <div class="conclusion-section-content">
+                    «CPM вырос на 12%, значит изменение работает. Выручка упала из-за внешних факторов. Можно катить в прод.»
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title correct">✅ Корректный вывод:</div>
+                <div class="conclusion-section-content">
+                    Повышение floor привело к росту CPM, но снижению объёма показов. Чистый эффект — падение выручки на 3%. Это указывает на то, что floor слишком высокий и отрезает значительную часть инвентаря. Нельзя катить в прод без снижения floor или расширения доступности инвентаря.
+                </div>
+            </div>
+
+            <div class="conclusion-section">
+                <div class="conclusion-section-title warning">⚠️ Чего нельзя утверждать:</div>
+                <div class="conclusion-section-content">
+                    Нельзя утверждать, что «высокий floor всегда плох» — это зависит от структуры спроса и доступности инвентаря. Нельзя утверждать, что «эффект проявится позже» — 14 дней достаточно для оценки эффекта floor. Нельзя утверждать, что «контрольная группа нестабильна» без проверки её метрик.
+                </div>
+            </div>
+        </section>
+
+        <nav class="scenario-nav">
+            <span class="nav-disabled">← Предыдущий сценарий</span>
+            <a href="../index.html">К практикуму</a>
+            <a href="./002-rev-up-no-cpm.html">Следующий сценарий →</a>
+        </nav>
+    </div>
+
+    <script src="../assets/js/ab_charts.js"></script>
+    <script>
+        // Scenario 001: CPM up, Revenue down
+        // Synthetic data: 14 days, baseline = 100
+        // CPM: Control stable ~100, Test grows to ~112 (12% increase)
+        // Revenue: Control stable ~100, Test drops to ~97 (3% decrease)
+
+        let currentMode = 'annotated';
+        let currentTab = 'cpm';
+
+        // Generate data for 14 days
+        function generateData() {
+            const days = Array.from({length: 15}, (_, i) => i);
+            
+            // CPM data: Control stable, Test grows
+            const cpmControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const cpmTest = days.map(d => {
+                const base = 100;
+                const growth = d * 0.85; // ~12% over 14 days
+                const noise = (Math.random() - 0.5) * 0.8;
+                return { x: d, y: base + growth + noise };
+            });
+
+            // Revenue data: Control stable, Test drops
+            const revControl = days.map(d => ({ x: d, y: 100 + (Math.random() - 0.5) * 0.5 }));
+            const revTest = days.map(d => {
+                const base = 100;
+                const drop = d > 4 ? (d - 4) * 0.25 : 0; // Starts dropping after day 4
+                const noise = (Math.random() - 0.5) * 0.6;
+                return { x: d, y: base - drop + noise };
+            });
+
+            return { cpmControl, cpmTest, revControl, revTest };
+        }
+
+        function renderCharts() {
+            const data = generateData();
+            const annotationsEnabled = currentMode === 'annotated';
+
+            // CPM Chart
+            ABCharts.render({
+                el: '#chart-cpm',
+                series: [
+                    { name: 'Control', values: data.cpmControl, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.cpmTest, color: '#4a9eff' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'CPM (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    lines: annotationsEnabled ? [
+                        { x: 0, color: '#999', opacity: 0.3, dashed: true }
+                    ] : [],
+                    labels: annotationsEnabled ? [
+                        { x: 7, y: 106, text: 'CPM растёт', color: '#4a9eff', fontSize: '11px' },
+                        { x: 12, y: 111, text: '+12%', color: '#4a9eff', fontSize: '10px', fontWeight: '500' }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+
+            // Revenue Chart
+            ABCharts.render({
+                el: '#chart-revenue',
+                series: [
+                    { name: 'Control', values: data.revControl, dashed: true, opacity: 0.6 },
+                    { name: 'Test', values: data.revTest, color: '#ff6b6b' }
+                ],
+                axis: {
+                    xLabel: 'Дни эксперимента',
+                    yLabel: 'Revenue (индекс)',
+                    xTicks: 14,
+                    yTicks: 5,
+                    yFormat: d => d.toFixed(1)
+                },
+                annotations: {
+                    enabled: annotationsEnabled,
+                    lines: annotationsEnabled ? [
+                        { x: 5, color: '#ff6b6b', opacity: 0.4, dashed: true },
+                        { x: 0, color: '#999', opacity: 0.3, dashed: true }
+                    ] : [],
+                    labels: annotationsEnabled ? [
+                        { x: 5, y: 99, text: 'Начало падения', color: '#ff6b6b', fontSize: '10px' },
+                        { x: 12, y: 97, text: '-3%', color: '#ff6b6b', fontSize: '10px', fontWeight: '500' }
+                    ] : [],
+                    bands: annotationsEnabled ? [
+                        { xStart: 5, xEnd: 14, yMin: 95, yMax: 100, color: '#ff6b6b', opacity: 0.1 }
+                    ] : []
+                },
+                theme: {
+                    background: '#ffffff',
+                    grid: true
+                },
+                height: 400,
+                responsive: true
+            });
+        }
+
+        function toggleMode(mode) {
+            currentMode = mode;
+            document.getElementById('mode-clean').classList.toggle('active', mode === 'clean');
+            document.getElementById('mode-annotated').classList.toggle('active', mode === 'annotated');
+            renderCharts();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-cpm').classList.toggle('active', tab === 'cpm');
+            document.getElementById('tab-revenue').classList.toggle('active', tab === 'revenue');
+            document.getElementById('tab-content-cpm').classList.toggle('active', tab === 'cpm');
+            document.getElementById('tab-content-revenue').classList.toggle('active', tab === 'revenue');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCharts();
+        });
+    </script>
+</body>
+</html>

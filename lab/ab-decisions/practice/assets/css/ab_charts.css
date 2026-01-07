@@ -1,0 +1,291 @@
+/* AB Charts - Canonical light style */
+
+:root {
+    --chart-bg: #ffffff;
+    --chart-surface: #ffffff;
+
+    --axis: #9ca3af;
+    --axis-label: #6b7280;
+
+    --grid: #e5e7eb;
+
+    --text: #111827;
+    --muted: #6b7280;
+
+    --line-control: #9ca3af;   /* светло-серый */
+    --line-test: #111827;      /* почти чёрный */
+    --line-secondary: #374151; /* для 2-й метрики */
+
+    --dash: 4 4;
+
+    --band-fill: rgba(17, 24, 39, 0.04); /* мягкое серое окно */
+    --band-stroke: rgba(17, 24, 39, 0.10);
+
+    --tooltip-bg: rgba(255, 255, 255, 0.92);
+    --tooltip-border: #e5e7eb;
+    --tooltip-text: #111827;
+}
+
+/* Chart container */
+.chart-block {
+    margin: 3rem 0;
+    background: var(--chart-bg);
+    padding: 1.5rem;
+    border-radius: 4px;
+}
+
+.chart {
+    width: 100%;
+    height: 420px;
+    background: var(--chart-bg);
+}
+
+.chart svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--chart-bg);
+}
+
+/* Toolbar */
+.chart-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--grid);
+}
+
+.chart-toolbar button {
+    padding: 0.5rem 1rem;
+    background: var(--chart-bg);
+    border: 1px solid var(--grid);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.chart-toolbar button:hover {
+    border-color: var(--axis);
+    color: var(--text);
+}
+
+.chart-toolbar button.active {
+    background: var(--text);
+    color: var(--chart-bg);
+    border-color: var(--text);
+}
+
+/* Tabs */
+.chart-tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--grid);
+}
+
+.chart-tabs-nav button {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.9rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.chart-tabs-nav button:hover {
+    color: var(--text);
+}
+
+.chart-tabs-nav button.active {
+    color: var(--text);
+    border-bottom-color: var(--text);
+    font-weight: 500;
+}
+
+.chart-tab-content {
+    display: none;
+}
+
+.chart-tab-content.active {
+    display: block;
+}
+
+/* Chart elements - Axes */
+.ab-chart .ab-axis path,
+.ab-chart .ab-axis line {
+    stroke: var(--axis);
+    stroke-width: 1;
+    fill: none;
+}
+
+.ab-chart .ab-axis path.domain {
+    display: none; /* скрываем основную линию оси */
+}
+
+.ab-chart .ab-axis .tick line {
+    stroke: var(--axis);
+    stroke-width: 1;
+    opacity: 0.5;
+}
+
+.ab-chart .ab-axis .tick text {
+    fill: var(--axis-label);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* Grid */
+.ab-chart .ab-grid line {
+    stroke: var(--grid);
+    stroke-width: 1;
+    stroke-dasharray: var(--dash);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Lines */
+.ab-chart .ab-line {
+    fill: none;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.ab-chart .ab-line.ab-control {
+    stroke: var(--line-control);
+    stroke-dasharray: var(--dash);
+    opacity: 0.8;
+}
+
+.ab-chart .ab-line.ab-test {
+    stroke: var(--line-test);
+    stroke-dasharray: none;
+}
+
+.ab-chart .ab-line.ab-secondary {
+    stroke: var(--line-secondary);
+    stroke-dasharray: none;
+}
+
+/* Labels (series names on the right) */
+.ab-chart .ab-label {
+    font-size: 12px;
+    font-weight: 400;
+    fill: var(--muted);
+    pointer-events: none;
+}
+
+.ab-chart .ab-label.ab-label-control {
+    fill: var(--line-control);
+}
+
+.ab-chart .ab-label.ab-label-test {
+    fill: var(--line-test);
+}
+
+.ab-chart .ab-label.ab-label-secondary {
+    fill: var(--line-secondary);
+}
+
+/* Bands (shaded areas) */
+.ab-chart .ab-band {
+    fill: var(--band-fill);
+    stroke: var(--band-stroke);
+    stroke-width: 1;
+    stroke-dasharray: var(--dash);
+    pointer-events: none;
+}
+
+/* Vertical lines (annotations) */
+.ab-chart .ab-vline {
+    stroke: var(--axis);
+    stroke-width: 1;
+    stroke-dasharray: var(--dash);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Axis labels */
+.ab-chart .ab-axis-label {
+    fill: var(--axis-label);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* Tooltip */
+.ab-tooltip {
+    position: absolute;
+    padding: 8px 12px;
+    background: var(--tooltip-bg);
+    border: 1px solid var(--tooltip-border);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--tooltip-text);
+    pointer-events: none;
+    z-index: 1000;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chart {
+        height: 320px;
+    }
+    
+    .chart-block {
+        padding: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .ab-chart .ab-axis .tick text,
+    .ab-chart .ab-label {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart {
+        height: 280px;
+    }
+    
+    .chart-toolbar button,
+    .chart-tabs-nav button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Multi-chart layouts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+@media (min-width: 800px) {
+    .charts-grid.two-columns {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Chart panel titles */
+.chart-panel-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    margin-top: 2rem;
+}
+
+.chart-panel-title:first-child {
+    margin-top: 0;
+}

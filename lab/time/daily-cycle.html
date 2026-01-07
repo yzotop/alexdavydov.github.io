@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Cycle</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .controls {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2f3e4e;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2f3e4e;
+            cursor: pointer;
+            border: none;
+        }
+
+        .hour-label {
+            font-size: 0.9rem;
+            color: #666;
+            min-width: 80px;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            background: #ffffff;
+            padding: 2.5rem;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            display: none;
+        }
+
+        .bar {
+            fill: #2f3e4e;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .bar:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Time</a>
+        <h1>Daily Cycle</h1>
+        <p class="subtitle">Time is a coordinate in state space.</p>
+        <p class="caption">A synthetic 24-hour cycle shifts the distribution of states.</p>
+
+        <div class="controls">
+            <div class="slider-container">
+                <label for="hour-slider" style="font-size: 0.9rem; color: #666;">Hour:</label>
+                <input type="range" id="hour-slider" class="slider" min="0" max="23" step="1" value="12">
+                <span class="hour-label" id="hour-label">Hour: 12</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <svg id="chart"></svg>
+        </div>
+    </div>
+
+    <script>
+        // States 1..100
+        const states = Array.from({ length: 100 }, (_, i) => i + 1);
+
+        // Set up dimensions
+        const margin = { top: 40, right: 30, bottom: 40, left: 30 };
+        const width = 800 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+
+        // Create SVG
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([1, 100])
+            .range([0, width]);
+
+        let yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+
+        // Function to compute distribution for hour h
+        function computeDistribution(h) {
+            // Peak moves during the day
+            const peak = 20 + 60 * (0.5 + 0.5 * Math.sin((h - 6) / 24 * 2 * Math.PI));
+            
+            // Compute weights
+            const weights = states.map(i => {
+                return Math.exp(-Math.pow(i - peak, 2) / (2 * Math.pow(10, 2)));
+            });
+
+            // Normalize
+            const sum = weights.reduce((a, b) => a + b, 0);
+            return weights.map(w => w / sum);
+        }
+
+        // Function to update chart
+        function updateChart(hour) {
+            const probabilities = computeDistribution(hour);
+
+            // Update y scale
+            yScale.domain([0, d3.max(probabilities)]).nice();
+
+            // Update bars
+            const bars = g.selectAll(".bar")
+                .data(probabilities);
+
+            bars.enter()
+                .append("rect")
+                .attr("class", "bar")
+                .merge(bars)
+                .transition()
+                .duration(300)
+                .attr("x", (d, i) => xScale(i + 1) - (width / 100 - 0.5) / 2)
+                .attr("width", width / 100 - 0.5)
+                .attr("y", d => yScale(d))
+                .attr("height", d => height - yScale(d));
+
+            bars.exit().remove();
+        }
+
+        // Initial render
+        updateChart(12);
+
+        // Slider event
+        const slider = document.getElementById("hour-slider");
+        const hourLabel = document.getElementById("hour-label");
+
+        slider.addEventListener("input", function() {
+            const hour = parseInt(this.value);
+            hourLabel.textContent = `Hour: ${hour}`;
+            updateChart(hour);
+        });
+
+        // X-axis
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(5)
+            .tickSize(0)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+    </script>
+</body>
+</html>
+
