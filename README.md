@@ -2,6 +2,12 @@
 
 A minimal static site for exploring system patterns and mathematical visualizations, deployed on GitHub Pages.
 
+## 🌍 Live site
+
+https://yzotop.github.io/alexdavydov.github.io/
+
+Deployed via GitHub Pages from `main` branch.
+
 ## What This Is
 
 This repository contains a systems gallery inspired by Yan Holtz's approach, but focused on system patterns rather than chart types. The gallery is organized into five categories exploring different aspects of adaptive systems under uncertainty. The site is built with pure HTML, CSS, and JavaScript—no build tools or frameworks required.
@@ -78,6 +84,16 @@ alexdavydov.github.io/
 - **CSS3**: Minimal, clean styling
 - **JavaScript**: Vanilla JS
 - **D3.js v7**: Data visualization (loaded via CDN)
+
+## UI / UX Style Guide
+
+Все калькуляторы, графики и интерактивные страницы в проекте должны соответствовать единому стиль-гайду для обеспечения консистентности и читаемости.
+
+См. [`STYLE_GUIDE_CURSOR.md`](./STYLE_GUIDE_CURSOR.md) для детальных правил по:
+- Визуальному стилю (цвета, типографика, отступы)
+- Паттернам калькуляторов и графиков
+- Семантике цветов (зелёный/красный/серый)
+- Sanity-checks и критериям готовности
 
 ## Публикация на GitHub Pages — чеклист
 
