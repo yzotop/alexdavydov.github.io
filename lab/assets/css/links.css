@@ -1,0 +1,94 @@
+/* Unified link styles for the project */
+
+:root {
+    --link-fg: #4f46e5;
+    --link-underline: rgba(79, 70, 229, 0.45);
+    --link-underline-strong: rgba(79, 70, 229, 0.85);
+    --term-bg-hover: rgba(79, 70, 229, 0.10);
+}
+
+/* базовые ссылки */
+a {
+    color: var(--link-fg);
+    text-decoration: underline;
+    text-decoration-color: var(--link-underline);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+a:visited {
+    color: var(--link-fg);
+    text-decoration-color: var(--link-underline);
+}
+
+/* обычные ссылки: hover без заливки */
+a:hover {
+    background: transparent;
+    text-decoration-color: var(--link-underline-strong);
+    text-decoration-thickness: 2px;
+}
+
+a:focus {
+    outline: 2px solid rgba(79, 70, 229, 0.30);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* термин-ссылка: спокойная по умолчанию */
+a.term-link {
+    padding: 0;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+/* термин-ссылка: плашка только на hover/focus */
+a.term-link:hover,
+a.term-link:focus {
+    background: var(--term-bg-hover);
+    padding: 1px 6px;
+    border-radius: 8px;
+}
+
+/* заголовки карточек и h1-h3: без плашки */
+.card-title a,
+h1 a, h2 a, h3 a {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* навигация (если есть класс back-link) — не превращать в "термин" */
+.back-link a,
+a.back-link {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* если где-то ссылки внутри маленьких подписей/мета — чуть тише */
+.meta a, .hint a, .small a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* Навигационные ссылки (back-link) могут иметь свой стиль, но базовый стиль ссылок применяется */
+.back-link,
+.back-to-home {
+    color: #666;
+    text-decoration: none;
+}
+
+.back-link:hover,
+.back-to-home:hover {
+    color: #1a1a1a;
+    background: transparent;
+}
+
+/* Scroll margin для якорей в глоссарии */
+#terms-container h2[id],
+#terms-container h3[id],
+.term-card h2[id],
+.term-card h3[id] {
+    scroll-margin-top: 24px;
+}
+

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson 1: Цена ≠ деньги — A/B-тестирование: принятие решений на практике</title>
+    <link rel="stylesheet" href="../../assets/css/links.css">
     <style>
         * {
             margin: 0;
@@ -361,6 +362,8 @@
             background-color: #1a1a1a;
             color: #ffffff;
         }
+
+        /* Term link styles - now using unified links.css */
     </style>
 </head>
 <body>
@@ -376,8 +379,9 @@
 
         <header>
             <div class="kicker">Lesson 1</div>
+            <!-- Правило использования терминов: определения НЕ пишем на страницах, если термин влияет на интерпретацию или решение → ставим ссылку на GLOSSARY.md -->
             <h1>Цена и объём: откуда берётся выручка</h1>
-            <p class="subtitle">Если CPM растёт — это ещё ничего не значит. Деньги меняются только когда меняется объём монетизируемых показов или микс.</p>
+            <p class="subtitle">Если <a class="term-link" href="/lab/glossary/#cpm">CPM</a> растёт — это ещё ничего не значит. Деньги меняются только когда меняется объём монетизируемых показов или микс.</p>
             
             <div class="decision-type-badge">
                 <strong>Тип решения:</strong> <a href="../index.html#decision-2">Что именно дало эффект?</a>
@@ -403,31 +407,31 @@
             <section class="card">
                 <h2>Одна формула, которая спасает от ошибок</h2>
                 <div class="formula">
-                    Revenue ≈ (CPM / 1000) × Shows
+                    <a class="term-link" href="/lab/glossary/#revenue">Revenue</a> ≈ (<a class="term-link" href="/lab/glossary/#cpm">CPM</a> / 1000) × Shows
                 </div>
                 <ul>
-                    <li><strong>CPM</strong> — "цена тысячи показов" (cost per mille). Это средняя цена, которую платят за тысячу показов.</li>
+                    <li><strong><a class="term-link" href="/lab/glossary/#cpm">CPM</a></strong> — "цена тысячи показов" (cost per mille). Это средняя цена, которую платят за тысячу показов.</li>
                     <li><strong>Shows</strong> — объём монетизируемых показов (а не requests). Это реальные показы, которые принесли деньги.</li>
-                    <li>Если CPM не растёт, рост Revenue идёт через Shows; если Shows падают, CPM может "не спасти" — выручка всё равно упадёт.</li>
+                    <li>Если <a class="term-link" href="/lab/glossary/#cpm">CPM</a> не растёт, рост <a class="term-link" href="/lab/glossary/#revenue">Revenue</a> идёт через Shows; если Shows падают, <a class="term-link" href="/lab/glossary/#cpm">CPM</a> может "не спасти" — <a class="term-link" href="/lab/glossary/#revenue">выручка</a> всё равно упадёт.</li>
                 </ul>
             </section>
 
             <section class="card">
                 <h2>4 рычага, которые реально двигают выручку</h2>
                 <ul>
-                    <li><strong>Цена:</strong> CPM (аукцион/рынок/формат) — насколько дорого продаётся показ.</li>
+                    <li><strong>Цена:</strong> <a class="term-link" href="/lab/glossary/#cpm">CPM</a> (аукцион/рынок/формат) — насколько дорого продаётся показ.</li>
                     <li><strong>Объём:</strong> monetizable shows — сколько показов реально произошло и принесло деньги.</li>
                     <li><strong>Воронка:</strong> requests → responses → shows (fill/coverage) — сколько запросов превратилось в показы.</li>
-                    <li><strong>Видимость/внимание:</strong> show rate / viewability / scroll depth — как часто блок становится видимым и получает внимание.</li>
+                    <li><strong>Видимость/внимание:</strong> <a class="term-link" href="/lab/glossary/#show-rate">show rate</a> / viewability / scroll depth — как часто блок становится видимым и получает внимание.</li>
                 </ul>
             </section>
 
             <section class="card">
                 <h2>Типовые ловушки интерпретации</h2>
                 <ul>
-                    <li>"CPM вырос — значит тест успешен" — не обязательно. Если Shows упали сильнее, чем вырос CPM, выручка снизится.</li>
-                    <li>"Выручка не выросла — значит ничего не произошло" — может выросли shows, но упал CPM или изменился микс форматов.</li>
-                    <li>"Fill rate вырос — значит деньги вырастут" — если show rate/внимание не выросло, объём показов может не измениться.</li>
+                    <li>"<a class="term-link" href="/lab/glossary/#cpm">CPM</a> вырос — значит тест успешен" — не обязательно. Если Shows упали сильнее, чем вырос <a class="term-link" href="/lab/glossary/#cpm">CPM</a>, <a class="term-link" href="/lab/glossary/#revenue">выручка</a> снизится.</li>
+                    <li>"<a class="term-link" href="/lab/glossary/#revenue">Выручка</a> не выросла — значит ничего не произошло" — может выросли shows, но упал <a class="term-link" href="/lab/glossary/#cpm">CPM</a> или изменился микс форматов.</li>
+                    <li>"Fill rate вырос — значит деньги вырастут" — если <a class="term-link" href="/lab/glossary/#show-rate">show rate</a>/внимание не выросло, объём показов может не измениться.</li>
                     <li>"Requests выросли — значит объём вырос" — requests не равны shows. Нужно смотреть на воронку requests → responses → shows.</li>
                     <li>"Средняя дельта" без формы кривой — особенно при лагах. Окно оценки может скрыть реальную динамику эффекта.</li>
                 </ul>
@@ -436,11 +440,11 @@
             <section class="card">
                 <h2>Мини-протокол проверки (total-first)</h2>
                 <ol>
-                    <li><strong>Revenue</strong> (или RPM) — есть ли изменение? Это главная метрика.</li>
-                    <li><strong>CPM</strong> — что происходит с ценой? Растёт, падает или стабильна?</li>
+                    <li><strong><a class="term-link" href="/lab/glossary/#revenue">Revenue</a></strong> (или RPM) — есть ли изменение? Это главная метрика.</li>
+                    <li><strong><a class="term-link" href="/lab/glossary/#cpm">CPM</a></strong> — что происходит с ценой? Растёт, падает или стабильна?</li>
                     <li><strong>Shows</strong> — что происходит с объёмом монетизируемых показов? Это вторая часть формулы.</li>
                     <li><strong>Requests→Responses→Shows</strong> — где меняется воронка? На каком этапе теряется объём?</li>
-                    <li><strong>Show rate / viewability</strong> — меняется ли видимость? Влияет ли на объём показов?</li>
+                    <li><strong><a class="term-link" href="/lab/glossary/#show-rate">Show rate</a> / viewability</strong> — меняется ли видимость? Влияет ли на объём показов?</li>
                     <li><strong>Разрезы:</strong> device/platform/placement — нет ли mix shift? Агрегат может маскировать эффекты.</li>
                 </ol>
             </section>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глоссарий аналитики</title>
+    <link rel="stylesheet" href="../assets/css/links.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2rem;
+            font-style: italic;
+            max-width: 700px;
+        }
+
+        .search-box {
+            margin-bottom: 3rem;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+
+        .term-card {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+
+        .term-card.hidden {
+            display: none;
+        }
+
+        .term-card h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+            scroll-margin-top: 2rem;
+        }
+
+        .term-section {
+            margin-bottom: 1rem;
+        }
+
+        .term-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .term-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .term-section-content {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+        }
+
+        .term-section-content strong {
+            font-weight: 600;
+        }
+
+        .footer-note {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .footer-note a {
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .footer-note a:hover {
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+        <a href="../index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
+
+        <h1>Глоссарий аналитики</h1>
+        <p class="subtitle">Единый язык проекта: термины и метрики без дублирования определений</p>
+
+        <div class="search-box">
+            <input type="text" id="search-input" class="search-input" placeholder="Поиск по терминам...">
+        </div>
+
+        <div id="terms-container">
+            <div class="term-card" data-term="requests">
+                <h2 id="requests">Requests</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Объём входящего спроса / попыток получить рекламу (в обучающих калькуляторах может быть индексом).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Считать, что рост Requests автоматически означает рост выручки.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Requests — верх воронки. Деньги появляются только если дальше сохраняются Fill/Show и цена.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда рост Requests сопровождается падением Fill или Show rate.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Fill rate, Show rate, Revenue decomposition</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="responses">
+                <h2 id="responses">Responses</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Успешные ответы на requests (в контексте рекламного запроса/ответа).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Путать responses с показами.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Responses — это «разрешение/готовность» системы продолжить воронку, но не факт показа.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда responses стабильны, но падают показы/монетизируемые показы ниже по воронке.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Fill rate, Show rate, Shows</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="fill-rate">
+                <h2 id="fill-rate">Fill rate</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Доля ответов: <strong>fill rate = responses / requests</strong>.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Считать fill rate «качеством рекламы» или «денежной метрикой».</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Fill rate — это пропускная способность верхней части воронки: насколько спрос реально превращается в возможность показа.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда fill растёт, но show rate падает (эффект «разрешили больше, показали меньше»).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Show rate, Funnel, Revenue decomposition</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="shows">
+                <h2 id="shows">Shows</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Фактические показы (в учебных моделях — промежуточный уровень между responses и monet shows).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Смешивать shows и monet shows.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Shows — это объём экспозиции, но деньги зависят от монетизируемой части и цены.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда растут shows за счёт «плохих» показов, которые не монетизируются.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Monetized shows, Show rate</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="monetized-shows">
+                <h2 id="monetized-shows">Monetized shows</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Показы, которые считаются монетизируемыми и участвуют в выручке.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Считать, что любые показы = деньги.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Это главный «объёмный» множитель выручки вместе с CPM.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда рост monet shows вызван ростом давления и ухудшает пользовательские метрики (вне учебной модели).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Show rate, Pressure, Revenue</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="show-rate">
+                <h2 id="show-rate">Show rate</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Доля монетизируемых показов от ответов: <strong>show rate = monetized_shows / responses</strong>.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Считать show rate «частью fill rate» или путать знаменатель.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Show rate — это эффективность превращения "responses" в монетизацию. Часто именно здесь «съедается» эффект.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда show rate растёт, но CPM падает (можно получить больше показов, но дешевле).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Fill rate, CPM, Revenue decomposition</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="cpm">
+                <h2 id="cpm">CPM</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Цена за 1000 монетизируемых показов.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Рост CPM = рост выручки.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">CPM — это цена, а не деньги. Выручка = цена × объём. Цена может расти при падении объёма и наоборот.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда CPM растёт на сужении инвентаря и падают monetized shows.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Revenue, Price vs volume, Auction, Demand</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="revenue">
+                <h2 id="revenue">Revenue</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Деньги, получаемые системой от монетизации.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Читать revenue без декомпозиции и без воронки.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Revenue — итог мультипликативной цепочки. Чтобы понять причину, нужно разложить на множители: объём и цену.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда итог стабилен, но внутри компенсируются противоположные эффекты (одна метрика растёт, другая падает).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Revenue decomposition, Funnel sensitivity, Control vs test</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="revenue-decomposition">
+                <h2 id="revenue-decomposition">Revenue decomposition</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Разложение выручки на вклад факторов (объёмные шаги воронки + цена).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Считать, что "главная метрика" объясняет сама себя.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Если есть итоговый эффект, он обязан быть объясним вкладом шагов. Иначе это шум/ошибка/плохая модель.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда вклад факторов считают на разных базах/окнах или смешивают знаменатели.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Control vs test, Funnel, Sanity-checks</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="control-vs-test">
+                <h2 id="control-vs-test">Control vs test</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Сравнение контрольной и тестовой группы как разбор причин эффекта, а не только фиксация "+/-".</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Останавливаться на "значимо/незначимо".</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Нужно разложить итог на вклад шагов и понять механизм: где именно возник эффект.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда в агрегате эффект есть, а в сегментах — конфликт (Симпсон).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Segments, Simpson's paradox, Decision</div>
+                </div>
+            </div>
+
+            <div class="term-card" data-term="rollout">
+                <h2 id="rollout">Rollout</h2>
+                <div class="term-section">
+                    <div class="term-section-title">Что это</div>
+                    <div class="term-section-content">Раскатка изменения на 100% трафика.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Типичная ошибка</div>
+                    <div class="term-section-content">Линейно переносить эффект без учёта доли трафика и механизма.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Как правильно читать</div>
+                    <div class="term-section-content">Проекция на 100% — это масштабирование эффекта с учётом текущей доли и базового уровня.</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Когда вводит в заблуждение</div>
+                    <div class="term-section-content">Когда сравнивают несколько тестов и "раскатывают всё сразу" (в реальности выбирают один вариант).</div>
+                </div>
+                <div class="term-section">
+                    <div class="term-section-title">Связанные темы</div>
+                    <div class="term-section-content">Rollout calculator, Compare variants, Decision</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Источник: <a href="/GLOSSARY.md">GLOSSARY.md</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple search functionality
+        const searchInput = document.getElementById('search-input');
+        const termCards = document.querySelectorAll('.term-card');
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            
+            termCards.forEach(card => {
+                const termText = card.textContent.toLowerCase();
+                if (query === '' || termText.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+
+        // Handle anchor links (scroll to term when page loads with hash)
+        window.addEventListener('load', function() {
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const target = document.getElementById(hash);
+                if (target) {
+                    setTimeout(() => {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выручка = цена × объём</title>
     <script src="assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/links.css">
     <link rel="stylesheet" href="assets/css/calculators.css">
     <link rel="stylesheet" href="assets/css/calculators_charts.css">
 </head>
@@ -13,14 +14,15 @@
         <a href="../../index.html" class="back-link">← На главную</a>
         <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
 
+        <!-- Правило использования терминов: определения НЕ пишем на страницах, если термин влияет на интерпретацию или решение → ставим ссылку на GLOSSARY.md -->
         <h1>Выручка = цена × объём</h1>
-        <p class="subtitle">Trade-off CPM и показов. Почему рост цены может снизить деньги.</p>
+        <p class="subtitle">Trade-off <a class="term-link" href="/lab/glossary/#cpm">CPM</a> и показов. Почему рост цены может снизить деньги.</p>
 
         <div class="calculator-layout">
             <div class="controls-panel">
                 <div class="control-group">
                     <label class="control-label">
-                        <span>CPM (цена за 1000 показов)</span>
+                        <span><a class="term-link" href="/lab/glossary/#cpm">CPM</a> (цена за 1000 показов)</span>
                         <span class="control-value" id="cpm-value">100</span>
                     </label>
                     <input type="range" id="cpm" min="40" max="240" step="1" value="100">
@@ -47,11 +49,11 @@
             <div class="output-panel">
                 <div class="kpi-block">
                     <div class="kpi-item">
-                        <span class="kpi-label">Выручка (индекс)</span>
+                        <span class="kpi-label"><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> (индекс)</span>
                         <span class="kpi-value" id="revenue-index">100.0</span>
                     </div>
                     <div class="kpi-item">
-                        <span class="kpi-label">CPM (индекс)</span>
+                        <span class="kpi-label"><a class="term-link" href="/lab/glossary/#cpm">CPM</a> (индекс)</span>
                         <span class="kpi-value" id="cpm-index">100.0</span>
                     </div>
                     <div class="kpi-item">
@@ -61,10 +63,10 @@
                 </div>
 
                 <div class="chart-card single">
-                    <h3 class="chart-title">Выручка vs CPM</h3>
+                    <h3 class="chart-title"><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> vs <a class="term-link" href="/lab/glossary/#cpm">CPM</a></h3>
                     
                     <p class="chart-hint">
-                        По оси X — CPM (цена), по оси Y — итоговая выручка системы.
+                        По оси X — <a class="term-link" href="/lab/glossary/#cpm">CPM</a> (цена), по оси Y — итоговая <a class="term-link" href="/lab/glossary/#revenue">выручка</a> системы.
                         Кривая показывает trade-off цены и объёма при текущей эластичности.
                     </p>
                     
@@ -85,7 +87,7 @@
 
         <div class="insight-block">
             <h3>Что показывает калькулятор</h3>
-            <p>Выручка = CPM × Показы. Но при росте CPM показы могут падать (эластичность). Калькулятор показывает trade-off: оптимальную точку, где выручка максимальна.</p>
+            <p><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> = <a class="term-link" href="/lab/glossary/#cpm">CPM</a> × Показы. Но при росте <a class="term-link" href="/lab/glossary/#cpm">CPM</a> показы могут падать (эластичность). Калькулятор показывает trade-off: оптимальную точку, где <a class="term-link" href="/lab/glossary/#revenue">выручка</a> максимальна.</p>
         </div>
     </div>
 
