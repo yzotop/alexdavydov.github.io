@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цена растёт, а выручка падает: почему это нормально и что с этим делать</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/links.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .checklist h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .checklist li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .checklist li:last-child {
+            margin-bottom: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .navigation-link {
+            display: inline-block;
+            margin-top: 3rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .navigation-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К метрикам</a>
+
+        <h1>Цена растёт, а выручка падает: почему это нормально и что с этим делать</h1>
+
+        <h2>Контекст</h2>
+
+        <p class="explanation">
+            Типичная ситуация в экспериментах и оптимизации монетизации: <a class="term-link" href="/lab/glossary/#cpm">CPM</a> вырос, команда радуется "цена лучше", но итоговая <a class="term-link" href="/lab/glossary/#revenue">выручка</a> падает.  
+            Отчёты показывают рост цены за тысячу показов, но деньги снижаются.  
+            Это выглядит как парадокс: если цена выросла, почему денег стало меньше?
+        </p>
+
+        <p class="explanation">
+            На практике это нормальный режим работы монетизационной системы.  
+            <a class="term-link" href="/lab/glossary/#cpm">CPM</a> — это "цена за тысячу показов", а денег приносит система целиком: цена × объём.  
+            Рост цены почти всегда сопровождается изменениями в объёме, и если объём падает быстрее, чем растёт цена, итоговая <a class="term-link" href="/lab/glossary/#revenue">выручка</a> снижается.
+        </p>
+
+        <h2>Что вы видите в данных</h2>
+
+        <div class="checklist">
+            <ul>
+                <li><a class="term-link" href="/lab/glossary/#cpm">CPM</a> растёт — цена за тысячу показов увеличивается</li>
+                <li><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> падает или стагнирует — деньги не растут или снижаются</li>
+                <li>показы/монетизируемые показы падают или не растут — объём не компенсирует рост цены</li>
+                <li>иногда растёт давление/частота, но объём всё равно проседает — система пытается компенсировать, но не успевает</li>
+            </ul>
+        </div>
+
+        <h2>Механизм</h2>
+
+        <p class="explanation">
+            Рост <a class="term-link" href="/lab/glossary/#cpm">CPM</a> может уменьшать объём: спрос не выкупает показы по такой цене, или система начинает продавать меньше, но дороже.  
+            Когда цена растёт, рекламодатели могут снижать ставки или уходить из аукциона, что уменьшает количество монетизируемых показов.
+        </p>
+
+        <p class="explanation">
+            Рост <a class="term-link" href="/lab/glossary/#cpm">CPM</a> может быть "эффектом микса": остались более дорогие показы, но их меньше.  
+            Система теряет дешёвые показы, а дорогие остаются, что повышает среднюю цену, но снижает общий объём.  
+            Итоговая <a class="term-link" href="/lab/glossary/#revenue">выручка</a> = <a class="term-link" href="/lab/glossary/#cpm">CPM</a> × показы: если объём падает быстрее, чем растёт цена, деньги снижаются.
+        </p>
+
+        <h2>Калькулятор</h2>
+
+        <p class="explanation" style="margin-bottom: 2rem;">
+            Калькулятор показывает, как изменение цены (<a class="term-link" href="/lab/glossary/#cpm">CPM</a>) и объёма показов совместно влияет на итоговую <a class="term-link" href="/lab/glossary/#revenue">выручку</a>.
+        </p>
+
+        <div class="calculator-layout">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">
+                        <span><a class="term-link" href="/lab/glossary/#cpm">CPM</a> (цена за 1000 показов)</span>
+                        <span class="control-value" id="cpm-value">100</span>
+                    </label>
+                    <input type="range" id="cpm" min="40" max="240" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Показы (индекс, базовое значение)</span>
+                        <span class="control-value" id="shows-value">100</span>
+                    </label>
+                    <input type="range" id="shows" min="50" max="150" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Эластичность объёма к цене</span>
+                        <span class="control-value" id="elasticity-value">-1.0</span>
+                    </label>
+                    <input type="range" id="elasticity" min="-40" max="0" step="1" value="-20">
+                    <p class="control-note">Отрицательное значение: при росте цены объём падает по степени</p>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="kpi-block">
+                    <div class="kpi-item">
+                        <span class="kpi-label"><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> (индекс)</span>
+                        <span class="kpi-value" id="revenue-index">100.0</span>
+                    </div>
+                    <div class="kpi-item">
+                        <span class="kpi-label"><a class="term-link" href="/lab/glossary/#cpm">CPM</a> (индекс)</span>
+                        <span class="kpi-value" id="cpm-index">100.0</span>
+                    </div>
+                    <div class="kpi-item">
+                        <span class="kpi-label">Показы (индекс)</span>
+                        <span class="kpi-value" id="shows-index">100.0</span>
+                    </div>
+                </div>
+
+                <div class="chart-card single">
+                    <h3 class="chart-title"><a class="term-link" href="/lab/glossary/#revenue">Выручка</a> vs <a class="term-link" href="/lab/glossary/#cpm">CPM</a></h3>
+                    
+                    <p class="chart-hint">
+                        По оси X — <a class="term-link" href="/lab/glossary/#cpm">CPM</a> (цена), по оси Y — итоговая <a class="term-link" href="/lab/glossary/#revenue">выручка</a> системы.
+                        Кривая показывает trade-off цены и объёма при текущей эластичности.
+                    </p>
+                    
+                    <p class="chart-context" id="chart-context"></p>
+                    <p class="chart-warning" id="chart-warning"></p>
+                    
+                    <div id="rev-vs-price-chart" class="chart big"></div>
+                    <div class="chart-footer">
+                        <div class="chart-sensitivity">
+                            Локальная чувствительность: ΔRevenue/ΔCPM ≈ <span id="sensitivity-value">0.0</span>
+                        </div>
+                        <div class="chart-plateau" id="plateau-info" style="display: none;"></div>
+                        <div class="chart-verdict" id="chart-verdict">Вы находитесь рядом с оптимумом.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="decision-block">
+            <h2>🧠 Решение</h2>
+
+            <div class="decision-block-section">
+                <h3>🔍 Наблюдение</h3>
+                <p>
+                    <a class="term-link" href="/lab/glossary/#cpm">CPM</a> вырос, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> падает.  
+                    Значит, рост цены не компенсировал падение монетизируемого объёма.  
+                    Система продаёт меньше, пусть и дороже.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>⚙️ Механизм</h3>
+                <p>
+                    <a class="term-link" href="/lab/glossary/#cpm">CPM</a> — это цена. <a class="term-link" href="/lab/glossary/#revenue">Выручка</a> зависит от цены и объёма.  
+                    Рост цены часто сопровождается снижением выкупа/объёма или изменением микса:  
+                    система продаёт меньше показов, или остаются только дорогие показы, но их меньше.  
+                    Потеря объёма перекрывает выигрыш от роста цены.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>❌ Неправильный вывод</h3>
+                <p>
+                    «<a class="term-link" href="/lab/glossary/#cpm">CPM</a> вырос — всё хорошо, монетизация улучшилась».  
+                    Этот вывод фокусируется на цене и игнорирует объём.  
+                    Он может привести к неверному решению: продолжать оптимизировать цену, не замечая потери объёма.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>✅ Корректная интерпретация</h3>
+                <p>
+                    Рост <a class="term-link" href="/lab/glossary/#cpm">CPM</a> — диагностический сигнал.  
+                    Он хорош, только если объём не проваливается и если рост цены не достигается ценой деградации системы.  
+                    Оценивать нужно связку цены и объёма, а не каждую метрику отдельно.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>▶️ Решение</h3>
+                <p>
+                    Проверить декомпозицию: что произошло с монетизируемыми показами, не было ли сдвига в миксе (меньше объёма, но дороже), не выросло ли давление без эффекта в деньгах.  
+                    Решение принимать по итоговой <a class="term-link" href="/lab/glossary/#revenue">выручке</a> и устойчивости, а не по <a class="term-link" href="/lab/glossary/#cpm">CPM</a> в одиночку.
+                </p>
+            </div>
+        </section>
+
+        <h2>Когда этот паттерн вводит в заблуждение</h2>
+
+        <p class="explanation">
+            Этот паттерн описывает типичную ситуацию, но не является универсальным правилом.  
+            <a class="term-link" href="/lab/glossary/#cpm">CPM</a> может вырости из-за сезонности или внешнего спроса, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> падать из-за потери объёма по другой причине (например, технические проблемы или изменения в продукте).  
+            Сам паттерн не доказывает причину — он показывает конфликт "цена vs объём" и направляет проверку.
+        </p>
+
+        <p class="explanation">
+            Например, если <a class="term-link" href="/lab/glossary/#cpm">CPM</a> вырос из-за сезонного всплеска спроса на рекламу, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> упала из-за технических проблем с показом, паттерн будет выглядеть так же, но причина будет другой.  
+            Важно проверять не только связь цены и объёма, но и внешние факторы, которые могут влиять на каждую метрику отдельно.
+        </p>
+
+        <div>
+            <a href="./patterns.html" class="navigation-link">← К паттернам интерпретации</a>
+        </div>
+    </div>
+
+    <script src="../../calculators/assets/js/revenue_calculator.js"></script>
+</body>
+</html>

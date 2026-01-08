@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выручка растёт, а продукту хуже: когда финансовый рост — плохой сигнал</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/links.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+        }
+
+        .chart-caption {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .checklist h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .checklist li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .checklist li:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-container {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 2rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .axis {
+            font-size: 11px;
+            fill: #999;
+            font-weight: 400;
+        }
+
+        .axis .domain {
+            display: none;
+        }
+
+        .axis .tick line {
+            stroke: #e8e8e8;
+            stroke-width: 1;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .line-revenue {
+            stroke: #1f2a37;
+        }
+
+        .line-product {
+            stroke: #dc2626;
+            stroke-dasharray: 4, 4;
+        }
+
+        .line-label {
+            font-size: 10px;
+            fill: #666;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К метрикам</a>
+
+        <h1>Выручка растёт, а продукту хуже: когда финансовый рост — плохой сигнал</h1>
+
+        <p class="explanation">
+            Иногда эксперименты и изменения в монетизации дают однозначно положительный результат по <a class="term-link" href="/lab/glossary/#revenue">выручке</a>.  
+            Графики растут, отчёты выглядят хорошо, финансовая метрика сигнализирует успех.
+        </p>
+
+        <p class="explanation">
+            Однако спустя некоторое время продукт начинает "вести себя хуже":  
+            падает вовлечённость, ухудшаются пользовательские метрики, растёт раздражение, снижается долгосрочная ценность аудитории или увеличивается нагрузка на команду поддержки.
+        </p>
+
+        <p class="explanation">
+            В такие моменты возникает сложный вопрос:  
+            если <a class="term-link" href="/lab/glossary/#revenue">выручка</a> растёт, значит ли это, что решение было правильным?
+        </p>
+
+        <p class="explanation">
+            Интуитивная логика часто звучит так:  
+            «Деньги выросли — значит всё ок, продукт адаптируется».  
+            Эта логика особенно опасна, потому что она подменяет оценку системы оценкой одного краткосрочного сигнала.
+        </p>
+
+        <p class="explanation">
+            На практике рост <a class="term-link" href="/lab/glossary/#revenue">выручки</a> может происходить за счёт:
+            — усиления давления на пользователя  
+            — сокращения "времени до рекламы"  
+            — ухудшения качества опыта ради краткосрочного дохода  
+            — выкупа будущей <a class="term-link" href="/lab/glossary/#revenue">выручки</a> ценой долгосрочного удержания  
+            — деградации немонетизационных метрик, которые не видны сразу
+        </p>
+
+        <p class="explanation">
+            В результате система зарабатывает больше сейчас, но теряет устойчивость, доверие и потенциал роста.
+        </p>
+
+        <p class="explanation" style="margin-bottom: 3rem;">
+            Ниже — способ читать этот паттерн и отличать здоровый рост <a class="term-link" href="/lab/glossary/#revenue">выручки</a> от роста, который ухудшает продукт.
+        </p>
+
+        <h2>Как читать этот паттерн</h2>
+
+        <p class="explanation">
+            Если <a class="term-link" href="/lab/glossary/#revenue">выручка</a> растёт, но продуктовые метрики ухудшаются, значит рост получен за счёт давления, перераспределения или выкупа будущей ценности.
+            Такой рост требует проверки guardrails и временной динамики, а не только финансового эффекта.
+        </p>
+
+        <div class="checklist">
+            <h3>Что проверить сразу</h3>
+            <ul>
+                <li>какие пользовательские метрики ухудшились (вовлечённость, retention, время)</li>
+                <li>есть ли рост рекламного давления или частоты контакта</li>
+                <li>не сократилось ли "время до первой рекламы"</li>
+                <li>есть ли негативная динамика с лагом (time / delayed effects)</li>
+                <li>не растёт ли <a class="term-link" href="/lab/glossary/#revenue">выручка</a> за счёт будущих периодов</li>
+            </ul>
+        </div>
+
+        <p class="chart-caption">
+            Рост <a class="term-link" href="/lab/glossary/#revenue">выручки</a> не всегда означает улучшение системы.  
+            Важно смотреть, за счёт чего этот рост получен.
+        </p>
+
+        <div class="chart-container">
+            <svg id="divergence-chart"></svg>
+        </div>
+
+        <section class="decision-block">
+            <h2>🧠 Решение</h2>
+
+            <div class="decision-block-section">
+                <h3>🔍 Наблюдение</h3>
+                <p>
+                    <a class="term-link" href="/lab/glossary/#revenue">Выручка</a> растёт, но продуктовые метрики ухудшаются. Это означает, что финансовый рост сопровождается деградацией пользовательского опыта или устойчивости продукта.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>⚙️ Механизм</h3>
+                <p>
+                    Рост <a class="term-link" href="/lab/glossary/#revenue">выручки</a> может быть достигнут за счёт усиления давления, сокращения времени до монетизации или перераспределения ценности между периодами. Эти механизмы дают краткосрочный эффект, но ухудшают долгосрочную динамику.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>❌ Неправильный вывод</h3>
+                <p>
+                    «<a class="term-link" href="/lab/glossary/#revenue">Выручка</a> выросла — эксперимент успешен». Такой вывод игнорирует побочные эффекты и долгосрочные последствия для продукта.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>✅ Корректная интерпретация</h3>
+                <p>
+                    Рост <a class="term-link" href="/lab/glossary/#revenue">выручки</a> — это сигнал, но не гарантия качества решения. Его нужно оценивать вместе с guardrails и временной динамикой продуктовых метрик.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>▶️ Решение</h3>
+                <p>
+                    Фиксировать guardrails для экспериментов монетизации. Оценивать не только прирост <a class="term-link" href="/lab/glossary/#revenue">выручки</a>, но и влияние на продуктовые метрики и устойчивость системы. Останавливать или корректировать решения, если рост денег ухудшает продукт.
+                </p>
+            </div>
+        </section>
+
+        <div>
+            <a href="./patterns.html" class="navigation-link">← К паттернам интерпретации</a>
+        </div>
+    </div>
+
+    <script>
+        // Generate data showing divergence: revenue up, product metrics down
+        const T = 120;
+        const data = [];
+
+        function revenue(t) {
+            const base = 100;
+            const growth = 15 * (1 / (1 + Math.exp(-(t - 30) / 8)));
+            const acceleration = 5 * (1 / (1 + Math.exp(-(t - 60) / 10)));
+            return base + growth + acceleration;
+        }
+
+        function productMetric(t) {
+            const base = 100;
+            const decline = -8 * (1 / (1 + Math.exp(-(t - 40) / 12)));
+            const furtherDecline = -12 * (1 / (1 + Math.exp(-(t - 70) / 8)));
+            return base + decline + furtherDecline;
+        }
+
+        for (let t = 1; t <= T; t++) {
+            data.push({
+                t,
+                revenue: revenue(t),
+                product: productMetric(t)
+            });
+        }
+
+        // Chart dimensions
+        const margin = { top: 30, right: 60, bottom: 40, left: 50 };
+        const width = 700 - margin.left - margin.right;
+        const height = 300 - margin.top - margin.bottom;
+
+        const svg = d3.select("#divergence-chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale = d3.scaleLinear()
+            .domain([1, T])
+            .range([0, width]);
+
+        const revMin = d3.min(data, d => d.revenue);
+        const revMax = d3.max(data, d => d.revenue);
+        const prodMin = d3.min(data, d => d.product);
+        const prodMax = d3.max(data, d => d.product);
+        const yMin = Math.min(revMin, prodMin) * 0.95;
+        const yMax = Math.max(revMax, prodMax) * 1.05;
+
+        const yScale = d3.scaleLinear()
+            .domain([yMin, yMax])
+            .range([height, 0]);
+
+        // Revenue line
+        const revenueLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.revenue))
+            .curve(d3.curveMonotoneX);
+
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-revenue")
+            .attr("d", revenueLine);
+
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", xScale(T) - 5)
+            .attr("y", yScale(data[data.length - 1].revenue) - 5)
+            .attr("text-anchor", "end")
+            .text("выручка");
+
+        // Product metric line
+        const productLine = d3.line()
+            .x(d => xScale(d.t))
+            .y(d => yScale(d.product))
+            .curve(d3.curveMonotoneX);
+
+        g.append("path")
+            .datum(data)
+            .attr("class", "line line-product")
+            .attr("d", productLine);
+
+        g.append("text")
+            .attr("class", "line-label")
+            .attr("x", xScale(T) - 5)
+            .attr("y", yScale(data[data.length - 1].product) + 5)
+            .attr("text-anchor", "end")
+            .text("продуктовые метрики");
+
+        // Axes
+        const xAxis = d3.axisBottom(xScale)
+            .ticks(6)
+            .tickValues([1, 30, 60, 90, 120])
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis);
+
+        g.append("text")
+            .attr("class", "axis")
+            .attr("x", width / 2)
+            .attr("y", height + 25)
+            .attr("text-anchor", "middle")
+            .text("время");
+
+        const yAxis = d3.axisLeft(yScale)
+            .ticks(4)
+            .tickSize(4)
+            .tickPadding(8);
+
+        g.append("g")
+            .attr("class", "axis")
+            .call(yAxis);
+
+        g.append("text")
+            .attr("class", "axis")
+            .attr("x", -height / 2)
+            .attr("y", -35)
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .text("индекс");
+    </script>
+</body>
+</html>

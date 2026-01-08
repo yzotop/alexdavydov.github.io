@@ -285,10 +285,7 @@
 
         <div class="lead">
             <p>
-                В монетизации деньги рождаются из двух факторов: объём × цена, и оба нестабильны. Объём зависит от механики системы: инвентарь, качество, давление, усталость. Цена зависит от рынка: спрос, конкуренция, ограничения, сезонность.
-            </p>
-            <p>
-                Market-раздел учит читать цену как сигнал: конкуренция, ограничения, качество, сезонность. Когда CPM скачет — это рынок или механика? Когда выручка падает — это цена или объём? Когда система не реагирует на изменения — это ограничения или деградация?
+                Деньги = объём × цена. Объём зависит от <a href="../inventory/index.html">механики системы</a>, цена — от рынка. См. <a href="./price-vs-volume.html">разложение</a>.
             </p>
         </div>
 
@@ -297,11 +294,11 @@
             <div class="order-panel">
                 <ol class="order-list">
                     <li><strong>Рынок</strong> (эта страница) — "модель и карта вопросов"</li>
-                    <li><strong>Price vs Volume</strong> — "разложение выручки на рычаги"</li>
-                    <li><strong>Auction Competition</strong> — "почему CPM скачет"</li>
-                    <li><strong>Floors & Constraints</strong> — "когда цена упирается в ограничения"</li>
-                    <li><strong>Demand Shocks</strong> — "сезонность и внешние события"</li>
-                    <li><strong>Price Elasticity</strong> — "когда давление/качество важнее цены"</li>
+                    <li><strong>Цена и объём</strong> — "разложение выручки на рычаги"</li>
+                    <li><strong>Аукцион и конкуренция</strong> — "почему CPM скачет"</li>
+                    <li><strong>Пороги и ограничения</strong> — "когда цена упирается в ограничения"</li>
+                    <li><strong>Шоки спроса</strong> — "сезонность и внешние события"</li>
+                    <li><strong>Эластичность</strong> — "когда давление/качество важнее цены"</li>
                 </ol>
             </div>
         </div>
@@ -310,7 +307,7 @@
             <div class="section-title">Уроки раздела</div>
             <div class="cards-grid">
                 <a href="./price-vs-volume.html" class="card">
-                    <div class="card-title">Price vs Volume</div>
+                    <div class="card-title">Цена и объём</div>
                     <div class="card-tagline">Разложение денег: цена × объём.</div>
                     <div class="card-when">
                         <strong>Когда:</strong> Выручка изменилась, непонятно почему.
@@ -319,7 +316,7 @@
                 </a>
 
                 <a href="./auction-competition.html" class="card">
-                    <div class="card-title">Auction Competition</div>
+                    <div class="card-title">Аукцион и конкуренция</div>
                     <div class="card-tagline">Конкуренция в аукционе.</div>
                     <div class="card-when">
                         <strong>Когда:</strong> CPM скачет без изменений в продукте.
@@ -328,7 +325,7 @@
                 </a>
 
                 <a href="./floor-and-constraints.html" class="card">
-                    <div class="card-title">Floor and Constraints</div>
+                    <div class="card-title">Пороги и ограничения</div>
                     <div class="card-tagline">Пороги и ограничения.</div>
                     <div class="card-when">
                         <strong>Когда:</strong> Цена 'не идёт' при росте спроса.
@@ -337,7 +334,7 @@
                 </a>
 
                 <a href="./demand-shocks.html" class="card">
-                    <div class="card-title">Demand Shocks</div>
+                    <div class="card-title">Шоки спроса</div>
                     <div class="card-tagline">Шоки и сезонность.</div>
                     <div class="card-when">
                         <strong>Когда:</strong> Есть резкий скачок, но вы не меняли систему.
@@ -346,7 +343,7 @@
                 </a>
 
                 <a href="./price-elasticity.html" class="card">
-                    <div class="card-title">Price Elasticity</div>
+                    <div class="card-title">Эластичность</div>
                     <div class="card-tagline">Эластичность и пределы цены.</div>
                     <div class="card-when">
                         <strong>Когда:</strong> Давление растёт, деньги не растут.
@@ -443,16 +440,12 @@
         <div class="section">
             <div class="section-title">Как отличить 'рынок' от 'механики'</div>
             <ul class="checklist">
-                <li>Если price↑, volume↓ — это может быть конкуренция или ограничения (рынок), но может быть и компенсация за падение качества (механика)</li>
-                <li>Если price↔, volume↓ — чаще механика/качество/доставка (не рынок, а система)</li>
-                <li>Если price↓ везде — вероятен рыночный шок/сезонность (внешний фактор)</li>
-                <li>Если price↓ в одном сегменте — микс/качество/инвентарь (механика, не рынок)</li>
-                <li>Сравнивать окна (день/неделя/месяц) — рынок часто быстрее, механика с лагом</li>
-                <li>Смотреть сегменты и хвосты — рынок обычно равномернее, механика неравномернее</li>
-                <li>Проверять change log — если ничего не меняли, но price изменился, вероятен рынок</li>
-                <li>Проверять lag: рынок часто быстрее, механика часто с лагом — цена реагирует сразу, объём с задержкой</li>
-                <li>Проверять proxy quality из Inventory — если quality падает, а price растёт, это компенсация (механика), не рынок</li>
-                <li>Не принимать решение по одному KPI — смотреть price и volume вместе, quality и pressure вместе</li>
+                <li>price↑, volume↓ — конкуренция/ограничения (рынок) или компенсация за падение качества (<a href="../inventory/index.html">механика</a>)</li>
+                <li>price↔, volume↓ — чаще <a href="../inventory/index.html">механика</a>/качество/доставка</li>
+                <li>price↓ везде — вероятен рыночный шок/сезонность (см. <a href="./demand-shocks.html">Шоки спроса</a>)</li>
+                <li>price↓ в одном сегменте — микс/качество/инвентарь (<a href="../inventory/index.html">механика</a>)</li>
+                <li>Рынок часто быстрее, <a href="../inventory/index.html">механика</a> с лагом — цена реагирует сразу, объём с задержкой</li>
+                <li>Проверять <a href="../operating/signals.html">ранние сигналы</a> — если quality падает, а price растёт, это компенсация (<a href="../inventory/index.html">механика</a>)</li>
             </ul>
         </div>
 
@@ -469,14 +462,14 @@
                 <span class="separator">·</span>
                 <a href="../experiments/index.html">Эксперименты</a>
                 <span class="separator">·</span>
-                <a href="../operating/index.html">Operating</a>
+                <a href="../operating/index.html">Эксплуатация системы</a>
                 <span class="separator">·</span>
                 <a href="../syllabus.html">Syllabus</a>
             </div>
         </div>
 
         <div class="final-block">
-            <p>Рынок объясняет цену. Механика объясняет объём. Качество объясняет устойчивость.</p>
+            <p>Рынок объясняет цену. <a href="../inventory/index.html">Механика</a> объясняет объём. Качество объясняет устойчивость.</p>
             <p><strong>Сначала разложите price × volume — потом спорьте о причинах.</strong></p>
         </div>
 

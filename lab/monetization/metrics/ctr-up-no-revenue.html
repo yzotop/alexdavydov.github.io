@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTR вырос, а выручка не изменилась: почему это возможно</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/links.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators.css">
+    <link rel="stylesheet" href="../../calculators/assets/css/calculators_charts.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+        }
+
+        .checklist {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .checklist h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .checklist li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .checklist li:last-child {
+            margin-bottom: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .navigation-link {
+            display: inline-block;
+            margin-top: 3rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .navigation-link:hover {
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К метрикам</a>
+
+        <h1>CTR вырос, а выручка не изменилась: почему это возможно</h1>
+
+        <p class="explanation">
+            Рост CTR почти автоматически воспринимается как успех: пользователи чаще кликают, значит реклама стала "лучше".
+            Поэтому ситуация, когда CTR растёт, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> остаётся примерно на месте (или меняется слабо), часто выглядит как парадокс.
+        </p>
+
+        <p class="explanation">
+            Интуитивная реакция:
+            «Если CTR вырос, рекламодатели должны платить больше, <a class="term-link" href="/lab/glossary/#cpm">CPM</a> должен вырасти — почему денег нет?»
+        </p>
+
+        <p class="explanation">
+            Проблема в том, что CTR — это метрика действия пользователя, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> — результат рыночного механизма и структуры <a class="term-link" href="/lab/glossary/#shows">показов</a>.
+            CTR может расти по причинам, которые не конвертируются в деньги:
+            — клики растут в дешёвых сегментах спроса
+            — меняется микс форматов/плейсментов (больше кликабельных, но дешёвых)
+            — растёт число "лёгких" кликов без улучшения ценности для аукциона
+            — <a class="term-link" href="/lab/glossary/#cpm">CPM</a> компенсирует CTR падением цены/конкуренции
+            — CTR улучшился, но объём монетизируемых <a class="term-link" href="/lab/glossary/#shows">показов</a> упал
+        </p>
+
+        <p class="explanation">
+            На практике «CTR↑, revenue≈0» — нормальный режим, когда изменение поведения не превращается в изменение цены или объёма.
+            Правильный вопрос здесь не "почему CTR не дал денег?", а:
+            что в системе было ограничением — цена, объём или структура?
+        </p>
+
+        <p class="explanation" style="margin-bottom: 3rem;">
+            Ниже — простой способ читать этот паттерн и какие проверки делать в первую очередь.
+        </p>
+
+        <h2>Как читать этот паттерн</h2>
+
+        <p class="explanation">
+            Если CTR вырос, а <a class="term-link" href="/lab/glossary/#revenue">выручка</a> не изменилась, значит рост кликов либо произошёл там, где цена низкая, либо был компенсирован изменением <a class="term-link" href="/lab/glossary/#cpm">CPM</a>/объёма.
+            Дальше нужно декомпозировать эффект: (1) <a class="term-link" href="/lab/glossary/#cpm">CPM</a>, (2) монетизируемые <a class="term-link" href="/lab/glossary/#shows">показы</a>, (3) структуру спроса/инвентаря.
+        </p>
+
+        <div class="checklist">
+            <h3>Что проверить сразу</h3>
+            <ul>
+                <li>изменился ли <a class="term-link" href="/lab/glossary/#cpm">CPM</a></li>
+                <li>изменились ли <a class="term-link" href="/lab/glossary/#shows">показы</a> и монетизируемые показы</li>
+                <li>не сместилась ли структура: сегменты, плейсменты, форматы</li>
+                <li>не вырос ли CTR за счёт низкоценовых кликов</li>
+                <li>нет ли компенсации "CTR↑, <a class="term-link" href="/lab/glossary/#cpm">CPM</a>↓"</li>
+            </ul>
+        </div>
+
+        <section class="decision-block">
+            <h2>🧠 Решение</h2>
+
+            <div class="decision-block-section">
+                <h3>🔍 Наблюдение</h3>
+                <p>
+                    CTR вырос, но <a class="term-link" href="/lab/glossary/#revenue">выручка</a> почти не изменилась. Это означает: кликов стало больше, но они не превратились в рост цены или объёма доходных <a class="term-link" href="/lab/glossary/#shows">показов</a>.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>⚙️ Механизм</h3>
+                <p>
+                    <a class="term-link" href="/lab/glossary/#revenue">Выручка</a> определяется не CTR напрямую, а через цену и объём: <a class="term-link" href="/lab/glossary/#cpm">CPM</a> × <a class="term-link" href="/lab/glossary/#shows">показы</a>. CTR может расти в дешёвых сегментах или компенсироваться падением <a class="term-link" href="/lab/glossary/#cpm">CPM</a>/снижением объёма монетизации.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>❌ Неправильный вывод</h3>
+                <p>
+                    «CTR вырос — значит эксперимент успешен». Этот вывод игнорирует цену, объём и структуру спроса.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>✅ Корректная интерпретация</h3>
+                <p>
+                    CTR — диагностическая метрика. Она важна, но сама по себе не гарантирует роста денег. Эффект нужно проверять через декомпозицию: <a class="term-link" href="/lab/glossary/#cpm">CPM</a>, <a class="term-link" href="/lab/glossary/#shows">показы</a>/монетизация, структура.
+                </p>
+            </div>
+
+            <div class="decision-block-section">
+                <h3>▶️ Решение</h3>
+                <p>
+                    Не принимать решение по CTR в одиночку. Проверить изменения <a class="term-link" href="/lab/glossary/#cpm">CPM</a> и монетизируемых <a class="term-link" href="/lab/glossary/#shows">показов</a>. Если CTR растёт без денег — искать, где именно вырос CTR и какая там цена.
+                </p>
+            </div>
+        </section>
+
+        <div>
+            <a href="./patterns.html" class="navigation-link">← К паттернам интерпретации</a>
+        </div>
+    </div>
+</body>
+</html>

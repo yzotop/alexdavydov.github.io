@@ -82,6 +82,14 @@ alexdavydov.github.io/
 └── README.md                           # This file
 ```
 
+### Архитектурные принципы
+
+В проекте зафиксированы архитектурные паттерны,
+определяющие работу с данными, графиками, глоссарием и Decision-блоками.
+
+Подробности см. в:
+[`ARCHITECTURE_PATTERNS.md`](./ARCHITECTURE_PATTERNS.md)
+
 ## Technologies
 
 - **HTML5**: Semantic markup

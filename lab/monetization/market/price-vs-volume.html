@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price vs Volume</title>
+    <title>Цена и объём</title>
         <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         * {
@@ -336,15 +336,15 @@
     <div class="container">
         <a href="../../../index.html" class="back-to-home">← На главную</a>
 
-        <h1>Price vs Volume</h1>
+        <h1>Цена и объём</h1>
         <p class="subtitle">Выручка = объём × цена. Спорьте только после разложения.</p>
 
         <div class="intro">
             <p>
-                Нельзя обсуждать "почему выросла выручка", пока не понятно: за счёт цены или объёма. Одинаковый рост revenue может быть достигнут разными путями: volume-driven (объём растёт, цена стабильна), price-driven (цена растёт, объём стабилен), или compensation (объём растёт, цена падает, или наоборот).
+                Нельзя обсуждать "почему выросла выручка", пока не понятно: за счёт цены или объёма. Одинаковый рост revenue может быть достигнут разными путями: volume-driven, price-driven, или compensation.
             </p>
             <p>
-                Цена часто маскирует деградацию качества: CPM может расти, компенсируя падение объёма. Объём часто показывает эффект давления: shows могут расти, но эффективность падает. Разложение revenue на volume и price — первый шаг к пониманию причин.
+                Цена часто маскирует деградацию качества: CPM может расти, компенсируя падение объёма. Объём часто показывает эффект давления. Разложение revenue на volume и price — первый шаг к пониманию причин.
             </p>
         </div>
 
@@ -460,7 +460,7 @@
                         <strong>Как выглядит:</strong> V↓ P↓
                     </div>
                     <div class="pattern-card-item">
-                        <strong>Что это может означать:</strong> Падение и объёма, и цены. Может быть рыночный шок/сезонность, или системная деградация (механика + качество).
+                        <strong>Что это может означать:</strong> Падение и объёма, и цены. Может быть рыночный шок/сезонность, или системная деградация (<a href="../inventory/index.html">механика</a> + качество).
                     </div>
                 </div>
 
@@ -479,18 +479,13 @@
         <div class="section">
             <div class="section-title">Что проверить после разложения</div>
             <ul class="checklist">
-                <li>Если price↑: спрос/конкуренция/ограничения — проверь auction competition, floors, constraints</li>
-                <li>Если price↓: шок/сезонность/микс — проверь demand shocks, seasonality, mix shift</li>
-                <li>Если volume↑: delivery/coverage/pressure — проверь цепочку opportunities→shows, coverage, pressure proxy</li>
-                <li>Если volume↓: hidden inventory/quality/fatigue — проверь loss-слои, quality proxy, frequency proxy</li>
-                <li>Смотреть лаги: volume раньше, revenue позже — механика реагирует раньше денег</li>
-                <li>Смотреть хвосты и сегменты — не маскирует ли среднее проблемы в отдельных сегментах</li>
-                <li>Свериться с change log — не смешались ли эффекты изменений</li>
-                <li>Проверить saturation/pressure proxy — не упирается ли система в потолок</li>
-                <li>Проверить composition качества (из Inventory) — не выросла ли доля low-quality</li>
-                <li>Не делать вывод по одному дню — смотреть на окне лагов, не на коротком окне</li>
-                <li>Нормализовать по сезону — учитывать day-of-week, month, quarter эффекты</li>
-                <li>Сравнить с контрольными сегментами — не все сегменты одинаково реагируют</li>
+                <li>price↑ → проверь <a href="./auction-competition.html">аукцион и конкуренцию</a>, <a href="./floor-and-constraints.html">пороги и ограничения</a></li>
+                <li>price↓ → проверь <a href="./demand-shocks.html">шоки спроса</a>, seasonality, mix shift</li>
+                <li>volume↑ → проверь цепочку opportunities→shows, coverage, <a href="../operating/signals.html">ранние сигналы</a></li>
+                <li>volume↓ → проверь loss-слои, quality proxy, frequency proxy (см. <a href="../inventory/index.html">Inventory</a>)</li>
+                <li>Смотреть лаги: volume раньше, revenue позже — <a href="../inventory/index.html">механика</a> реагирует раньше денег</li>
+                <li>Проверить <a href="../operating/signals.html">ранние сигналы</a> — не упирается ли система в потолок</li>
+                <li>Проверить composition качества (из <a href="../inventory/index.html">Inventory</a>) — не выросла ли доля low-quality</li>
             </ul>
         </div>
 

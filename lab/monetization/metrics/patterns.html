@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Паттерны интерпретации</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .pattern-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: border-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .pattern-card:hover {
+            border-color: #999;
+        }
+
+        .pattern-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .pattern-description {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        .intro-block {
+            max-width: 700px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .selection-list {
+            max-width: 700px;
+            margin: 2rem 0 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .selection-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .selection-list li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .selection-list li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .selection-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .selection-list a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid #ccc;
+            transition: border-color 0.2s ease;
+        }
+
+        .selection-list a:hover {
+            border-bottom-color: #1a1a1a;
+        }
+
+        .common-block {
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #666;
+            margin: 2rem 0 3rem 0;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #1a1a1a;
+            border-radius: 3px;
+        }
+
+        .closing-note {
+            max-width: 700px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #666;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К метрикам</a>
+
+        <h1>Паттерны интерпретации</h1>
+
+        <div class="intro-block">
+            <p>
+                Паттерны интерпретации — это типовые ситуации,
+                в которых метрики ведут себя против ожиданий.
+            </p>
+            <p style="margin-top: 1rem;">
+                Они помогают ответить не на вопрос
+                "какая метрика выросла",
+                а на вопрос
+                "что это значит для денег и решения".
+            </p>
+            <p style="margin-top: 1rem; font-weight: 500; color: #1a1a1a;">
+                Начинайте с того паттерна,
+                который ближе всего к тому,
+                что вы видите в данных.
+            </p>
+        </div>
+
+        <h2>Как выбрать паттерн</h2>
+
+        <div class="selection-list">
+            <ul>
+                <li>Если растёт CPM, но выручка падает → <a href="./cpm-up-revenue-down.html">«Цена растёт, а выручка падает»</a></li>
+                <li>Если растут показы, но деньги не реагируют → <a href="./shows-up-no-revenue.html">«Показы растут, а денег нет»</a></li>
+                <li>Если fill rate стабилен, но выручка падает → <a href="./fill-stable-revenue-down.html">«Fill rate стабильный, а выручка падает»</a></li>
+                <li>Если CTR растёт, но выручка не меняется → <a href="./ctr-up-no-revenue.html">«CTR вырос, а выручка не изменилась»</a></li>
+                <li>Если вырос show rate, но денег больше не стало → <a href="./showrate-up-no-revenue.html">«Show rate вырос, а выручка не растёт»</a></li>
+                <li>Если деньги растут, но продукту становится хуже → <a href="./revenue-up-product-down.html">«Выручка растёт, а продукту хуже»</a></li>
+            </ul>
+        </div>
+
+        <div class="common-block">
+            <p>
+                Все паттерны используют одну и ту же базовую модель выручки.
+                Отличие не в формуле,
+                а в том,
+                какую часть системы мы анализируем
+                и какие выводы делаем.
+            </p>
+            <p style="margin-top: 1rem;">
+                Паттерны не дают "правильный ответ" —
+                они помогают избежать неправильного вывода.
+            </p>
+        </div>
+
+        <div class="patterns-grid">
+            <a href="./cpm-up-revenue-down.html" class="pattern-card">
+                <div class="pattern-title">Цена растёт, а выручка падает</div>
+                <div class="pattern-description">
+                    Рост CPM может сопровождаться падением денег,
+                    если объём проседает быстрее цены.
+                </div>
+            </a>
+
+            <a href="./shows-up-no-revenue.html" class="pattern-card">
+                <div class="pattern-title">Показы растут, а денег нет</div>
+                <div class="pattern-description">
+                    Рост объёма не гарантирует рост выручки:
+                    добавленные показы могут быть «дешёвыми».
+                </div>
+            </a>
+
+            <a href="./fill-stable-revenue-down.html" class="pattern-card">
+                <div class="pattern-title">Fill rate стабильный, а выручка падает</div>
+                <div class="pattern-description">
+                    Стабильная верхняя часть воронки
+                    не защищает от падения цены или структуры спроса.
+                </div>
+            </a>
+
+            <a href="./ctr-up-no-revenue.html" class="pattern-card">
+                <div class="pattern-title">CTR вырос, а выручка не изменилась</div>
+                <div class="pattern-description">
+                    CTR — диагностическая метрика:
+                    рост кликов не всегда превращается в деньги.
+                </div>
+            </a>
+
+            <a href="./showrate-up-no-revenue.html" class="pattern-card">
+                <div class="pattern-title">Show rate вырос, а выручка не растёт</div>
+                <div class="pattern-description">
+                    Видимость ≠ деньги:
+                    дополнительные показы могут каннибализировать дорогие.
+                </div>
+            </a>
+
+            <a href="./revenue-up-product-down.html" class="pattern-card">
+                <div class="pattern-title">Выручка растёт, а продукту хуже</div>
+                <div class="pattern-description">
+                    Краткосрочный рост денег может ухудшать продукт
+                    и долгосрочную устойчивость.
+                </div>
+            </a>
+        </div>
+
+        <p class="closing-note">
+            Если вы сомневаетесь, с чего начать —
+            начните с первых двух паттернов: они задают базовую логику
+            «цена × объём».
+        </p>
+
+        <p class="closing-note" style="margin-top: 1rem; padding-top: 0; border-top: none;">
+            Если вы анализируете эксперимент —
+            читайте паттерны как сценарии интерпретации,
+            а не как чеклист метрик.
+        </p>
+    </div>
+</body>
+</html>
