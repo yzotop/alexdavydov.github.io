@@ -188,7 +188,9 @@
             transition: border-color 0.2s ease;
             text-decoration: none;
             color: inherit;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .track-card:hover {
@@ -213,6 +215,7 @@
             font-size: 0.9rem;
             color: #888;
             line-height: 1.5;
+            flex-grow: 1;
         }
 
         .exemplar-card {
@@ -285,6 +288,19 @@
             color: #1a1a1a;
         }
 
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: #1a1a1a;
+        }
+
         .footer-note {
             font-size: 0.85rem;
             color: #999;
@@ -354,6 +370,154 @@
             margin: 0 0.5rem;
             color: #ccc;
         }
+
+        .card-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .card-grid-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        @media (max-width: 980px) {
+            .card-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            display: block;
+            padding: 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 1px 0 rgba(0,0,0,.03);
+        }
+
+        .card h4 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .mini-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mini {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .pill {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .pill-gray {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .note-block {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-left: 3px solid #e5e7eb;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .note-block p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .note-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        .note-block .muted {
+            font-size: 0.9rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        .big-card {
+            padding: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .big-card h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .big-card .muted {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .big-card .link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .big-card .link:hover {
+            color: #1a1a1a;
+        }
+
+        .muted-caps {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -383,11 +547,11 @@
                         <div class="mini-card-effect">сначала механика, потом выручка</div>
                     </div>
                     <div class="mini-card">
-                        <div class="mini-card-title">Pressure → Threshold</div>
+                        <div class="mini-card-title">Pressure → Пороговый эффект</div>
                         <div class="mini-card-effect">порог меняет режим</div>
                     </div>
                     <div class="mini-card">
-                        <div class="mini-card-title">Pressure → Hidden Saturation</div>
+                        <div class="mini-card-title">Pressure → Скрытое насыщение</div>
                         <div class="mini-card-effect">цена компенсирует, механика ломается</div>
                     </div>
                     <div class="mini-card">
@@ -427,56 +591,55 @@
         </div>
 
         <div class="section">
-            <div class="section-title">Уроки раздела</div>
-            <div class="section-title" style="margin-top: 2rem;">Три трека</div>
-            <div class="tracks-grid">
-                <a href="./pressure-patterns.html" class="track-card">
-                    <div class="track-title">Давление</div>
-                    <div class="track-tagline">Дожимать можно. Ломать — быстро.</div>
-                    <div class="track-description">
-                        Эксперименты, которые меняют давление: частота, плотность, конкуренция форматов. <a href="../operating/signals.html">Ранние сигналы</a>: showConv, насыщение, пороги. Типичная ловушка: <a href="../pressure/hidden-saturation.html">скрытое насыщение</a>, когда выручка растёт, а <a href="../inventory/index.html">механика</a> деградирует.
+            <h2>Уроки раздела</h2>
+
+            <h3 class="muted-caps">Три трека</h3>
+
+            <div class="card-grid card-grid-3">
+                <a class="card" href="./pressure-patterns.html">
+                    <h4>Давление</h4>
+                    <p>Эксперименты, которые меняют давление: частота, плотность, конкуренция форматов.</p>
+                    <div class="mini-row">
+                        <span class="pill pill-gray">ранние сигналы</span>
+                        <span class="mini">showConv • насыщение • пороги</span>
                     </div>
                 </a>
 
-                <a href="./time-patterns.html" class="track-card">
-                    <div class="track-title">Время</div>
-                    <div class="track-tagline">Лаг — это часть эффекта.</div>
-                    <div class="track-description">
-                        <a href="../time/delayed-effects.html">Отложенные эффекты</a>, долгая тишина, дрейф, смена режима. Короткие окна врут, потому что последствия приходят с лагом. Измеряйте <a href="../operating/signals.html">ранние сигналы</a>: <a href="../inventory/index.html">механика</a>, распределение, динамика во времени.
+                <a class="card" href="./time-patterns.html">
+                    <h4>Время</h4>
+                    <p>Лаг — это часть эффекта. Окно наблюдения может врать.</p>
+                    <div class="mini-row">
+                        <span class="pill pill-gray">ранние сигналы</span>
+                        <span class="mini">лаг • дрифт • смена режима</span>
                     </div>
                 </a>
 
-                <a href="./decision-patterns.html" class="track-card">
-                    <div class="track-title">Решения</div>
-                    <div class="track-tagline">Окно, риск, сожаление.</div>
-                    <div class="track-description">
-                        Windowing, regret, value of information, irreversibility. Компромиссы и неопределённость. Как принимать решения при неполной информации и как читать результаты в правильном окне.
+                <a class="card" href="./decision-patterns.html">
+                    <h4>Решения</h4>
+                    <p>Компромиссы и цена ошибок. Как не сделать "логичный" неправильный вывод.</p>
+                    <div class="mini-row">
+                        <span class="pill pill-gray">ранние сигналы</span>
+                        <span class="mini">guardrails • риск • необратимость</span>
                     </div>
                 </a>
             </div>
 
-            <div class="recommended-panel">
-                <div class="recommended-title">Рекомендуемый маршрут</div>
-                <p>Начните с Давления: там механика и нелинейность.</p>
-                <p>Потом Время: там лаги и ловушки окна.</p>
-                <p>Завершите Решениями: там trade-offs и стоимость ошибок.</p>
-                <p>И после этого — эталонный разбор.</p>
+            <div class="note-block">
+                <p><strong>Рекомендуемый маршрут:</strong> Начните с "Давление", затем "Время", затем "Решения".</p>
+                <p class="muted">Паттерны повторяются: если вы умеете читать форму, вы прогнозируете последствия раньше отчёта.</p>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Один эталонный разбор</div>
-            <a href="./anatomy-of-experiment.html" class="exemplar-card">
-                <div class="exemplar-title">Anatomy of an Experiment</div>
-                <div class="exemplar-tagline">Как интерпретировать результаты эксперимента</div>
-                <div class="exemplar-description">
-                    Один обезличенный разбор на одном экране: что трогали → как реагировала <a href="../inventory/index.html">механика</a> → где ловушка вывода → чем закончилось.
-                </div>
-            </a>
-            <p class="exemplar-note">
-                Это самый сильный формат для интервью и лекций.
-            </p>
-            <a href="./anatomy-of-experiment.html" class="secondary-link">Открыть разбор →</a>
+            <h2 class="muted-caps">Один эталонный разбор</h2>
+
+            <div class="card big-card">
+                <h3>Анатомия эксперимента</h3>
+                <p class="muted">Как интерпретировать результаты эксперимента: что трогали → какая механика изменилась → где ловушка вывода → чем закончилось.</p>
+                <a class="link" href="./anatomy-of-experiment.html">Открыть разбор →</a>
+            </div>
+
+            <p class="muted" style="font-size: 0.85rem; color: #999; font-style: italic; margin-top: 0.5rem;">Это самый сильный формат для интервью и лекций: один разбор на одном экране.</p>
         </div>
 
         <p class="closing">

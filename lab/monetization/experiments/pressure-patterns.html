@@ -347,6 +347,30 @@
             font-weight: 500;
         }
 
+        .pattern-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: 500;
+        }
+
+        .pattern-badge.early {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .pattern-badge.later {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .pattern-badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .interpretation {
             font-size: 1rem;
             line-height: 1.7;
@@ -508,39 +532,39 @@
             <div class="section-title">Повторяющиеся паттерны</div>
             <div class="patterns-grid">
                 <div class="pattern-card">
-                    <div class="pattern-title">Hidden saturation</div>
+                    <div class="pattern-title">Скрытое насыщение</div>
                     <div class="pattern-item">
-                        <strong>Сначала ломается:</strong> showConv, конверсия в показ
+                        <span class="pattern-badge early">Сначала ломается</span> showConv, конверсия в показ
                     </div>
                     <div class="pattern-item">
-                        <strong>Позже видно в:</strong> выручка, RPM
+                        <span class="pattern-badge later">Позже видно в</span> выручка, RPM
                     </div>
                     <div class="pattern-item">
-                        <strong>Типичная ошибка:</strong> читать только выручку, игнорировать механику
-                    </div>
-                </div>
-                <div class="pattern-card">
-                    <div class="pattern-title">Threshold</div>
-                    <div class="pattern-item">
-                        <strong>Сначала ломается:</strong> распределение, стабильность
-                    </div>
-                    <div class="pattern-item">
-                        <strong>Позже видно в:</strong> выручка, метрики качества
-                    </div>
-                    <div class="pattern-item">
-                        <strong>Типичная ошибка:</strong> дожимать давление после порога
+                        <span class="pattern-badge error">Типичная ошибка</span> читать только выручку, игнорировать механику
                     </div>
                 </div>
                 <div class="pattern-card">
-                    <div class="pattern-title">Pressure without attention</div>
+                    <div class="pattern-title">Пороговый эффект</div>
                     <div class="pattern-item">
-                        <strong>Сначала ломается:</strong> хвосты распределения, конкуренция форматов
+                        <span class="pattern-badge early">Сначала ломается</span> распределение, стабильность
                     </div>
                     <div class="pattern-item">
-                        <strong>Позже видно в:</strong> выручка, долгосрочная траектория
+                        <span class="pattern-badge later">Позже видно в</span> выручка, метрики качества
                     </div>
                     <div class="pattern-item">
-                        <strong>Типичная ошибка:</strong> увеличивать давление без расширения инвентаря
+                        <span class="pattern-badge error">Типичная ошибка</span> дожимать давление после порога
+                    </div>
+                </div>
+                <div class="pattern-card">
+                    <div class="pattern-title">Давление без внимания</div>
+                    <div class="pattern-item">
+                        <span class="pattern-badge early">Сначала ломается</span> хвосты распределения, конкуренция форматов
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-badge later">Позже видно в</span> выручка, долгосрочная траектория
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-badge error">Типичная ошибка</span> увеличивать давление без расширения инвентаря
                     </div>
                 </div>
             </div>
