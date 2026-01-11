@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive career review — Alex Davydov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1a1a1a;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .insight {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .intro p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .symptoms {
+            margin-top: 1.5rem;
+        }
+
+        .symptoms ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .symptoms li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .symptoms li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .card-item {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .formats-block {
+            margin-bottom: 2rem;
+        }
+
+        .format-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: #fafafa;
+            margin-bottom: 1.5rem;
+        }
+
+        .format-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .format-for {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .format-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .format-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .format-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .format-output {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .format-output strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .what-not {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-left: 3px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .what-not h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+
+        .what-not ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .what-not li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .what-not li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        .what-not p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-top: 0.5rem;
+        }
+
+        .audience-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .audience-section li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .audience-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+        }
+
+        .cta-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .cta-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #f0f0f0;
+            border-color: #666;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .footer-link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+            margin-bottom: 2rem;
+        }
+
+        .footer-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="/index.html" class="back-link">← На главную</a>
+            <a href="/career/index.html" class="back-link">← Карьерная поддержка</a>
+        </nav>
+
+        <header>
+            <h1>Executive career review</h1>
+            <p class="subtitle">Для Lead / Head / C-level</p>
+            <p class="insight">Резюме → позиционирование → решения → ответственность</p>
+        </header>
+
+        <main>
+            <section class="intro">
+                <h2>О чём это</h2>
+                <p>
+                    Я работаю с лидерами и руководителями над тем, как объяснять свои решения, влияние и ответственность — в резюме, кейсах и интервью.
+                </p>
+                <p>
+                    Это не про «улучшить CV». Это про управленческую ясность: что именно вы делали, какие системы меняли и какие риски брали на себя.
+                </p>
+                <div class="symptoms">
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 1rem; margin-bottom: 0.75rem;"><strong>Частые симптомы:</strong></p>
+                    <ul>
+                        <li>сильный опыт звучит как набор задач</li>
+                        <li>эксперименты без логики выбора</li>
+                        <li>деньги, продукт и метрики смешаны</li>
+                        <li>ответственность размыта</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>С чем работаем</h2>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Позиционирование лидера</div>
+                        <div class="card-item">переход в lead/head/C-level</div>
+                        <div class="card-item">управленческая история</div>
+                        <div class="card-item">зона влияния и границы ответственности</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Кейсы и интервью</div>
+                        <div class="card-item">ответы через решения, не «успехи команды»</div>
+                        <div class="card-item">trade-offs и конфликты метрик</div>
+                        <div class="card-item">объяснение сложных ситуаций</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Деньги, эксперименты, ответственность</div>
+                        <div class="card-item">говорить о выручке без KPI-магии</div>
+                        <div class="card-item">разбор неудачных экспериментов</div>
+                        <div class="card-item">управление риском и мониторинг</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Форматы работы</h2>
+                
+                <div class="formats-block">
+                    <div class="format-card">
+                        <div class="format-title">Executive review (1–2 встречи)</div>
+                        <div class="format-for">Для кого: lead/head/C-level перед переходом или интервью</div>
+                        <div>
+                            <strong>Что делаем:</strong>
+                            <ul class="format-list">
+                                <li>разбираем целевую роль и контекст</li>
+                                <li>вытаскиваем управленческие решения</li>
+                                <li>упаковываем опыт в аргументы уровня системы</li>
+                            </ul>
+                        </div>
+                        <div class="format-output">
+                            <strong>На выходе:</strong>
+                            <ul class="format-list">
+                                <li>ясная narrative-линия</li>
+                                <li>список сильных/слабых мест</li>
+                                <li>рекомендации, что усиливать</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formats-block">
+                    <div class="format-card">
+                        <div class="format-title">Interview & decision review</div>
+                        <div class="format-for">Для кого: руководители, проходящие сложные интервью</div>
+                        <div>
+                            <strong>Что делаем:</strong>
+                            <ul class="format-list">
+                                <li>прогон вопросов и разбор ответов</li>
+                                <li>очистка формулировок от «шума»</li>
+                                <li>отработка логики решения и trade-offs</li>
+                            </ul>
+                        </div>
+                        <div class="format-output">
+                            <strong>На выходе:</strong>
+                            <ul class="format-list">
+                                <li>структурные ответы</li>
+                                <li>уверенность в сложных вопросах</li>
+                                <li>понимание границ "не знаю"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="what-not">
+                <h3>Что это НЕ</h3>
+                <ul>
+                    <li>не гарантия оффера</li>
+                    <li>не карьерный коучинг</li>
+                    <li>не мотивационные разговоры</li>
+                    <li>не "как понравиться интервьюеру"</li>
+                </ul>
+                <p>Это аналитический разбор управленческого опыта.</p>
+            </div>
+
+            <section class="audience-section">
+                <h2>Кому подходит</h2>
+                <ul>
+                    <li>lead → head</li>
+                    <li>head → C-level</li>
+                    <li>сильный опыт, который «не звучит»</li>
+                    <li>ответственность за деньги/эксперименты/риски</li>
+                    <li>переговоры о роли и мандате</li>
+                </ul>
+            </section>
+
+            <section class="cta-section">
+                <p>Если важно быть правильно понятым на своём уровне — напишите.</p>
+                <div class="cta-buttons">
+                    <a href="/career/index.html#contact" class="cta-button">Записаться на review</a>
+                    <a href="/career/index.html#contact" class="cta-button">Задать вопрос</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <a href="/index.html" class="footer-link">← На главную</a>
+            <p class="footer-note">На этом уровне важно не выглядеть сильным. Важно быть понятным.</p>
+        </footer>
+    </div>
+</body>
+</html>
