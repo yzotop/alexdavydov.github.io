@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карьерный разбор для аналитиков</title>
+    <title>Карьерная поддержка — Alex Davydov</title>
     <style>
         * {
             margin: 0;
@@ -16,25 +16,42 @@
             line-height: 1.6;
             color: #1a1a1a;
             background-color: #ffffff;
-            padding: 3rem 1rem;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
+            padding: 3rem 1rem;
         }
 
-        .back-to-home {
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .back-link {
             display: inline-block;
-            margin-bottom: 1rem;
             color: #666;
             text-decoration: none;
             font-size: 0.9rem;
             transition: color 0.2s ease;
         }
 
-        .back-to-home:hover {
+        .back-link:hover {
             color: #1a1a1a;
+        }
+
+        header {
+            margin-bottom: 3rem;
         }
 
         h1 {
@@ -48,40 +65,32 @@
             font-size: 1rem;
             font-weight: 400;
             color: #666;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             font-style: italic;
         }
 
-        .intro {
-            max-width: 700px;
-            margin-bottom: 3rem;
+        .insight {
+            font-size: 0.9rem;
+            color: #666;
         }
 
-        .intro p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 1rem;
+        section {
+            margin-bottom: 3rem;
         }
 
         h2 {
             font-size: 1.3rem;
             font-weight: 400;
-            margin-top: 3rem;
             margin-bottom: 1.5rem;
             color: #1a1a1a;
         }
 
-        h2:first-of-type {
-            margin-top: 0;
-        }
-
-        .audience-section ul {
+        .how-work ul {
             list-style: none;
             padding-left: 0;
         }
 
-        .audience-section li {
+        .how-work li {
             font-size: 0.95rem;
             line-height: 1.7;
             color: #1a1a1a;
@@ -90,151 +99,190 @@
             position: relative;
         }
 
-        .audience-section li:before {
+        .how-work li:before {
             content: "•";
             position: absolute;
             left: 0;
             color: #666;
         }
 
-        .formats-grid {
+        .directions-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
         @media (min-width: 768px) {
-            .formats-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .directions-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        .format-card {
+        .direction-card {
             border: 1px solid #e8e8e8;
             border-radius: 6px;
-            padding: 1.5rem;
+            padding: 1.25rem;
             background: #fafafa;
+            display: flex;
+            flex-direction: column;
         }
 
-        .format-title {
-            font-size: 1.1rem;
+        .direction-title {
+            font-size: 1.2rem;
             font-weight: 500;
             margin-bottom: 0.75rem;
             color: #1a1a1a;
         }
 
-        .format-duration {
+        .direction-tagline {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .direction-section {
+            margin-bottom: 1.25rem;
+        }
+
+        .direction-section-title {
             font-size: 0.85rem;
-            color: #666;
-            font-style: italic;
-            margin-bottom: 1rem;
-        }
-
-        .format-what {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #1a1a1a;
-            margin-bottom: 1rem;
-        }
-
-        .format-what strong {
-            color: #1a1a1a;
             font-weight: 500;
-        }
-
-        .format-output {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #666;
-            padding-top: 1rem;
-            border-top: 1px solid #e8e8e8;
-        }
-
-        .format-output strong {
             color: #1a1a1a;
-            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .what-not {
-            max-width: 700px;
-            margin-bottom: 3rem;
-            padding: 1.5rem;
-            background: #fafafa;
-            border-left: 3px solid #e8e8e8;
-        }
-
-        .what-not h3 {
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            color: #1a1a1a;
-        }
-
-        .what-not ul {
+        .direction-section ul {
             list-style: none;
             padding-left: 0;
         }
 
-        .what-not li {
+        .direction-section li {
             font-size: 0.9rem;
             line-height: 1.6;
-            color: #666;
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+            padding-left: 1.25rem;
             position: relative;
         }
 
-        .what-not li:before {
-            content: "—";
+        .direction-section li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            color: #999;
+            color: #666;
         }
 
-        .cases-section {
+        .direction-button {
+            display: inline-block;
+            margin-top: auto;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .direction-button:hover {
+            background-color: #f0f0f0;
+            border-color: #666;
+        }
+
+        .examples-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .examples-table th {
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        .examples-table td {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            padding: 1rem;
+            border-bottom: 1px solid #e8e8e8;
+            vertical-align: top;
+        }
+
+        .examples-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .examples-table td:first-child {
+            color: #666;
+            font-style: italic;
+            width: 45%;
+        }
+
+        .examples-table td:last-child {
+            width: 55%;
+        }
+
+        .contact-section {
             max-width: 700px;
             margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
         }
 
-        .cases-section ul {
-            list-style: none;
-            padding-left: 0;
+        .contact-section h2 {
+            margin-bottom: 1rem;
         }
 
-        .cases-section li {
+        .contact-section > p {
             font-size: 0.95rem;
             line-height: 1.7;
             color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-points {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-points li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
             margin-bottom: 0.75rem;
             padding-left: 1.5rem;
             position: relative;
         }
 
-        .cases-section li:before {
-            content: "—";
+        .contact-points li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            color: #999;
+            color: #666;
         }
 
-        .cta-section {
-            max-width: 700px;
-            margin-bottom: 3rem;
-            padding: 1.5rem;
-            background: #fafafa;
-            border: 1px solid #e8e8e8;
-            border-radius: 6px;
-        }
-
-        .cta-buttons {
+        .contact-buttons {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-top: 1rem;
         }
 
-        .cta-button {
+        .contact-button {
             display: inline-block;
             padding: 0.75rem 1.5rem;
             color: #1a1a1a;
@@ -242,11 +290,12 @@
             font-size: 0.9rem;
             border: 1px solid #1a1a1a;
             border-radius: 4px;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .cta-button:hover {
+        .contact-button:hover {
             background-color: #f0f0f0;
+            border-color: #666;
         }
 
         .footer {
@@ -254,117 +303,194 @@
             padding-top: 2rem;
             border-top: 1px solid #e8e8e8;
         }
+
+        .footer-link {
+            display: inline-block;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+            margin-bottom: 2rem;
+        }
+
+        .footer-link:hover {
+            color: #1a1a1a;
+        }
+
+        .footer-note {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .examples-table {
+                font-size: 0.85rem;
+            }
+
+            .examples-table th,
+            .examples-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="../index.html" class="back-to-home">← На главную</a>
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="/index.html" class="back-link">← На главную</a>
+            </div>
+            <a href="/lab/" class="back-link">Лаборатория</a>
+        </nav>
 
         <header>
-            <h1>Карьерный разбор для аналитиков</h1>
-            <p class="subtitle">Резюме → позиционирование → интервью → решение</p>
+            <h1>Карьерная поддержка</h1>
+            <p class="subtitle">Упаковка опыта в аргументы: решения, ответственность, trade-offs.</p>
+            <p class="insight">Фокус — на ясности и структуре, а не на шаблонах.</p>
         </header>
 
         <main>
-            <section class="intro">
-                <h2>О чём это</h2>
-                <p>
-                    Помогаю аналитикам переходить и расти через структуру аргументов и кейсов. Фокус на ясности решения: что усиливать, что перестроить, как упаковать опыт в убедительные истории.
-                </p>
-                <p>
-                    Это не про шаблоны резюме или заученные ответы. Это про аналитический разбор вашего опыта: какие проекты и метрики действительно работают как аргументы, как их структурировать для целевой роли, как отвечать на вопросы так, чтобы решение было очевидным.
-                </p>
-                <p>
-                    Без обещаний трудоустройства, без рекламных формулировок. Только структура, ясность и аргументы.
-                </p>
-            </section>
-
-            <section class="audience-section">
-                <h2>Кому подходит</h2>
+            <section class="how-work">
+                <h2>Как я работаю</h2>
                 <ul>
-                    <li>Junior/middle → переход в продуктовую аналитику</li>
-                    <li>Middle/senior → рост до лида/хэда</li>
-                    <li>Лиды → позиционирование, систематизация опыта, подготовка к интервью</li>
+                    <li>сначала вытаскиваем реальные решения и контекст</li>
+                    <li>затем строим narrative и структуру кейсов</li>
+                    <li>затем упаковываем под конкретную роль</li>
+                    <li>затем тренируем ответы и слабые места</li>
                 </ul>
             </section>
 
             <section>
-                <h2>Форматы</h2>
-                <div class="formats-grid">
-                    <div class="format-card">
-                        <div class="format-title">Разбор резюме и позиционирования</div>
-                        <div class="format-duration">60–90 мин</div>
-                        <div class="format-what">
-                            <strong>Что делаем:</strong> структура резюме, сильные истории, гипотезы по рынку, позиционирование под целевую роль.
+                <h2>Два направления</h2>
+                <div class="directions-grid">
+                    <div class="direction-card">
+                        <div class="direction-title">Разбор для аналитиков (IC)</div>
+                        <div class="direction-tagline">Для product/data аналитиков, которые растут или меняют трек.</div>
+                        
+                        <div class="direction-section">
+                            <div class="direction-section-title">Когда полезно</div>
+                            <ul>
+                                <li>переход в продуктовую аналитику</li>
+                                <li>рост до лида/хэда</li>
+                                <li>сильный опыт, который «не звучит»</li>
+                            </ul>
                         </div>
-                        <div class="format-output">
-                            <strong>Что на выходе:</strong> список правок + "скелет" позиционирования + план на 7 дней.
+
+                        <div class="direction-section">
+                            <div class="direction-section-title">Что делаем</div>
+                            <ul>
+                                <li>разбираем целевую роль и контекст</li>
+                                <li>вытаскиваем управленческие решения</li>
+                                <li>упаковываем опыт в аргументы</li>
+                                <li>готовим кейсы для интервью</li>
+                            </ul>
                         </div>
+
+                        <div class="direction-section">
+                            <div class="direction-section-title">Результат</div>
+                            <ul>
+                                <li>ясная narrative-линия и позиционирование</li>
+                                <li>структурные ответы и уверенность</li>
+                            </ul>
+                        </div>
+
+                        <a href="/career/analysts/index.html" class="direction-button">Перейти</a>
                     </div>
 
-                    <div class="format-card">
-                        <div class="format-title">Mock interview / кейсы</div>
-                        <div class="format-duration">60 мин</div>
-                        <div class="format-what">
-                            <strong>Что делаем:</strong> прогон 2–3 кейсов, уточнение рамок, тренировка ответов, структурирование историй.
+                    <div class="direction-card">
+                        <div class="direction-title">Executive career review</div>
+                        <div class="direction-tagline">Для Lead / Head / C-level: позиционирование решений и ответственности.</div>
+                        
+                        <div class="direction-section">
+                            <div class="direction-section-title">Когда полезно</div>
+                            <ul>
+                                <li>переход lead → head или head → C-level</li>
+                                <li>сложные интервью на управленческие роли</li>
+                                <li>ответственность за деньги/эксперименты/риски</li>
+                            </ul>
                         </div>
-                        <div class="format-output">
-                            <strong>Что на выходе:</strong> список "историй", улучшенные формулировки, чеклист слабых мест.
-                        </div>
-                    </div>
 
-                    <div class="format-card">
-                        <div class="format-title">План перехода/роста</div>
-                        <div class="format-duration">Пакет 2–4 встречи</div>
-                        <div class="format-what">
-                            <strong>Что делаем:</strong> целевая роль → gap → план проектов → подготовка артефактов → стратегия поиска.
+                        <div class="direction-section">
+                            <div class="direction-section-title">Что делаем</div>
+                            <ul>
+                                <li>разбираем управленческие решения и контекст</li>
+                                <li>вытаскиваем зону влияния и границы ответственности</li>
+                                <li>упаковываем опыт в аргументы уровня системы</li>
+                                <li>отрабатываем trade-offs и сложные ситуации</li>
+                            </ul>
                         </div>
-                        <div class="format-output">
-                            <strong>Что на выходе:</strong> дорожная карта на 4 недели + требования/артефакты + план действий.
+
+                        <div class="direction-section">
+                            <div class="direction-section-title">Результат</div>
+                            <ul>
+                                <li>управленческая ясность и narrative-линия</li>
+                                <li>структурные ответы на уровне системы</li>
+                            </ul>
                         </div>
+
+                        <a href="/career/executive/index.html" class="direction-button">Перейти</a>
                     </div>
                 </div>
             </section>
 
-            <div class="what-not">
-                <h3>Что это НЕ</h3>
-                <ul>
-                    <li>Не гарантия оффера</li>
-                    <li>Не "курс"</li>
-                    <li>Не психотерапия и не мотивация</li>
-                    <li>Это аналитический разбор и упаковывание опыта в аргументы</li>
-                </ul>
-            </div>
-
-            <section class="cases-section">
-                <h2>Примеры результатов</h2>
-                <ul>
-                    <li>Переупаковали опыт из маркетинговой аналитики → продуктовую, усилили 3 кейса, выровняли историю роста</li>
-                    <li>Структурировали опыт лида под переход в хэд-позицию, подготовили аргументы для системных решений</li>
-                    <li>Перестроили резюме middle-аналитика под продуктовую роль, выделили эксперименты и метрики как сильные стороны</li>
-                    <li>Подготовили кейсы для интервью senior-аналитика, отработали формулировки и структуру ответов</li>
-                    <li>Создали план перехода из data-аналитики в product-аналитику с конкретными проектами и артефактами</li>
-                </ul>
+            <section>
+                <h2>Примеры того, что улучшаем</h2>
+                <table class="examples-table">
+                    <thead>
+                        <tr>
+                            <th>До</th>
+                            <th>После</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Делал отчёты по метрикам</td>
+                            <td>Принимал решения по X через Y, учитывая Z ограничения</td>
+                        </tr>
+                        <tr>
+                            <td>Проводил A/B-тесты</td>
+                            <td>Проектировал эксперименты с guardrails и лаг-окнами; объяснял trade-offs</td>
+                        </tr>
+                        <tr>
+                            <td>Отвечал за монетизацию</td>
+                            <td>Управлял давлением и устойчивостью; балансировал revenue и продукт</td>
+                        </tr>
+                        <tr>
+                            <td>Работал с продуктом</td>
+                            <td>Проектировал метрики и системы принятия решений; строил границы ответственности</td>
+                        </tr>
+                        <tr>
+                            <td>Руководил командой</td>
+                            <td>Выстраивал процессы и управлял рисками; брал ответственность за решения</td>
+                        </tr>
+                        <tr>
+                            <td>Улучшал метрики</td>
+                            <td>Изменял системы через эксперименты; объяснял компромиссы и последствия</td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
 
-            <section class="cta-section">
-                <h2>Как записаться</h2>
-                <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; margin-bottom: 1rem;">
-                    Для записи на разбор используйте форму ниже. Если есть вопросы — напишите в Telegram.
-                </p>
-                <div class="cta-buttons">
-                    <!-- TODO: вставить ссылку -->
-                    <a href="#" class="cta-button">Записаться на разбор</a>
-                    <!-- TODO: вставить ссылку на Telegram или mailto -->
-                    <a href="#" class="cta-button">Задать вопрос</a>
+            <section id="contact" class="contact-section">
+                <h2>Контакт</h2>
+                <p>Коротко опишите роль, цель и контекст. Я отвечу, подойдёт ли формат и что лучше сделать.</p>
+                <ul class="contact-points">
+                    <li>Целевая роль / уровень</li>
+                    <li>Что хотите улучшить: резюме / кейсы / интервью / позиционирование</li>
+                </ul>
+                <div class="contact-buttons">
+                    <a href="#" class="contact-button">Написать в Telegram</a>
+                    <a href="#" class="contact-button">Запросить разбор</a>
                 </div>
             </section>
         </main>
 
         <footer class="footer">
-            <a href="../index.html" class="back-to-home">← На главную</a>
+            <a href="/index.html" class="footer-link">← На главную</a>
+            <p class="footer-note">Сильный опыт не продаёт себя сам. Его нужно правильно структурировать.</p>
         </footer>
     </div>
 </body>
 </html>
-
