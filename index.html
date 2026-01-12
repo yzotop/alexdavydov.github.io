@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex Davydov — Applied Mathematics for Analytics</title>
+    <title>Alex Davydov — Прикладная аналитика</title>
     <style>
         * {
             margin: 0;
@@ -24,6 +24,11 @@
             margin: 0 auto;
         }
 
+        .hero {
+            max-width: 700px;
+            margin-bottom: 4rem;
+        }
+
         h1 {
             font-size: 2.5rem;
             font-weight: 300;
@@ -32,15 +37,16 @@
             letter-spacing: -0.02em;
         }
 
-        .hero {
-            max-width: 700px;
-            margin-bottom: 4rem;
-        }
-
-        .hero p {
+        .subtitle {
             font-size: 1rem;
             line-height: 1.7;
             color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .muted {
+            font-size: 0.9rem;
+            color: #666;
         }
 
         h2 {
@@ -55,134 +61,104 @@
             margin-top: 3rem;
         }
 
-        .main-course-card {
-            border: 2px solid #1a1a1a;
-            border-radius: 6px;
-            padding: 2rem;
-            background: #fafafa;
-            margin-bottom: 3rem;
-        }
-
-        .main-course-kicker {
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #666;
-            margin-bottom: 0.5rem;
-        }
-
-        .main-course-title {
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-        }
-
-        .main-course-cta-links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        .main-course-cta-links a {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            color: #1a1a1a;
-            text-decoration: none;
-            font-size: 0.9rem;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-        }
-
-        .main-course-cta-links a:hover {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-
-        .main-course-points {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .main-course-points li {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .main-course-points li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #666;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #1a1a1a;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .cta-button:hover {
-            background: #333;
-        }
-
-        .mini-courses-list {
-            display: flex;
-            flex-direction: column;
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-bottom: 3rem;
         }
 
-        .mini-course-card {
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
             border: 1px solid #e8e8e8;
             border-radius: 6px;
-            padding: 1.5rem;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
+            padding: 1.25rem;
+            background: #ffffff;
+            transition: border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
         }
 
-        .mini-course-card:hover {
-            background-color: #fafafa;
-            border-color: #d8d8d8;
+        .card:hover {
+            border-color: #999;
         }
 
-        .mini-course-title {
+        .card-title {
             font-size: 1.2rem;
             font-weight: 500;
             margin-bottom: 0.75rem;
             color: #1a1a1a;
         }
 
-        .mini-course-description {
+        .card-text {
             font-size: 0.95rem;
             line-height: 1.7;
-            color: #666;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .card-button:hover {
+            background-color: #f0f0f0;
+            border-color: #666;
+        }
+
+        .companies-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .companies-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
             margin-bottom: 1rem;
         }
 
-        .mini-course-link {
+        .companies-button {
             display: inline-block;
-            color: #666;
+            padding: 0.75rem 1.5rem;
+            color: #1a1a1a;
             text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s ease;
+            font-size: 0.9rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            margin-top: 0.5rem;
         }
 
-        .mini-course-link:hover {
+        .companies-button:hover {
+            background-color: #f0f0f0;
+            border-color: #666;
+        }
+
+        .about-section {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+
+        .about-section p {
+            font-size: 0.95rem;
+            line-height: 1.7;
             color: #1a1a1a;
+            margin-bottom: 0.75rem;
         }
 
         .footer {
@@ -191,121 +167,98 @@
             border-top: 1px solid #e8e8e8;
         }
 
-        .footer-text {
-            font-size: 0.85rem;
-            color: #999;
+        .footer-nav {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .footer-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #1a1a1a;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="hero">
-            <h1>Прикладная математика для аналитики</h1>
+            <h1>Alex Davydov</h1>
+            <p class="subtitle">Прикладная аналитика для монетизации, экспериментов и принятия решений.</p>
+            <p class="muted">Курсы, лаборатория и экспертная работа.</p>
+        </div>
+
+        <h2>Start here</h2>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">Математика монетизации рекламы</div>
+                <div class="card-text">
+                    Монетизация под давлением: как давление и насыщение искажают метрики.
+                    Диагностика до падения выручки через механизмы, а не цифры.
+                </div>
+                <a href="/lab/monetization/" class="card-button">Открыть курс →</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Математика экспериментов в монетизации</div>
+                <div class="card-text">
+                    Эксперименты, когда метрики врут: давление, время, лаги, guardrails.
+                    Траектории системы вместо дельт цифр.
+                </div>
+                <a href="/lab/experiments/" class="card-button">Открыть курс →</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Лаборатория</div>
+                <div class="card-text">
+                    Один механизм → одна визуализация → один вывод.
+                    Экспонаты о времени, давлении, метриках, экспериментах.
+                </div>
+                <a href="/lab/" class="card-button">Открыть лабораторию →</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Карьерная поддержка</div>
+                <div class="card-text">
+                    Аргументы для lead / head уровня: решения, trade-offs, ответственность.
+                    Упаковка опыта в управленческую ясность.
+                </div>
+                <a href="/career/" class="card-button">Перейти →</a>
+            </div>
+        </div>
+
+        <section class="companies-section">
+            <h2>Для компаний</h2>
             <p>
-                Курсы про то, как принимать решения на основе данных, а не формул. Эксперименты, графики, монетизация, неопределённость — фокус на том, что меняет понимание и действия.
+                Диагностика конфликтов продуктовых и монетизационных метрик.
+                Механизмы принятия решений вместо косметики KPI.
             </p>
-        </div>
+            <a href="/companies/" class="companies-button">Обсудить задачу →</a>
+        </section>
 
-        <h2>Основные курсы</h2>
+        <section class="about-section">
+            <h2>Обо мне</h2>
+            <p>Лид аналитики монетизации.</p>
+            <p>Бэкграунд: финансы → продуктовая аналитика.</p>
+            <p>Работаю с метриками, экспериментами и операционными решениями.</p>
+        </section>
 
-        <div class="main-course-card">
-            <div class="main-course-title">Математика монетизации рекламы</div>
-            <ul class="main-course-points">
-                <li>Учит читать систему за метриками и диагностировать проблемы до падения выручки</li>
-                <li>Для аналитиков и продуктовых менеджеров, которые работают с рекламными системами</li>
-                <li>После курса решения принимаются на основе механизмов, а не цифр</li>
-            </ul>
-            <a href="./lab/monetization/index.html" class="cta-button">Перейти к курсу</a>
-        </div>
-
-        <div class="main-course-card">
-            <div class="main-course-kicker">Основной курс №2</div>
-            <div class="main-course-title">A/B-тестирование: принятие решений на практике</div>
-            <ul class="main-course-points">
-                <li>Как читать эксперименты в реальных продуктах и принимать решения: графики → механизм → решение</li>
-                <li>Для аналитиков и продуктовых менеджеров, которые принимают решения на основе экспериментов</li>
-            </ul>
-            <div class="main-course-cta-links">
-                <a href="./lab/ab-decisions/index.html">Открыть курс</a>
-                <a href="./lab/ab-decisions/practice/index.html">Открыть практику (графики)</a>
-            </div>
-        </div>
-
-        <div class="main-course-card">
-            <div class="main-course-kicker">Основной курс №3</div>
-            <div class="main-course-title">Графики в аналитике и принятии решений</div>
-            <ul class="main-course-points">
-                <li>Как визуальная форма представления данных влияет на интерпретацию, аргументы и решения в аналитике</li>
-                <li>Для product и data аналитиков, которые строят графики для принятия решений</li>
-                <li>После курса графики становятся инструментом аналитического рассуждения, а не просто визуализацией</li>
-            </ul>
-            <div class="main-course-cta-links">
-                <a href="./lab/graphs-analytics/index.html">Открыть курс</a>
-            </div>
-        </div>
-
-        <h2>Мини-курсы</h2>
-
-        <div class="mini-courses-list">
-            <div class="mini-course-card">
-                <div class="mini-course-title">Математика экспериментов в монетизации</div>
-                <div class="mini-course-description">
-                    Как проектировать, считать и интерпретировать эксперименты в рекламных и маркетплейс-системах.<br>
-                    Фокус — не на формулах, а на том, какие выводы действительно можно делать из данных.
-                </div>
-                <a href="./lab/experiments/index.html" class="mini-course-link">→ Открыть</a>
-            </div>
-
-            <div class="mini-course-card">
-                <div class="mini-course-title">Практика A/B-тестирования на графиках</div>
-                <div class="mini-course-description">
-                    Тренировочный режим для чтения экспериментов через визуальные формы.<br>
-                    7 сценариев с графиками и разбором решений из реальных продуктов.
-                </div>
-                <a href="./lab/ab-decisions/practice/index.html" class="mini-course-link">→ Открыть</a>
-            </div>
-
-        </div>
-
-        <h2>Калькуляторы</h2>
-
-        <div class="mini-course-card">
-            <div class="mini-course-title">Интерактивные модели</div>
-            <div class="mini-course-description">
-                Покрутить систему руками. Trade-off цены и объёма, давление и лаги, чувствительность метрик.<br>
-                Модели не предсказывают будущее — они дают почувствовать рычаги и нелинейности.
-            </div>
-            <a href="./lab/calculators/index.html" class="mini-course-link">→ Открыть калькуляторы</a>
-        </div>
-
-        <h2>Глоссарий аналитики</h2>
-
-        <div class="mini-course-card">
-            <div class="mini-course-title">Глоссарий аналитики</div>
-            <div class="mini-course-description">
-                Как мы используем термины и метрики в этом проекте
-            </div>
-            <a href="./lab/glossary/" class="mini-course-link">→ Открыть глоссарий</a>
-        </div>
-
-        <h2>Карьерная поддержка</h2>
-
-        <div class="main-course-card">
-            <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; margin-bottom: 1rem;">
-                Помогаю аналитикам упаковать опыт в аргументы: резюме, кейсы, интервью.
-            </p>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; margin-bottom: 1rem;">
-                Фокус — на ясности решения и структуре, а не на шаблонах.
-            </p>
-            <div class="main-course-cta-links">
-                <a href="./career/index.html">Как я помогаю</a>
-                <a href="./about/index.html">Обо мне</a>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p class="footer-text">Alex Davydov</p>
-        </div>
+        <footer class="footer">
+            <nav class="footer-nav">
+                <a href="/lab/" class="footer-link">Лаборатория</a>
+                <a href="/lab/monetization/" class="footer-link">Монетизация</a>
+                <a href="/lab/experiments/" class="footer-link">Эксперименты</a>
+                <a href="/career/" class="footer-link">Карьера</a>
+                <a href="/companies/" class="footer-link">Для компаний</a>
+            </nav>
+        </footer>
     </div>
 </body>
 </html>
