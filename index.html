@@ -74,6 +74,32 @@
             }
         }
 
+        .courses-grid {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .courses-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .tools-grid {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .card {
             border: 1px solid #e8e8e8;
             border-radius: 6px;
@@ -194,45 +220,82 @@
             <p class="muted">Курсы, лаборатория и экспертная работа.</p>
         </div>
 
-        <h2>Start here</h2>
-
-        <div class="cards-grid">
-            <div class="card">
-                <div class="card-title">Математика монетизации рекламы</div>
-                <div class="card-text">
-                    Монетизация под давлением: как давление и насыщение искажают метрики.
-                    Диагностика до падения выручки через механизмы, а не цифры.
+        <section>
+            <h2>Курсы</h2>
+            <p class="muted" style="margin-bottom: 1.5rem;">Практические мини-курсы про монетизацию и эксперименты: механизм → метрики → решение.</p>
+            
+            <div class="cards-grid courses-grid">
+                <div class="card">
+                    <div class="card-title">Математика монетизации рекламы</div>
+                    <div class="card-text">
+                        Монетизация под давлением: как давление и насыщение искажают метрики. Диагностика до падения выручки через механизмы, а не цифры.
+                    </div>
+                    <a href="/lab/monetization/" class="card-button">Открыть курс →</a>
                 </div>
-                <a href="/lab/monetization/" class="card-button">Открыть курс →</a>
-            </div>
 
-            <div class="card">
-                <div class="card-title">Математика экспериментов в монетизации</div>
-                <div class="card-text">
-                    Эксперименты, когда метрики врут: давление, время, лаги, guardrails.
-                    Траектории системы вместо дельт цифр.
+                <div class="card">
+                    <div class="card-title">Математика экспериментов в монетизации</div>
+                    <div class="card-text">
+                        Эксперименты, когда метрики врут: давление, время, лаги, guardrails. Траектории системы вместо дельт.
+                    </div>
+                    <a href="/lab/experiments/" class="card-button">Открыть курс →</a>
                 </div>
-                <a href="/lab/experiments/" class="card-button">Открыть курс →</a>
-            </div>
 
-            <div class="card">
-                <div class="card-title">Лаборатория</div>
-                <div class="card-text">
-                    Один механизм → одна визуализация → один вывод.
-                    Экспонаты о времени, давлении, метриках, экспериментах.
+                <div class="card">
+                    <div class="card-title">A/B-тестирование: принятие решений на практике</div>
+                    <div class="card-text">
+                        Практический курс про решения в A/B: графики → механизм → решение. Конфликты метрик, сегменты, окна и лаги.
+                    </div>
+                    <a href="/lab/ab-decisions/" class="card-button">Открыть курс →</a>
                 </div>
-                <a href="/lab/" class="card-button">Открыть лабораторию →</a>
             </div>
+        </section>
 
-            <div class="card">
-                <div class="card-title">Карьерная поддержка</div>
-                <div class="card-text">
-                    Аргументы для lead / head уровня: решения, trade-offs, ответственность.
-                    Упаковка опыта в управленческую ясность.
+        <section>
+            <h2>Инструменты</h2>
+            <p class="muted" style="margin-bottom: 1.5rem;">Калькуляторы и определения — чтобы быстро сверять смысл метрик и расчётов.</p>
+            
+            <div class="cards-grid tools-grid">
+                <div class="card">
+                    <div class="card-title">Калькуляторы</div>
+                    <div class="card-text">
+                        Интерактивные модели: покрутить рычаги, увидеть нелинейности и trade-offs.
+                    </div>
+                    <a href="/lab/calculators/" class="card-button">Открыть →</a>
                 </div>
-                <a href="/career/" class="card-button">Перейти →</a>
+
+                <div class="card">
+                    <div class="card-title">Глоссарий</div>
+                    <div class="card-text">
+                        Термины и метрики проекта: что именно считаем и как читаем.
+                    </div>
+                    <a href="/lab/glossary/" class="card-button">Открыть →</a>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <section>
+            <h2>Карьера</h2>
+            <p class="muted" style="margin-bottom: 1.5rem;">Разбор опыта и решений: резюме, кейсы, интервью. Упор на структуру аргументов, ответственность и trade-offs.</p>
+            
+            <div class="cards-grid tools-grid">
+                <div class="card">
+                    <div class="card-title">Карьерный разбор (аналитики)</div>
+                    <div class="card-text">
+                        Упаковываем опыт в чёткие аргументы: что вы сделали, почему это сработало, какие были ограничения и как вы принимали решения.
+                    </div>
+                    <a href="/career/index.html" class="card-button">Перейти →</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Executive review (Lead / Head)</div>
+                    <div class="card-text">
+                        Позиционирование уровня системы: зона влияния, границы ответственности, решения про деньги, риски и эксперименты.
+                    </div>
+                    <a href="/career/executive/index.html" class="card-button">Перейти →</a>
+                </div>
+            </div>
+        </section>
 
         <section class="companies-section">
             <h2>Для компаний</h2>
