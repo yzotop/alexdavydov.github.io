@@ -160,7 +160,7 @@
             font-size: 1.3rem;
             font-weight: 400;
             margin-top: 3rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             color: #1a1a1a;
         }
 
@@ -233,175 +233,30 @@
             color: #1a1a1a;
         }
 
-        .section {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: 0.85rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-            font-weight: 500;
-        }
-
-        .tracks-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
+        .related-section {
+            margin-top: 4rem;
             margin-bottom: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e8e8e8;
         }
 
-        @media (min-width: 768px) {
-            .tracks-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .related-links {
+            list-style: none;
+            padding-left: 0;
         }
 
-        .track-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 1.5rem;
-            transition: border-color 0.2s ease;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .track-card:hover {
-            border-color: #999;
-        }
-
-        .track-title {
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
-        }
-
-        .track-tagline {
-            font-size: 0.9rem;
-            font-style: italic;
-            color: #666;
+        .related-links li {
             margin-bottom: 0.75rem;
         }
 
-        .track-description {
-            font-size: 0.9rem;
-            color: #888;
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-
-        .track-description a {
+        .related-links a {
             color: #666;
-            text-decoration: underline;
-            text-decoration-color: #ccc;
-            transition: color 0.2s ease, text-decoration-color 0.2s ease;
-        }
-
-        .track-description a:hover {
-            color: #1a1a1a;
-            text-decoration-color: #1a1a1a;
-        }
-
-        .recommended-panel {
-            padding: 1.5rem;
-            border: 1px solid #e8e8e8;
-            border-radius: 4px;
-            margin-bottom: 3rem;
-            max-width: 700px;
-        }
-
-        .recommended-title {
-            font-size: 0.9rem;
-            color: #999;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-
-        .recommended-panel p {
+            text-decoration: none;
             font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
-        }
-
-        .recommended-panel p:last-child {
-            margin-bottom: 0;
-            font-style: italic;
-            color: #888;
-            margin-top: 1rem;
-        }
-
-        .exemplar-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 1.5rem;
-            transition: border-color 0.2s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            max-width: 600px;
-            margin-bottom: 1rem;
-        }
-
-        .exemplar-card:hover {
-            border-color: #999;
-        }
-
-        .exemplar-title {
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
-        }
-
-        .exemplar-tagline {
-            font-size: 0.9rem;
-            font-style: italic;
-            color: #666;
-            margin-bottom: 0.75rem;
-        }
-
-        .exemplar-description {
-            font-size: 0.9rem;
-            color: #888;
-            line-height: 1.5;
-        }
-
-        .exemplar-description a {
-            color: #666;
-            text-decoration: underline;
-            text-decoration-color: #ccc;
-            transition: color 0.2s ease, text-decoration-color 0.2s ease;
-        }
-
-        .exemplar-description a:hover {
-            color: #1a1a1a;
-            text-decoration-color: #1a1a1a;
-        }
-
-        .exemplar-note {
-            font-size: 0.85rem;
-            color: #999;
-            font-style: italic;
-            margin-top: 0.5rem;
-        }
-
-        .secondary-link {
-            display: inline-block;
-            margin-top: 0.75rem;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
             transition: color 0.2s ease;
         }
 
-        .secondary-link:hover {
+        .related-links a:hover {
             color: #1a1a1a;
         }
     </style>
@@ -417,23 +272,20 @@
         </div>
 
         <h1>Математика экспериментов в монетизации</h1>
-        <p class="subtitle">Как проектировать, считать и интерпретировать эксперименты в рекламных и маркетплейс-системах. Фокус — не на формулах, а на том, какие выводы действительно можно делать из данных.</p>
+        <p class="subtitle">Практический курс о том, как проектировать и интерпретировать эксперименты в системах монетизации и маркетплейсах: давление, время, лаги, guardrails и конфликты метрик.</p>
 
         <div class="intro">
             <p>
-                Эксперимент — это инструмент понимания <a href="../monetization/inventory/index.html">механизма</a>, а не поиск дельты. В монетизации эксперименты искажаются давлением, временем и рынком.
-            </p>
-            <p>
-                Этот курс — о том, как принимать решения в экспериментах, когда метрики искажаются давлением, временем и рынком. Практические паттерны и механики из реальных экспериментов в рекламных системах.
+                Эксперимент — инструмент понимания механизма, а не поиск дельты. В монетизации метрики искажаются давлением, временем и рынком. Мы учимся читать траектории и принимать решение, когда "цифры спорят".
             </p>
         </div>
 
         <div class="how-to">
             <h3>Как проходить курс</h3>
             <ul>
-                <li>Проходите уроки последовательно: каждый урок строится на предыдущих</li>
-                <li>Обращайте внимание на паттерны и <a href="../monetization/inventory/index.html">механизмы</a>: они повторяются в разных экспериментах</li>
-                <li>Используйте эталонный шаблон эксперимента для проектирования своих тестов</li>
+                <li>Идите по модулям сверху вниз: каждый следующий опирается на предыдущий.</li>
+                <li>Фиксируйте: гипотеза → механизм → метрики → guardrails → решение.</li>
+                <li>Смотрите на форму эффекта и лаги: окно наблюдения меняет вывод.</li>
             </ul>
         </div>
 
@@ -443,134 +295,93 @@
             <a href="./checklist.html" class="cta-button secondary">Чеклист</a>
         </div>
 
-        <div class="unit-title">Юнит 1: Основы экспериментов</div>
+        <h2>Карта курса</h2>
+
+        <div class="unit-title">Модуль 1 — Основа экспериментов</div>
 
         <div class="lessons-grid">
             <div class="lesson-card">
-                <div class="lesson-title">Role of Experiment</div>
+                <div class="lesson-title">Зачем нужен эксперимент</div>
                 <div class="lesson-description">
-                    Зачем вообще нужен эксперимент. Почему "выросло / не выросло" — плохой вопрос. Эксперимент как инструмент понимания <a href="../monetization/inventory/index.html">механизма</a>.
+                    Эксперимент как проверка механизма. Почему "выросло/не выросло" — плохой вопрос.
                 </div>
                 <a href="./role-of-experiment.html" class="lesson-link">→ Открыть урок</a>
             </div>
 
             <div class="lesson-card">
-                <div class="lesson-title">Pressure & Distortions</div>
+                <div class="lesson-title">Давление и искажения</div>
                 <div class="lesson-description">
-                    Как давление, насыщение и перетоки ломают тесты. Почему локальные выигрыши вредят системе. Системные эффекты в экспериментах.
+                    Как давление, насыщение и переток ломают интерпретацию. Почему локальные выигрыши вредят total.
                 </div>
                 <a href="./pressure-design.html" class="lesson-link">→ Открыть урок</a>
             </div>
 
             <div class="lesson-card">
-                <div class="lesson-title">Time & Lags</div>
+                <div class="lesson-title">Время и лаги</div>
                 <div class="lesson-description">
-                    Почему эффекты приходят позже. Как окно оценки меняет вывод. Временные искажения в экспериментах.
+                    Почему эффект приходит позже. Как окно оценки меняет вывод. Временные искажения в тестах.
                 </div>
                 <a href="./time-and-lags.html" class="lesson-link">→ Открыть урок</a>
             </div>
         </div>
 
-        <div class="unit-title">Юнит 2: Метрики и структура</div>
+        <div class="unit-title">Модуль 2 — Метрики и структура решения</div>
 
         <div class="lessons-grid">
             <div class="lesson-card">
-                <div class="lesson-title">Metrics for Reading</div>
+                <div class="lesson-title">Метрики для чтения эксперимента</div>
                 <div class="lesson-description">
-                    Primary vs diagnostic vs guardrails. Как разложить деньги на рычаги. Какие метрики читать для принятия решения.
+                    Primary vs diagnostic vs guardrails. Как разложить деньги на рычаги и не попасть в ложный вывод.
                 </div>
                 <a href="./metrics-for-reading.html" class="lesson-link">→ Открыть урок</a>
             </div>
 
             <div class="lesson-card">
-                <div class="lesson-title">Anatomy of Experiment</div>
+                <div class="lesson-title">Анатомия эксперимента</div>
                 <div class="lesson-description">
-                    Эталонный шаблон эксперимента. От гипотезы до решения и мониторинга. Структура эксперимента как инструмент принятия решения.
+                    Шаблон: гипотеза → дизайн → мониторинг → решение. Как оформлять выводы.
                 </div>
                 <a href="./anatomy-of-experiment.html" class="lesson-link">→ Открыть урок</a>
             </div>
 
             <div class="lesson-card">
-                <div class="lesson-title">Patterns Catalog</div>
+                <div class="lesson-title">Каталог паттернов</div>
                 <div class="lesson-description">
-                    Повторяющиеся формы экспериментов. Когда какой паттерн применять. Типовые структуры экспериментов в монетизации.
+                    Повторяющиеся формы эффектов в монетизации. Что ожидать и как читать.
                 </div>
                 <a href="./patterns-catalog.html" class="lesson-link">→ Открыть урок</a>
             </div>
 
             <div class="lesson-card">
-                <div class="lesson-title">Metric Conflicts</div>
+                <div class="lesson-title">Конфликты метрик</div>
                 <div class="lesson-description">
-                    Когда метрики противоречат друг другу. Как интерпретировать конфликты и принимать решения при неоднозначных результатах.
+                    Когда продуктовые метрики спорят с монетизацией. Как принимать решение при неоднозначных результатах.
                 </div>
                 <a href="./metric-conflicts.html" class="lesson-link">→ Открыть урок</a>
             </div>
         </div>
 
-        <div class="unit-title">Юнит 3: Операционная работа</div>
+        <div class="unit-title">Модуль 3 — Операционная работа</div>
 
         <div class="lessons-grid">
             <div class="lesson-card">
-                <div class="lesson-title">Checklists & Operating</div>
+                <div class="lesson-title">Операционный контур экспериментов</div>
                 <div class="lesson-description">
-                    Как запускать, останавливать и выкатывать. Stop-rules и мониторинг. Операционные процедуры для экспериментов.
+                    Запуск, остановка, выкладка. Stop-rules, мониторинг, повторные тесты и пост-аналитика.
                 </div>
                 <a href="./checklists-operating.html" class="lesson-link">→ Открыть урок</a>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">Уроки раздела</div>
-            <div class="section-title" style="margin-top: 2rem;">Три трека</div>
-            <div class="tracks-grid">
-                <a href="./pressure-patterns.html" class="track-card">
-                    <div class="track-title">Давление</div>
-                    <div class="track-tagline">Дожимать можно. Ломать — быстро.</div>
-                    <div class="track-description">
-                        Эксперименты, которые меняют давление: частота, плотность, конкуренция форматов. <a href="../monetization/operating/signals.html" onclick="event.stopPropagation();">Ранние сигналы</a>: showConv, насыщение, пороги. Типичная ловушка: <a href="../monetization/pressure/hidden-saturation.html" onclick="event.stopPropagation();">скрытое насыщение</a>, когда выручка растёт, а <a href="../monetization/inventory/index.html" onclick="event.stopPropagation();">механика</a> деградирует.
-                    </div>
-                </a>
-
-                <a href="./time-patterns.html" class="track-card">
-                    <div class="track-title">Время</div>
-                    <div class="track-tagline">Лаг — это часть эффекта.</div>
-                    <div class="track-description">
-                        <a href="../monetization/time/delayed-effects.html" onclick="event.stopPropagation();">Отложенные эффекты</a>, долгая тишина, дрейф, смена режима. Короткие окна врут, потому что последствия приходят с лагом. Измеряйте <a href="../monetization/operating/signals.html" onclick="event.stopPropagation();">ранние сигналы</a>: <a href="../monetization/inventory/index.html" onclick="event.stopPropagation();">механика</a>, распределение, динамика во времени.
-                    </div>
-                </a>
-
-                <a href="./decision-patterns.html" class="track-card">
-                    <div class="track-title">Решения</div>
-                    <div class="track-tagline">Окно, риск, сожаление.</div>
-                    <div class="track-description">
-                        Windowing, regret, value of information, irreversibility. Компромиссы и неопределённость. Как принимать решения при неполной информации и как читать результаты в правильном окне.
-                    </div>
-                </a>
-            </div>
-
-            <div class="recommended-panel">
-                <div class="recommended-title">Рекомендуемый маршрут</div>
-                <p>Начните с Давления: там механика и нелинейность.</p>
-                <p>Потом Время: там лаги и ловушки окна.</p>
-                <p>Завершите Решениями: там trade-offs и стоимость ошибок.</p>
-                <p>И после этого — эталонный разбор.</p>
-            </div>
+        <div class="related-section">
+            <h2>Связанные материалы</h2>
+            <ul class="related-links">
+                <li><a href="/lab/ab-decisions/">A/B-тестирование: принятие решений на практике</a></li>
+                <li><a href="/lab/monetization/">Математика монетизации рекламы</a></li>
+            </ul>
         </div>
 
-        <div class="section">
-            <div class="section-title">Один эталонный разбор</div>
-            <a href="./anatomy-of-experiment.html" class="exemplar-card">
-                <div class="exemplar-title">Anatomy of an Experiment</div>
-                <div class="exemplar-tagline">Как интерпретировать результаты эксперимента</div>
-                <div class="exemplar-description">
-                    Один обезличенный разбор на одном экране: что трогали → как реагировала <a href="../monetization/inventory/index.html" onclick="event.stopPropagation();">механика</a> → где ловушка вывода → чем закончилось.
-                </div>
-            </a>
-            <p class="exemplar-note">
-                Это самый сильный формат для интервью и лекций.
-            </p>
-            <a href="./anatomy-of-experiment.html" class="secondary-link">Открыть разбор →</a>
-        </div>
+        <a href="../../index.html" class="back-to-home">← На главную</a>
     </div>
 </body>
 </html>
