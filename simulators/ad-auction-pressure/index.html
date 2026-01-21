@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Ad Auction &amp; Ad Pressure (Live)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__left">
+        <div class="brand">
+          <div class="brand__title">Ad Auction &amp; Ad Pressure (Live)</div>
+          <div class="brand__subtitle">sessions · opportunities · auction · pressure · fatigue</div>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <span id="statusBadge" class="badge badge--ok">Paused</span>
+
+        <div class="seed">
+          <label class="seed__label" for="seedInput">Seed</label>
+          <input id="seedInput" class="seed__input" type="number" min="1" max="999999999" step="1" />
+          <button id="randomizeSeedBtn" class="btn btn--ghost" type="button">Randomize</button>
+        </div>
+
+        <div class="topbar__buttons">
+          <button id="startPauseBtn" class="btn btn--primary" type="button">Start</button>
+          <button id="resetBtn" class="btn btn--outline" type="button">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <aside class="panel panel--left">
+        <div class="panel__header">
+          <div class="panel__title">Controls</div>
+          <div class="panel__hint">All controls update live. Seed + Reset makes runs reproducible.</div>
+        </div>
+
+        <section class="control-group">
+          <div class="control-group__title">A) Traffic &amp; Sessions</div>
+          <div id="controlsTraffic" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">B) Ad Pressure Policy</div>
+          <div id="controlsPressure" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">C) Auction &amp; Monetization</div>
+          <div id="controlsAuction" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">D) Fatigue &amp; UX</div>
+          <div id="controlsFatigue" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">E) Display</div>
+          <div id="controlsDisplay" class="control-group__body"></div>
+        </section>
+      </aside>
+
+      <section class="center">
+        <div class="main-card">
+          <div class="main-card__header">
+            <div class="main-card__title">Session stream</div>
+            <div class="main-card__badges">
+              <span id="capBadge" class="badge badge--warn is-hidden">Cap reached</span>
+            </div>
+          </div>
+          <div class="main-card__summary">
+            <div id="topSummary" class="panel-summary" aria-live="polite"></div>
+          </div>
+          <div class="main-card__canvasWrap">
+            <canvas id="mainCanvas"></canvas>
+          </div>
+          <div class="main-card__footer">
+            <div class="footer-row">
+              <div class="footer-kv"><span class="kv__k">Sim time</span><span id="simTime" class="kv__v">0s</span></div>
+              <div class="footer-kv"><span class="kv__k">Active users</span><span id="activeUsers" class="kv__v">0</span></div>
+              <div class="footer-kv"><span class="kv__k">FPS</span><span id="fps" class="kv__v">—</span></div>
+              <div class="footer-kv"><span class="kv__k">Sim</span><span id="simHz" class="kv__v">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <details class="howto" open>
+          <summary class="howto__summary">How to read this</summary>
+          <div class="howto__body">
+            <ul class="howto__list">
+              <li>Each dot is a user session moving left→right (x = progress). Sessions can end naturally or exit early.</li>
+              <li>Opportunities occur at a constant cadence per user; policy controls whether an opportunity becomes an impression.</li>
+              <li>Fixed policy targets a global ad rate; Adaptive policy reduces shows when fatigue exceeds the user’s tolerance.</li>
+              <li>Impressions trigger a mini-auction: bidder CPMs × user quality (CTR ratio) compete; a floor can block delivery.</li>
+              <li>Fatigue increases on impressions, decays over time, reduces CTR/quality, and increases early-exit probability.</li>
+              <li>Fill rate = impressions/opportunities. Avg CPM = spend/impressions × 1000.</li>
+              <li>Revenue/min shows publisher revenue; platform revenue is spend × take rate.</li>
+              <li>Heat strip (if enabled) shows recent ad pressure (impressions per user-second) for the last 60s.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <aside class="panel panel--right">
+        <div class="panel__header">
+          <div class="panel__title">Metrics</div>
+          <div class="panel__hint">Updated every 1s. Most values are rolling over the last 60s.</div>
+        </div>
+
+        <div class="charts">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title">Revenue/min</div>
+              <div id="cRevNow" class="chart-card__now">—</div>
+            </div>
+            <div class="chart-card__canvasWrap"><canvas id="chartRevenue"></canvas></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title">Impressions/min</div>
+              <div id="cImprNow" class="chart-card__now">—</div>
+            </div>
+            <div class="chart-card__canvasWrap"><canvas id="chartImpr"></canvas></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title">Avg CPM</div>
+              <div id="cCPMNow" class="chart-card__now">—</div>
+            </div>
+            <div class="chart-card__canvasWrap"><canvas id="chartCPM"></canvas></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title">Avg fatigue</div>
+              <div id="cFatNow" class="chart-card__now">—</div>
+            </div>
+            <div class="chart-card__canvasWrap"><canvas id="chartFatigue"></canvas></div>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric"><div class="metric__k">Active users</div><div id="mActiveUsers" class="metric__v">0</div></div>
+          <div class="metric"><div class="metric__k">Ad impressions/min</div><div id="mImprPerMin" class="metric__v">0</div></div>
+          <div class="metric"><div class="metric__k">Ad rate (impr/user-min)</div><div id="mAdRate" class="metric__v">0.00</div></div>
+          <div class="metric">
+            <div class="metric__k">Fill rate</div>
+            <div id="mFill" class="metric__v">0%</div>
+            <div class="metric__sub" aria-label="Why no impression breakdown">
+              <div class="metric__subrow"><span class="sub__k">Policy</span><span id="mNoImprPolicy" class="sub__v">—</span></div>
+              <div class="metric__subrow"><span class="sub__k">Floor</span><span id="mNoImprFloor" class="sub__v">—</span></div>
+              <div class="metric__subrow"><span class="sub__k">Caps</span><span id="mNoImprCaps" class="sub__v">—</span></div>
+            </div>
+          </div>
+          <div class="metric"><div class="metric__k">Avg CPM ($)</div><div id="mCPM" class="metric__v">$0.00</div></div>
+          <div class="metric"><div class="metric__k">Revenue/min ($)</div><div id="mRevPub" class="metric__v">$0.00</div></div>
+          <div class="metric"><div class="metric__k">Platform rev/min ($)</div><div id="mRevPlat" class="metric__v">$0.00</div></div>
+          <div class="metric"><div class="metric__k">Advertiser spend/min ($)</div><div id="mSpend" class="metric__v">$0.00</div></div>
+          <div class="metric"><div class="metric__k">Avg CTR</div><div id="mCTR" class="metric__v">0.00%</div></div>
+          <div class="metric"><div class="metric__k">Avg fatigue</div><div id="mFatigue" class="metric__v">0.00</div></div>
+          <div class="metric"><div class="metric__k">Ends/min</div><div id="mEnds" class="metric__v">0</div></div>
+          <div class="metric"><div class="metric__k">Early exit share</div><div id="mEarlyShare" class="metric__v">0%</div></div>
+          <div class="metric"><div class="metric__k">Avg session time (sec)</div><div id="mAvgSessionTime" class="metric__v">0</div></div>
+        </div>
+      </aside>
+    </main>
+
+    <script defer src="./utils.js"></script>
+    <script defer src="./sim.js"></script>
+    <script defer src="./render.js"></script>
+    <script defer src="./ui.js"></script>
+    <script defer src="./main.js"></script>
+  </body>
+</html>
+
