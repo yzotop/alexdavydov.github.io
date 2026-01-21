@@ -137,6 +137,7 @@
   }
 
   function createUI({ sim, renderer, elements }) {
+    const topSummaryEl = document.getElementById('topSummary');
     const state = {
       // Mirrors sim.cfg keys + some UI-only values
       demandRatePerMin: sim.cfg.demandRatePerMin,
@@ -317,11 +318,127 @@
       renderer.drawCharts(seriesMap);
     }
 
+    function renderTopSummary(derived) {
+      if (!topSummaryEl) return;
+
+      const cfg = sim.cfg;
+      const demand = cfg.demandRatePerMin;
+      const drivers = derived.drivers;
+      const activeOrders = derived.activeOrders;
+      const util = U.clamp(derived.utilization, 0, 1);
+      const idlePct = U.clamp(1 - util, 0, 1);
+
+      const avgEta = derived.avgPickupETA;
+      const p90Eta = derived.p90PickupETA;
+      const cancelRate = U.clamp(derived.cancelRate, 0, 1);
+
+      const gmv = derived.gmvPerMin;
+      const plat = derived.platformRevPerMin;
+      const drv = derived.driverEarnPerMin;
+      const avgSurge = derived.avgSurge;
+
+      // --- Limiter heuristics (use existing sim state only) ---
+      // zone ratio max (pending / idle supply)
+      let ratioMax = 0;
+      const pend = sim.zonePending;
+      const idle = sim.zoneIdleSupply;
+      if (pend && idle && pend.length === idle.length) {
+        for (let i = 0; i < pend.length; i++) {
+          const r = pend[i] / Math.max(1, idle[i]);
+          if (Number.isFinite(r) && r > ratioMax) ratioMax = r;
+        }
+      }
+
+      // cap binding share: share of zones where target surge hits cap (current, not rolling)
+      let capBindShare = 0;
+      const cap = Number(cfg.surgeCap);
+      const target = sim._surgeTarget;
+      if (cap > 0 && target && target.length) {
+        let hit = 0;
+        for (let i = 0; i < target.length; i++) {
+          if (target[i] >= cap * 0.98) hit++;
+        }
+        capBindShare = hit / target.length;
+      }
+
+      const eta0 = Math.max(1e-6, Number(cfg.eta0));
+
+      const supplyScore =
+        U.clamp((0.18 - idlePct) / 0.18, 0, 1.5) +
+        U.clamp((p90Eta - eta0) / eta0, 0, 1.5);
+
+      const activeRef = Math.max(1, Math.floor(drivers * 0.08));
+      const demandScore =
+        U.clamp((0.35 - util) / 0.35, 0, 1.5) +
+        U.clamp((activeRef - activeOrders) / activeRef, 0, 1.5);
+
+      const pricingScore =
+        U.clamp((ratioMax - 1.4) / 1.4, 0, 1.5) * 0.8 +
+        U.clamp((0.6 - Number(cfg.surgeStrength)) / 0.6, 0, 1.5) * 0.5 +
+        U.clamp(capBindShare / 0.5, 0, 1.5) * 0.7;
+
+      let limiter = 'Supply-limited';
+      let hint = `idle ${U.formatPercent01(idlePct, 0)}, p90 ${U.formatSeconds(p90Eta)}`;
+      let best = supplyScore;
+      if (demandScore > best) {
+        best = demandScore;
+        limiter = 'Demand-limited';
+        hint = `util ${U.formatPercent01(util, 0)}, active ${activeOrders}`;
+      }
+      if (pricingScore > best) {
+        best = pricingScore;
+        limiter = 'Pricing-limited';
+        const capPct = `${Math.round(capBindShare * 100)}%`;
+        hint = `cap bind ${capPct}, max ratio ${Number.isFinite(ratioMax) ? ratioMax.toFixed(1) : '—'}`;
+      }
+
+      const pills = [];
+      pills.push(el('div', { class: 'pill' }, [
+        el('span', { text: 'Now:' }),
+        el('span', { text: `demand λ ${Math.round(demand)}/min` }),
+        el('span', { text: '|' }),
+        el('span', { text: `drivers ${drivers}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `active ${activeOrders}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `idle ${U.formatPercent01(idlePct, 0)}` }),
+      ]));
+
+      pills.push(el('div', { class: 'pill' }, [
+        el('span', { text: 'SLA:' }),
+        el('span', { text: `avg ETA ${U.formatSeconds(avgEta)}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `p90 ${U.formatSeconds(p90Eta)}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `cancel ${U.formatPercent01(cancelRate, 1)}` }),
+      ]));
+
+      pills.push(el('div', { class: 'pill' }, [
+        el('span', { text: 'Economics:' }),
+        el('span', { text: `GMV/min ${U.formatMoneyRub(gmv)}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `plat/min ${U.formatMoneyRub(plat)}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `driver/min ${U.formatMoneyRub(drv)}` }),
+        el('span', { text: '|' }),
+        el('span', { text: `surge ${U.formatFloat(avgSurge, 2)}×` }),
+      ]));
+
+      pills.push(el('div', { class: 'pill pill--limiter' }, [
+        el('span', { text: 'Limiter:' }),
+        el('b', { text: `${limiter}` }),
+        el('span', { text: `(${hint})` }),
+      ]));
+
+      topSummaryEl.replaceChildren(...pills);
+    }
+
     // Hook into sim per-second flush.
     sim.onSecond = ({ derived, ts }) => {
       updateMetrics(derived);
       updateChartsNowLabels(derived);
       updateMiniCharts(ts);
+      renderTopSummary(derived);
     };
 
     // ---- Simulation control buttons are wired from main.js (start/pause loop)
