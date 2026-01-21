@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькуляторы — Alex Davydov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .card-button:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+
+        .links-list {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            font-size: 0.9rem;
+        }
+
+        .links-list a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <span>Калькуляторы</span>
+        </div>
+
+        <h1>Калькуляторы</h1>
+        <p class="subtitle">Параметрические модели и интерактивные калькуляторы: «покрутить рычаги» и увидеть нелинейности.</p>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h2 class="card-title">Симулятор монетизации рекламы</h2>
+                <p class="card-text">
+                    Параметрическая модель рекламной монетизации: давление, насыщение, спрос и выручка во времени.
+                </p>
+                <div class="btn-row">
+                    <a href="./ad-monetization/" class="card-button">Открыть калькулятор →</a>
+                    <a href="./ad-monetization/about/" class="card-button btn-secondary">Описание</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Симулятор Ride-Hailing</h2>
+                <p class="card-text">
+                    Параметрическая модель двустороннего рынка поездок: спрос, предложение, SLA и экономика по неделям.
+                </p>
+                <div class="btn-row">
+                    <a href="./ride-hailing/" class="card-button">Открыть калькулятор →</a>
+                    <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Калькуляторы (лаборатория)</h2>
+                <p class="card-text">
+                    Набор небольших калькуляторов для быстрых проверок trade-off и чувствительности метрик.
+                </p>
+                <div class="btn-row">
+                    <a href="./lab/" class="card-button">Открыть раздел →</a>
+                </div>
+                <div class="links-list">
+                    <a href="./lab/revenue.html">Выручка = цена × объём</a>
+                    <a href="./lab/rollout.html">Раскатка теста на 100%</a>
+                    <a href="./lab/rollout-compare.html">Сравнение 3 тестов</a>
+                    <a href="./lab/funnel-sensitivity.html">Воронка: +1 п.п.</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

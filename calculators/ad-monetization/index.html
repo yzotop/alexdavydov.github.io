@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор монетизации рекламы — Alex Davydov</title>
+    <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="breadcrumb">
+                <a href="/">Главная</a>
+                <span>→</span>
+                <a href="/calculators/">Калькуляторы</a>
+                <span>→</span>
+                <span>Симулятор монетизации рекламы</span>
+            </div>
+            <h1>Симулятор монетизации рекламы</h1>
+            <p class="subtitle">Интерактивная модель динамики монетизации: давление, насыщение и выручка во времени.</p>
+        </header>
+
+        <div class="page-layout">
+            <div id="controls" class="controls left-panel">
+                <div class="card">
+                    <h2>Параметры</h2>
+                    
+                    <div class="form-field">
+                        <label for="preset">Сценарий</label>
+                        <select id="preset">
+                        </select>
+                    </div>
+
+                    <div class="actions">
+                        <button id="runBtn">Пересчитать модель</button>
+                        <div class="actions-secondary">
+                            <button id="resetBtn" class="secondary">Сброс к сценарию</button>
+                            <button id="exportBtn" class="secondary">Выгрузить CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="param-section param-section-live">
+                        <h3>Управление давлением (онлайн)</h3>
+                        <div class="section-hint">Графики обновляются сразу</div>
+
+                        <div class="form-field">
+                            <label for="pv_per_user">PV на пользователя (база)</label>
+                            <input type="number" id="pv_per_user" min="1" max="500" step="1" value="70" data-live>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="slots_per_pv">Слотов на PV</label>
+                            <input type="number" id="slots_per_pv" min="0" max="2" step="0.01" value="0.55" data-live>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="commission">Комиссия (0..1)</label>
+                            <input type="number" id="commission" min="0" max="1" step="0.01" value="0.10" data-live>
+                            <div class="hint">0..1</div>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="saturation_sweetspot">Комфортное давление (ads/user/day)</label>
+                            <input type="number" id="saturation_sweetspot" min="1" max="50" step="1" value="14" data-live>
+                            <div class="hint">в день</div>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="cap_ads_day">Кап показов на пользователя (в день)</label>
+                            <input type="number" id="cap_ads_day" min="1" max="100" step="1" value="22" data-live>
+                            <div class="hint">в день</div>
+                            <div class="error"></div>
+                        </div>
+                    </div>
+
+                    <div class="param-section param-section-slow">
+                        <h3>Сценарий и шум</h3>
+                        <div class="section-hint">Требует пересчёта модели</div>
+
+                        <div class="form-field">
+                            <label for="dau0">DAU (старт)</label>
+                            <input type="number" id="dau0" min="100000" max="100000000" step="100000" value="4000000">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="growth_rate">Темп роста r (в неделю)</label>
+                            <input type="number" id="growth_rate" min="0" max="0.1" step="0.001" value="0.015">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="carrying_capacity">Потолок аудитории K (max DAU)</label>
+                            <input type="number" id="carrying_capacity" min="100000" max="100000000" step="100000" value="8000000">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="viewability">Видимость (0..1)</label>
+                            <input type="number" id="viewability" min="0" max="1" step="0.01" value="0.72">
+                            <div class="hint">0..1</div>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="fill_rate_base">Fill rate (база 0..1)</label>
+                            <input type="number" id="fill_rate_base" min="0" max="1" step="0.01" value="0.88">
+                            <div class="hint">0..1</div>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="cpm0">CPM (база, ₽)</label>
+                            <input type="number" id="cpm0" min="10" max="1000" step="1" value="180">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="alpha_engagement">Штраф PV от давления (alpha)</label>
+                            <input type="number" id="alpha_engagement" min="0" max="0.1" step="0.001" value="0.015">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="beta_cpm">Штраф CPM от перегруза (beta)</label>
+                            <input type="number" id="beta_cpm" min="0" max="0.1" step="0.001" value="0.010">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="gamma_fill">Штраф fill от перегруза (gamma)</label>
+                            <input type="number" id="gamma_fill" min="0" max="0.1" step="0.001" value="0.008">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="seed">Seed (целое)</label>
+                            <input type="number" id="seed" min="0" max="999999" step="1" value="42">
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="cpm_volatility">Волатильность CPM (0..1)</label>
+                            <input type="number" id="cpm_volatility" min="0" max="1" step="0.01" value="0.08">
+                            <div class="hint">0..1</div>
+                            <div class="error"></div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="demand_volatility">Волатильность спроса (0..1)</label>
+                            <input type="number" id="demand_volatility" min="0" max="1" step="0.01" value="0.06">
+                            <div class="hint">0..1</div>
+                            <div class="error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results" class="results">
+                <div id="statusBar" class="statusbar" aria-live="polite">Initializing...</div>
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div id="kpiTiles" class="kpi-tiles"></div>
+                <div class="charts-grid">
+                    <div class="card chart-card chart-card--wide">
+                        <div class="chart-header">
+                            <h2>Выручка нетто (неделя)</h2>
+                            <label class="mini-toggle"><input id="toggleCumulative" type="checkbox"> Накопительно</label>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="chartRevenue"></canvas>
+                        </div>
+                        <div id="cumWrap" class="cum-wrap">
+                            <div class="cum-title">Выручка нетто (накопительно)</div>
+                            <canvas id="chartRevenueCum"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h2>CPM</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chartCPM"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h2>Fill rate</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chartFill"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h2>Давление и PV на пользователя</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chartPressurePV"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h2>Показы (в неделю)</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chartImpressions"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card--wide">
+                        <h2>Итоги</h2>
+                        <table class="kpi-table" id="kpiTable">
+                            <tr>
+                                <th>Метрика</th>
+                                <th>Значение</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/model.js"></script>
+    <script src="assets/charts.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Описание симулятора монетизации рекламы — Alex Davydov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .card-button:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="../../">Калькуляторы</a>
+            <span>→</span>
+            <span>Описание симулятора</span>
+        </div>
+
+        <h1>Описание симулятора монетизации рекламы</h1>
+        <p class="subtitle">Что это за инструмент, зачем он нужен и как им пользоваться.</p>
+
+        <h2>Что это</h2>
+        <p>Это не «прогноз выручки», а инструмент для мышления о монетизации как системе. Симулятор помогает понять, как давление рекламы, спрос, fill rate, CPM и поведение пользователя вместе формируют результат во времени.</p>
+
+        <h2>Зачем он нужен</h2>
+        <ul>
+            <li>Быстро проверять сценарии «что если» (спрос слабый/сильный, давление выше/ниже, рост аудитории, комиссия).</li>
+            <li>Видеть trade-off'ы: рост давления не всегда увеличивает выручку; перегруз снижает fill и вовлечённость.</li>
+            <li>Сравнивать сценарии с базой и объяснять результат через вклад факторов (DAU, PV/user, fill, CPM, комиссия).</li>
+        </ul>
+
+        <h2>Как читать графики</h2>
+        <ul>
+            <li><strong>Выручка нетто (неделя):</strong> динамика результата по неделям — главная кривая для анализа.</li>
+            <li><strong>CPM и Fill rate:</strong> показывают состояние спроса/доставки.</li>
+            <li><strong>Давление и PV/user:</strong> помогают увидеть эффект насыщения и штрафов.</li>
+            <li><strong>Показы (в неделю):</strong> прокси объёма инвентаря и спроса.</li>
+        </ul>
+
+        <h2>Ограничения</h2>
+        <p>Модель упрощённая и предназначена для объяснения причинно-следственных связей, а не для точного финансового прогноза. Числа условные, важнее форма зависимостей и направления эффектов.</p>
+
+        <h2>Как пользоваться (быстрый старт)</h2>
+        <ol>
+            <li>Выберите сценарий или задайте параметры.</li>
+            <li>Сохраните базу и включите сравнение.</li>
+            <li>Меняйте параметры и смотрите Δ в KPI и графиках.</li>
+            <li>Используйте декомпозицию, чтобы понять, что дало изменение выручки.</li>
+            <li>При необходимости экспортируйте CSV.</li>
+        </ol>
+
+        <div class="btn-row">
+            <a href="../" class="card-button">Открыть калькулятор →</a>
+            <a href="../../" class="card-button btn-secondary">Назад к калькуляторам</a>
+        </div>
+    </div>
+</body>
+</html>

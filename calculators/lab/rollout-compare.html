@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение 3 тестов: проекция на 100%</title>
+    <script src="assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="assets/css/calculators.css">
+    <link rel="stylesheet" href="assets/css/calculators_charts.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
+
+        <h1>Сравнение 3 тестов: проекция на 100%</h1>
+        <p class="subtitle">Сравнить проекции трёх тестов на 100% раскатку по их текущим результатам.</p>
+
+        <div class="calculator-layout">
+            <div class="controls-panel">
+                <div class="compare-input-card">
+                    <h3 style="font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: var(--text);">Ввод данных (3 теста)</h3>
+                    
+                    <div class="control-group" style="margin-bottom: 1.5rem;">
+                        <label class="control-label">
+                            <span>Доля теста (%)</span>
+                            <span class="control-value" id="shareCommonValue">22</span>
+                        </label>
+                        <input type="range" id="shareCommon" min="1" max="33" step="1" value="22">
+                    </div>
+
+                    <div class="test-row">
+                        <div class="test-name">Тест A</div>
+                        <label>Выручка (индекс)</label>
+                        <input type="number" id="tA_rev" min="70" max="130" step="0.1" value="99.7">
+                    </div>
+
+                    <div class="test-row">
+                        <div class="test-name">Тест B</div>
+                        <label>Выручка (индекс)</label>
+                        <input type="number" id="tB_rev" min="70" max="130" step="0.1" value="101.0">
+                    </div>
+
+                    <div class="test-row">
+                        <div class="test-name">Тест C</div>
+                        <label>Выручка (индекс)</label>
+                        <input type="number" id="tC_rev" min="70" max="130" step="0.1" value="98.6">
+                    </div>
+
+                    <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1rem; line-height: 1.4;">
+                        Ограничение сценария: доля ≤ 33%. Здесь доля общая для A/B/C.
+                    </p>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="decision-header">
+                    <div class="kpi-block">
+                        <div class="kpi-item">
+                            <span class="kpi-label">Лучший @100%</span>
+                            <span class="kpi-value" id="best-test-name">—</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label">Выручка @100%</span>
+                            <span class="kpi-value" id="best-revenue-100">—</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label">Δ к базе</span>
+                            <span class="kpi-value" id="best-delta">—</span>
+                        </div>
+                    </div>
+                    <div class="kpi-meta">
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem;">Проекция выручки @100% (из текущей доли)</div>
+                        <span class="kpi-meta-text" id="all-tests-meta">—</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div id="all-tests-summary"></div>
+                    </div>
+                    <div class="below-note" id="compare-verdict" style="margin-top: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 4px;"></div>
+                </div>
+
+                <article class="chart-card single">
+                    <h3 class="chart-title">Выручка vs доля раскатки (3 теста)</h3>
+                    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                        Линии показывают, как изменится выручка при выборе ОДНОГО варианта и раскатке его до 100%.
+                    </p>
+                    <div id="compare-main-chart" class="chart big"></div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/rollout_compare_calculator.js"></script>
+</body>
+</html>
+

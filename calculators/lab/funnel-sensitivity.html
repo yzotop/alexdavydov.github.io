@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Воронка монетизации: стоимость +1 п.п.</title>
+    <script src="assets/vendor/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="assets/css/calculators.css">
+    <link rel="stylesheet" href="assets/css/calculators_charts.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← На главную</a>
+        <a href="./index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
+
+        <h1>Денежная воронка: стоимость +1 шага</h1>
+        <p class="subtitle">Маржинальная ценность улучшения одного шага воронки (Requests → Fill rate → Show rate → CPM).</p>
+
+        <div class="calculator-layout">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Requests (индекс) <span class="control-badge">база: 100</span></span>
+                        <span class="control-value" id="requests-value">100</span>
+                    </label>
+                    <input type="range" id="requests" min="50" max="200" step="1" value="100">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Fill rate (%) <span class="control-badge">база: 80.0%</span></span>
+                        <span class="control-value" id="fill-rate-value">80.0</span>
+                    </label>
+                    <input type="range" id="fill-rate" min="1" max="99" step="0.1" value="80">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Show rate (%) <span class="control-badge">база: 80.0%</span></span>
+                        <span class="control-value" id="show-rate-value">80.0</span>
+                    </label>
+                    <input type="range" id="show-rate" min="1" max="99" step="0.1" value="80">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>CPM (₽) <span class="control-badge">база: 50 ₽</span></span>
+                        <span class="control-value" id="cpm-value">50</span>
+                    </label>
+                    <input type="range" id="cpm" min="10" max="200" step="1" value="50">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">
+                        <span>Revenue base (₽)</span>
+                        <span class="control-value" id="revenue-base-display">1 000 000 ₽</span>
+                    </label>
+                    <input type="number" id="revenue-base-input" min="0" step="10000" value="1000000">
+                </div>
+
+                <button type="button" id="reset-to-base" class="reset-button">Сбросить к базе</button>
+            </div>
+
+            <div class="output-panel">
+                <div class="decision-header">
+                    <div class="kpi-block">
+                        <div class="kpi-item">
+                            <span class="kpi-label">Выручка (₽)</span>
+                            <span class="kpi-value" id="revenue-rub">1 000 000 ₽</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label">Δ к базе</span>
+                            <span class="kpi-value" id="delta-rub">0 ₽</span>
+                            <span class="kpi-label" style="font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem;" id="delta-pct">0.0%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-meta">
+                        <details style="font-size: 0.8rem; color: #6b7280;">
+                            <summary>Детали расчёта</summary>
+                            <div class="kpi-meta-text" id="meta-index">Index: 100.0</div>
+                            <div class="kpi-meta-text" id="meta-breakdown">Req 100.0 | Fill 80.0% | Show 80.0% | CPM 50 ₽</div>
+                            <div class="kpi-meta-text" id="meta-drivers" style="margin-top: 4px;"></div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Control vs Test decomposition (Graph #5) - MAIN BLOCK -->
+                <article class="chart-card single" id="control-vs-test-block" style="margin-top: 24px;">
+                    <h3 class="chart-title">Контроль vs тест: разбор эффекта</h3>
+                    <p class="chart-hint" style="margin-bottom: 8px; font-weight: 500; color: #111;">Почему получился текущий результат</p>
+                    <p class="chart-hint" style="margin-bottom: 16px; font-size: 12px; color: #6b7280;">За счёт каких шагов воронки получен итоговый эффект</p>
+                    <div id="cvst-summary" class="chart-hint" style="margin-bottom: 12px; padding: 8px 10px; background:#f9fafb; border-left: 3px solid #6b7280; font-size: 13px;"></div>
+                    <div id="cvst-table"></div>
+                </article>
+
+                <!-- Sensitivity analysis - SECONDARY BLOCK -->
+                <article class="chart-card single" style="margin-top: 24px;">
+                    <h3 class="chart-title">Сколько стоит +1 шаг в каждом этапе</h3>
+                    <p class="chart-hint" style="margin-bottom: 8px; font-weight: 500; color: #111;">Что выгоднее улучшать дальше</p>
+                    <p class="chart-hint" style="margin-bottom: 4px;">Показана маржинальная ценность улучшения одного этапа при фиксированных остальных.</p>
+                    <p class="chart-hint" style="margin-bottom: 12px; font-size: 12px; color: #6b7280;">
+                        Шаг улучшения: Requests +1%, Fill rate / Show rate +1 п.п., CPM +1 ₽.
+                    </p>
+                    <div id="pp-callout" class="chart-hint" style="margin-bottom: 10px; padding: 8px 10px; background:#f9fafb; border-left: 3px solid #16a34a; font-size: 13px;"></div>
+                    <div id="pp-debug" class="chart-hint" style="margin-top:0; margin-bottom:8px; display:none; color:#dc2626;"></div>
+                    <div id="pp-table"></div>
+                    <p class="chart-note" id="pivot-explainer" style="margin-top: 10px;"></p>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pp-grid {
+            display: grid;
+            grid-template-columns: 160px 120px 1fr;
+            gap: 10px 14px;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .pp-head {
+            font-weight: 600;
+            color: #111;
+            padding-top: 6px;
+            font-size: 13px;
+        }
+        .pp-cell {
+            color: #111;
+            font-size: 13px;
+        }
+        .pp-base {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        .pp-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 500;
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        .pp-badge-low {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .pp-badge-base {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        .pp-badge-high {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .pp-barwrap {
+            position: relative;
+            height: 12px;
+            background: #f3f4f6;
+            border-radius: 999px;
+            overflow: visible;
+            margin-right: 8px;
+        }
+        /* .pp-zero - removed: bars now start from 0 (one-sided visualization)
+           Previously used for diverging scale (zero-centered), can be restored if needed:
+           position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px;
+           background: #cbd5e1; transform: translateX(-50%);
+        */
+        .pp-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 12px;
+            background: #6b7280;
+            border-radius: 999px;
+            min-width: 2px;
+        }
+        .pp-bar-best {
+            background: #16a34a;
+        }
+        .pp-bar-normal {
+            background: #6b7280;
+        }
+        .pp-val {
+            margin-left: 10px;
+            font-variant-numeric: tabular-nums;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .pp-pos {
+            color: #16a34a;
+        }
+        .pp-neg {
+            color: #dc2626;
+        }
+        .pp-zeroText {
+            color: #6b7280;
+        }
+        .pp-barcell {
+            display: flex;
+            align-items: center;
+        }
+        .control-badge {
+            margin-left: 6px;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        .reset-button {
+            margin-top: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            color: #4b5563;
+            cursor: pointer;
+        }
+        .reset-button:hover {
+            background: #f3f4f6;
+        }
+        /* Control vs Test decomposition styles */
+        .cvst-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 10px 14px;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .cvst-head {
+            font-weight: 600;
+            color: #111;
+            padding-top: 6px;
+            font-size: 13px;
+        }
+        .cvst-cell {
+            color: #111;
+            font-size: 13px;
+        }
+        .cvst-barwrap {
+            position: relative;
+            height: 12px;
+            background: #f3f4f6;
+            border-radius: 999px;
+            overflow: visible;
+            margin-right: 8px;
+        }
+        .cvst-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 12px;
+            border-radius: 999px;
+            min-width: 2px;
+        }
+        .cvst-bar-pos {
+            background: #16a34a;
+        }
+        .cvst-bar-neg {
+            background: #dc2626;
+        }
+        .cvst-val {
+            margin-left: 10px;
+            font-variant-numeric: tabular-nums;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .cvst-total {
+            font-weight: 600;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 8px;
+        }
+    </style>
+
+    <script src="assets/js/funnel_sensitivity_calculator.js"></script>
+</body>
+</html>
+
