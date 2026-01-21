@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Описание симулятора Ride-Hailing — Alex Davydov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .card-button:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="../../">Калькуляторы</a>
+            <span>→</span>
+            <span>Описание симулятора</span>
+        </div>
+
+        <h1>Симулятор Ride-Hailing</h1>
+        <p class="subtitle">Двусторонний рынок: как спрос, предложение, SLA и экономика складываются во времени.</p>
+
+        <h2>Что это</h2>
+        <p>
+            Это упрощённая динамическая модель рынка поездок (ride-hailing) на горизонте 52 недель. 
+            Симулятор показывает, как базовый спрос, количество водителей, SLA (ETA) и экономика платформы 
+            взаимодействуют и влияют на выручку, GMV и качество сервиса.
+        </p>
+
+        <h2>Метрики</h2>
+        <p>Модель считает по неделям:</p>
+        <ul>
+            <li><strong>Запросы, выполненные и невыполненные поездки</strong> — спрос и степень его покрытия.</li>
+            <li><strong>Водители и ёмкость</strong> — сколько поездок в неделю может выдержать парк.</li>
+            <li><strong>Utilization и match rate</strong> — загрузка supply и доля удовлетворённого спроса.</li>
+            <li><strong>ETA</strong> — SLA в минутах как функция загрузки.</li>
+            <li><strong>GMV, выручка брутто, выплаты водителям, выручка нетто</strong> — экономика платформы по неделям.</li>
+        </ul>
+
+        <h2>Рычаги</h2>
+        <p>Основные управляемые параметры:</p>
+        <ul>
+            <li><strong>Спрос:</strong> базовый уровень запросов, цена, эластичности по цене и SLA, сезонность.</li>
+            <li><strong>Предложение:</strong> стартовое количество водителей, онбординг, базовый churn, trips/driver.</li>
+            <li><strong>SLA / деградация:</strong> базовый ETA и чувствительность к перегрузке.</li>
+            <li><strong>Экономика:</strong> take rate и выплата водителю за поездку.</li>
+            <li><strong>Шум:</strong> уровень случайности и seed для воспроизводимости.</li>
+        </ul>
+
+        <h2>Как читать графики</h2>
+        <ul>
+            <li><strong>Спрос (запросы/выполненные/невыполненные):</strong> помогает увидеть, где не хватает supply.</li>
+            <li><strong>Водители и ёмкость:</strong> показывает, успевает ли парк за спросом и как реагирует на churn.</li>
+            <li><strong>Utilization и match rate:</strong> баланс загрузки и качества сервиса.</li>
+            <li><strong>ETA:</strong> SLA во времени, растёт при перегрузе.</li>
+            <li><strong>Выручка нетто и GMV:</strong> денежный результат по неделям.</li>
+        </ul>
+
+        <h2>Ограничения</h2>
+        <p>
+            Модель намеренно упрощена: нет сегментов, ценовых экспериментов, сложного поведения водителей и пассажиров. 
+            Числа условные и не предназначены для прогноза P&amp;L. Цель — показать причинно-следственные связи между спросом, 
+            предложением, SLA и экономикой, а не заменить продуктовую аналитику.
+        </p>
+
+        <div class="btn-row">
+            <a href="../" class="card-button">Открыть калькулятор →</a>
+            <a href="../../" class="card-button btn-secondary">Назад к калькуляторам</a>
+        </div>
+    </div>
+</body>
+</html>
+
