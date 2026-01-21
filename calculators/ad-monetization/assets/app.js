@@ -598,5 +598,4 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', init);
+// Note: initialization is done via initApp() in the DOMContentLoaded handler above.
