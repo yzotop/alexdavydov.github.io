@@ -333,94 +333,8 @@
         <div class="section">
             <div class="section-title">Уроки раздела</div>
             <div class="section-title" style="margin-top: 2rem;">Операционные треки</div>
-            <div class="cards-grid">
-                <a href="./signals.html" class="card">
-                    <div class="card-title">Сигналы</div>
-                    <div class="card-tagline">Что портится раньше денег.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Ловить деградацию механики до отчёта.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> show rate, showConv, variance, хвосты.
-                    </div>
-                </a>
-
-                <a href="./alerts.html" class="card">
-                    <div class="card-title">Алерты</div>
-                    <div class="card-tagline">Раннее предупреждение.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Проектировать алерты по слоям с правильными окнами.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> контракт на время реакции, не шум в чате.
-                    </div>
-                </a>
-
-                <a href="./incidents.html" class="card">
-                    <div class="card-title">Инциденты</div>
-                    <div class="card-tagline">Диагностика и runbook.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Триаж по слоям, локализация, план действий.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> разложение по множителям, таймлайн t0/t1/t2.
-                    </div>
-                </a>
-
-                <a href="./playbooks.html" class="card">
-                    <div class="card-title">Плейбуки</div>
-                    <div class="card-tagline">Симптом → диагностика → действие.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Универсальные runbooks для монетизации.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> порядок действий важнее скорости реакции.
-                    </div>
-                </a>
-
-                <a href="./cadence.html" class="card">
-                    <div class="card-title">Ритм контроля</div>
-                    <div class="card-tagline">Ежедневка/неделя/месяц: что смотреть и чего не делать.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Разные горизонты — разные метрики.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> сигналы ранние, итоги поздние, пауза после изменений.
-                    </div>
-                </a>
-
-                <a href="./quality.html" class="card">
-                    <div class="card-title">Качество алертов</div>
-                    <div class="card-tagline">Баланс шума и пропусков: пороги, окна, сегменты.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Калибровать пороги под стоимость ошибки.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> precision vs recall, confirm window, cooldown.
-                    </div>
-                </a>
-
-                <a href="./governance.html" class="card">
-                    <div class="card-title">Governance</div>
-                    <div class="card-tagline">Контракт на изменение: guardrails, окна, журнал.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Оформлять изменения, вести change log, выбирать guardrails.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> порядок: один рычаг → окно → проверка → запись → вывод.
-                    </div>
-                </a>
-
-                <a href="./dashboard-spec.html" class="card">
-                    <div class="card-title">Dashboard Spec</div>
-                    <div class="card-tagline">Как должен выглядеть дашборд для эксплуатации системы.</div>
-                    <div class="card-item">
-                        <strong>Что делать:</strong> Структура виджетов, окна, срезы, подсказки.
-                    </div>
-                    <div class="card-item">
-                        <strong>Ранние сигналы:</strong> не 'все метрики', а 'правильные вопросы'.
-                    </div>
-                </a>
+            <div class="cards-grid" id="module5-cards-grid">
+                <!-- НЕ редактировать списки в двух местах, править только в data/modules.js -->
             </div>
         </div>
 
@@ -534,20 +448,80 @@
             <p class="footer-note" style="margin-top: 1rem;">Сначала стабилизируйте. Потом улучшайте.</p>
         </div>
     </div>
+    <script src="../data/modules.js"></script>
     <script>
+        // НЕ редактировать списки в двух местах, править только в data/modules.js
+        (function() {
+            const gridEl = document.getElementById('module5-cards-grid');
+            if (!gridEl || !MODULE_LESSONS || !MODULE_LESSONS.module5) return;
+            
+            const cardData = {
+                'Сигналы': {
+                    what: 'Ловить деградацию механики до отчёта.',
+                    signals: 'show rate, showConv, variance, хвосты.'
+                },
+                'Алерты': {
+                    what: 'Проектировать алерты по слоям с правильными окнами.',
+                    signals: 'контракт на время реакции, не шум в чате.'
+                },
+                'Инциденты': {
+                    what: 'Триаж по слоям, локализация, план действий.',
+                    signals: 'разложение по множителям, таймлайн t0/t1/t2.'
+                },
+                'Плейбуки': {
+                    what: 'Универсальные runbooks для монетизации.',
+                    signals: 'порядок действий важнее скорости реакции.'
+                },
+                'Ритм контроля': {
+                    what: 'Разные горизонты — разные метрики.',
+                    signals: 'сигналы ранние, итоги поздние, пауза после изменений.'
+                },
+                'Качество алертов': {
+                    what: 'Калибровать пороги под стоимость ошибки.',
+                    signals: 'precision vs recall, confirm window, cooldown.'
+                },
+                'Управление изменениями': {
+                    what: 'Оформлять изменения, вести change log, выбирать guardrails.',
+                    signals: 'порядок: один рычаг → окно → проверка → запись → вывод.'
+                },
+                'Спецификация дашбордов': {
+                    what: 'Структура виджетов, окна, срезы, подсказки.',
+                    signals: 'не \'все метрики\', а \'правильные вопросы\'.'
+                }
+            };
+            
+            MODULE_LESSONS.module5.forEach(function(lesson) {
+                const card = document.createElement('a');
+                card.href = './' + lesson.slug + '.html';
+                card.className = 'card';
+                
+                const data = cardData[lesson.title] || {};
+                
+                card.innerHTML = 
+                    '<div class="card-title">' + lesson.title + '</div>' +
+                    '<div class="card-tagline">' + (lesson.tagline || '') + '</div>' +
+                    '<div class="card-item"><strong>Что делать:</strong> ' + (data.what || '') + '</div>' +
+                    '<div class="card-item"><strong>Ранние сигналы:</strong> ' + (data.signals || '') + '</div>';
+                
+                gridEl.appendChild(card);
+            });
+        })();
+        
         (function () {
             const current = window.location.pathname.replace(/\/$/, "");
-            links.forEach(a => {
-                const href = a.getAttribute("href");
-                if (!href) return;
-                const normalized = href.replace(/\/$/, "");
-                if (normalized === current || current.endsWith(normalized)) {
-                    a.classList.add("active");
-                    a.setAttribute("aria-current", "page");
-                    const section = a.closest(".nav-section");
-                    if (section) section.classList.add("active-section");
-                }
-            });
+            if (typeof links !== 'undefined') {
+                links.forEach(a => {
+                    const href = a.getAttribute("href");
+                    if (!href) return;
+                    const normalized = href.replace(/\/$/, "");
+                    if (normalized === current || current.endsWith(normalized)) {
+                        a.classList.add("active");
+                        a.setAttribute("aria-current", "page");
+                        const section = a.closest(".nav-section");
+                        if (section) section.classList.add("active-section");
+                    }
+                });
+            }
         })();
     </script>
 </body>

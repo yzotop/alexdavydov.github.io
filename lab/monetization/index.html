@@ -276,6 +276,7 @@
                                 <li><a href="./metrics/show-fill-rate.html">Show rate и Fill rate как ранние сигналы</a></li>
                                 <li><a href="./metrics/metric-decomposition.html">Разложение изменения выручки</a></li>
                                 <li><a href="./metrics/calculators.html">Калькуляторы и сценарии</a></li>
+                                <li><a href="./metrics/patterns.html">Паттерны интерпретации</a></li>
                             </ul>
                             <a href="./metrics/index.html" class="module-link">Открыть модуль →</a>
                         </div>
@@ -345,13 +346,8 @@
                         </div>
                         <div class="module-lessons">
                             <div class="module-lessons-title">Уроки модуля:</div>
-                            <ul>
-                                <li><a href="./operating/signals.html">Сигналы деградации системы</a></li>
-                                <li><a href="./operating/alerts.html">Алерты и пороги</a></li>
-                                <li><a href="./operating/cadence.html">Ритм контроля</a></li>
-                                <li><a href="./operating/dashboard-spec.html">Спецификация дашбордов</a></li>
-                                <li><a href="./operating/incidents.html">Инциденты и реакции</a></li>
-                                <li><a href="./operating/playbooks.html">Плейбуки и качество</a></li>
+                            <ul id="module5-lessons-list">
+                                <!-- НЕ редактировать списки в двух местах, править только в data/modules.js -->
                             </ul>
                             <a href="./operating/index.html" class="module-link">Открыть модуль →</a>
                         </div>
@@ -383,5 +379,22 @@
             <p style="font-size: 0.85rem; color: #999; font-style: italic;">Понимание причин важнее цифр в отчёте.</p>
         </footer>
     </div>
+    <script src="./data/modules.js"></script>
+    <script>
+        // НЕ редактировать списки в двух местах, править только в data/modules.js
+        (function() {
+            const listEl = document.getElementById('module5-lessons-list');
+            if (!listEl || !MODULE_LESSONS || !MODULE_LESSONS.module5) return;
+            
+            MODULE_LESSONS.module5.forEach(function(lesson) {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = './operating/' + lesson.slug + '.html';
+                a.textContent = lesson.title;
+                li.appendChild(a);
+                listEl.appendChild(li);
+            });
+        })();
+    </script>
 </body>
 </html>

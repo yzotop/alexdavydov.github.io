@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Обо мне</title>
+    <title>Обо мне — Alex Davydov</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +24,7 @@
             margin: 0 auto;
         }
 
-        .back-to-home {
+        .back-link {
             display: inline-block;
             margin-bottom: 1rem;
             color: #666;
@@ -33,7 +33,7 @@
             transition: color 0.2s ease;
         }
 
-        .back-to-home:hover {
+        .back-link:hover {
             color: #1a1a1a;
         }
 
@@ -44,16 +44,24 @@
             color: #1a1a1a;
         }
 
-        .intro {
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+
+        .content {
             max-width: 700px;
             margin-bottom: 3rem;
         }
 
-        .intro p {
+        .content p {
             font-size: 0.95rem;
             line-height: 1.7;
             color: #1a1a1a;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         h2 {
@@ -68,123 +76,94 @@
             margin-top: 0;
         }
 
-        .help-section ul {
+        .courses-list {
             list-style: none;
             padding-left: 0;
+            margin-bottom: 3rem;
         }
 
-        .help-section li {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
+        .courses-list li {
             margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
         }
 
-        .help-section li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
+        .courses-list a {
             color: #666;
-        }
-
-        .help-section a {
-            color: #1a1a1a;
             text-decoration: none;
-            border-bottom: 1px solid #ccc;
-            transition: border-color 0.2s ease;
-        }
-
-        .help-section a:hover {
-            border-bottom-color: #1a1a1a;
-        }
-
-        .links-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .links-section li {
             font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
+            transition: color 0.2s ease;
         }
 
-        .links-section li:before {
-            content: "—";
-            position: absolute;
-            left: 0;
-            color: #999;
+        .courses-list a:hover {
+            color: #1a1a1a;
         }
 
-        .links-section a {
-            color: #1a1a1a;
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .contacts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .contacts-grid a {
+            color: #666;
             text-decoration: none;
-            border-bottom: 1px solid #ccc;
-            transition: border-color 0.2s ease;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
         }
 
-        .links-section a:hover {
-            border-bottom-color: #1a1a1a;
-        }
-
-        .footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e8e8e8;
+        .contacts-grid a:hover {
+            color: #1a1a1a;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="../index.html" class="back-to-home">← На главную</a>
+        <a href="/" class="back-link">← На главную</a>
 
-        <header>
-            <h1>Обо мне</h1>
-        </header>
+        <h1>Обо мне</h1>
+        <p class="subtitle">Аналитика как инструмент решений в реальных системах.</p>
 
-        <main>
-            <section class="intro">
-                <h2>Кто я</h2>
-                <p>
-                    Руковожу аналитикой монетизации и продуктовой аналитикой. Фокус: эксперименты, метрики, механики, принятие решений.
-                </p>
-                <p>
-                    Эти курсы — про прикладную математику для решений, а не про формулы. Про то, как читать систему за цифрами, как видеть механику изменений, как принимать решения в условиях нелинейности и лагов.
-                </p>
-                <p>
-                    Работаю с продуктами, где аналитика влияет на решения: монетизация рекламы, эксперименты, метрики, принятие решений с ограничениями и trade-offs.
-                </p>
-            </section>
+        <div class="content">
+            <p>
+                <strong>Я — лид аналитики данных с опытом работы в крупных продуктовых и рекламных системах.</strong>
+                Работаю на стыке аналитики, экспериментов и управленческих решений — там, где данные перестают быть отчётами и начинают влиять на систему.
+            </p>
 
-            <section class="help-section">
-                <h2>Чем могу быть полезен</h2>
-                <ul>
-                    <li><a href="../index.html">Курсы</a> — прикладная аналитика: монетизация, эксперименты, метрики, давление, время, решения</li>
-                    <li><a href="../career/index.html">Карьерный разбор</a> — помощь в упаковке опыта в аргументы: резюме, кейсы, интервью</li>
-                    <li>Менторство — систематизация опыта и принятие решений в аналитике</li>
-                </ul>
-            </section>
+            <p>
+                Меня интересует не рост метрик сам по себе, а механизм: что именно изменилось в системе, почему это произошло и какие последствия это создаёт. В монетизации, экспериментах и продуктовой аналитике результат часто приходит с лагом, а локальная оптимизация может ухудшать систему целиком.
+            </p>
 
-            <section class="links-section">
-                <h2>Ссылки</h2>
-                <ul>
-                    <!-- TODO: добавить ссылки -->
-                    <li>Telegram: TODO: добавить ссылку</li>
-                    <li>LinkedIn: TODO: добавить ссылку</li>
-                    <li>Solvery: TODO: добавить ссылку</li>
-                </ul>
-            </section>
-        </main>
+            <p>
+                Этот сайт — витрина практики. Здесь я собираю курсы, разборы и инструменты, которые помогают принимать решения, когда данные неполные, метрики конфликтуют, а эффект проявляется не сразу. Я стараюсь объяснять не "как считать", а "как понимать и решать".
+            </p>
 
-        <footer class="footer">
-            <a href="../index.html" class="back-to-home">← На главную</a>
-        </footer>
+            <p>
+                Если вы хотите понять, как я мыслю — начните с курсов ниже.
+            </p>
+        </div>
+
+        <h2>С чего начать</h2>
+        <ul class="courses-list">
+            <li><a href="/lab/monetization/">Математика монетизации рекламы</a></li>
+            <li><a href="/lab/experiments/">Математика экспериментов в монетизации</a></li>
+            <li><a href="/lab/ab-decisions/">A/B-тестирование: принятие решений</a></li>
+        </ul>
+
+        <h2>Контакты</h2>
+        <div class="contacts-grid">
+            <a href="https://t.me/Datalake" target="_blank" rel="noopener noreferrer">Telegram: @Datalake</a>
+            <a href="https://solvery.io/ru/mentor/1882" target="_blank" rel="noopener noreferrer">Solvery</a>
+            <a href="https://getmentor.dev/mentor/sasha-davydov-3357" target="_blank" rel="noopener noreferrer">GetMentor</a>
+            <a href="https://www.linkedin.com/in/alexanderdavydow/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+
+        <a href="/" class="back-link">← На главную</a>
     </div>
 </body>
 </html>
-
