@@ -1,19 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Moved</title>
-  <link rel="canonical" href="/calculators/ride-hailing/about/" />
-  <meta http-equiv="refresh" content="0; url=/calculators/ride-hailing/about/" />
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; padding: 24px; line-height: 1.5; }
-    a { color: #2563eb; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride-Hailing Simulator (MVP) — Описание — Alex Davydov</title>
+    <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+    <link rel="stylesheet" href="about.css" />
 </head>
 <body>
-  <p>Moved to <a href="/calculators/ride-hailing/about/">/calculators/ride-hailing/about/</a></p>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/simulators/">Симуляторы</a>
+            <span>→</span>
+            <a href="../">Ride-Hailing Simulator (MVP)</a>
+            <span>→</span>
+            <span>Описание</span>
+        </div>
+
+        <div class="links-top">
+            <a href="../" class="link-button">Открыть симулятор →</a>
+            <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+        </div>
+
+        <h1>Ride-Hailing Simulator (MVP) — Описание</h1>
+        <p class="lead">
+            Демонстрирует динамику такси-платформы: как матчинг водителей и заказов, surge-ценообразование по зонам и отмены влияют на метрики в реальном времени.
+        </p>
+
+        <div class="section">
+            <h2 class="section-title">Что показывает</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>2D карта города</strong> с визуализацией водителей, заказов и активных матчингов в реальном времени</li>
+                    <li><strong>Зонная система</strong> с динамическим surge-множителем, который реагирует на соотношение спроса и предложения в каждой зоне</li>
+                    <li><strong>Алгоритм матчинга</strong> с использованием spatial grid для эффективного поиска ближайших водителей (без O(N²))</li>
+                    <li><strong>Модель отмен</strong> заказов в зависимости от времени ожидания (ETA) — чем дольше ждать, тем выше вероятность отмены</li>
+                    <li><strong>Метрики в реальном времени</strong>: выручка платформы, P90 ETA, процент отмен, утилизация водителей</li>
+                    <li><strong>Мини-графики</strong> за последние 120 секунд симуляции с обновлением каждые 60 секунд</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Как читать визуал</h2>
+            <div class="section-content">
+                <p>
+                    Центральная область — это 2D карта города, разделённая на зоны (сетка 3×2, 4×3 или 5×4). 
+                    Водители отображаются как точки, заказы — как маркеры с пунктом назначения. 
+                    Когда водитель назначается на заказ, между ними появляется линия (матчинг). 
+                    Цвет зоны показывает текущий surge-множитель (чем темнее, тем выше surge). 
+                    Правая панель показывает метрики и мини-графики за последние 120 секунд.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Параметры</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Demand & Supply</strong>: интенсивность заказов (orders/min), количество водителей, скорость водителей</li>
+                    <li><strong>Pricing & Behavior</strong>: базовая цена, цена за километр, доля платформы (take rate), чувствительность к отменам</li>
+                    <li><strong>City / Zones</strong>: размер карты, количество зон, паттерн спроса (uniform, center-heavy, two-hotspots)</li>
+                    <li><strong>Matching</strong>: интервал батчинга матчинга, политика выбора (nearest ETA или score-based)</li>
+                    <li><strong>Surge</strong>: сила surge-реакции, максимальный surge, скорость сглаживания (EMA alpha)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Идеи для экспериментов</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Влияние surge на отмены</strong>: увеличьте surge strength и наблюдайте, как это влияет на процент отмен и выручку</li>
+                    <li><strong>Оптимальное количество водителей</strong>: меняйте количество водителей при фиксированном спросе и смотрите на утилизацию и средний ETA</li>
+                    <li><strong>Паттерны спроса</strong>: сравните uniform, center-heavy и two-hotspots — как surge распределяется по зонам?</li>
+                    <li><strong>Политика матчинга</strong>: сравните nearest ETA vs score-based — какая даёт лучшую выручку?</li>
+                    <li><strong>Чувствительность к отменам</strong>: увеличьте cancel sensitivity и посмотрите, как это влияет на метрики платформы</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-

@@ -1,0 +1,53 @@
+{
+  "baseline": {
+    "description": "Baseline: fixed policy every 5 events, 1 slot, second-price auction",
+    "policy": {
+      "mode": "fixed",
+      "every_n_events": 5,
+      "slots_per_open": 1
+    },
+    "auction": {
+      "pricing": "second_price",
+      "floor_multiplier": 1.0
+    },
+    "fatigue": {
+      "fatigue_strength": 0.5,
+      "baseline_noise": 0.01,
+      "viewability_enabled": true
+    }
+  },
+  "high_floors": {
+    "description": "High floor multiplier (2.0x) to reduce low-quality fills",
+    "policy": {
+      "mode": "fixed",
+      "every_n_events": 5,
+      "slots_per_open": 1
+    },
+    "auction": {
+      "pricing": "second_price",
+      "floor_multiplier": 2.0
+    },
+    "fatigue": {
+      "fatigue_strength": 0.5,
+      "baseline_noise": 0.01,
+      "viewability_enabled": true
+    }
+  },
+  "utility_policy": {
+    "description": "Utility policy with lambda=0.5 balancing revenue and UX",
+    "policy": {
+      "mode": "utility",
+      "lambda_annoyance": 0.5,
+      "max_slots": 2
+    },
+    "auction": {
+      "pricing": "second_price",
+      "floor_multiplier": 1.0
+    },
+    "fatigue": {
+      "fatigue_strength": 0.5,
+      "baseline_noise": 0.01,
+      "viewability_enabled": true
+    }
+  }
+}

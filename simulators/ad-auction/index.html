@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Ad Auction Simulator</title>
+  <link rel="stylesheet" href="assets/simulator.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__links">
+      <a href="./about/">← Описание</a>
+      <a href="/simulators/">Симуляторы</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Left Panel: Controls -->
+    <aside class="panel panel--left">
+      <h1 class="panel__title">Ad Auction Simulator</h1>
+      
+      <div id="statusMessage" class="status hidden"></div>
+
+      <!-- Scenario Section -->
+      <div class="panel__section">
+        <div class="section__title">Scenario</div>
+        <div class="form-group">
+          <label class="form-label" for="scenarioSelect">Scenario</label>
+          <select id="scenarioSelect" class="form-select">
+            <option>Loading...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="seedInput">Seed</label>
+          <input type="number" id="seedInput" class="form-input" value="1" min="1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="horizonEvents">Horizon Events</label>
+          <input type="number" id="horizonEvents" class="form-input" value="1000" min="100" step="100" />
+        </div>
+        <div class="btn-group">
+          <button id="btnPlay" class="btn btn--primary">Play</button>
+          <button id="btnPause" class="btn btn--secondary hidden">Pause</button>
+          <button id="btnStep" class="btn">Step</button>
+          <button id="btnReset" class="btn">Reset</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="speedSelect">Speed</label>
+          <select id="speedSelect" class="form-select">
+            <option value="1">1x</option>
+            <option value="4">4x</option>
+            <option value="20">20x</option>
+            <option value="max">Max</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Advanced Section (Collapsible) -->
+      <details class="panel__section advanced-section">
+        <summary class="section__title">Advanced</summary>
+        
+        <div class="form-group">
+          <label class="form-label" for="pricingType">Pricing</label>
+          <select id="pricingType" class="form-select">
+            <option value="second_price">Second Price</option>
+            <option value="first_price">First Price</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div id="hybridAlphaGroup" class="form-group hidden">
+          <label class="form-label" for="hybridAlpha">Hybrid Alpha</label>
+          <input type="number" id="hybridAlpha" class="form-input" value="0.5" min="0" max="1" step="0.1" />
+          <div class="form-hint">0 = second price, 1 = first price</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="floorMultiplier">Floor Multiplier</label>
+          <input type="number" id="floorMultiplier" class="form-input" value="1.0" min="0" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fatigueStrength">Fatigue Strength</label>
+          <input type="number" id="fatigueStrength" class="form-input" value="0.5" min="0" max="2" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="baselineNoise">Baseline Noise</label>
+          <input type="number" id="baselineNoise" class="form-input" value="0.01" min="0" max="0.05" step="0.001" />
+        </div>
+        <div class="form-group">
+          <div class="toggle">
+            <input type="checkbox" id="viewabilityEnabled" class="toggle__input" checked />
+            <label class="toggle__label" for="viewabilityEnabled">Viewability Enabled</label>
+          </div>
+        </div>
+      </details>
+    </aside>
+
+    <!-- Right Panel: Results -->
+    <section class="panel panel--right">
+      <!-- Simulation Clock Bar -->
+      <div id="simClock" class="sim-clock">
+        <div class="sim-clock__header">
+          <div class="sim-clock__status">
+            <span id="clockStatus">Idle</span>
+          </div>
+          <div class="sim-clock__time">
+            <span>t: </span><span id="clockTime" class="mono">0</span>
+            <span> / </span><span id="clockHorizon" class="mono">1000</span>
+            <span> | Speed: </span><span id="clockSpeed" class="mono">1x</span>
+          </div>
+        </div>
+        <div class="sim-clock__slider-container">
+          <input type="range" id="progressSlider" class="sim-clock__slider" min="0" max="1000" value="0" step="1" />
+        </div>
+      </div>
+
+      <!-- Auction Arena -->
+      <div id="auctionArena" class="auction-arena">
+        <!-- Slot Card (Left) -->
+        <div class="arena-slot">
+          <div class="arena-slot__title">Slot</div>
+          <div class="arena-slot__placement">
+            <span id="slotPlacement" class="arena-slot__badge">—</span>
+          </div>
+          <div class="arena-slot__field">
+            <span class="arena-slot__label">Floor:</span>
+            <span id="slotFloor" class="arena-slot__value mono">—</span>
+          </div>
+          <div class="arena-slot__field">
+            <span class="arena-slot__label">Opened:</span>
+            <span id="slotOpened" class="arena-slot__value mono">0</span>
+          </div>
+          <div class="arena-slot__field">
+            <span class="arena-slot__label">Filled:</span>
+            <span id="slotFilled" class="arena-slot__value mono">0</span>
+          </div>
+          <div class="arena-slot__field">
+            <span class="arena-slot__label">Eligible:</span>
+            <span id="slotEligible" class="arena-slot__value mono">0</span>
+          </div>
+          <div class="arena-slot__field">
+            <span class="arena-slot__label">Reason:</span>
+            <span id="slotReason" class="arena-slot__value">—</span>
+          </div>
+        </div>
+
+        <!-- Bidder Ladder (Center) -->
+        <div class="arena-ladder">
+          <div class="arena-ladder__title">Bidder Ladder</div>
+          <div class="arena-ladder__header">
+            <div class="arena-ladder__col-rank">#</div>
+            <div class="arena-ladder__col-name">Advertiser</div>
+            <div class="arena-ladder__col-bid mono">Bid</div>
+            <div class="arena-ladder__col-pctr mono">pCTR</div>
+            <div class="arena-ladder__col-quality mono">Q</div>
+            <div class="arena-ladder__col-score mono">Score</div>
+            <div class="arena-ladder__col-bar">Bar</div>
+          </div>
+          <div id="ladderRows" class="arena-ladder__rows">
+            <!-- 8 fixed rows will be created by JS -->
+          </div>
+        </div>
+
+        <!-- Outcome Card (Right) -->
+        <div class="arena-outcome">
+          <div class="arena-outcome__title">Outcome</div>
+          <div class="arena-outcome__field">
+            <span class="arena-outcome__label">Winner:</span>
+            <span id="outcomeWinner" class="arena-outcome__value">—</span>
+          </div>
+          <div class="arena-outcome__field-large">
+            <span class="arena-outcome__label">Pay CPM:</span>
+            <span id="outcomePay" class="arena-outcome__value-large mono">—</span>
+          </div>
+          <div class="arena-outcome__field">
+            <span class="arena-outcome__label">Impression:</span>
+            <span id="outcomeImpression" class="arena-outcome__value">—</span>
+          </div>
+          <div class="arena-outcome__field">
+            <span class="arena-outcome__label">Click:</span>
+            <span id="outcomeClick" class="arena-outcome__value arena-outcome__value--click">—</span>
+          </div>
+          <div class="arena-outcome__metrics">
+            <div class="arena-outcome__metric">
+              <span class="arena-outcome__metric-label">Revenue:</span>
+              <span id="outcomeRevenue" class="arena-outcome__metric-value mono">$0.00</span>
+            </div>
+            <div class="arena-outcome__metric">
+              <span class="arena-outcome__metric-label">CTR:</span>
+              <span id="outcomeCTR" class="arena-outcome__metric-value mono">0.00%</span>
+            </div>
+            <div class="arena-outcome__metric">
+              <span class="arena-outcome__metric-label">eCPM:</span>
+              <span id="outcomeECPM" class="arena-outcome__metric-value mono">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auction Tape -->
+      <div id="auctionTape" class="auction-tape">
+        <div class="auction-tape__title">Auction Tape (Last 30)</div>
+        <div class="auction-tape__table-container">
+          <table class="auction-tape__table">
+            <thead>
+              <tr>
+                <th class="mono">t</th>
+                <th class="mono">Place</th>
+                <th>Winner</th>
+                <th class="mono">Pay CPM</th>
+                <th class="mono">Click</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="auctionTapeBody">
+              <!-- 30 fixed rows will be created by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KPIs Row -->
+      <div id="kpiRow" class="kpi-row">
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">Revenue</div>
+          <div id="kpiRevenue" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">Impressions</div>
+          <div id="kpiImpressions" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">Clicks</div>
+          <div id="kpiClicks" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">CTR</div>
+          <div id="kpiCTR" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">eCPM</div>
+          <div id="kpiECPM" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">FillRate</div>
+          <div id="kpiFillRate" class="kpi-row__value mono">—</div>
+        </div>
+        <div class="kpi-row__item">
+          <div class="kpi-row__label">AdPressure</div>
+          <div id="kpiAdPressure" class="kpi-row__value mono">—</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <section class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-card__title">Revenue per 100 Events (Rolling)</div>
+          <div class="chart-card__body">
+            <canvas id="chartRevenue" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card__title">CTR (Rolling)</div>
+          <div class="chart-card__body">
+            <canvas id="chartCTR" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card__title">FillRate (Rolling)</div>
+          <div class="chart-card__body">
+            <canvas id="chartFillRate" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card__title">AdPressure vs Revenue (per 100 events bins)</div>
+          <div class="chart-card__body">
+            <canvas id="chartScatter" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <!-- Error Overlay -->
+  <div id="errorOverlay" class="error-overlay hidden">
+    <div class="error-overlay__content">
+      <div class="error-overlay__header">
+        <h3 class="error-overlay__title">Error</h3>
+        <button id="errorClose" class="error-overlay__close">&times;</button>
+      </div>
+      <div class="error-overlay__body">
+        <div id="errorMessage" class="error-overlay__message"></div>
+        <pre id="errorStack" class="error-overlay__stack"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="engine/rng.js"></script>
+  <script src="engine/model.js"></script>
+  <script src="engine/predictor.js"></script>
+  <script src="engine/fatigue.js"></script>
+  <script src="engine/policy.js"></script>
+  <script src="engine/auction.js"></script>
+  <script src="engine/pricing.js"></script>
+  <script src="engine/metrics.js"></script>
+  <script src="engine/events.js"></script>
+  <script src="engine/scenarios.js"></script>
+  <script src="engine/simulator.js"></script>
+  <script src="assets/formatters.js"></script>
+  <script src="assets/charts.js"></script>
+  <script src="assets/ui.js"></script>
+</body>
+</html>

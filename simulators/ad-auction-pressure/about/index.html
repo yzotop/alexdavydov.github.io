@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Pressure Dynamics (Live) — Описание — Alex Davydov</title>
+    <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+    <link rel="stylesheet" href="about.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/simulators/">Симуляторы</a>
+            <span>→</span>
+            <a href="../">Ad Pressure Dynamics (Live)</a>
+            <span>→</span>
+            <span>Описание</span>
+        </div>
+
+        <div class="links-top">
+            <a href="../" class="link-button">Открыть симулятор →</a>
+            <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+        </div>
+
+        <h1>Ad Pressure Dynamics (Live) — Описание</h1>
+        <p class="lead">
+            Демонстрирует динамику рекламных сессий пользователей: как политика давления рекламы (fixed/adaptive), аукцион, усталость пользователей и floor prices влияют на монетизацию и пользовательский опыт во времени.
+        </p>
+
+        <div class="section">
+            <h2 class="section-title">Что показывает</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Поток сессий пользователей</strong>: сессии прибывают как Poisson-процесс, каждая с плановой длительностью и толерантностью к усталости</li>
+                    <li><strong>Политика давления рекламы</strong>: fixed (целевой глобальный ad rate) и adaptive (снижает показы при превышении толерантности к усталости)</li>
+                    <li><strong>Аукцион на каждом opportunity</strong>: ставки участников масштабируются с качеством пользователя (CTR ratio), которое снижается с усталостью</li>
+                    <li><strong>Динамика усталости</strong>: растёт на impressions, затухает со временем, снижает CTR и увеличивает вероятность раннего выхода</li>
+                    <li><strong>Визуализация потока сессий</strong>: точки движутся слева направо (прогресс сессии), цвет кодирует усталость (низкая→cyan, высокая→red)</li>
+                    <li><strong>Метрики в реальном времени</strong>: revenue/min, impressions/min, avg CPM, fill rate, breakdown "Why no impression?" (Policy vs Floor vs Caps)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Как читать визуал</h2>
+            <div class="section-content">
+                <p>
+                    Центральная область — "Session stream" показывает поток пользовательских сессий. 
+                    Каждая точка — это сессия, движущаяся слева направо (x = прогресс сессии). 
+                    Цвет точки кодирует уровень усталости: от cyan (низкая) до red (высокая). 
+                    Вспышки показывают impressions (маленькие прямоугольники, окрашенные по CPM bucket), 
+                    кольца — opportunities. Опциональная heat strip сверху показывает давление рекламы за последние 60 секунд. 
+                    Правая панель показывает метрики (rolling 60s) и мини-графики за последние 120 секунд.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Параметры</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Traffic & Sessions</strong>: интенсивность прибытия пользователей (users/sec), средняя длина сессии, толерантность к усталости</li>
+                    <li><strong>Ad Pressure Policy</strong>: режим (fixed или adaptive), целевой ad rate, frequency cap, minimum gap между рекламой</li>
+                    <li><strong>Auction & Monetization</strong>: количество участников, распределение base CPM (lognormal), floor CPM, take rate платформы</li>
+                    <li><strong>Fatigue & UX</strong>: скорость роста усталости на impression, скорость затухания, влияние на CTR и early-exit hazard</li>
+                    <li><strong>Display</strong>: опции визуализации (trails, impression flashes, opportunity ticks, heat strip)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Идеи для экспериментов</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Fixed vs Adaptive policy</strong>: сравните fixed policy (глобальный ad rate) с adaptive (реагирует на усталость) — какая даёт лучший баланс выручки и удержания?</li>
+                    <li><strong>Влияние floor на fill rate</strong>: увеличьте floor CPM и наблюдайте, как это влияет на fill rate и breakdown "Why no impression?"</li>
+                    <li><strong>Толерантность к усталости</strong>: измените среднюю толерантность пользователей и посмотрите, как это влияет на оптимальную политику давления</li>
+                    <li><strong>Frequency cap и minimum gap</strong>: экспериментируйте с ограничениями на частоту показа рекламы — как это влияет на монетизацию?</li>
+                    <li><strong>Скорость затухания усталости</strong>: измените decay rate усталости и наблюдайте долгосрочное влияние на метрики сессий</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

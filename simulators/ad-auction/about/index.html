@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Auction (Live) — Описание — Alex Davydov</title>
+    <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+    <link rel="stylesheet" href="about.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/simulators/">Симуляторы</a>
+            <span>→</span>
+            <a href="../">Ad Auction (Live)</a>
+            <span>→</span>
+            <span>Описание</span>
+        </div>
+
+        <div class="links-top">
+            <a href="../" class="link-button">Открыть симулятор →</a>
+            <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+        </div>
+
+        <h1>Ad Auction (Live) — Описание</h1>
+        <p class="lead">
+            Демонстрирует двухслойную систему монетизации рекламы: политику размещения (placement policy) и рекламный аукцион, а также влияние давления рекламы на усталость пользователей и экономику платформы.
+        </p>
+
+        <div class="section">
+            <h2 class="section-title">Что показывает</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Аукционная арена</strong> с визуализацией участников, их ставок, pCTR, качества и итоговых скоров в реальном времени</li>
+                    <li><strong>Двухслойная система</strong>: сначала политика размещения решает, сколько слотов открыть, затем аукцион определяет победителя и цену</li>
+                    <li><strong>Модель усталости</strong>: давление рекламы (ad pressure) влияет на pCTR через экспоненциальный decay, создавая обратную связь</li>
+                    <li><strong>Различные стратегии ценообразования</strong>: second-price, first-price и hybrid (взвешенная комбинация)</li>
+                    <li><strong>Динамические метрики</strong>: выручка, CTR, fill rate, ad pressure с обновлением во время симуляции</li>
+                    <li><strong>Лента аукционов</strong>: последние 30 результатов с информацией о победителе, цене и причине результата</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Как читать визуал</h2>
+            <div class="section-content">
+                <p>
+                    Левая панель — Slot Card показывает текущий слот (placement, floor, opened/filled slots). 
+                    Центральная панель — Bidder Ladder показывает топ-8 участников с их ставками, pCTR, качеством и скором; 
+                    победитель выделен синим, второй участник — светло-синим (для объяснения second-price/hybrid). 
+                    Правая панель — Outcome Card показывает результат: победитель, цена, impression, click и кумулятивные метрики. 
+                    Внизу — лента последних 30 аукционов и компактная строка KPIs.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Параметры</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Scenario</strong>: предустановленные конфигурации (baseline, high_floors, utility_policy)</li>
+                    <li><strong>Policy Mode</strong>: fixed (открывать каждые N событий), threshold (когда eCPM > порога), utility (максимизация utility = revenue - lambda × annoyance)</li>
+                    <li><strong>Pricing</strong>: second-price, first-price или hybrid (с параметром alpha)</li>
+                    <li><strong>Floor Multiplier</strong>: множитель для минимальной цены (floor CPM)</li>
+                    <li><strong>Fatigue Strength</strong>: сила влияния ad pressure на pCTR (экспоненциальный decay)</li>
+                    <li><strong>Viewability</strong>: включение проверки видимости (вероятность impression после выигрыша аукциона)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Идеи для экспериментов</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Влияние fatigue на выручку</strong>: увеличьте fatigue strength и наблюдайте, как падает CTR и выручка при высоком ad pressure</li>
+                    <li><strong>Сравнение pricing моделей</strong>: запустите одинаковый сценарий с second-price, first-price и hybrid — какая модель даёт больше выручки?</li>
+                    <li><strong>Utility policy vs fixed</strong>: сравните utility policy (которая учитывает annoyance) с fixed policy — как меняется ad pressure и выручка?</li>
+                    <li><strong>Влияние floor</strong>: увеличьте floor multiplier и посмотрите, как это влияет на fill rate и выручку</li>
+                    <li><strong>Viewability impact</strong>: включите/выключите viewability и сравните метрики — как это влияет на реальную монетизацию?</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
