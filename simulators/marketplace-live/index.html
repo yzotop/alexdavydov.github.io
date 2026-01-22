@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Marketplace Auction &amp; Delivery (Live)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__left">
+        <div class="brand">
+          <div class="brand__title">Marketplace Auction &amp; Delivery (Live)</div>
+          <div class="brand__subtitle">buyers · sellers · feed · ranking · delivery · trust</div>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <span id="statusBadge" class="badge badge--ok">Paused</span>
+
+        <div class="seed">
+          <label class="seed__label" for="seedInput">Seed</label>
+          <input id="seedInput" class="seed__input" type="number" min="1" max="999999999" step="1" value="42" />
+          <button id="randomizeSeedBtn" class="btn btn--ghost" type="button">Randomize</button>
+        </div>
+
+        <div class="topbar__buttons">
+          <select id="viewModeSelect" class="btn btn--outline" style="padding: 9px 12px; font-size: 13px;">
+            <option value="learn">Learn</option>
+            <option value="explore">Explore</option>
+            <option value="debug">Debug</option>
+          </select>
+          <button id="storyBtn" class="btn btn--outline" type="button">Story</button>
+          <button id="startPauseBtn" class="btn btn--primary" type="button">Start</button>
+          <button id="resetBtn" class="btn btn--outline" type="button">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <aside class="panel panel--left">
+        <div class="panel__header">
+          <div class="panel__title">Controls</div>
+          <div class="panel__hint">All controls update live. Seed + Reset makes runs reproducible.</div>
+        </div>
+
+        <section class="control-group">
+          <div class="control-group__title">A) Traffic</div>
+          <div id="controlsTraffic" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">B) Marketplace Policy</div>
+          <div id="controlsPolicy" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">C) Supply / Auction</div>
+          <div id="controlsSupply" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">D) Delivery / Ops</div>
+          <div id="controlsDelivery" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">E) Trust / Fatigue</div>
+          <div id="controlsTrust" class="control-group__body"></div>
+        </section>
+      </aside>
+
+      <section class="center">
+        <div class="main-card">
+          <div class="main-card__header">
+            <div class="main-card__title">Market flow</div>
+            <div class="main-card__badges">
+              <span id="capBadge" class="badge badge--warn is-hidden">Cap reached</span>
+            </div>
+          </div>
+          <div class="main-card__summary">
+            <div id="topSummary" class="panel-summary" aria-live="polite"></div>
+            <div id="heroStoryline" class="hero-storyline" aria-live="polite"></div>
+            <div id="whyReason" class="why-reason" aria-live="polite"></div>
+          </div>
+          <div class="main-card__canvasWrap">
+            <canvas id="mainCanvas"></canvas>
+          </div>
+          <div class="main-card__footer">
+            <div class="footer-row">
+              <div class="footer-kv"><span class="kv__k">Sim time</span><span id="simTime" class="kv__v">0s</span></div>
+              <div class="footer-kv"><span class="kv__k">Active buyers</span><span id="activeBuyers" class="kv__v">0</span></div>
+              <div class="footer-kv"><span class="kv__k">Queue</span><span id="queueLen" class="kv__v">0</span></div>
+              <div class="footer-kv"><span class="kv__k">FPS</span><span id="fps" class="kv__v">—</span></div>
+              <div class="footer-kv"><span class="kv__k">Sim</span><span id="simHz" class="kv__v">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <details class="howto" open>
+          <summary class="howto__summary">How to read this</summary>
+          <div class="howto__body">
+            <ul class="howto__list">
+              <li>Left side: Buyers (blue dots) enter in waves. Each buyer has price sensitivity and patience.</li>
+              <li>Center: Feed/Ranking shows 10–15 product cards. Color/outline = quality; small badge = promoted/auction.</li>
+              <li>Right side: Sellers (dots) with inventory capacity. Delivery queue shows pending orders.</li>
+              <li>Purchase flow: buyer → item → queue (line animation). Delivery: moving point along line to buyer or "delivered" zone.</li>
+              <li>Cancelled orders = red cross. Late delivery = yellow marker. Trust bar shows user trust level.</li>
+              <li>Ranking modes: Quality-first prioritizes user value; Revenue-first prioritizes bids and take rate.</li>
+              <li>High pressure (promoted share, take rate) can increase short-term revenue but degrade trust → lower CTR/conversion → lower long-term revenue.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <aside class="panel panel--right">
+        <div class="panel__header">
+          <div class="panel__title">Metrics</div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-card__title">Revenue/min</div>
+            <canvas id="chartRevenue" class="chart-canvas"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__title">Orders/min</div>
+            <canvas id="chartOrders" class="chart-canvas"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__title">P90 ETA</div>
+            <canvas id="chartETA" class="chart-canvas"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__title">Trust</div>
+            <canvas id="chartTrust" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <div id="metricsMain" class="metrics-grid">
+          <div class="metric">
+            <div class="metric__k">Revenue/min</div>
+            <div id="mRevenue" class="metric__v">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Orders/min</div>
+            <div id="mOrders" class="metric__v">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">P90 ETA</div>
+            <div id="mP90ETA" class="metric__v">0s</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Trust</div>
+            <div id="mTrust" class="metric__v">0%</div>
+          </div>
+        </div>
+
+        <details id="moreMetrics" class="more-metrics">
+          <summary class="more-metrics__summary">More metrics</summary>
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric__k">GMV/min</div>
+              <div id="mGMV" class="metric__v">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Conversion rate</div>
+              <div id="mConversion" class="metric__v">0%</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Fill rate</div>
+              <div id="mFillRate" class="metric__v">0%</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Cancel rate</div>
+              <div id="mCancelRate" class="metric__v">0%</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Late share</div>
+              <div id="mLateShare" class="metric__v">0%</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Active orders</div>
+              <div id="mActiveOrders" class="metric__v">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Queue len</div>
+              <div id="mQueueLen" class="metric__v">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Avg price shown</div>
+              <div id="mAvgPrice" class="metric__v">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric__k">Avg quality shown</div>
+              <div id="mAvgQuality" class="metric__v">0.00</div>
+            </div>
+          </div>
+        </details>
+      </aside>
+    </main>
+
+    <!-- Story Modal -->
+    <div id="storyModal" class="modal is-hidden">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <div class="modal__header">
+          <div class="modal__title">Story Scenarios</div>
+          <button id="storyModalClose" class="modal__close">×</button>
+        </div>
+        <div class="modal__body">
+          <div class="story-scenarios">
+            <div class="story-scenario" data-scenario="auction-overload">
+              <div class="story-scenario__title">1. Auction Overload</div>
+              <div class="story-scenario__desc">Revenue-first ranking + high promoted share + low capacity → short-term revenue spike, then cancel/late surge, trust drop, revenue decline.</div>
+              <button class="btn btn--primary story-scenario__btn">Apply</button>
+            </div>
+            <div class="story-scenario" data-scenario="ops-upgrade">
+              <div class="story-scenario__title">2. Ops Upgrade</div>
+              <div class="story-scenario__desc">Increase capacity → ETA and cancel drop → completion and long-term revenue rise.</div>
+              <button class="btn btn--primary story-scenario__btn">Apply</button>
+            </div>
+            <div class="story-scenario" data-scenario="quality-pivot">
+              <div class="story-scenario__title">3. Quality Pivot</div>
+              <div class="story-scenario__desc">Quality-first + moderate commission → trust recovers → stable growth, but less short-term CPM-like effect.</div>
+              <button class="btn btn--primary story-scenario__btn">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./utils.js"></script>
+    <script src="./sim.js"></script>
+    <script src="./charts.js"></script>
+    <script src="./render.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./main.js"></script>
+  </body>
+</html>
