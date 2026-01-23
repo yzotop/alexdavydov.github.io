@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Aladdin-Lite: Portfolio Risk & Copilot</title>
+  <link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__links">
+      <a href="/simulators/">← Симуляторы</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="header">
+      <h1 class="header__title">Aladdin-Lite: Portfolio Risk & Copilot</h1>
+      <p class="header__subtitle">Управление портфелем и оценка риска</p>
+    </header>
+
+    <div class="main-layout">
+      <!-- Left: Portfolio Controls -->
+      <aside class="panel panel--left">
+        <div class="panel__section">
+          <h2 class="section__title">Портфель</h2>
+          
+          <div class="presets">
+            <button class="btn btn--small" data-preset="6040">60/40</button>
+            <button class="btn btn--small" data-preset="tech">Tech Heavy</button>
+            <button class="btn btn--small" data-preset="defensive">Defensive</button>
+            <button class="btn btn--small" data-preset="riskparity">Risk Parity</button>
+            <button class="btn btn--small btn--secondary" id="btnReset">Сброс</button>
+          </div>
+
+          <div id="portfolioControls" class="portfolio-controls">
+            <!-- Will be populated by JS -->
+          </div>
+
+          <div class="portfolio-summary">
+            <div class="summary-row">
+              <span class="summary-label">Сумма весов:</span>
+              <span id="totalWeight" class="summary-value mono">100%</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Metrics and Charts -->
+      <main class="panel panel--center">
+        <div class="panel__section">
+          <h2 class="section__title">Метрики риска</h2>
+          
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Portfolio Vol (annual)</div>
+              <div id="metricVol" class="metric-value mono">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">VaR 95% (1 день)</div>
+              <div id="metricVaR1d" class="metric-value mono">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">ES 95% (1 день)</div>
+              <div id="metricES1d" class="metric-value mono">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">VaR 95% (1 месяц)</div>
+              <div id="metricVaR1m" class="metric-value mono">—</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">ES 95% (1 месяц)</div>
+              <div id="metricES1m" class="metric-value mono">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel__section">
+          <h2 class="section__title">Risk Profile</h2>
+          <div class="chart-container">
+            <canvas id="chartRisk" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="panel__section">
+          <h2 class="section__title">Stress Scenarios</h2>
+          <div id="stressTable" class="stress-table">
+            <!-- Will be populated by JS -->
+          </div>
+          <p class="disclaimer">Все числа — учебная симуляция, не инвестиционный совет.</p>
+        </div>
+
+        <div class="panel__section">
+          <h2 class="section__title">Stress PnL</h2>
+          <div class="chart-container">
+            <canvas id="chartStress" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right: Copilot -->
+      <aside class="panel panel--right">
+        <div class="panel__section">
+          <h2 class="section__title">Copilot</h2>
+          <div id="copilotText" class="copilot-text">
+            Загружается...
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
