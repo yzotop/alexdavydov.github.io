@@ -257,6 +257,7 @@
         this.feed[i].impressions = 0;
         this.feed[i].lastPurchaseTime = null;
       }
+      if (typeof this.onReset === 'function') this.onReset();
     }
     
     step(dt) {
@@ -622,10 +623,16 @@
         platform_rev: 0,
       };
       
-      // Callback
+      // Callback (sec = per-second counts for flow strip / funnel)
       if (typeof this.onSecond === 'function') {
         try {
-          this.onSecond({ derived: this.getDerived(), ts: this.ts });
+          const sec = {
+            impressions: this._sec.impressions,
+            orders_created: this._sec.orders_created,
+            orders_completed: this._sec.orders_completed,
+            orders_cancelled: this._sec.orders_cancelled,
+          };
+          this.onSecond({ derived: this.getDerived(), ts: this.ts, sec });
         } catch (e) {
           console.error('Error in onSecond:', e);
         }
@@ -634,11 +641,16 @@
     
     getDerived() {
       const buyersPerSec = this.ts.revenue_per_min.count > 0 ? this.params.buyers_per_sec : 0;
+      const cap = this.params.capacity_deliveries_per_min;
+      const q = this.delivery_queue.length;
+      const delivery_load = cap > 0 ? q / cap : 0;
       return {
         time: this.time,
         buyers_per_sec: buyersPerSec,
         active_orders: this.orders.filter(o => !o.delivered && !o.cancelled).length,
-        queue_len: this.delivery_queue.length,
+        queue_len: q,
+        capacity_deliveries_per_min: cap,
+        delivery_load,
         p90_eta: this.ts.p90_eta.last() || 0,
         ranking_mode: this.params.ranking_mode,
         take_rate: this.params.take_rate,

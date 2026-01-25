@@ -102,14 +102,19 @@
           <summary class="howto__summary">How to read this</summary>
           <div class="howto__body">
             <ul class="howto__list">
-              <li>Orders appear in zones according to the demand pattern; each order has a pickup and dropoff.</li>
-              <li>Matching runs in batches; it assigns idle drivers to waiting orders using a spatial grid (fast nearest search).</li>
-              <li>Surge is computed per zone from <span class="mono">pending demand / idle supply</span>, then smoothed by EMA.</li>
-              <li>Cancellations happen while waiting or before pickup, increasing with pickup ETA vs reference ETA0.</li>
-              <li>Driver colors: idle (gray), to pickup (blue), to dropoff (green). Orders: waiting (dot), assigned (ring).</li>
-              <li>Metrics on the right are rolling over the last 60 seconds; charts show the last 120 seconds.</li>
-              <li>If demand overwhelms supply, pending orders can grow. We cap active orders to keep the sim stable.</li>
-              <li>Use seed for reproducible runs. Randomize changes the whole stochastic trajectory.</li>
+              <li>Заказы (orders) появляются в зонах города в соответствии с выбранным распределением спроса (demand pattern). У каждого заказа есть точка подачи (pickup) и точка высадки (dropoff).</li>
+              <li>Матчинг (matching) выполняется пакетно: система периодически назначает свободных водителей (idle drivers) ожидающим заказам, используя пространственный поиск ближайших кандидатов.</li>
+              <li>Surge рассчитывается по зонам на основе дисбаланса между ожидающим спросом (pending demand) и доступным предложением (idle supply), затем сглаживается во времени (EMA).</li>
+              <li>Отмены (cancellations) возможны до подачи и во время ожидания. Вероятность отмены растёт при увеличении времени подачи (pickup ETA) относительно базового значения ETA₀ (ETA reference).</li>
+              <li>Цвета объектов:
+                <ul>
+                  <li>водители: свободен (gray), едет на подачу (blue), выполняет поездку (green);</li>
+                  <li>заказы: ожидает (dot), назначен водителю (ring).</li>
+                </ul>
+              </li>
+              <li>Метрики справа считаются по скользящему окну (rolling window) последних ~60 секунд, графики показывают более длинную динамику во времени.</li>
+              <li>Если спрос значительно превышает предложение, очередь заказов может расти. В симуляции введены ограничения на активные заказы, чтобы система оставалась устойчивой.</li>
+              <li>Параметр Seed используется для воспроизводимости: при одинаковом seed симуляция развивается одинаково; Randomize меняет стохастическую траекторию.</li>
             </ul>
           </div>
         </details>

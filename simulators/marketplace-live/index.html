@@ -83,9 +83,54 @@
             <div id="topSummary" class="panel-summary" aria-live="polite"></div>
             <div id="heroStoryline" class="hero-storyline" aria-live="polite"></div>
             <div id="whyReason" class="why-reason" aria-live="polite"></div>
+            <div id="whyExplain" class="why-explain" aria-live="polite"></div>
+            <p class="tradeoff-hint">Higher pressure → revenue now ↑, trust ↓ → orders later ↓</p>
           </div>
-          <div class="main-card__canvasWrap">
-            <canvas id="mainCanvas"></canvas>
+          <div class="pipeline-container">
+            <!-- Canvas для анимаций линий (скрыт, используется только для рисования) -->
+            <canvas id="mainCanvas" class="pipeline-canvas"></canvas>
+            
+            <!-- Pipeline: 5 колонок -->
+            <div class="pipeline">
+              <!-- Column 1: Buyers stream -->
+              <div class="pipeline-col pipeline-col--buyers">
+                <div class="pipeline-col__header">Buyers</div>
+                <div id="pipelineBuyers" class="pipeline-buyers"></div>
+              </div>
+              
+              <!-- Column 2: Feed / Ranking -->
+              <div class="pipeline-col pipeline-col--feed">
+                <div class="pipeline-col__header">Feed / Ranking</div>
+                <div id="pipelineFeed" class="pipeline-feed"></div>
+              </div>
+              
+              <!-- Column 3: Selected item (Hero) -->
+              <div class="pipeline-col pipeline-col--hero">
+                <div class="pipeline-col__header">Selected</div>
+                <div id="pipelineHero" class="pipeline-hero"></div>
+                <div id="pipelineHeroReason" class="pipeline-hero-reason"></div>
+              </div>
+              
+              <!-- Column 4: Order & Queue -->
+              <div class="pipeline-col pipeline-col--queue">
+                <div class="pipeline-col__header">Order & Queue</div>
+                <div id="pipelineQueue" class="pipeline-queue"></div>
+                <div id="pipelineCapacity" class="pipeline-capacity"></div>
+              </div>
+              
+              <!-- Column 5: Delivery & Trust -->
+              <div class="pipeline-col pipeline-col--trust">
+                <div class="pipeline-col__header">Delivery & Trust</div>
+                <div id="pipelineDelivery" class="pipeline-delivery"></div>
+                <div id="pipelineTrust" class="pipeline-trust">
+                  <div class="pipeline-trust__label">Trust (long-term system health)</div>
+                  <div class="pipeline-trust__bar">
+                    <div id="pipelineTrustFill" class="pipeline-trust__fill"></div>
+                  </div>
+                  <div id="pipelineTrustValue" class="pipeline-trust__value">0%</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="main-card__footer">
             <div class="footer-row">
@@ -98,20 +143,27 @@
           </div>
         </div>
 
-        <details class="howto" open>
+        <details class="howto">
           <summary class="howto__summary">How to read this</summary>
           <div class="howto__body">
             <ul class="howto__list">
-              <li>Left side: Buyers (blue dots) enter in waves. Each buyer has price sensitivity and patience.</li>
-              <li>Center: Feed/Ranking shows 10–15 product cards. Color/outline = quality; small badge = promoted/auction.</li>
-              <li>Right side: Sellers (dots) with inventory capacity. Delivery queue shows pending orders.</li>
-              <li>Purchase flow: buyer → item → queue (line animation). Delivery: moving point along line to buyer or "delivered" zone.</li>
-              <li>Cancelled orders = red cross. Late delivery = yellow marker. Trust bar shows user trust level.</li>
-              <li>Ranking modes: Quality-first prioritizes user value; Revenue-first prioritizes bids and take rate.</li>
-              <li>High pressure (promoted share, take rate) can increase short-term revenue but degrade trust → lower CTR/conversion → lower long-term revenue.</li>
+              <li>Симулятор показывает pipeline маркетплейса: buyers → feed / ranking → selected item → order & queue → delivery → trust.</li>
+              <li>Buyers слева — активные пользователи с разной чувствительностью к цене (price sensitivity) и терпением (patience). Они формируют спрос.</li>
+              <li>Feed / Ranking — ключевой механизм: товары упорядочены по выбранной политике (ranking mode) с учётом promoted share.</li>
+              <li>Блок Selected — якорь внимания: это товар, выбранный прямо сейчас, с пояснением “selected because”.</li>
+              <li>Order & Queue показывает узкое место доставки: рост очереди (queue) и ETA влияет на отмены (cancels) и просрочки (late delivery).</li>
+              <li>Trust — долгосрочное здоровье системы (long-term system health): он не даёт мгновенного эффекта, но влияет на будущие CTR / conversion и объём заказов.</li>
+              <li>Режимы ранжирования:
+                <ul>
+                  <li>Quality-first максимизирует пользовательскую ценность (user value) и поддерживает trust.</li>
+                  <li>Revenue-first усиливает ставки (bids) и комиссию (take rate), повышая выручку в краткосрочном периоде.</li>
+                </ul>
+              </li>
+              <li>Ключевой trade-off: рост давления (promoted share, take rate) может увеличить revenue сейчас, но снизить trust → ухудшить conversion и orders позже.</li>
             </ul>
           </div>
         </details>
+        <p class="decision-hint">This simulator helps reason about short-term revenue vs long-term marketplace health.</p>
       </section>
 
       <aside class="panel panel--right">
@@ -121,7 +173,7 @@
 
         <div class="charts-grid">
           <div class="chart-card">
-            <div class="chart-card__title">Revenue/min</div>
+            <div class="chart-card__title">Revenue/min <span class="chart-label--muted">(short-term)</span></div>
             <canvas id="chartRevenue" class="chart-canvas"></canvas>
           </div>
           <div class="chart-card">
@@ -133,14 +185,14 @@
             <canvas id="chartETA" class="chart-canvas"></canvas>
           </div>
           <div class="chart-card">
-            <div class="chart-card__title">Trust</div>
+            <div class="chart-card__title">Trust <span class="chart-label--muted">(long-term)</span></div>
             <canvas id="chartTrust" class="chart-canvas"></canvas>
           </div>
         </div>
 
         <div id="metricsMain" class="metrics-grid">
           <div class="metric">
-            <div class="metric__k">Revenue/min</div>
+            <div class="metric__k">Revenue/min <span class="metric-label--muted">(short-term)</span></div>
             <div id="mRevenue" class="metric__v">0</div>
           </div>
           <div class="metric">
@@ -152,8 +204,16 @@
             <div id="mP90ETA" class="metric__v">0s</div>
           </div>
           <div class="metric">
-            <div class="metric__k">Trust</div>
+            <div class="metric__k">Trust <span class="metric-label--muted">(long-term)</span></div>
             <div id="mTrust" class="metric__v">0%</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Conversion</div>
+            <div id="mConversionMain" class="metric__v">0%</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Late rate</div>
+            <div id="mLateRateMain" class="metric__v">0%</div>
           </div>
         </div>
 

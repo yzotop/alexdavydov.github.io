@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Ad Fatigue &amp; Channel Saturation (Live)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__left">
+        <div class="brand">
+          <div class="brand__title">Ad Fatigue &amp; Channel Saturation (Live)</div>
+          <div class="brand__subtitle">pressure · fatigue · CTR · saturation · revenue</div>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <span id="statusBadge" class="badge badge--ok">Paused</span>
+
+        <div class="seed">
+          <label class="seed__label" for="seedInput">Seed</label>
+          <input id="seedInput" class="seed__input" type="number" min="1" max="999999999" step="1" value="42" />
+          <button id="randomizeSeedBtn" class="btn btn--ghost" type="button">Randomize</button>
+        </div>
+
+        <div class="topbar__buttons">
+          <button id="startPauseBtn" class="btn btn--primary" type="button">Start</button>
+          <button id="resetBtn" class="btn btn--outline" type="button">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <aside class="panel panel--left">
+        <div class="panel__header">
+          <div class="panel__title">Controls</div>
+          <div class="panel__hint">All controls update live. Seed + Reset makes runs reproducible.</div>
+        </div>
+
+        <section class="control-group">
+          <div class="control-group__title">A) Traffic &amp; Sessions</div>
+          <div id="controlsTraffic" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">B) Ad Policy</div>
+          <div id="controlsPolicy" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">C) Fatigue &amp; UX</div>
+          <div id="controlsFatigue" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">D) Monetization</div>
+          <div id="controlsMonetization" class="control-group__body"></div>
+        </section>
+      </aside>
+
+      <section class="center">
+        <div class="main-card">
+          <div class="main-card__header">
+            <div class="main-card__title">Ad Pressure Diagnosis</div>
+          </div>
+          
+          <!-- System State: Primary Focus -->
+          <div id="systemStateCard" class="system-state-card">
+            <div class="system-state-card__header">
+              <div class="system-state-card__title">System State</div>
+            </div>
+            <div id="systemStateContent" class="system-state-card__body">
+              <div class="system-state-card__status">Starting...</div>
+              <div class="system-state-card__explanation"></div>
+            </div>
+          </div>
+          
+          <!-- Pressure Scale -->
+          <div class="pressure-scale-container">
+            <div class="pressure-scale">
+              <div class="pressure-scale__label pressure-scale__label--left">Low</div>
+              <div class="pressure-scale__bar">
+                <div class="pressure-scale__zone pressure-scale__zone--low"></div>
+                <div class="pressure-scale__zone pressure-scale__zone--optimal"></div>
+                <div class="pressure-scale__zone pressure-scale__zone--overpressure"></div>
+                <div class="pressure-scale__zone pressure-scale__zone--saturation"></div>
+                <div id="pressureScaleMarker" class="pressure-scale__marker"></div>
+              </div>
+              <div class="pressure-scale__labels">
+                <span>Optimal</span>
+                <span>Overpressure</span>
+                <span>Saturation</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main Driver Cards -->
+          <div class="driver-cards">
+            <div id="cardPressure" class="driver-card">
+              <div class="driver-card__header">Pressure</div>
+              <div class="driver-card__body"></div>
+            </div>
+            <div id="cardFatigue" class="driver-card driver-card--fatigue">
+              <div class="driver-card__header">Fatigue</div>
+              <div class="driver-card__body"></div>
+            </div>
+            <div id="cardBehavior" class="driver-card">
+              <div class="driver-card__header">Behavior</div>
+              <div class="driver-card__body"></div>
+            </div>
+          </div>
+          
+          <!-- Outcome Cards -->
+          <div class="outcome-cards">
+            <div id="cardRevenue" class="outcome-card">
+              <div class="outcome-card__header">Revenue / min</div>
+              <div class="outcome-card__body"></div>
+            </div>
+            <div id="cardImpressions" class="outcome-card">
+              <div class="outcome-card__header">Impressions / min</div>
+              <div class="outcome-card__body"></div>
+            </div>
+          </div>
+          
+          <!-- Contextual Warnings (only shown when thresholds crossed) -->
+          <div id="contextualWarnings" class="contextual-warnings"></div>
+          
+          <div class="main-card__footer">
+            <div class="footer-row">
+              <div class="footer-kv"><span class="kv__k">Sim time</span><span id="simTime" class="kv__v">0s</span></div>
+              <div class="footer-kv"><span class="kv__k">Active users</span><span id="activeUsers" class="kv__v">0</span></div>
+              <div class="footer-kv"><span class="kv__k">FPS</span><span id="fps" class="kv__v">—</span></div>
+              <div class="footer-kv"><span class="kv__k">Sim</span><span id="simHz" class="kv__v">—</span></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Hidden canvases for charts.js compatibility (not used in pipeline view) -->
+        <canvas id="chartRevenue" style="display: none;"></canvas>
+        <canvas id="chartImpressions" style="display: none;"></canvas>
+        <canvas id="chartFatigue" style="display: none;"></canvas>
+        <canvas id="chartScatter" style="display: none;"></canvas>
+
+        <details class="howto">
+          <summary class="howto__summary">How to read this</summary>
+          <div class="howto__body">
+            <ul class="howto__list">
+              <li>Симулятор показывает поток (pipeline): Users → Pressure → Fatigue → Behavior → Revenue.</li>
+              <li>Каждая колонка показывает состояние одного этапа системы. Карточки обновляются в реальном времени с мини-графиками (sparklines) последних 60 секунд.</li>
+              <li>Users & Sessions: активные пользователи, длина сессий, ранние выходы (early exits). Индикатор показывает здоровье: зелёный — норма, жёлтый — растущие выходы, красный — массовые выходы.</li>
+              <li>Ad Pressure: текущее давление (ads per user), целевое значение, минимальный интервал, процент пользователей, достигших лимита (cap). Прогресс-бар показывает давление относительно толерантности.</li>
+              <li>User Fatigue: средняя усталость, скорость накопления, скорость восстановления. Центральная карточка "Fatigue Zone" показывает зону: Healthy / Borderline / Saturated с цветовой кодировкой.</li>
+              <li>Behavior Impact: эффективный CTR, штраф CTR от усталости, чувствительность к выходу. Важно: "CTR collapse happens BEFORE revenue collapse".</li>
+              <li>Revenue Outcome: impressions/min, средний CPM, revenue/min. Бейдж сравнения показывает отклонение от baseline низкого давления.</li>
+              <li>System State: автоматически генерируемый вердикт на основе пороговых значений (fatigue, exit rate, CTR). Примеры: "Healthy monetization", "Over-monetized, short-term revenue", "Fatigue-dominated collapse".</li>
+              <li>Этот симулятор отвечает на вопрос: "Где именно находится обрыв монетизации (monetization cliff)?"</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <aside class="panel panel--right">
+        <div class="panel__header">
+          <div class="panel__title">Metrics</div>
+        </div>
+
+        <div id="metricsMain" class="metrics-grid">
+          <div class="metric">
+            <div class="metric__k">Revenue/min</div>
+            <div id="mRevenue" class="metric__v">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Impressions/min</div>
+            <div id="mImpressions" class="metric__v">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Avg CPM</div>
+            <div id="mCPM" class="metric__v">$0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Avg fatigue</div>
+            <div id="mFatigue" class="metric__v">0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Active users</div>
+            <div id="mActiveUsers" class="metric__v">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Ad rate (impr/user-min)</div>
+            <div id="mAdRate" class="metric__v">0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">CTR</div>
+            <div id="mCTR" class="metric__v">0.00%</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Early exit %</div>
+            <div id="mEarlyExit" class="metric__v">0%</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="./utils.js"></script>
+    <script src="./sim.js"></script>
+    <script src="./charts.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./main.js"></script>
+  </body>
+</html>
