@@ -89,9 +89,58 @@
         .term-card h2 {
             font-size: 1.5rem;
             font-weight: 500;
-            margin-bottom: 1rem;
+            margin-bottom: 0.6rem;
             color: #1a1a1a;
             scroll-margin-top: 2rem;
+        }
+
+        .term-badges {
+            display: inline-flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 0 0 1rem;
+        }
+
+        .term-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.78rem; /* ~12px */
+            line-height: 1.2;
+            border: 1px solid rgba(37, 99, 235, 0.22);
+            background: rgba(37, 99, 235, 0.06);
+            color: rgba(37, 99, 235, 0.92);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .term-related {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .term-related-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.18rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            line-height: 1.2;
+            border: 1px solid rgba(17, 24, 39, 0.14);
+            background: rgba(17, 24, 39, 0.04);
+            color: #374151;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .term-related-chip:hover {
+            border-color: rgba(37, 99, 235, 0.35);
+            background: rgba(37, 99, 235, 0.06);
+            color: rgba(37, 99, 235, 0.92);
         }
 
         .term-section {
@@ -153,7 +202,7 @@
         </div>
 
         <div id="terms-container">
-            <div class="term-card" data-term="requests">
+            <div class="term-card" data-term="requests" data-tags="Монетизация, Ad Tech, Воронка">
                 <h2 id="requests">Запросы (Requests)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -177,7 +226,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="responses">
+            <div class="term-card" data-term="responses" data-tags="Монетизация, Ad Tech, Воронка">
                 <h2 id="responses">Ответы (Responses)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -201,7 +250,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="fill-rate">
+            <div class="term-card" data-term="fill-rate" data-tags="Монетизация, Ad Tech, Delivery">
                 <h2 id="fill-rate">Коэффициент заполнения (Fill rate)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -225,7 +274,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="shows">
+            <div class="term-card" data-term="shows" data-tags="Монетизация, Ad Tech, Delivery">
                 <h2 id="shows">Показы (Shows)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -249,7 +298,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="monetized-shows">
+            <div class="term-card" data-term="monetized-shows" data-tags="Монетизация, Ad Tech, Revenue">
                 <h2 id="monetized-shows">Монетизируемые показы (Monetized shows)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -273,7 +322,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="show-rate">
+            <div class="term-card" data-term="show-rate" data-tags="Монетизация, Ad Tech, Delivery">
                 <h2 id="show-rate">Коэффициент показа (Show rate)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -297,7 +346,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="cpm">
+            <div class="term-card" data-term="cpm" data-tags="Монетизация, Pricing">
                 <h2 id="cpm">CPM (Cost Per Mille)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -321,7 +370,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="revenue">
+            <div class="term-card" data-term="revenue" data-tags="Монетизация, Метрики">
                 <h2 id="revenue">Выручка (Revenue)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -345,7 +394,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="revenue-decomposition">
+            <div class="term-card" data-term="revenue-decomposition" data-tags="Монетизация, Метод">
                 <h2 id="revenue-decomposition">Декомпозиция выручки (Revenue decomposition)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -369,7 +418,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="control-vs-test">
+            <div class="term-card" data-term="control-vs-test" data-tags="Эксперименты, Метод">
                 <h2 id="control-vs-test">Контроль vs тест (Control vs test)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -393,7 +442,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="rollout">
+            <div class="term-card" data-term="rollout" data-tags="Эксперименты, Rollout">
                 <h2 id="rollout">Раскатка (Rollout)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -417,7 +466,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="pressure">
+            <div class="term-card" data-term="pressure" data-tags="Монетизация, Ad Tech, Pressure">
                 <h2 id="pressure">Давление рекламы (Ad Pressure)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -441,7 +490,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="saturation">
+            <div class="term-card" data-term="saturation" data-tags="Монетизация, Saturation">
                 <h2 id="saturation">Насыщение (Saturation)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -465,7 +514,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="price-vs-volume">
+            <div class="term-card" data-term="price-vs-volume" data-tags="Монетизация, Pricing">
                 <h2 id="price-vs-volume">Компромисс цена-объём (Price vs Volume trade-off)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -489,7 +538,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="elasticity">
+            <div class="term-card" data-term="elasticity" data-tags="Монетизация, Pricing, Sensitivity">
                 <h2 id="elasticity">Эластичность (Elasticity)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -513,7 +562,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="risk-contribution">
+            <div class="term-card" data-term="risk-contribution" data-tags="Финансы / Риск, Portfolio">
                 <h2 id="risk-contribution">Вклад в риск (Risk contribution)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -537,7 +586,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="stress-scenario">
+            <div class="term-card" data-term="stress-scenario" data-tags="Финансы / Риск, Stress-testing">
                 <h2 id="stress-scenario">Стресс-сценарий (Stress scenario)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -561,7 +610,7 @@
                 </div>
             </div>
 
-            <div class="term-card" data-term="mechanism">
+            <div class="term-card" data-term="mechanism" data-tags="Метод, Mechanism">
                 <h2 id="mechanism">Механизм (Mechanism)</h2>
                 <div class="term-section">
                     <div class="term-section-title">Что это</div>
@@ -595,6 +644,66 @@
         // Simple search functionality
         const searchInput = document.getElementById('search-input');
         const termCards = document.querySelectorAll('.term-card');
+
+        // 1) Render tags (badges) under term title (optional)
+        termCards.forEach(card => {
+            const tagsRaw = (card.dataset.tags || '').trim();
+            if (!tagsRaw) return;
+            const h2 = card.querySelector('h2');
+            if (!h2) return;
+            const tags = tagsRaw.split(',').map(s => s.trim()).filter(Boolean);
+            if (!tags.length) return;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'term-badges';
+            tags.forEach(t => {
+                const chip = document.createElement('span');
+                chip.className = 'term-badge';
+                chip.textContent = t;
+                wrap.appendChild(chip);
+            });
+            h2.insertAdjacentElement('afterend', wrap);
+        });
+
+        // 2) Remove "Типичная ошибка" section from UI (title + content)
+        termCards.forEach(card => {
+            const sections = Array.from(card.querySelectorAll('.term-section'));
+            sections.forEach(sec => {
+                const title = sec.querySelector('.term-section-title');
+                if (!title) return;
+                if (title.textContent.trim() === 'Типичная ошибка') {
+                    sec.remove();
+                }
+            });
+        });
+
+        // 3) Render related topics as clickable chips (uses existing search)
+        termCards.forEach(card => {
+            const sections = Array.from(card.querySelectorAll('.term-section'));
+            const rel = sections.find(sec => (sec.querySelector('.term-section-title')?.textContent || '').trim() === 'Связанные темы');
+            if (!rel) return;
+            const content = rel.querySelector('.term-section-content');
+            if (!content) return;
+            const raw = content.textContent;
+            const items = raw.split(',').map(s => s.trim()).filter(Boolean);
+            if (!items.length) return;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'term-related';
+            items.forEach(label => {
+                const chip = document.createElement('span');
+                chip.className = 'term-related-chip';
+                chip.textContent = label;
+                chip.addEventListener('click', () => {
+                    searchInput.value = label;
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    searchInput.focus();
+                });
+                wrap.appendChild(chip);
+            });
+            content.textContent = '';
+            content.appendChild(wrap);
+        });
 
         searchInput.addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
