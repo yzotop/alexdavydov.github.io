@@ -411,17 +411,20 @@
 
     // Update metrics
     function updateMetrics(derived, ts) {
-      // Main metrics (always visible)
       const mRevenue = document.getElementById('mRevenue');
       const mOrders = document.getElementById('mOrders');
       const mP90ETA = document.getElementById('mP90ETA');
       const mTrust = document.getElementById('mTrust');
-      
+      const mConversionMain = document.getElementById('mConversionMain');
+      const mLateRateMain = document.getElementById('mLateRateMain');
+
       if (mRevenue) mRevenue.textContent = U.formatMoney(ts.revenue_per_min.last() || 0);
       if (mOrders) mOrders.textContent = Math.round(ts.orders_per_min.last() || 0).toString();
       if (mP90ETA) mP90ETA.textContent = U.formatSeconds(ts.p90_eta.last() || 0);
       if (mTrust) mTrust.textContent = U.formatPercent01(ts.trust.last() || 0, 0);
-      
+      if (mConversionMain) mConversionMain.textContent = U.formatPercent01(ts.conversion_rate.last() || 0, 1);
+      if (mLateRateMain) mLateRateMain.textContent = U.formatPercent01(ts.late_share.last() || 0, 1);
+
       // More metrics (collapsible)
       const mGMV = document.getElementById('mGMV');
       const mConversion = document.getElementById('mConversion');
@@ -444,12 +447,284 @@
       if (mAvgQuality) mAvgQuality.textContent = (ts.avg_quality_shown.last() || 0).toFixed(2);
     }
 
-    sim.onSecond = ({ derived, ts }) => {
+    // Rolling 60s buffer for flow strip
+    const flowBuffer = { impressions: [], orders_created: [], orders_completed: [], orders_cancelled: [] };
+    const FLOW_WINDOW = 60;
+
+    // Selection highlight (feed → selected flash, ~200ms)
+    let _lastHeroSlotIndex = -2;
+    let _flashUntil = 0;
+
+    function pushFlow(sec) {
+      if (!sec) return;
+      for (const k of Object.keys(flowBuffer)) {
+        flowBuffer[k].push(sec[k] || 0);
+        if (flowBuffer[k].length > FLOW_WINDOW) flowBuffer[k].shift();
+      }
+    }
+
+    function flowSums() {
+      const sum = (arr) => arr.reduce((a, b) => a + b, 0);
+      return {
+        impressions: sum(flowBuffer.impressions),
+        orders_created: sum(flowBuffer.orders_created),
+        orders_completed: sum(flowBuffer.orders_completed),
+        orders_cancelled: sum(flowBuffer.orders_cancelled),
+      };
+    }
+
+    function updateFlowStrip(derived, sec) {
+      pushFlow(sec);
+      const heroStorylineEl = document.getElementById('heroStoryline');
+      if (!heroStorylineEl) return;
+      const f = flowSums();
+      const steps = [
+        { key: 'impression', label: 'IMPRESSION', count: f.impressions },
+        { key: 'click', label: 'CLICK', count: f.orders_created },
+        { key: 'order', label: 'ORDER', count: f.orders_created },
+        { key: 'queue', label: 'QUEUE', count: derived.queue_len },
+        { key: 'delivered', label: 'DELIVERED', count: f.orders_completed },
+        { key: 'cancelled', label: 'CANCELLED', count: f.orders_cancelled },
+      ];
+      const limiter = derived.limiter || 'Balanced';
+      let activeKey = 'impression';
+      if (limiter === 'Ops-limited') activeKey = 'queue';
+      else if (limiter === 'Trust-limited') activeKey = 'delivered';
+      else if (limiter === 'Demand-limited') activeKey = 'impression';
+      else if (limiter === 'Supply-limited') activeKey = 'order';
+      else activeKey = f.orders_completed > 0 ? 'delivered' : f.orders_created > 0 ? 'queue' : 'impression';
+
+      heroStorylineEl.innerHTML = '';
+      heroStorylineEl.appendChild(el('span', { class: 'hero-storyline__label', text: 'Flow (60s): ' }));
+      for (let i = 0; i < steps.length; i++) {
+        const s = steps[i];
+        const active = s.key === activeKey;
+        const stepEl = el('span', {
+          class: 'hero-storyline__step' + (active ? ' hero-storyline__step--active' : ''),
+          text: `${s.label} ${typeof s.count === 'number' ? s.count : '-'}`
+        });
+        heroStorylineEl.appendChild(stepEl);
+        if (i < steps.length - 1) heroStorylineEl.appendChild(el('span', { class: 'hero-storyline__arrow', text: ' → ' }));
+      }
+    }
+
+    function updateWhyExplain(derived) {
+      const whyEl = document.getElementById('whyExplain');
+      if (!whyEl) return;
+      const load = derived.delivery_load;
+      let loadLabel = 'low';
+      if (load >= 0.8) loadLabel = 'high';
+      else if (load >= 0.5) loadLabel = 'medium';
+      const rank = derived.ranking_mode || 'quality-first';
+      const prom = ((derived.promoted_share || 0) * 100).toFixed(0);
+      whyEl.textContent = `Why: ranking: ${rank}, promoted share: ${prom}%, delivery load: ${loadLabel}`;
+    }
+
+    function updatePipelineBuyers(sim) {
+      const container = document.getElementById('pipelineBuyers');
+      if (!container) return;
+      const last = sim.buyers.slice(-5);
+      container.innerHTML = '';
+      for (const b of last) {
+        const isHero = b.id === sim.heroBuyerId;
+        const card = el('div', { class: 'pipeline-buyer' + (isHero ? ' pipeline-buyer--hero' : '') });
+        card.appendChild(el('div', { class: 'pipeline-buyer__label', text: isHero ? `B${b.id} (Hero)` : `B${b.id}` }));
+        const meta = el('div', { class: 'pipeline-buyer__meta' });
+        meta.appendChild(el('span', { text: `price sens: ${(b.price_sensitivity || 0).toFixed(2)}` }));
+        meta.appendChild(el('span', { text: `patience: ${(b.patience || 0).toFixed(2)}` }));
+        meta.appendChild(el('span', { text: `intent: ${b.intent || 'browse'}` }));
+        card.appendChild(meta);
+        container.appendChild(card);
+      }
+      if (last.length === 0) {
+        container.appendChild(el('div', { class: 'pipeline-buyer__meta', text: 'No buyers yet' }));
+      }
+    }
+
+    function updatePipelineFeed(sim) {
+      const container = document.getElementById('pipelineFeed');
+      if (!container) return;
+      const slots = sim.feed || [];
+      const heroSlotIndex = (() => {
+        for (const e of (sim.heroEvents || []).slice().reverse()) {
+          if ((e.type === 'impression' || e.type === 'orderCreated') && e.data && e.data.slotIndex != null) return e.data.slotIndex;
+        }
+        return -1;
+      })();
+      const recentImpression = (i) => (sim.heroEvents || []).some(e => e.type === 'impression' && e.data && e.data.slotIndex === i && (sim.time - e.t) < 1.5);
+      const now = Date.now();
+      if (heroSlotIndex >= 0 && heroSlotIndex !== _lastHeroSlotIndex) {
+        _lastHeroSlotIndex = heroSlotIndex;
+        _flashUntil = now + 220;
+      }
+      if (now > _flashUntil) {
+        _flashUntil = 0;
+        const heroEl = document.getElementById('pipelineHero');
+        if (heroEl) heroEl.classList.remove('pipeline-hero--flash');
+      }
+      const inFlash = now < _flashUntil;
+      if (inFlash) {
+        const heroEl = document.getElementById('pipelineHero');
+        if (heroEl) heroEl.classList.add('pipeline-hero--flash');
+      }
+      container.innerHTML = '';
+      const limit = Math.min(8, slots.length);
+      for (let i = 0; i < limit; i++) {
+        const slot = slots[i];
+        const item = slot && slot.item;
+        const promoted = !!(slot && slot.promoted);
+        const highlighted = recentImpression(i);
+        const selected = heroSlotIndex === i;
+        const selectFlash = selected && inFlash;
+        const card = el('div', {
+          class: 'pipeline-feed-item' +
+            (highlighted ? ' pipeline-feed-item--highlighted' : '') +
+            (selected ? ' pipeline-feed-item--selected' : '') +
+            (selectFlash ? ' pipeline-feed-item--select-flash' : '') +
+            (promoted ? ' pipeline-feed-item--promoted' : '')
+        });
+        if (item) {
+          card.appendChild(el('div', { class: 'pipeline-feed-item__price', text: `$${item.price.toFixed(0)}` }));
+          card.appendChild(el('div', { class: 'pipeline-feed-item__quality', text: `quality: ${(item.quality || 0).toFixed(2)}` }));
+          if (promoted) card.appendChild(el('span', { class: 'pipeline-feed-item__badge', text: 'PROMOTED' }));
+        } else {
+          card.appendChild(el('div', { class: 'pipeline-feed-item__price', text: '—' }));
+        }
+        container.appendChild(card);
+      }
+    }
+
+    function updatePipelineHero(sim) {
+      const container = document.getElementById('pipelineHero');
+      const reasonEl = document.getElementById('pipelineHeroReason');
+      if (!container) return;
+      let heroItem = null;
+      let heroSlotIndex = -1;
+      const rankingMode = (sim.params && sim.params.ranking_mode) || 'quality-first';
+      for (const e of (sim.heroEvents || []).slice().reverse()) {
+        if ((e.type === 'impression' || e.type === 'orderCreated') && e.data && e.data.slotIndex != null && sim.feed[e.data.slotIndex]) {
+          heroSlotIndex = e.data.slotIndex;
+          heroItem = sim.feed[heroSlotIndex].item;
+          break;
+        }
+      }
+      if (!heroItem && sim.feed && sim.feed[0] && sim.feed[0].item) {
+        heroItem = sim.feed[0].item;
+        heroSlotIndex = 0;
+      }
+      container.innerHTML = '';
+      if (!heroItem) {
+        container.appendChild(el('div', { class: 'pipeline-hero__empty', text: 'No selection yet' }));
+      } else {
+        const slot = sim.feed[heroSlotIndex];
+        const promoted = !!(slot && slot.promoted);
+        container.appendChild(el('div', { class: 'pipeline-hero__price', text: `$${heroItem.price.toFixed(0)}` }));
+        container.appendChild(el('div', { class: 'pipeline-hero__quality', text: `Quality: ${(heroItem.quality || 0).toFixed(2)}` }));
+        if (promoted) container.appendChild(el('span', { class: 'pipeline-hero__badge', text: 'PROMOTED' }));
+      }
+      if (reasonEl) {
+        reasonEl.textContent = `Selected because: ${rankingMode === 'revenue-first' ? 'revenue-first' : 'quality-first'}`;
+      }
+    }
+
+    function updatePipelineQueue(sim) {
+      const container = document.getElementById('pipelineQueue');
+      if (!container) return;
+      const q = sim.delivery_queue || [];
+      container.innerHTML = '';
+      const limit = Math.min(12, q.length);
+      for (let i = 0; i < limit; i++) {
+        const o = q[i];
+        if (!o) continue;
+        let status = 'ordered';
+        if (o.cancelled) status = 'cancelled';
+        else if (o.delivered) status = 'delivered';
+        else if (o.delivery_progress > 0) status = 'delivering';
+        else status = 'queued';
+        const cls = 'pipeline-queue-item' +
+          (o.late ? ' pipeline-queue-item--late' : '') +
+          (status === 'delivering' ? ' pipeline-queue-item--delivering' : '');
+        const card = el('div', { class: cls });
+        card.appendChild(el('div', { class: 'pipeline-queue-item__status', text: status.toUpperCase() }));
+        const eta = o.eta != null ? U.formatSeconds(o.eta) : '—';
+        card.appendChild(el('div', { class: 'pipeline-queue-item__eta', text: `ETA: ${eta}` }));
+        container.appendChild(card);
+      }
+    }
+
+    function updatePipelineCapacity(sim) {
+      const container = document.getElementById('pipelineCapacity');
+      if (!container) return;
+      const cap = (sim.params && sim.params.capacity_deliveries_per_min) || 0;
+      const q = (sim.delivery_queue && sim.delivery_queue.length) || 0;
+      const load = cap > 0 ? Math.min(1, q / cap) : 0;
+      container.innerHTML = '';
+      container.appendChild(el('div', { class: 'pipeline-capacity__label', text: `Capacity: ${cap.toFixed(1)}/min | Load: ${(load * 100).toFixed(0)}%` }));
+      const bar = el('div', { class: 'pipeline-capacity__bar' });
+      const fill = el('div', {
+        class: 'pipeline-capacity__fill' + (load > 0.8 ? ' pipeline-capacity__fill--danger' : load > 0.5 ? ' pipeline-capacity__fill--warn' : '')
+      });
+      fill.style.width = `${(load * 100).toFixed(0)}%`;
+      bar.appendChild(fill);
+      container.appendChild(bar);
+    }
+
+    function updatePipelineTrust(sim) {
+      const fillEl = document.getElementById('pipelineTrustFill');
+      const valueEl = document.getElementById('pipelineTrustValue');
+      if (!fillEl || !valueEl) return;
+      const t = Math.max(0, Math.min(1, sim.trust != null ? sim.trust : 0));
+      fillEl.style.width = `${(t * 100).toFixed(0)}%`;
+      valueEl.textContent = `${(t * 100).toFixed(0)}%`;
+    }
+
+    function updatePipelineDelivery(sim) {
+      const container = document.getElementById('pipelineDelivery');
+      if (!container) return;
+      const q = sim.delivery_queue || [];
+      const delivering = q.filter(o => !o.delivered && !o.cancelled && o.delivery_progress > 0);
+      const p90 = sim.ts && sim.ts.p90_eta && sim.ts.p90_eta.last ? sim.ts.p90_eta.last() : null;
+      container.innerHTML = '';
+      container.appendChild(el('div', { text: `Delivering: ${delivering.length}` }));
+      if (p90 != null) container.appendChild(el('div', { text: `ETA p90: ${U.formatSeconds(p90)}` }));
+    }
+
+    function updateTrustFeedVisual(sim) {
+      const col = document.querySelector('.pipeline-col--feed');
+      if (!col) return;
+      const t = Math.max(0, Math.min(1, sim.trust != null ? sim.trust : 0));
+      col.classList.remove('trust-low', 'trust-mid', 'trust-high');
+      if (t < 0.4) col.classList.add('trust-low');
+      else if (t > 0.7) col.classList.add('trust-high');
+      else col.classList.add('trust-mid');
+    }
+
+    function updatePipeline(sim) {
+      updatePipelineBuyers(sim);
+      updatePipelineFeed(sim);
+      updatePipelineHero(sim);
+      updatePipelineQueue(sim);
+      updatePipelineCapacity(sim);
+      updatePipelineDelivery(sim);
+      updatePipelineTrust(sim);
+      updateTrustFeedVisual(sim);
+    }
+
+    sim.onSecond = ({ derived, ts, sec }) => {
       updateSummary(derived);
       updateMetrics(derived, ts);
-      updateHeroStoryline(derived);
+      updateFlowStrip(derived, sec);
       updateWhyReason(derived);
+      updateWhyExplain(derived);
+      updatePipeline(sim);
     };
+
+    sim.onReset = () => {
+      _lastHeroSlotIndex = -2;
+      _flashUntil = 0;
+      updatePipeline(sim);
+    };
+    updatePipeline(sim);
     
     // View mode selector
     const viewModeSelect = document.getElementById('viewModeSelect');

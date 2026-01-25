@@ -280,6 +280,37 @@
           </div>
         </div>
       </section>
+
+      <details class="howto">
+        <summary class="howto__summary">How to read this</summary>
+        <div class="howto__body">
+          <p><strong>The mechanism</strong></p>
+          <ul class="howto__list">
+            <li>Симуляция — двухслойная монетизация: сначала placement policy решает, сколько слотов открыть, затем auction выбирает победителя и цену.</li>
+            <li>Ad pressure влияет на user fatigue: pCTR падает через экспоненциальный decay, появляется обратная связь "больше показов → ниже CTR → другая экономика".</li>
+          </ul>
+          <p><strong>Reading the panels</strong></p>
+          <ul class="howto__list">
+            <li>Slot Card (слева): текущий слот — placement, floor, opened/filled slots.</li>
+            <li>Bidder Ladder (центр): топ-8 участников — bid, pCTR, quality, score; winner выделен синим, #2 — светло-синим (важно для second-price / hybrid).</li>
+            <li>Outcome Card (справа): итог аукциона — winner, price, impression/click + кумулятивные метрики.</li>
+            <li>Auction tape (внизу): последние 30 аукционов и компактная строка KPI.</li>
+          </ul>
+          <p><strong>Interpreting metrics</strong></p>
+          <ul class="howto__list">
+            <li>Revenue — результат "объём × цена": рост impressions не гарантирует рост денег, если падает CPM или CTR из-за fatigue.</li>
+            <li>Fill rate и ad pressure помогают понять, "где съедается эффект": policy может открыть больше слотов, но дальше аукцион/видимость/усталость меняют результат.</li>
+            <li>При высоком ad pressure следи за CTR и early exit: система может заходить в режим насыщения (saturation).</li>
+          </ul>
+          <p><strong>Experiment ideas</strong></p>
+          <ul class="howto__list">
+            <li>Fatigue strength ↑: наблюдай, как при высоком ad pressure падают CTR и revenue.</li>
+            <li>Pricing: сравни second-price vs first-price vs hybrid (alpha) на одинаковом сценарии.</li>
+            <li>Utility policy vs fixed: как меняются ad pressure и revenue при учёте annoyance.</li>
+            <li>Floor multiplier ↑: как меняется fill rate и revenue; отдельно проверь эффект с включённым viewability.</li>
+          </ul>
+        </div>
+      </details>
     </section>
   </div>
 

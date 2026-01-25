@@ -65,51 +65,91 @@
       const H = h / dpr;
       ctx.clearRect(0, 0, W, H);
 
-      // Background
-      this._drawBackground(ctx, W, H);
-
-      if (this.viewMode === 'learn') {
-        this._drawLearnMode(ctx, W, H, sim);
-      } else if (this.viewMode === 'explore') {
-        this._drawExploreMode(ctx, W, H, sim);
-      } else {
-        this._drawDebugMode(ctx, W, H, sim);
-      }
+      // Canvas используется ТОЛЬКО для анимаций линий между элементами pipeline
+      // Основной UI рендерится через HTML/CSS
+      this._drawPipelineLines(ctx, W, H, sim);
 
       ctx.restore();
     }
     
-    _drawLearnMode(ctx, W, H, sim) {
-      // Simplified layout for learning
-      const centerX = W * 0.5;
-      const centerY = H * 0.5;
+    _drawPipelineLines(ctx, W, H, sim) {
+      // Canvas используется только для анимаций линий между элементами pipeline
+      // Получаем позиции элементов из DOM
+      const buyersCol = document.querySelector('.pipeline-col--buyers');
+      const feedCol = document.querySelector('.pipeline-col--feed');
+      const heroCol = document.querySelector('.pipeline-col--hero');
+      const queueCol = document.querySelector('.pipeline-col--queue');
       
-      // Hero buyer (left side)
-      this._drawHeroBuyerLearn(ctx, W, H, sim);
+      if (!buyersCol || !feedCol || !heroCol || !queueCol) return;
       
-      // 5 last active buyers (B1..B6, excluding hero)
-      this._drawLastBuyers(ctx, W, H, sim);
+      // Рисуем линии для hero buyer (если есть)
+      if (sim.heroBuyerId) {
+        const hero = sim.buyers.find(b => b.id === sim.heroBuyerId);
+        if (hero) {
+          // Линии от buyers → feed → hero → queue
+          this._drawHeroFlowLines(ctx, W, H, sim, buyersCol, feedCol, heroCol, queueCol);
+        }
+      }
       
-      // Hero Card (large, center)
-      this._drawHeroCard(ctx, W, H, centerX, centerY, sim);
+      // Вспышки (delivered, cancelled)
+      this._drawFlashes(ctx, W, H, sim);
+    }
+    
+    _drawHeroFlowLines(ctx, W, H, sim, buyersCol, feedCol, heroCol, queueCol) {
+      if (!sim.heroBuyerId) return;
       
-      // Feed list (compact, left of hero card)
-      this._drawFeedList(ctx, W, H, centerX - 200, centerY, sim);
+      const hero = sim.buyers.find(b => b.id === sim.heroBuyerId);
+      if (!hero) return;
       
-      // Hero lines (impressions, orders) in Learn mode
-      this._drawHeroLinesLearn(ctx, W, H, centerX, centerY, sim);
+      // Получаем позиции элементов
+      const getElementCenter = (el) => {
+        const rect = el.getBoundingClientRect();
+        const containerRect = this.mainCanvas.getBoundingClientRect();
+        return {
+          x: rect.left - containerRect.left + rect.width / 2,
+          y: rect.top - containerRect.top + rect.height / 2
+        };
+      };
       
-      // Delivery queue (stack, right side)
-      this._drawDeliveryQueueStack(ctx, W, H, centerX + 150, centerY, sim);
+      const buyersCenter = getElementCenter(buyersCol);
+      const feedCenter = getElementCenter(feedCol);
+      const heroCenter = getElementCenter(heroCol);
+      const queueCenter = getElementCenter(queueCol);
       
-      // Capacity widget (near queue)
-      this._drawCapacityWidget(ctx, W, H, centerX + 150, centerY - 100, sim);
+      // Impression lines (dotted) — buyer → feed
+      for (let event of sim.heroEvents) {
+        if (event.type === 'impression') {
+          const age = sim.time - event.t;
+          if (age > 0.5) continue;
+          const alpha = 1 - age / 0.5;
+          
+          ctx.strokeStyle = `rgba(96,165,250,${alpha * 0.4})`;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(buyersCenter.x, buyersCenter.y);
+          ctx.lineTo(feedCenter.x, feedCenter.y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
       
-      // Delivery particles (only hero)
-      this._drawDeliveryParticlesLearn(ctx, W, H, centerX, centerY, sim);
-      
-      // Trust bar
-      this._drawTrustBar(ctx, W, H, sim);
+      // Order line (solid) — feed → hero → queue
+      for (let line of sim.purchase_lines) {
+        if (line.isHero && line.buyer.id === sim.heroBuyerId) {
+          const age = sim.time - line.t0;
+          if (age > line.ttl) continue;
+          const alpha = 1 - age / line.ttl;
+          
+          ctx.strokeStyle = `rgba(251,191,36,${alpha * 0.8})`;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(feedCenter.x, feedCenter.y);
+          ctx.lineTo(heroCenter.x, heroCenter.y);
+          ctx.lineTo(queueCenter.x, queueCenter.y);
+          ctx.stroke();
+        }
+      }
     }
     
     _drawLastBuyers(ctx, W, H, sim) {
@@ -149,7 +189,7 @@
       ctx.restore();
     }
     
-    _drawHeroLinesLearn(ctx, W, H, centerX, centerY, sim) {
+    _drawHeroLinesLearn(ctx, W, H, centerX, centerY, sim, feedX, queueX, itemH) {
       if (!sim.heroBuyerId) return;
       
       const hero = sim.buyers.find(b => b.id === sim.heroBuyerId);
@@ -158,46 +198,44 @@
       ctx.save();
       const heroX = W * 0.15;
       const heroY = H * 0.5;
-      const feedX = centerX - 200;
       const feedY = centerY;
-      const queueX = centerX + 150;
       const queueY = centerY;
+      const listW = 200;
       
-      // Impression lines (dotted)
+      // Impression lines (dotted) — feed → hero highlight
       for (let event of sim.heroEvents) {
         if (event.type === 'impression') {
           const age = sim.time - event.t;
           if (age > 0.5) continue;
           const alpha = 1 - age / 0.5;
           const slotIndex = event.data.slotIndex || 0;
-          const itemY = feedY - (sim.feed.length * 20) / 2 + slotIndex * 20 + 10;
+          const itemY = feedY - (sim.feed.length * itemH) / 2 + slotIndex * itemH + itemH / 2;
           
-          ctx.strokeStyle = `rgba(96,165,250,${alpha * 0.4})`;
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(96,165,250,${alpha * 0.5})`;
+          ctx.lineWidth = 1.5;
           ctx.setLineDash([3, 3]);
           ctx.beginPath();
           ctx.moveTo(heroX, heroY);
-          ctx.lineTo(feedX + 160, itemY);
+          ctx.lineTo(feedX + listW, itemY);
           ctx.stroke();
           ctx.setLineDash([]);
         }
       }
       
-      // Order line (solid)
+      // Order line (solid) — hero → feed → queue
       for (let line of sim.purchase_lines) {
         if (line.isHero && line.buyer.id === sim.heroBuyerId) {
           const age = sim.time - line.t0;
           if (age > line.ttl) continue;
           const alpha = 1 - age / line.ttl;
           const slotIndex = line.slotIndex || 0;
-          const itemY = feedY - (sim.feed.length * 20) / 2 + slotIndex * 20 + 10;
+          const itemY = feedY - (sim.feed.length * itemH) / 2 + slotIndex * itemH + itemH / 2;
           
-          // Line: hero → feed → queue
-          ctx.strokeStyle = `rgba(251,191,36,${alpha * 0.8})`;
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = `rgba(251,191,36,${alpha * 0.9})`;
+          ctx.lineWidth = 2.5;
           ctx.beginPath();
           ctx.moveTo(heroX, heroY);
-          ctx.lineTo(feedX + 160, itemY);
+          ctx.lineTo(feedX + listW, itemY);
           ctx.lineTo(queueX, queueY);
           ctx.stroke();
         }
@@ -206,12 +244,11 @@
       ctx.restore();
     }
     
-    _drawDeliveryParticlesLearn(ctx, W, H, centerX, centerY, sim) {
+    _drawDeliveryParticlesLearn(ctx, W, H, centerX, centerY, sim, queueX) {
       ctx.save();
       
       const heroX = W * 0.15;
       const heroY = H * 0.5;
-      const queueX = centerX + 150;
       const queueY = centerY;
       
       // Only show hero deliveries
@@ -302,8 +339,8 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // Grid
-      ctx.strokeStyle = 'rgba(148,163,184,0.06)';
+      // Grid (reduced opacity to avoid “empty field” feel)
+      ctx.strokeStyle = 'rgba(148,163,184,0.03)';
       ctx.lineWidth = 1;
       const step = 40;
       for (let x = 0; x <= W; x += step) {
@@ -388,18 +425,21 @@
     }
     
     _drawHeroCard(ctx, W, H, centerX, centerY, sim) {
+      const cardW = 240;
+      const cardH = 160;
+      const cx = centerX - cardW / 2;
+      const cy = centerY - cardH / 2;
       // Find hero's current/last viewed item
       if (!sim.heroBuyerId) {
-        // Show placeholder if no hero
         ctx.save();
         ctx.fillStyle = 'rgba(15,23,42,0.6)';
-        drawRoundedRect(ctx, centerX - 90, centerY - 60, 180, 120, 8);
+        drawRoundedRect(ctx, cx, cy, cardW, cardH, 8);
         ctx.fill();
         ctx.strokeStyle = 'rgba(148,163,184,0.3)';
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.fillStyle = 'rgba(229,231,235,0.5)';
-        ctx.font = '12px ui-sans-serif';
+        ctx.font = '14px ui-sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Waiting for hero...', centerX, centerY);
         ctx.restore();
@@ -429,16 +469,15 @@
       }
       
       if (!heroItem) {
-        // Show placeholder
         ctx.save();
         ctx.fillStyle = 'rgba(15,23,42,0.6)';
-        drawRoundedRect(ctx, centerX - 90, centerY - 60, 180, 120, 8);
+        drawRoundedRect(ctx, cx, cy, cardW, cardH, 8);
         ctx.fill();
         ctx.strokeStyle = 'rgba(148,163,184,0.3)';
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.fillStyle = 'rgba(229,231,235,0.5)';
-        ctx.font = '12px ui-sans-serif';
+        ctx.font = '14px ui-sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Hero: browsing...', centerX, centerY);
         ctx.restore();
@@ -446,13 +485,10 @@
       }
       
       ctx.save();
+      const x = cx;
+      const y = cy;
       
-      const cardW = 180;
-      const cardH = 120;
-      const x = centerX - cardW / 2;
-      const y = centerY - cardH / 2;
-      
-      // Card background
+      // Card background (scale ×1.5)
       const quality = heroItem.quality;
       const color = qualityColor(quality);
       ctx.fillStyle = color;
@@ -466,41 +502,40 @@
       
       // Content
       ctx.fillStyle = 'rgba(229,231,235,0.95)';
-      ctx.font = 'bold 16px ui-monospace';
+      ctx.font = 'bold 20px ui-monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(`$${heroItem.price.toFixed(0)}`, centerX, y + 30);
+      ctx.fillText(`$${heroItem.price.toFixed(0)}`, centerX, y + 42);
       
-      ctx.font = '14px ui-monospace';
-      ctx.fillText(`Quality: ${quality.toFixed(2)}`, centerX, y + 50);
+      ctx.font = '16px ui-monospace';
+      ctx.fillText(`Quality: ${quality.toFixed(2)}`, centerX, y + 70);
       
       if (sim.feed[heroSlotIndex] && sim.feed[heroSlotIndex].promoted) {
         ctx.fillStyle = 'rgba(251,191,36,0.95)';
-        ctx.font = 'bold 12px ui-sans-serif';
-        ctx.fillText('PROMOTED', centerX, y + 75);
+        ctx.font = 'bold 14px ui-sans-serif';
+        ctx.fillText('PROMOTED', centerX, y + 105);
       }
       
-      // Label
       ctx.fillStyle = 'rgba(251,191,36,0.8)';
-      ctx.font = '11px ui-sans-serif';
-      ctx.fillText('HERO CARD', centerX, y - 8);
+      ctx.font = '12px ui-sans-serif';
+      ctx.fillText('HERO CARD', centerX, y - 10);
       
       ctx.restore();
     }
     
-    _drawFeedList(ctx, W, H, listX, listY, sim) {
+    _drawFeedList(ctx, W, H, listX, listY, sim, itemH = 26) {
       ctx.save();
       
-      const itemH = 20;
+      const listW = 200;
       const startY = listY - (sim.feed.length * itemH) / 2;
       
       // Background
       ctx.fillStyle = 'rgba(15,23,42,0.5)';
-      drawRoundedRect(ctx, listX - 10, startY - 5, 160, sim.feed.length * itemH + 10, 6);
+      drawRoundedRect(ctx, listX - 10, startY - 5, listW + 10, sim.feed.length * itemH + 10, 6);
       ctx.fill();
       
       // Label
       ctx.fillStyle = 'rgba(229,231,235,0.7)';
-      ctx.font = '10px ui-sans-serif';
+      ctx.font = '11px ui-sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText('FEED', listX, startY - 8);
       
@@ -509,7 +544,7 @@
         const slot = sim.feed[i];
         const y = startY + i * itemH;
         
-        // Highlight if recently viewed by hero
+        // Highlight if recently viewed by hero (feed → hero)
         const isHighlighted = sim.heroEvents.some(e => 
           e.type === 'impression' && e.data.slotIndex === i && (sim.time - e.t) < 1.0
         );
@@ -521,22 +556,22 @@
         
         if (isOrdered) {
           ctx.fillStyle = 'rgba(251,191,36,0.4)';
-          ctx.fillRect(listX - 8, y - 2, 156, itemH - 2);
+          ctx.fillRect(listX - 8, y - 2, listW - 4, itemH - 2);
         } else if (isHighlighted) {
-          ctx.fillStyle = 'rgba(96,165,250,0.2)';
-          ctx.fillRect(listX - 8, y - 2, 156, itemH - 2);
+          ctx.fillStyle = 'rgba(96,165,250,0.28)';
+          ctx.fillRect(listX - 8, y - 2, listW - 4, itemH - 2);
         }
         
         if (slot.item) {
           ctx.fillStyle = isOrdered ? 'rgba(251,191,36,0.95)' : 'rgba(229,231,235,0.9)';
-          ctx.font = isOrdered ? 'bold 11px ui-monospace' : '11px ui-monospace';
+          ctx.font = isOrdered ? 'bold 12px ui-monospace' : '12px ui-monospace';
           ctx.textAlign = 'left';
           const promo = slot.promoted ? ' PROMO' : '';
-          ctx.fillText(`#${i + 1}  $${slot.item.price.toFixed(0)}  q${slot.item.quality.toFixed(2)}${promo}`, listX, y + 12);
+          ctx.fillText(`#${i + 1}  $${slot.item.price.toFixed(0)}  q${slot.item.quality.toFixed(2)}${promo}`, listX, y + 14);
         } else {
           ctx.fillStyle = 'rgba(148,163,184,0.4)';
-          ctx.font = '10px ui-monospace';
-          ctx.fillText(`#${i + 1}  —`, listX, y + 12);
+          ctx.font = '11px ui-monospace';
+          ctx.fillText(`#${i + 1}  —`, listX, y + 14);
         }
       }
       
@@ -547,9 +582,9 @@
       ctx.save();
       
       const maxVisible = Math.min(12, sim.delivery_queue.length);
-      const cardW = 140;
-      const cardH = 25;
-      const spacing = 4;
+      const cardW = 175;
+      const cardH = 28;
+      const spacing = 5;
       const startY = stackY - (maxVisible * (cardH + spacing)) / 2;
       
       // Background
@@ -1075,7 +1110,7 @@
     _drawFlashes(ctx, W, H, sim) {
       ctx.save();
       
-      // Cancel flashes (red cross)
+      // Cancel flashes (red cross) — stronger
       for (let flash of sim.cancel_flashes) {
         const age = sim.time - flash.t0;
         const alpha = Math.max(0, 1 - age / flash.ttl);
@@ -1083,10 +1118,11 @@
         
         const x = flash.x * W;
         const y = flash.y * H;
-        const size = 8;
+        const size = 12;
         
-        ctx.strokeStyle = `rgba(251,113,133,${alpha})`;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(251,113,133,${alpha * 0.95})`;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(x - size, y - size);
         ctx.lineTo(x + size, y + size);
@@ -1103,9 +1139,9 @@
         
         const x = flash.x * W;
         const y = flash.y * H;
-        const size = 6 + age * 10;
+        const size = 8 + age * 12;
         
-        ctx.fillStyle = `rgba(52,211,153,${alpha * 0.5})`;
+        ctx.fillStyle = `rgba(52,211,153,${alpha * 0.6})`;
         ctx.beginPath();
         ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
@@ -1119,14 +1155,12 @@
       
       const barX = W * 0.05;
       const barY = H * 0.05;
-      const barW = 120;
-      const barH = 6;
+      const barW = 180;
+      const barH = 10;
       
-      // Background
       ctx.fillStyle = 'rgba(15,23,42,0.6)';
       ctx.fillRect(barX, barY, barW, barH);
       
-      // Trust fill
       const trust = U.clamp(sim.trust, 0, 1);
       const fillW = barW * trust;
       const r = Math.round(U.lerp(251, 52, trust));
@@ -1135,12 +1169,11 @@
       ctx.fillStyle = `rgba(${r},${g},${b},0.9)`;
       ctx.fillRect(barX, barY, fillW, barH);
       
-      // Label
       ctx.fillStyle = 'rgba(229,231,235,0.8)';
-      ctx.font = '10px ui-sans-serif';
+      ctx.font = '11px ui-sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Trust', barX, barY - 4);
-      ctx.fillText(`${(trust * 100).toFixed(0)}%`, barX + barW + 8, barY + 5);
+      ctx.fillText('Trust (long-term)', barX, barY - 5);
+      ctx.fillText(`${(trust * 100).toFixed(0)}%`, barX + barW + 10, barY + 7);
       
       ctx.restore();
     }

@@ -75,11 +75,45 @@
             font-weight: 500;
         }
 
+        .card-badges {
+            display: inline-flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: -0.25rem 0 0.75rem;
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.78rem; /* ~12px */
+            line-height: 1.2;
+            border: 1px solid rgba(37, 99, 235, 0.22);
+            background: rgba(37, 99, 235, 0.06);
+            color: rgba(37, 99, 235, 0.92);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
         .card-text {
             color: #666;
             font-size: 0.9rem;
             margin-bottom: 1rem;
             line-height: 1.5;
+        }
+
+        .card-keyq {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+            line-height: 1.45;
+        }
+
+        .card-keyq strong {
+            color: #333;
+            font-weight: 600;
         }
 
         .card-button {
@@ -140,50 +174,85 @@
 
         <div class="cards-grid">
             <div class="card">
-                <h2 class="card-title">Ride-Hailing Simulator (MVP)</h2>
+                <h2 class="card-title">Ride-Hailing Simulator</h2>
+                <div class="card-badges">
+                    <span class="card-badge">On-Demand</span>
+                    <span class="card-badge">MVP</span>
+                </div>
                 <p class="card-text">
-                    Живая 2D-симуляция: водители и заказы на карте, матчинги, surge по зонам, отмены и метрики во времени.
+                    Живая 2D-симуляция ride-hailing платформы: drivers, orders, matching, ETA, surge pricing и cancellations в реальном времени.
                 </p>
+                <div class="card-keyq"><strong>Key question:</strong> Как дисбаланс спроса и предложения влияет на ETA, cancellations и revenue?</div>
                 <div class="btn-row">
                     <a href="./ride-hailing/" class="card-button">Симулятор →</a>
                     <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Ad Auction (Live)</h2>
+                <h2 class="card-title">Ad Auction</h2>
+                <div class="card-badges">
+                    <span class="card-badge">Монетизация</span>
+                </div>
                 <p class="card-text">
-                    Живая симуляция рекламных сессий во времени: opportunities → impressions, аукцион, давление (fixed/adaptive), усталость пользователей и экономика.
+                    Симуляция рекламных сессий: ad opportunities → impressions → auction → pricing → revenue с поддержкой fixed и adaptive policy.
                 </p>
+                <div class="card-keyq"><strong>Key question:</strong> Как auction и pricing policy формируют краткосрочную и долгосрочную выручку?</div>
                 <div class="btn-row">
                     <a href="./ad-auction/" class="card-button">Симулятор →</a>
                     <a href="./ad-auction/about/" class="card-button btn-secondary">Описание</a>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Ad Pressure Dynamics (Live)</h2>
+                <h2 class="card-title">Ad Pressure Dynamics</h2>
+                <div class="card-badges">
+                    <span class="card-badge">Монетизация</span>
+                </div>
                 <p class="card-text">
-                    Симуляция сессий пользователей: поток сессий, политика давления рекламы (fixed/adaptive), аукцион, усталость и её влияние на CTR и ранний выход.
+                    Модель давления рекламы: как частота показов, policy (fixed / adaptive) и user behavior влияют на CTR, early exit и экономику платформы.
                 </p>
+                <div class="card-keyq"><strong>Key question:</strong> Где проходит граница между ростом revenue и деградацией пользовательского опыта?</div>
                 <div class="btn-row">
                     <a href="./ad-auction-pressure/" class="card-button">Симулятор →</a>
                     <a href="./ad-auction-pressure/about/" class="card-button btn-secondary">Описание</a>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Marketplace Auction &amp; Delivery (Live)</h2>
+                <h2 class="card-title">Marketplace Auction &amp; Delivery</h2>
+                <div class="card-badges">
+                    <span class="card-badge">Маркетплейс</span>
+                </div>
                 <p class="card-text">
-                    Живая симуляция маркетплейса: ранжирование товаров, рекламный аукцион, доставка, доверие между покупателями и продавцами.
+                    Симуляция маркетплейса: ranking, promoted items, auction, delivery capacity и trust в едином потоке от click до delivery.
                 </p>
+                <div class="card-keyq"><strong>Key question:</strong> Когда рост revenue через ranking начинает разрушать trust и конверсию?</div>
                 <div class="btn-row">
                     <a href="./marketplace-live/" class="card-button">Симулятор →</a>
                     <a href="./marketplace-live/about/" class="card-button btn-secondary">Описание</a>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Aladdin-Lite: Portfolio Risk &amp; Copilot</h2>
+                <h2 class="card-title">Ad Fatigue &amp; Channel Saturation</h2>
+                <div class="card-badges">
+                    <span class="card-badge">Монетизация</span>
+                </div>
                 <p class="card-text">
-                    Управление портфелем и оценка риска: VaR, ES, стресс-тесты и автоматические рекомендации по структуре портфеля.
+                    Pipeline-модель: ad pressure → fatigue → CTR / early exit → saturation point, где revenue перестаёт расти.
                 </p>
+                <div class="card-keyq"><strong>Key question:</strong> Где именно находится точка monetization cliff?</div>
+                <div class="btn-row">
+                    <a href="./ad-fatigue-live/" class="card-button">Симулятор →</a>
+                </div>
+            </div>
+            <div class="card">
+                <h2 class="card-title">Aladdin-Lite: Portfolio Risk &amp; Copilot</h2>
+                <div class="card-badges">
+                    <span class="card-badge">Финансы / Риск</span>
+                    <span class="card-badge">Experimental</span>
+                </div>
+                <p class="card-text">
+                    Интерактивная модель управления портфелем: risk, VaR, ES, stress-testing и сценарные рекомендации по аллокации.
+                </p>
+                <div class="card-keyq"><strong>Key question:</strong> Как меняется оптимальная структура портфеля под разными risk-сценариями?</div>
                 <div class="btn-row">
                     <a href="/lab/simulators/aladdin-lite/" class="card-button">Симулятор →</a>
                 </div>
