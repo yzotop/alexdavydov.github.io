@@ -121,6 +121,7 @@
             flex-wrap: wrap;
             gap: 8px;
             align-items: center;
+            margin-top: 0.25rem;
         }
 
         .term-related-chip {
@@ -128,11 +129,11 @@
             align-items: center;
             padding: 0.18rem 0.5rem;
             border-radius: 999px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             line-height: 1.2;
             border: 1px solid rgba(17, 24, 39, 0.14);
-            background: rgba(17, 24, 39, 0.04);
-            color: #374151;
+            background: rgba(17, 24, 39, 0.03);
+            color: #6b7280;
             cursor: pointer;
             user-select: none;
         }
@@ -145,6 +146,15 @@
 
         .term-section {
             margin-bottom: 1rem;
+        }
+
+        /* Related terms: chips-only meta block (no title label) */
+        .term-section--related {
+            margin-top: 1rem;
+        }
+
+        .term-section--related .term-section-title {
+            display: none;
         }
 
         .term-section:last-child {
@@ -727,6 +737,10 @@
             const sections = Array.from(card.querySelectorAll('.term-section'));
             const rel = sections.find(sec => (sec.querySelector('.term-section-title')?.textContent || '').trim() === 'Связанные темы');
             if (!rel) return;
+            rel.classList.add('term-section--related');
+            const titleEl = rel.querySelector('.term-section-title');
+            if (titleEl) titleEl.remove(); // chips-only UI (no label)
+
             const content = rel.querySelector('.term-section-content');
             if (!content) return;
 
@@ -734,7 +748,7 @@
             const related = raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
             const existing = related.filter(slug => slugs.has(slug));
             if (!existing.length) {
-                content.textContent = '';
+                rel.remove();
                 return;
             }
 
