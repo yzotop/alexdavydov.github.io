@@ -60,6 +60,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 3rem;
+            align-items: stretch;
         }
 
         .card {
@@ -67,6 +68,9 @@
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .card-title {
@@ -104,12 +108,18 @@
             line-height: 1.5;
         }
 
+        /* Alias classes for reliable layout control (per spec) */
+        .sim-card__desc { line-height: 1.45; overflow-wrap: anywhere; word-break: break-word; }
+
         .card-keyq {
             font-size: 0.85rem;
             color: #666;
             margin-top: 0.5rem;
+            margin-bottom: 14px;
             line-height: 1.45;
         }
+
+        .sim-card__keyq { margin-top: 10px; margin-bottom: 14px; line-height: 1.35; overflow-wrap: anywhere; word-break: break-word; }
 
         .card-keyq strong {
             color: #333;
@@ -136,6 +146,11 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .sim-card__actions {
+            margin-top: auto;
+            padding-top: 12px;
         }
 
         .btn-secondary {
@@ -174,87 +189,111 @@
 
         <div class="cards-grid">
             <div class="card">
-                <h2 class="card-title">Ride-Hailing Simulator</h2>
-                <div class="card-badges">
-                    <span class="card-badge">On-Demand</span>
-                    <span class="card-badge">MVP</span>
+                <div class="sim-card__content">
+                    <h2 class="card-title">Ride-Hailing Simulator</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">On-Demand</span>
+                        <span class="card-badge">MVP</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Живая 2D-симуляция ride-hailing платформы: drivers, orders, matching, ETA, surge pricing и cancellations в реальном времени.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Как дисбаланс спроса и предложения влияет на ETA, cancellations и revenue?</div>
                 </div>
-                <p class="card-text">
-                    Живая 2D-симуляция ride-hailing платформы: drivers, orders, matching, ETA, surge pricing и cancellations в реальном времени.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Как дисбаланс спроса и предложения влияет на ETA, cancellations и revenue?</div>
-                <div class="btn-row">
-                    <a href="./ride-hailing/" class="card-button">Симулятор →</a>
-                    <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
-                </div>
-            </div>
-            <div class="card">
-                <h2 class="card-title">Ad Auction</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Монетизация</span>
-                </div>
-                <p class="card-text">
-                    Симуляция рекламных сессий: ad opportunities → impressions → auction → pricing → revenue с поддержкой fixed и adaptive policy.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Как auction и pricing policy формируют краткосрочную и долгосрочную выручку?</div>
-                <div class="btn-row">
-                    <a href="./ad-auction/" class="card-button">Симулятор →</a>
-                    <a href="./ad-auction/about/" class="card-button btn-secondary">Описание</a>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./ride-hailing/" class="card-button">Симулятор →</a>
+                        <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Ad Pressure Dynamics</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Монетизация</span>
+                <div class="sim-card__content">
+                    <h2 class="card-title">Ad Auction</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Монетизация</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Симуляция рекламных сессий: ad opportunities → impressions → auction → pricing → revenue с поддержкой fixed и adaptive policy.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Как auction и pricing policy формируют краткосрочную и долгосрочную выручку?</div>
                 </div>
-                <p class="card-text">
-                    Модель давления рекламы: как частота показов, policy (fixed / adaptive) и user behavior влияют на CTR, early exit и экономику платформы.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Где проходит граница между ростом revenue и деградацией пользовательского опыта?</div>
-                <div class="btn-row">
-                    <a href="./ad-auction-pressure/" class="card-button">Симулятор →</a>
-                    <a href="./ad-auction-pressure/about/" class="card-button btn-secondary">Описание</a>
-                </div>
-            </div>
-            <div class="card">
-                <h2 class="card-title">Marketplace Auction &amp; Delivery</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Маркетплейс</span>
-                </div>
-                <p class="card-text">
-                    Симуляция маркетплейса: ranking, promoted items, auction, delivery capacity и trust в едином потоке от click до delivery.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Когда рост revenue через ranking начинает разрушать trust и конверсию?</div>
-                <div class="btn-row">
-                    <a href="./marketplace-live/" class="card-button">Симулятор →</a>
-                    <a href="./marketplace-live/about/" class="card-button btn-secondary">Описание</a>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./ad-auction/" class="card-button">Симулятор →</a>
+                        <a href="./ad-auction/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Ad Fatigue &amp; Channel Saturation</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Монетизация</span>
+                <div class="sim-card__content">
+                    <h2 class="card-title">Ad Pressure Dynamics</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Монетизация</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Модель давления рекламы: как частота показов, policy (fixed / adaptive) и user behavior влияют на CTR, early exit и экономику платформы.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Где проходит граница между ростом revenue и деградацией пользовательского опыта?</div>
                 </div>
-                <p class="card-text">
-                    Pipeline-модель: ad pressure → fatigue → CTR / early exit → saturation point, где revenue перестаёт расти.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Где именно находится точка monetization cliff?</div>
-                <div class="btn-row">
-                    <a href="./ad-fatigue-live/" class="card-button">Симулятор →</a>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./ad-auction-pressure/" class="card-button">Симулятор →</a>
+                        <a href="./ad-auction-pressure/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
             <div class="card">
-                <h2 class="card-title">Aladdin-Lite: Portfolio Risk &amp; Copilot</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Финансы / Риск</span>
-                    <span class="card-badge">Experimental</span>
+                <div class="sim-card__content">
+                    <h2 class="card-title">Marketplace Auction &amp; Delivery</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Маркетплейс</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Симуляция маркетплейса: ranking, promoted items, auction, delivery capacity и trust в едином потоке от click до delivery.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Когда рост revenue через ranking начинает разрушать trust и конверсию?</div>
                 </div>
-                <p class="card-text">
-                    Интерактивная модель управления портфелем: risk, VaR, ES, stress-testing и сценарные рекомендации по аллокации.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Как меняется оптимальная структура портфеля под разными risk-сценариями?</div>
-                <div class="btn-row">
-                    <a href="/lab/simulators/aladdin-lite/" class="card-button">Симулятор →</a>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./marketplace-live/" class="card-button">Симулятор →</a>
+                        <a href="./marketplace-live/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="sim-card__content">
+                    <h2 class="card-title">Ad Fatigue &amp; Channel Saturation</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Монетизация</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Pipeline-модель: ad pressure → fatigue → CTR / early exit → saturation point, где revenue перестаёт расти.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Где именно находится точка monetization cliff?</div>
+                </div>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./ad-fatigue-live/" class="card-button">Симулятор →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="sim-card__content">
+                    <h2 class="card-title">Aladdin-Lite: Portfolio Risk &amp; Copilot</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Финансы / Риск</span>
+                        <span class="card-badge">Experimental</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Интерактивная модель управления портфелем: risk, VaR, ES, stress-testing и сценарные рекомендации по аллокации.
+                    </p>
+                    <div class="card-keyq sim-card__keyq"><strong>Key question:</strong> Как меняется оптимальная структура портфеля под разными risk-сценариями?</div>
+                </div>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="/lab/simulators/aladdin-lite/" class="card-button">Симулятор →</a>
+                    </div>
                 </div>
             </div>
         </div>

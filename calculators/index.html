@@ -60,6 +60,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 3rem;
+            align-items: stretch;
         }
 
         .card {
@@ -67,6 +68,9 @@
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .card-title {
@@ -107,14 +111,19 @@
         .card-keyq {
             font-size: 0.85rem;
             color: #666;
-            margin-top: 0.5rem;
-            line-height: 1.45;
+            margin-top: 10px;
+            margin-bottom: 14px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
         }
 
         .card-keyq strong {
             color: #333;
             font-weight: 600;
         }
+
+        /* Alias for reliability per spec */
+        .calc-card__keyq { }
 
         .card-button {
             display: inline-block;
@@ -136,6 +145,11 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .calc-card__actions {
+            margin-top: auto;
+            padding-top: 12px;
         }
 
         .btn-secondary {
@@ -180,98 +194,116 @@
 
         <div class="cards-grid">
             <div class="card">
-                <h2 class="card-title">Монетизация рекламы: Pressure → Revenue</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Монетизация</span>
-                    <span class="card-badge">Калькулятор</span>
+                <div class="calc-card__content">
+                    <h2 class="card-title">Монетизация рекламы: Pressure → Revenue</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Монетизация</span>
+                    </div>
+                    <p class="card-text">
+                        Параметрическая модель рекламной монетизации: как Pressure меняет delivery и приводит к saturation по revenue.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Где рост ad pressure перестаёт увеличивать выручку?</div>
                 </div>
-                <p class="card-text">
-                    Параметрическая модель рекламной монетизации: как Pressure меняет delivery и приводит к saturation по revenue.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Где рост ad pressure перестаёт увеличивать выручку?</div>
-                <div class="btn-row">
-                    <a href="./ad-monetization/" class="card-button">Калькулятор →</a>
-                    <a href="./ad-monetization/about/" class="card-button btn-secondary">Описание</a>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">Ride-Hailing: спрос ↔ предложение</h2>
-                <div class="card-badges">
-                    <span class="card-badge">On-Demand</span>
-                    <span class="card-badge">Калькулятор</span>
-                </div>
-                <p class="card-text">
-                    Параметрическая модель двустороннего рынка: как спрос и предложение задают SLA и экономику сервиса.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Как дисбаланс спроса и предложения влияет на SLA и экономику?</div>
-                <div class="btn-row">
-                    <a href="./ride-hailing/" class="card-button">Калькулятор →</a>
-                    <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./ad-monetization/" class="card-button">Калькулятор →</a>
+                        <a href="./ad-monetization/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">Цена vs объём: эластичность выручки</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Монетизация</span>
-                    <span class="card-badge">Калькулятор</span>
+                <div class="calc-card__content">
+                    <h2 class="card-title">Ride-Hailing: спрос ↔ предложение</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">On-Demand</span>
+                    </div>
+                    <p class="card-text">
+                        Параметрическая модель двустороннего рынка: как спрос и предложение задают SLA и экономику сервиса.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Как дисбаланс спроса и предложения влияет на SLA и экономику?</div>
                 </div>
-                <p class="card-text">
-                    Trade-off цена × объём: как elasticity превращает рост цены в падение объёма — и где находится оптимум по revenue.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> При какой цене рост начинает снижать общую выручку?</div>
-                <div class="btn-row">
-                    <a href="./lab/revenue.html" class="card-button">Калькулятор →</a>
-                    <a href="./lab/revenue/about/" class="card-button btn-secondary">Описание</a>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">A/B: прогноз раскатки на 100%</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Эксперименты</span>
-                    <span class="card-badge">Калькулятор</span>
-                </div>
-                <p class="card-text">
-                    Прогноз полного rollout: как эффекты теста (ΔCPM, ΔShowRate, ΔRequests) пересоберут итоговые метрики.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Что реально произойдёт с метриками после полного rollout?</div>
-                <div class="btn-row">
-                    <a href="./lab/rollout.html" class="card-button">Калькулятор →</a>
-                    <a href="./lab/rollout/about/" class="card-button btn-secondary">Описание</a>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./ride-hailing/" class="card-button">Калькулятор →</a>
+                        <a href="./ride-hailing/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">A/B: выбрать лучший тест из 3</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Эксперименты</span>
-                    <span class="card-badge">Калькулятор</span>
+                <div class="calc-card__content">
+                    <h2 class="card-title">Цена vs объём: эластичность выручки</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Монетизация</span>
+                    </div>
+                    <p class="card-text">
+                        Trade-off цена × объём: как elasticity превращает рост цены в падение объёма — и где находится оптимум по revenue.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> При какой цене рост начинает снижать общую выручку?</div>
                 </div>
-                <p class="card-text">
-                    Сравнение трёх A/B: проекция на 100% rollout по текущим результатам, чтобы выбрать лучший вариант для масштабирования.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Какой тест даёт максимальный эффект при масштабировании?</div>
-                <div class="btn-row">
-                    <a href="./lab/rollout-compare.html" class="card-button">Калькулятор →</a>
-                    <a href="./lab/rollout-compare/about/" class="card-button btn-secondary">Описание</a>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./lab/revenue.html" class="card-button">Калькулятор →</a>
+                        <a href="./lab/revenue/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">Воронка: цена +1 п.п. конверсии</h2>
-                <div class="card-badges">
-                    <span class="card-badge">Маркетплейс</span>
-                    <span class="card-badge">Калькулятор</span>
+                <div class="calc-card__content">
+                    <h2 class="card-title">A/B: прогноз раскатки на 100%</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Эксперименты</span>
+                    </div>
+                    <p class="card-text">
+                        Прогноз полного rollout: как эффекты теста (ΔCPM, ΔShowRate, ΔRequests) пересоберут итоговые метрики.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Что реально произойдёт с метриками после полного rollout?</div>
                 </div>
-                <p class="card-text">
-                    Чувствительность воронки: стоимость +1 п.п. на каждом шаге и вклад в итоговый revenue — где ROI лучше всего.
-                </p>
-                <div class="card-keyq"><strong>Key question:</strong> Какой шаг воронки даёт самый дешёвый рост выручки?</div>
-                <div class="btn-row">
-                    <a href="./lab/funnel-sensitivity.html" class="card-button">Калькулятор →</a>
-                    <a href="./lab/funnel-sensitivity/about/" class="card-button btn-secondary">Описание</a>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./lab/rollout.html" class="card-button">Калькулятор →</a>
+                        <a href="./lab/rollout/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="calc-card__content">
+                    <h2 class="card-title">A/B: выбрать лучший тест из 3</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Эксперименты</span>
+                    </div>
+                    <p class="card-text">
+                        Сравнение трёх A/B: проекция на 100% rollout по текущим результатам, чтобы выбрать лучший вариант для масштабирования.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Какой тест даёт максимальный эффект при масштабировании?</div>
+                </div>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./lab/rollout-compare.html" class="card-button">Калькулятор →</a>
+                        <a href="./lab/rollout-compare/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="calc-card__content">
+                    <h2 class="card-title">Воронка: цена +1 п.п. конверсии</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Маркетплейс</span>
+                    </div>
+                    <p class="card-text">
+                        Чувствительность воронки: стоимость +1 п.п. на каждом шаге и вклад в итоговый revenue — где ROI лучше всего.
+                    </p>
+                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Какой шаг воронки даёт самый дешёвый рост выручки?</div>
+                </div>
+                <div class="calc-card__actions">
+                    <div class="btn-row">
+                        <a href="./lab/funnel-sensitivity.html" class="card-button">Калькулятор →</a>
+                        <a href="./lab/funnel-sensitivity/about/" class="card-button btn-secondary">Описание</a>
+                    </div>
                 </div>
             </div>
         </div>
