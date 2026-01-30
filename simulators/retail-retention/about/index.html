@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Retention &amp; Revenue (Live) — Описание — Alex Davydov</title>
+  <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+  <style>
+    .note { padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fafafa; color: #555; }
+    .note code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.95em; }
+    .links-top { display:flex; gap: 12px; flex-wrap: wrap; margin: 1.2rem 0 1.6rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Главная</a>
+      <span>→</span>
+      <a href="/simulators/">Симуляторы</a>
+      <span>→</span>
+      <a href="../">Retail Retention &amp; Revenue (Live)</a>
+      <span>→</span>
+      <span>Описание</span>
+    </div>
+
+    <div class="links-top">
+      <a href="../" class="link-button">Открыть симулятор →</a>
+      <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+    </div>
+
+    <h1>Retail Retention &amp; Revenue (Live) — Описание</h1>
+    <p class="lead">
+      Data-driven лаборатория по удержанию и выручке на реальном ретейл-датасете: когортные матрицы, revenue retention, и сегментация RFM
+      с переключателями (возвраты / анонимы / недели vs месяцы).
+    </p>
+
+    <div class="section">
+      <h2 class="section-title">Что показывает</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>Cohort retention heatmap</strong>: доля клиентов, которые снова покупают через 0..N периодов после первой покупки</li>
+          <li><strong>Revenue retention heatmap</strong>: доля выручки относительно выручки когорты в периоде 0 (clamp 0..100 для стабильного визуала)</li>
+          <li><strong>RFM сегменты</strong>: Champions / Loyal / At Risk / Lost и др., с метриками customers, revenue, AOV, repeat rate</li>
+          <li><strong>Sanity checks</strong>: 10 проверок качества данных и фильтров (missing IDs, returns, duplicates, date range, top countries, p99 invoice)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Переключатели (как интерпретировать)</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>Include returns/cancellations</strong>: включает строки/инвойсы, которые считаются возвратом (Invoice начинается с <code>C</code> или Quantity &lt; 0). Это меняет net revenue и сигналы повторов.</li>
+          <li><strong>Include customers without CustomerID</strong>: включает покупки без CustomerID. В препроцессинге такие покупки моделируются как <em>synthetic customer per invoice</em> (иначе их нельзя корректно “склеить” во времени).</li>
+          <li><strong>Granularity: Month / Week</strong>: меняет ключ периода и число offset’ов — полезно для сравнения сезонности и “скорости” повторов.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Как подготовить данные (локально)</h2>
+      <div class="section-content">
+        <div class="note">
+          GitHub Pages не может запускать Python, поэтому preprocessing делается локально и результат коммитится как JSON.<br><br>
+          1) Скачайте Kaggle dataset “Online Retail II (UCI)” в CSV.<br>
+          2) Положите файл сюда: <code>simulators/retail-retention/data/raw/online_retail_ii.csv</code><br>
+          3) Запустите:<br>
+          <code>python3 scripts/retail_preprocess.py --input simulators/retail-retention/data/raw/online_retail_ii.csv --out simulators/retail-retention/data/processed</code><br>
+          4) Убедитесь, что созданы JSON-файлы в <code>simulators/retail-retention/data/processed/</code> (8 вариантов <code>variant_*.json</code>).<br><br>
+          Подробная инструкция: <code>simulators/retail-retention/DATASET.md</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Sensitivities (что сравниваем)</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>Returns on/off</strong>: возвраты/отмены считаются как Invoice начинается с <code>C</code> или Quantity &lt; 0.</li>
+          <li><strong>Anon customers on/off</strong>: покупки без CustomerID можно включать/исключать; при включении они моделируются как “synthetic customer per invoice”.</li>
+          <li><strong>Weeks vs months</strong>: неделя (ISO) даёт более “быстрый” горизонт, месяц — более стабильную сезонность.</li>
+          <li><strong>Compare (A/B)</strong>: в UI можно выбрать два пресета и увидеть дельты (B − A) по retention/revenue и сегментам.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
