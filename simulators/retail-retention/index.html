@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Retail Retention &amp; Revenue Lab</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__links">
+      <a href="./about/">← Описание</a>
+      <a href="/simulators/">Симуляторы</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="panel panel--left">
+      <h1 class="panel__title">Retention &amp; Revenue Lab</h1>
+      <div class="panel__subtitle">Online Retail II (UCI) · cohorts · revenue · RFM segments</div>
+
+      <div id="status" class="status status--info hidden"></div>
+
+      <div class="panel__section">
+        <div class="section__title">Mode</div>
+        <div class="segmented" role="tablist" aria-label="Mode">
+          <button id="modeExplore" class="segmented__btn is-active" type="button" role="tab" aria-selected="true">Explore</button>
+          <button id="modeCompare" class="segmented__btn" type="button" role="tab" aria-selected="false">Compare (A/B)</button>
+        </div>
+        <div class="form-hint" style="margin-top:10px;">
+          Explore = single variant. Compare = load two variants and compute deltas (B − A).
+        </div>
+      </div>
+
+      <div class="panel__section" id="exploreControls">
+        <div class="section__title">Toggles</div>
+
+        <div class="toggle-row">
+          <label class="toggle">
+            <input id="toggleReturns" type="checkbox" class="toggle__input" />
+            <span class="toggle__label">Include returns/cancellations</span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <label class="toggle">
+            <input id="toggleAnon" type="checkbox" class="toggle__input" />
+            <span class="toggle__label">Include customers without CustomerID</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="granularitySelect">Granularity</label>
+          <select id="granularitySelect" class="form-select">
+            <option value="month" selected>Month</option>
+            <option value="week">Week (ISO)</option>
+          </select>
+          <div class="form-hint">Granularity changes cohort keys and offsets.</div>
+        </div>
+
+        <div class="callout">
+          <div class="callout__title">What changes?</div>
+          <div class="callout__body">
+            Returns impact net revenue and repeat signals. Anonymous customers are modeled as
+            per-invoice synthetic IDs (low retention by design). Week vs month changes cohort resolution.
+          </div>
+        </div>
+      </div>
+
+      <div class="panel__section hidden" id="compareControls">
+        <div class="section__title">Compare presets</div>
+
+        <div class="ab-grid">
+          <div class="ab-card">
+            <div class="ab-card__title">Preset A</div>
+            <div class="form-group">
+              <label class="form-label" for="aGran">Granularity</label>
+              <select id="aGran" class="form-select">
+                <option value="month" selected>Month</option>
+                <option value="week">Week (ISO)</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input id="aRet" type="checkbox" class="toggle__input" />
+                <span class="toggle__label">Returns</span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input id="aAnon" type="checkbox" class="toggle__input" />
+                <span class="toggle__label">Anon customers</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="ab-card">
+            <div class="ab-card__title">Preset B</div>
+            <div class="form-group">
+              <label class="form-label" for="bGran">Granularity</label>
+              <select id="bGran" class="form-select">
+                <option value="month" selected>Month</option>
+                <option value="week">Week (ISO)</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input id="bRet" type="checkbox" class="toggle__input" checked />
+                <span class="toggle__label">Returns</span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle">
+                <input id="bAnon" type="checkbox" class="toggle__input" />
+                <span class="toggle__label">Anon customers</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-hint" style="margin-top:10px;">
+          Presets map to processed files: <span class="mono">variant_&lt;granularity&gt;_ret&lt;0|1&gt;_anon&lt;0|1&gt;.json</span>
+        </div>
+      </div>
+
+      <div class="panel__section">
+        <div class="section__title">Data</div>
+        <div class="form-hint">
+          The simulator reads only processed JSON.
+          If you see “Dataset not found”, put the CSV at
+          <span class="mono">simulators/retail-retention/data/raw/online_retail_ii.csv</span>
+          and run:
+          <span class="mono">python3 scripts/retail_preprocess.py --input simulators/retail-retention/data/raw/online_retail_ii.csv --out simulators/retail-retention/data/processed</span>.
+          See <a href="./DATASET.md">DATASET.md</a>.
+        </div>
+      </div>
+    </aside>
+
+    <main class="panel panel--right">
+      <section id="exploreView" class="grid">
+        <div class="card card--sanity">
+          <div class="card__header">
+            <div class="card__title">Sanity checks (10)</div>
+            <div id="metaLine" class="card__meta mono">—</div>
+          </div>
+          <div id="sanityList" class="sanity"></div>
+        </div>
+
+        <div class="card card--heat card--heat1">
+          <div class="card__header">
+            <div class="card__title">Cohort retention (% customers)</div>
+            <div class="card__meta">Hover a cell for exact values</div>
+          </div>
+          <div class="heatmap-wrap">
+            <canvas id="heatCustomers" class="heatmap"></canvas>
+          </div>
+          <div id="tipCustomers" class="tooltip hidden"></div>
+        </div>
+
+        <div class="card card--heat card--heat2">
+          <div class="card__header">
+            <div class="card__title">Revenue retention (% of cohort revenue)</div>
+            <div class="card__meta">Clamped to 0..100 for stability</div>
+          </div>
+          <div class="heatmap-wrap">
+            <canvas id="heatRevenue" class="heatmap"></canvas>
+          </div>
+          <div id="tipRevenue" class="tooltip hidden"></div>
+        </div>
+
+        <div class="card card--table">
+          <div class="card__header">
+            <div class="card__title">RFM segments</div>
+            <div class="card__meta">Customers · Revenue · AOV · Repeat rate</div>
+          </div>
+          <div class="split">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Segment</th>
+                    <th class="right mono">Customers</th>
+                    <th class="right mono">Revenue</th>
+                    <th class="right mono">AOV</th>
+                    <th class="right mono">Repeat</th>
+                  </tr>
+                </thead>
+                <tbody id="segmentBody"></tbody>
+              </table>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-title">Revenue by segment (top)</div>
+              <canvas id="barSegments" class="bar"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="compareView" class="grid hidden">
+        <div class="card card--compareSummary">
+          <div class="card__header">
+            <div class="card__title">Delta summary (B − A)</div>
+            <div id="compareMeta" class="card__meta mono">—</div>
+          </div>
+          <div id="deltaGrid" class="delta"></div>
+        </div>
+
+        <div class="card card--heat card--heat1">
+          <div class="card__header">
+            <div class="card__title">A: Cohort retention (% customers)</div>
+            <div id="aMeta" class="card__meta mono">—</div>
+          </div>
+          <div class="heatmap-wrap">
+            <canvas id="heatCustomersA" class="heatmap"></canvas>
+          </div>
+          <div id="tipCustomersA" class="tooltip hidden"></div>
+        </div>
+
+        <div class="card card--heat card--heat2">
+          <div class="card__header">
+            <div class="card__title">B: Cohort retention (% customers)</div>
+            <div id="bMeta" class="card__meta mono">—</div>
+          </div>
+          <div class="heatmap-wrap">
+            <canvas id="heatCustomersB" class="heatmap"></canvas>
+          </div>
+          <div id="tipCustomersB" class="tooltip hidden"></div>
+        </div>
+      </section>
+
+      <section id="missingData" class="missing hidden" aria-live="polite">
+        <div class="missing__title">Dataset not found</div>
+        <div class="missing__body">
+          <p>This simulator cannot run preprocessing in the browser (GitHub Pages). Please:</p>
+          <ol>
+            <li>Download Kaggle dataset “Online Retail II (UCI)” as CSV.</li>
+            <li>Save it to <span class="mono">simulators/retail-retention/data/raw/online_retail_ii.csv</span></li>
+            <li>Run the command below:</li>
+            <li>Refresh this page.</li>
+          </ol>
+          <pre class="cmd mono">python3 scripts/retail_preprocess.py --input simulators/retail-retention/data/raw/online_retail_ii.csv --out simulators/retail-retention/data/processed</pre>
+          <p class="muted">
+            If you already generated JSON, make sure the folder
+            <span class="mono">simulators/retail-retention/data/processed/</span>
+            contains <span class="mono">variant_*.json</span>.
+          </p>
+          <p class="muted">See <a href="./DATASET.md">DATASET.md</a> for the exact Kaggle download steps.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./assets/ui.js"></script>
+</body>
+</html>
+
