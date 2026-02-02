@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Warehouse Ops Simulator (Live)</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__links">
+      <a href="./about/">← Описание</a>
+      <a href="/simulators/">Симуляторы</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="panel panel--left">
+      <h1 class="panel__title">Warehouse Ops Simulator (Live)</h1>
+      <div class="panel__subtitle">Discrete-time (1 min) · queues · capacities · carrier windows · deterministic seed</div>
+
+      <div id="status" class="status hidden"></div>
+
+      <div class="panel__section">
+        <div class="section__title">Controls</div>
+        <div class="btn-row">
+          <button id="btnPlay" class="btn btn--primary" type="button">Play</button>
+          <button id="btnPause" class="btn btn--secondary hidden" type="button">Pause</button>
+          <button id="btnStep" class="btn" type="button">Step</button>
+          <button id="btnReset" class="btn" type="button">Reset</button>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label" for="speedSelect">Speed</label>
+          <select id="speedSelect" class="form-select">
+            <option value="1">1x</option>
+            <option value="4">4x</option>
+            <option value="20">20x</option>
+            <option value="max">Max</option>
+          </select>
+          <div class="form-hint">Rendering is throttled (stable UI, faster sim).</div>
+        </div>
+      </div>
+
+      <div class="panel__section">
+        <div class="section__title">Scenario</div>
+        <div class="form-group">
+          <label class="form-label" for="scenarioSelect">Scenario</label>
+          <select id="scenarioSelect" class="form-select"><option>Loading…</option></select>
+          <div id="scenarioDesc" class="form-hint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="seedInput">Seed</label>
+          <input id="seedInput" class="form-input mono" type="number" min="1" value="1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="horizonInput">Horizon (minutes)</label>
+          <input id="horizonInput" class="form-input mono" type="number" min="60" step="60" value="1440" />
+        </div>
+      </div>
+
+      <div class="panel__section">
+        <div class="section__title">Demand & SLA</div>
+        <div class="form-group">
+          <label class="form-label" for="arrivalInput">Arrival rate (orders/hour)</label>
+          <input id="arrivalInput" class="form-input mono" type="number" min="0" step="1" value="30" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="slaInput">SLA (hours)</label>
+          <input id="slaInput" class="form-input mono" type="number" min="1" step="1" value="24" />
+        </div>
+      </div>
+
+      <div class="panel__section">
+        <div class="section__title">Staff (capacities)</div>
+        <div class="form-group">
+          <label class="form-label" for="wInbound">Inbound workers</label>
+          <input id="wInbound" class="form-input mono" type="number" min="0" step="1" value="3" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wStorage">Storage servers</label>
+          <input id="wStorage" class="form-input mono" type="number" min="0" step="1" value="2" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wPick">Pickers</label>
+          <input id="wPick" class="form-input mono" type="number" min="0" step="1" value="6" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wPack">Packers</label>
+          <input id="wPack" class="form-input mono" type="number" min="0" step="1" value="5" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wOutbound">Outbound loaders</label>
+          <input id="wOutbound" class="form-input mono" type="number" min="0" step="1" value="3" />
+        </div>
+      </div>
+
+      <details class="panel__section" open>
+        <summary class="section__title" style="cursor:pointer; user-select:none;">Process times (minutes)</summary>
+        <div class="form-group">
+          <label class="form-label" for="tInbound">Inbound mean</label>
+          <input id="tInbound" class="form-input mono" type="number" min="1" step="1" value="6" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tStorage">Storage mean</label>
+          <input id="tStorage" class="form-input mono" type="number" min="1" step="1" value="3" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tPick">Pick mean</label>
+          <input id="tPick" class="form-input mono" type="number" min="1" step="1" value="10" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tPack">Pack mean</label>
+          <input id="tPack" class="form-input mono" type="number" min="1" step="1" value="8" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tOutbound">Outbound mean</label>
+          <input id="tOutbound" class="form-input mono" type="number" min="1" step="1" value="5" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="jitterInput">Variability (±)</label>
+          <select id="jitterInput" class="form-select">
+            <option value="0.2">±20%</option>
+            <option value="0.4" selected>±40%</option>
+            <option value="0.6">±60%</option>
+          </select>
+          <div class="form-hint">Applied uniformly around the mean for all stages.</div>
+        </div>
+      </details>
+
+      <div class="panel__section">
+        <div class="section__title">WIP limits</div>
+        <div class="form-group">
+          <label class="form-label" for="storageCap">Storage WIP cap</label>
+          <input id="storageCap" class="form-input mono" type="number" min="0" step="10" value="180" />
+          <div class="form-hint">If cap is hit, upstream blocks into STORAGE.</div>
+        </div>
+      </div>
+
+      <details class="panel__section" open>
+        <summary class="section__title" style="cursor:pointer; user-select:none;">Carrier</summary>
+        <div class="form-group">
+          <label class="form-label" for="carrierMode">Mode</label>
+          <select id="carrierMode" class="form-select">
+            <option value="interval" selected>Interval</option>
+            <option value="windows">Fixed windows</option>
+          </select>
+        </div>
+        <div class="form-group" id="carrierIntervalGroup">
+          <label class="form-label" for="carrierInterval">Departure interval (min)</label>
+          <input id="carrierInterval" class="form-input mono" type="number" min="10" step="5" value="60" />
+        </div>
+        <div class="form-group hidden" id="carrierWindowsGroup">
+          <label class="form-label" for="carrierWindows">Windows (HH:MM, comma-separated)</label>
+          <input id="carrierWindows" class="form-input mono" type="text" value="09:00, 13:00, 18:00" />
+          <div class="form-hint">Evaluated as minutes-of-day, repeats every 24h.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="carrierCap">Capacity per departure</label>
+          <input id="carrierCap" class="form-input mono" type="number" min="0" step="10" value="120" />
+        </div>
+      </details>
+    </aside>
+
+    <main class="panel panel--right">
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi__k">Shipped</div><div id="kpiShipped" class="kpi__v mono">0</div></div>
+        <div class="kpi"><div class="kpi__k">Backlog</div><div id="kpiBacklog" class="kpi__v mono">0</div></div>
+        <div class="kpi"><div class="kpi__k">SLA breach</div><div id="kpiBreach" class="kpi__v mono">0.0%</div></div>
+        <div class="kpi"><div class="kpi__k">Avg lead time</div><div id="kpiLead" class="kpi__v mono">0m</div></div>
+        <div class="kpi"><div class="kpi__k">Util (pick)</div><div id="kpiUtilPick" class="kpi__v mono">0%</div></div>
+        <div class="kpi"><div class="kpi__k">Util (pack)</div><div id="kpiUtilPack" class="kpi__v mono">0%</div></div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card__title">Warehouse Map (Live)</div>
+          <div class="card__meta mono">t=<span id="clockT">0</span> / <span id="clockH">1440</span> min · bottleneck=<span id="clockB">—</span></div>
+          <div class="flow-wrap" style="margin-top:10px;">
+            <div id="flowMap" class="flow-map" aria-label="Warehouse flow map"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="./assets/ui.js"></script>
+</body>
+</html>
+

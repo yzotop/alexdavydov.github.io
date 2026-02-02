@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warehouse Ops Simulator (Live) — Описание — Alex Davydov</title>
+  <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+  <style>
+    .links-top { display:flex; gap: 12px; flex-wrap: wrap; margin: 1.2rem 0 1.6rem; }
+    .note { padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fafafa; color: #555; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Главная</a>
+      <span>→</span>
+      <a href="/simulators/">Симуляторы</a>
+      <span>→</span>
+      <a href="../">Warehouse Ops Simulator (Live)</a>
+      <span>→</span>
+      <span>Описание</span>
+    </div>
+
+    <div class="links-top">
+      <a href="../" class="link-button">Открыть симулятор →</a>
+      <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+    </div>
+
+    <h1>Warehouse Ops Simulator (Live) — Описание</h1>
+    <p class="lead">
+      2D, event-driven симуляция операций склада во времени: очереди, мощности (workers/servers), WIP-лимиты и окна/интервалы отгрузки перевозчика.
+      Дискретная модель: <strong>1 тик = 1 минута</strong>. Симуляция детерминированна по <strong>seed</strong>.
+    </p>
+
+    <div class="section">
+      <h2 class="section-title">Что симулируем</h2>
+      <div class="section-content">
+        <p><strong>Поток заказа</strong> проходит зоны:</p>
+        <ul>
+          <li><code>INBOUND → STORAGE → PICK → PACK → OUTBOUND → CARRIER</code></li>
+        </ul>
+        <p>У каждой зоны есть очередь (WIP) и ограничение по мощности (сколько заказов может обрабатываться параллельно).</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Как читать “Arena”</h2>
+      <div class="section-content">
+        <ul>
+          <li>Прямоугольники — зоны процесса, подпись показывает текущий WIP (queue + in-service).</li>
+          <li>Точки — заказы (сэмпл для скорости). Цвет = текущая зона.</li>
+          <li>Красное кольцо — заказ уже “late” (текущее время &gt; SLA deadline).</li>
+          <li>Стрелки показывают направление потока; если WIP растёт в зоне — это симптом bottleneck.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Метрики</h2>
+      <div class="section-content">
+        <ul>
+          <li><strong>Shipped</strong> — отгружено заказовU</li>
+          <li><strong>Backlog</strong> — создано минус отгружено</li>
+          <li><strong>SLA breach %</strong> — доля отгруженных после дедлайна</li>
+          <li><strong>Avg lead time</strong> — среднее время от создания до отгрузки</li>
+          <li><strong>Utilization</strong> — занятость пулов (pick/pack) = busy / capacity</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Эксперименты</h2>
+      <div class="section-content">
+        <ul>
+          <li>Сделайте <strong>pickers</strong> меньше → посмотрите рост WIP в PICK и увеличение lead time.</li>
+          <li>Уменьшите <strong>carrier capacity</strong> → OUTBOUND станет хвостом, SLA ухудшится.</li>
+          <li>Задайте <strong>storage WIP cap</strong> сильно ниже → появятся блокировки “вверх по потоку”.</li>
+          <li>Сравните <strong>interval</strong> vs <strong>windows</strong> для перевозчика при том же объёме.</li>
+        </ul>
+        <div class="note">
+          Для воспроизводимости фиксируйте <code>seed</code> и изменения параметров; одинаковый seed даёт одинаковую траекторию при одинаковых настройках.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

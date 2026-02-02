@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario Planning &amp; P&amp;L Forecast — Описание — Alex Davydov</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            margin: 0 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .card-button:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/calculators/">Калькуляторы</a>
+            <span>→</span>
+            <a href="/calculators/scenario-planning/">Scenario Planning &amp; P&amp;L Forecast</a>
+            <span>→</span>
+            <span>Описание</span>
+        </div>
+
+        <h1>Scenario Planning &amp; P&amp;L Forecast — Описание</h1>
+        <p class="subtitle">Executive FP&amp;A калькулятор: как масштаб и шоки превращаются в Revenue → EBITDA → Net Profit.</p>
+
+        <h2>Что это</h2>
+        <p>
+            Это компактный сценарный калькулятор для стратегического обсуждения финансовых исходов.
+            Он помогает быстро сформировать “range” результатов и связать драйверы (спрос, цена, FX, логистика) с итоговыми KPI.
+        </p>
+
+        <h2>Что показывает</h2>
+        <ul>
+            <li><strong>Annualized KPI (run-rate)</strong> по выбранному сценарию: Revenue, EBITDA, Net Profit, Net Margin</li>
+            <li><strong>Месячную динамику</strong> на горизонте планирования: Revenue / EBITDA / Net Profit</li>
+            <li><strong>Сравнение сценариев</strong>: Base / Optimistic / Pessimistic через шоки demand/price/FX/freight</li>
+            <li><strong>Scale anchor</strong>: фиксированный пресет задаёт масштаб (implied annual revenue) для контекста</li>
+        </ul>
+
+        <h2>Как читать визуал</h2>
+        <ol>
+            <li><strong>Выберите сценарий</strong> — он станет “selected” для KPI.</li>
+            <li><strong>Смотрите на верхние карточки</strong> как на годовой run-rate по выбранному сценарию.</li>
+            <li><strong>Смотрите на графики</strong> как на месячную динамику: скорость и устойчивость эффекта.</li>
+            <li><strong>Сравнивайте линии</strong> между сценариями, чтобы зафиксировать диапазон исходов.</li>
+        </ol>
+
+        <h2>Параметры</h2>
+        <ul>
+            <li><strong>Scale preset</strong>: фиксирует масштаб бизнеса и baseline-контекст.</li>
+            <li><strong>Demand shock</strong>: объём (units).</li>
+            <li><strong>Price shock</strong>: уровень цены.</li>
+            <li><strong>FX shock</strong>: cost-side эффект на себестоимость.</li>
+            <li><strong>Freight shock</strong>: логистические расходы.</li>
+            <li><strong>Horizon</strong>: 12 / 24 / 36 месяцев.</li>
+        </ul>
+
+        <h2>Как сформирован датасет</h2>
+
+        <h3>Коротко: почему данные синтетические</h3>
+        <p>
+            В калькуляторе используется синтетический датасет: он не содержит реальных продаж, клиентов или цен.
+            Это сделано, чтобы безопасно демонстрировать механику executive FP&amp;A и причинно-следственные связи
+            Revenue → EBITDA → Net Profit без раскрытия коммерчески чувствительных данных.
+        </p>
+
+        <h3>Структура данных (Category × Country × Month)</h3>
+        <ul>
+            <li>Базовая единица наблюдения — агрегат по <strong>категории</strong> и <strong>стране</strong> на <strong>месяц</strong>.</li>
+            <li>Для каждой пары Category×Country строится история и затем прогноз на горизонте 12/24/36 месяцев.</li>
+            <li>На уровне строки моделируются два ряда: <strong>units</strong> и <strong>price</strong>; выручка считается как <strong>Revenue = Units × Price</strong>.</li>
+        </ul>
+
+        <h3>Категории (обобщённый FMCG-набор)</h3>
+        <ul>
+            <li>Категории — обобщённые (например, «Category 01…10») и не содержат брендов, SKU или названий сетей.</li>
+            <li>Смысл: сохранить реалистичность структуры портфеля без привязки к конкретной индустрии или компании.</li>
+        </ul>
+
+        <h3>Страны и FX-логика</h3>
+        <ul>
+            <li>Страны — абстрактные («Country 01…10») и используются как источник неоднородности портфеля.</li>
+            <li><strong>FX влияет на cost-side</strong>: меняет себестоимость (через unit cost), а не выручку.</li>
+            <li>Смысл: отделить коммерческие драйверы (demand/price) от внешних факторов (FX) в P&amp;L.</li>
+        </ul>
+
+        <h3>Временная структура (месячная, без ML)</h3>
+        <ul>
+            <li>Гранулярность фиксирована: <strong>месяцы</strong>.</li>
+            <li>Горизонт — <strong>12 / 24 / 36</strong> месяцев; это сценарный FP&amp;A, а не высокочастотная симуляция.</li>
+            <li>Базовый прогноз строится простым устойчивым правилом (seasonal naive / median last K) — без машинного обучения.</li>
+        </ul>
+
+        <h3>Scale preset и baseline (implied annual revenue)</h3>
+        <ul>
+            <li><strong>Scale preset</strong> задаёт масштаб бизнеса и «якорь» для интерпретации результатов.</li>
+            <li>От масштаба выводится <strong>implied annual revenue</strong> — ориентир, который помогает читать годовые KPI как run-rate.</li>
+            <li>Важно: пресет задаёт контекст, а сценарии отвечают за «драйверы результата» (demand/price/FX/freight).</li>
+        </ul>
+
+        <h3>Упрощённая логика P&amp;L (что именно считается)</h3>
+        <ul>
+            <li><strong>Units</strong>: базовый объём, затем шок спроса (Demand shock).</li>
+            <li><strong>Price</strong>: базовый уровень, затем шок цены (Price shock).</li>
+            <li><strong>Revenue</strong>: Units × Price (не может быть отрицательной).</li>
+            <li><strong>COGS</strong>: Units × UnitCost; UnitCost задаётся как доля от цены и чувствителен к <strong>FX</strong> (cost-side).</li>
+            <li><strong>Freight</strong>: процент от COGS с шоком логистики/фрахта.</li>
+            <li><strong>OPEX</strong>: фиксированная часть + процент от выручки.</li>
+            <li><strong>EBITDA</strong>: Revenue − COGS − Freight − OPEX.</li>
+            <li><strong>Net Profit</strong>: упрощённый «below EBITDA» блок (финансирование и налог), чтобы видеть цепочку до чистой прибыли.</li>
+        </ul>
+
+        <h3>Осознанные ограничения модели</h3>
+        <ul>
+            <li>Это не заменяет бюджетирование «по статьям» и не претендует на точность ERP/консолидации.</li>
+            <li>Нет клиентской и SKU-гранулярности, нет промо/каннибализации, нет сложной логистики и оборотного капитала.</li>
+            <li>Цель — быстро и прозрачно показать, какие драйверы двигают P&amp;L, и каков диапазон исходов.</li>
+        </ul>
+
+        <h3>Как использовать калькулятор на собеседовании</h3>
+        <ul>
+            <li>Начните с масштаба (preset): проговорите, какой «порядок цифр» вы моделируете.</li>
+            <li>Сформулируйте 2–3 сценария: base / best / worst через demand/price/FX/freight.</li>
+            <li>Сравните, что сильнее влияет на итог: коммерческие драйверы (demand/price) или cost-side (FX/freight/OPEX).</li>
+            <li>Сделайте выводы в терминах управления: какие рычаги приоритетнее и какой риск-фактор доминирует.</li>
+        </ul>
+
+        <h2>Какие управленческие решения поддерживает</h2>
+        <ul>
+            <li><strong>Коммуникация ожиданий</strong>: base/best/worst и диапазон исходов для руководства.</li>
+            <li><strong>Приоритизация рычагов</strong>: что доминирует в эффекте — спрос, цена, FX или логистика.</li>
+            <li><strong>Stress test</strong>: устойчивость плана при ухудшении внешних условий.</li>
+            <li><strong>Согласование инициатив</strong>: привязка коммерческих и операционных действий к финансовому результату.</li>
+        </ul>
+
+        <div class="btn-row">
+            <a href="/calculators/scenario-planning/" class="card-button">Открыть калькулятор →</a>
+            <a href="/calculators/" class="card-button btn-secondary">Назад к калькуляторам</a>
+        </div>
+    </div>
+</body>
+</html>
+

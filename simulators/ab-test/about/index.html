@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A/B Test Simulator (Live) — Описание — Alex Davydov</title>
+    <link rel="stylesheet" href="../../_assets/simulators-page.css" />
+    <link rel="stylesheet" href="about.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/simulators/">Симуляторы</a>
+            <span>→</span>
+            <a href="../">A/B Test Simulator (Live)</a>
+            <span>→</span>
+            <span>Описание</span>
+        </div>
+
+        <div class="links-top">
+            <a href="../" class="link-button">Открыть симулятор →</a>
+            <a href="/simulators/" class="link-button link-button--secondary">Назад к Симуляторам</a>
+        </div>
+
+        <h1>A/B Test Simulator (Live) — Описание</h1>
+        <p class="lead">
+            Живая симуляция A/B-теста во времени: пользователи приходят потоком, распределяются в Control и Test, генерируют события и деньги, а метрики и p-value “плывут” по мере накопления выборки.
+            Цель — увидеть не «ответ в конце», а динамику: как нестабильны uplift и p-value на ранних сэмплах и почему ошибки дизайна эксперимента делают выводы ненадёжными.
+        </p>
+
+        <div class="section">
+            <h2 class="section-title">Что показывает</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Поток пользователей</strong> во времени (Poisson arrivals) и накопление выборки по группам</li>
+                    <li><strong>Метрики в динамике</strong>: CTR, CR и ARPU для Control и Test</li>
+                    <li><strong>Uplift во времени</strong>: как “эффект” может менять знак и масштаб на ранних этапах</li>
+                    <li><strong>p-value во времени</strong> и сравнение с α: когда «значимость» появляется/исчезает</li>
+                    <li><strong>Останов</strong> по фиксированному горизонту или по правилам peeking (ранняя остановка)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Как читать визуал</h2>
+            <div class="section-content">
+                <p>
+                    Смотрите на три истории одновременно: (1) как растут выборки, (2) как стабилизируются метрики и uplift, (3) как ведёт себя p-value относительно α.
+                    На малых выборках шум и перекосы доминируют — линии “гуляют”. По мере роста выборки кривые обычно сглаживаются, но при peeking вы можете остановиться в случайной “удачной” точке, получив ложноположительный вывод.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Параметры</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Seed</strong>: фиксирует генерацию случайностей, чтобы сценарии воспроизводились</li>
+                    <li><strong>Arrivals per minute</strong>: интенсивность входящего трафика</li>
+                    <li><strong>Horizon users</strong>: фиксированный горизонт (когда тест “заканчивается”)</li>
+                    <li><strong>baseCTR, upliftCTR</strong>: базовый CTR и относительный uplift тестовой группы</li>
+                    <li><strong>imprRate</strong>: среднее число показов на пользователя</li>
+                    <li><strong>buyProb, revenue</strong>: вероятность покупки и распределение выручки (для CR/ARPU)</li>
+                    <li><strong>Metric / Stat test / α</strong>: выбор целевой метрики, теста и порога значимости</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Типовые ошибки</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Peeking (ранняя остановка)</strong>: частые “промежуточные взгляды” повышают шанс остановиться на случайной значимости</li>
+                    <li><strong>Imbalance (дисбаланс групп)</strong>: 60/40 или 70/30 снижает power и увеличивает разброс оценок</li>
+                    <li><strong>SUTVA / spillover</strong>: часть Control “ведёт себя как Test”, размывая эффект и создавая контаминацию</li>
+                    <li><strong>Aggregation mismatch</strong>: per-event vs per-user агрегации могут давать разные ответы для CTR</li>
+                    <li><strong>Wrong statistical test</strong>: несоответствие теста метрике/единице анализа искажает p-value и доверие к CI</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Идеи для экспериментов</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>Поймайте ложную значимость</strong>: включите peeking и уменьшите lookEveryUsers — как часто тест “успевает” остановиться?</li>
+                    <li><strong>Сравните дисбаланс</strong>: 50/50 vs 70/30 — как меняются скорость стабилизации и вероятность значимости?</li>
+                    <li><strong>Проверьте контаминацию</strong>: увеличьте spillover и наблюдайте, как эффект “растворяется”</li>
+                    <li><strong>CTR: unit-of-analysis</strong>: переключайте per-user vs per-event и сравните выводы</li>
+                    <li><strong>Выбор метрики</strong>: CTR vs ARPU — где больше шум и как это влияет на интерпретацию результатов?</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
