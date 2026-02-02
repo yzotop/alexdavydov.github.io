@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Lab Simulators — Alex Davydov</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+            padding: 3rem 1rem;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 0.5rem; }
+
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 1rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 3rem; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            align-items: stretch;
+        }
+
+        .card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 500; }
+
+        .card-badges {
+            display: inline-flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: -0.25rem 0 0.75rem;
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            line-height: 1.2;
+            border: 1px solid rgba(37, 99, 235, 0.22);
+            background: rgba(37, 99, 235, 0.06);
+            color: rgba(37, 99, 235, 0.92);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .card-text { color: #666; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
+        .sim-card__desc { line-height: 1.45; overflow-wrap: anywhere; word-break: break-word; }
+
+        .card-keyq {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 14px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .card-keyq strong { color: #333; font-weight: 600; }
+
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .sim-card__actions { margin-top: auto; padding-top: 12px; }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .card-button:hover { background: #1d4ed8; }
+
+        .btn-secondary { background: #fff; color: #2563eb; border: 1px solid #2563eb; }
+        .btn-secondary:hover { background: #eff6ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a>
+            <span>→</span>
+            <a href="/simulators/">Симуляторы</a>
+            <span>→</span>
+            <span>Lab</span>
+        </div>
+
+        <h1>Lab Simulators</h1>
+        <p class="subtitle">Экспериментальные интерактивные модели и “рабочие” прототипы.</p>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="sim-card__content">
+                    <h2 class="card-title">Aladdin-Lite: Portfolio Risk &amp; Copilot</h2>
+                    <div class="card-badges">
+                        <span class="card-badge">Risk</span>
+                        <span class="card-badge">Portfolio</span>
+                    </div>
+                    <p class="card-text sim-card__desc">
+                        Лёгкий прототип для оценки риска портфеля и стресс-сценариев.
+                    </p>
+                </div>
+                <div class="sim-card__actions">
+                    <div class="btn-row">
+                        <a href="./aladdin-lite/" class="card-button">Открыть →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

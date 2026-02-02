@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "baseline_stable",
+      "title": "baseline_stable",
+      "description": "Balanced flow, low breach rate, stable queues.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 30,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 6, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 10, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 180 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 120 }
+      }
+    },
+    {
+      "id": "demand_spike_30pct",
+      "title": "demand_spike_30pct",
+      "description": "Higher arrival rate with the same resources → backlog growth.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 39,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 6, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 10, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 180 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 120 }
+      }
+    },
+    {
+      "id": "pick_bottleneck",
+      "title": "pick_bottleneck",
+      "description": "Insufficient pickers → WIP piles up in PICK.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 30,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 3, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 11, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 180 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 120 }
+      }
+    },
+    {
+      "id": "carrier_bottleneck",
+      "title": "carrier_bottleneck",
+      "description": "Carrier capacity is too low → OUTBOUND queue grows, breaches increase.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 30,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 6, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 10, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 180 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 70 }
+      }
+    },
+    {
+      "id": "limited_storage_wip",
+      "title": "limited_storage_wip",
+      "description": "Storage buffer cap is tight → upstream blocks, throughput drops.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 30,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 6, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 10, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 60 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 120 }
+      }
+    },
+    {
+      "id": "faster_pickers_investment",
+      "title": "faster_pickers_investment",
+      "description": "Same headcount but faster picking → lower lead time & backlog.",
+      "config": {
+        "horizon_min": 1440,
+        "arrival_rate_per_hour": 30,
+        "sla_hours": 24,
+        "workers": { "inbound": 3, "storage": 2, "pick": 6, "pack": 5, "outbound": 3 },
+        "proc_min": {
+          "inbound_mean": 6, "inbound_jitter": 0.4,
+          "storage_mean": 3, "storage_jitter": 0.4,
+          "pick_mean": 7, "pick_jitter": 0.5,
+          "pack_mean": 8, "pack_jitter": 0.5,
+          "outbound_mean": 5, "outbound_jitter": 0.4
+        },
+        "limits": { "storage_wip_cap": 180 },
+        "carrier": { "mode": "interval", "interval_min": 60, "capacity_per_departure": 120 }
+      }
+    }
+  ]
+}
+
