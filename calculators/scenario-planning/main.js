@@ -136,6 +136,8 @@ function injectCssOnce(id, cssText) {
 injectCssOnce(
   "scenario-planning-kpi-sticky-css",
   `
+  :root { --stickyTop: calc(var(--kpiHeaderH, 0px) + 12px); }
+
   .kpiSticky {
     position: sticky;
     top: var(--topbar, 0px);
@@ -158,6 +160,24 @@ injectCssOnce(
   .kpiSub { font-size: 11px; opacity: .70; }
   .kpiSticky.isCompact .kpiSub { display: none; }
   .kpiSticky.isCompact .kpiCard { padding: 10px; }
+
+  .stickyCol {
+    position: sticky;
+    top: var(--stickyTop);
+    align-self: start;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .stickyColInner {
+    max-height: calc(100vh - var(--stickyTop) - 16px);
+    overflow: auto;
+  }
+  @media (max-width: 1023px) {
+    .stickyCol { position: static; max-height: none; overflow: visible; border: none; box-shadow: none; background: transparent; }
+    .stickyColInner { max-height: none; overflow: visible; }
+  }
   `
 );
 
@@ -374,6 +394,16 @@ function ScenarioPlanningApp() {
       document.documentElement.style.setProperty("--topbar", `${hh}px`);
     }
 
+    function setKpiHeaderH() {
+      if (sticky) {
+        const h = sticky.getBoundingClientRect().height;
+        document.documentElement.style.setProperty("--kpiHeaderH", `${Math.round(h)}px`);
+      }
+    }
+
+    const ro = typeof ResizeObserver !== "undefined" && sticky ? new ResizeObserver(() => setKpiHeaderH()) : null;
+    if (ro) ro.observe(sticky);
+
     let raf = 0;
     function onScroll() {
       if (raf) return;
@@ -383,14 +413,21 @@ function ScenarioPlanningApp() {
       });
     }
 
+    function onResize() {
+      applyTopbarVar();
+      setKpiHeaderH();
+    }
+
     applyTopbarVar();
+    setKpiHeaderH();
     onScroll();
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", applyTopbarVar);
+    window.addEventListener("resize", onResize);
     return () => {
+      if (ro && sticky) ro.unobserve(sticky);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", applyTopbarVar);
+      window.removeEventListener("resize", onResize);
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
@@ -861,8 +898,8 @@ function ScenarioPlanningApp() {
       howToRead,
       h("div", { className: "grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr_360px] items-start" }, [
         h("div", { key: "left", className: "space-y-4" }, [scaleCard, scenarioBuilder]),
-        h("div", { key: "mid", className: "space-y-4" }, charts),
-        h("div", { key: "right", className: "space-y-4" }, rightPanel),
+        h("div", { key: "mid", className: "stickyCol space-y-4" }, charts),
+        h("div", { key: "right", className: "stickyCol" }, h("div", { className: "stickyColInner space-y-4" }, rightPanel)),
       ]),
       h(
         "div",
