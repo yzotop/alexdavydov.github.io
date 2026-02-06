@@ -3,236 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карьерная поддержка — Alex Davydov</title>
+    <title>Разбор карьеры в аналитике — Alex Davydov</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: #1a1a1a;
             background-color: #ffffff;
         }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 1rem; }
+        .nav { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: space-between; }
+        .nav-left { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .back-link { display: inline-block; color: #666; text-decoration: none; font-size: 0.9rem; transition: color 0.2s ease; }
+        .back-link:hover { color: #1a1a1a; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 3rem 1rem;
-        }
+        header { margin-bottom: 2.5rem; }
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.75rem; color: #1a1a1a; }
+        .subtitle { font-size: 1rem; color: #666; margin-bottom: 1rem; line-height: 1.6; }
 
-        .nav {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .nav-left {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .back-link {
-            display: inline-block;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-
-        .back-link:hover {
-            color: #1a1a1a;
-        }
-
-        header {
-            margin-bottom: 3rem;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #666;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .insight {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        section {
-            margin-bottom: 3rem;
-        }
-
-        h2 {
-            font-size: 1.3rem;
-            font-weight: 400;
-            margin-bottom: 1.5rem;
-            color: #1a1a1a;
-        }
-
-        .how-work ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .how-work li {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .how-work li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #666;
-        }
-
-        .directions-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (min-width: 768px) {
-            .directions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .direction-card {
-            border: 1px solid #e8e8e8;
-            border-radius: 6px;
-            padding: 1.25rem;
+        .career-strip {
             background: #fafafa;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .direction-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            color: #1a1a1a;
-        }
-
-        .direction-tagline {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-
-        .direction-section {
+            border: 1px solid #e8e8e8;
+            border-left: 3px solid #888;
+            border-radius: 0 8px 8px 0;
+            padding: 0.55rem 1rem;
             margin-bottom: 1.25rem;
+            font-size: 0.88rem;
+            color: #555;
+            max-width: 100%;
         }
 
-        .direction-section-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #1a1a1a;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .direction-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .direction-section li {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #1a1a1a;
-            margin-bottom: 0.4rem;
-            padding-left: 1.25rem;
-            position: relative;
-        }
-
-        .direction-section li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #666;
-        }
-
-        .direction-button {
-            display: inline-block;
-            margin-top: auto;
-            padding: 0.75rem 1.5rem;
-            color: #1a1a1a;
+        .hero-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.7rem 1.4rem;
+            background: #1a1a1a;
+            color: #fff;
             text-decoration: none;
             font-size: 0.9rem;
             border: 1px solid #1a1a1a;
             border-radius: 4px;
-            text-align: center;
             transition: all 0.2s ease;
         }
-
-        .direction-button:hover {
-            background-color: #f0f0f0;
-            border-color: #666;
-        }
-
-        .examples-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 2rem;
-        }
-
-        .examples-table th {
-            text-align: left;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 0.75rem 1rem;
-            border-bottom: 2px solid #e8e8e8;
-        }
-
-        .examples-table td {
-            font-size: 0.9rem;
-            line-height: 1.6;
+        .btn-primary:hover { background: #333; }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.7rem 1.4rem;
+            background: #fff;
             color: #1a1a1a;
-            padding: 1rem;
-            border-bottom: 1px solid #e8e8e8;
-            vertical-align: top;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: all 0.2s ease;
         }
+        .btn-secondary:hover { background: #f5f5f5; border-color: #999; }
 
-        .examples-table tr:last-child td {
-            border-bottom: none;
+        .career-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.7rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
         }
+        .career-chip:hover { background: #e8e8e8; color: #333; }
 
-        .examples-table td:first-child {
-            color: #666;
-            font-style: italic;
-            width: 45%;
+        .copy-tooltip {
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.3rem 0.6rem;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 0.72rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 400;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+            z-index: 100;
         }
+        .copy-tooltip.show { opacity: 1; }
 
-        .examples-table td:last-child {
-            width: 55%;
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.3rem; font-weight: 400; margin-bottom: 1.5rem; color: #1a1a1a; }
+
+        .directions-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 0; }
+        @media (min-width: 640px) { .directions-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 900px) { .directions-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .direction-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
+        .direction-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 8px 0 0 8px;
+        }
+        .direction-card.card-ic::before { background: #d0d8e8; }
+        .direction-card.card-exec::before { background: #e8e0d8; }
+        .direction-card.card-results::before { background: #d8e8d8; }
+
+        .career-badge {
+            position: absolute;
+            top: 0.9rem;
+            right: 0.9rem;
+            padding: 0.2rem 0.5rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .direction-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; color: #1a1a1a; padding-right: 3rem; }
+        .direction-label { font-size: 0.7rem; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; margin-top: 0.75rem; }
+        .direction-label:first-of-type { margin-top: 0; }
+        .direction-text { font-size: 0.85rem; color: #1a1a1a; line-height: 1.5; }
+        .direction-bullets { list-style: none; padding-left: 0; margin-bottom: 0; margin-top: 0.35rem; }
+        .direction-bullets li { font-size: 0.82rem; line-height: 1.55; color: #1a1a1a; margin-bottom: 0.25rem; padding-left: 0.9rem; position: relative; }
+        .direction-bullets li:before { content: "•"; position: absolute; left: 0; color: #bbb; }
+        .direction-spacer { flex-grow: 1; min-height: 1rem; }
+        .direction-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.6rem 1.1rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.2s ease;
+            align-self: flex-start;
+        }
+        .direction-button:hover { background-color: #f0f0f0; border-color: #666; }
+
+        .solvery-callout {
+            background: #fcfcfc;
+            border: 1px solid #e8e8e8;
+            border-left: 3px solid #a3d9a5;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 2rem 0 3rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .solvery-content { flex: 1; min-width: 200px; }
+        .solvery-title { font-size: 0.95rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.2rem; }
+        .solvery-subtitle { font-size: 0.85rem; color: #666; line-height: 1.4; }
+        .solvery-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            color: #555;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .solvery-link:hover { background: #f5f5f5; color: #1a1a1a; border-color: #999; }
+        .solvery-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .when-useful ul { list-style: none; padding-left: 0; }
+        .when-useful li { font-size: 0.95rem; line-height: 1.7; color: #1a1a1a; margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .when-useful li:before { content: "•"; position: absolute; left: 0; color: #666; }
+
+        .examples-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+        .examples-table th { text-align: left; font-size: 0.85rem; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.75rem 1rem; border-bottom: 2px solid #e8e8e8; }
+        .examples-table td { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; padding: 1rem; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+        .examples-table tr:last-child td { border-bottom: none; }
+        .examples-table td:first-child { color: #666; font-style: italic; width: 40%; }
+        .examples-table td:last-child { width: 60%; }
+
+        .how-verify { margin-top: 1.5rem; padding: 1rem 1.25rem; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px; }
+        .how-verify-title { font-size: 0.9rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.75rem; }
+        .how-verify ul { list-style: none; padding-left: 0; }
+        .how-verify li { font-size: 0.88rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 0.4rem; padding-left: 1.25rem; position: relative; }
+        .how-verify li:before { content: "•"; position: absolute; left: 0; color: #666; }
+
+        .companies-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.5rem;
+            background: #fafafa;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+        .companies-card h2 { margin-bottom: 1rem; }
+        .companies-card ul { list-style: none; padding-left: 0; margin-bottom: 1.25rem; }
+        .companies-card li { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 0.5rem; padding-left: 1.25rem; position: relative; }
+        .companies-card li:before { content: "•"; position: absolute; left: 0; color: #666; }
 
         .contact-section {
             max-width: 700px;
@@ -242,97 +235,65 @@
             border: 1px solid #e8e8e8;
             border-radius: 6px;
         }
+        .contact-section h2 { margin-bottom: 0.75rem; }
+        .contact-intro { font-size: 0.95rem; color: #1a1a1a; margin-bottom: 1rem; font-weight: 500; }
 
-        .contact-section h2 {
+        .contact-template {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 0.9rem 1rem;
             margin-bottom: 1rem;
-        }
-
-        .contact-section > p {
-            font-size: 0.95rem;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+            font-size: 0.82rem;
             line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
+            color: #555;
         }
-
-        .contact-points {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 1.5rem;
+        .contact-template-row { margin-bottom: 0.15rem; }
+        .contact-template-row:last-child { margin-bottom: 0; }
+        .contact-template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
         }
-
-        .contact-points li {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
+        .contact-template-label {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .copy-template-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.5rem;
+            background: transparent;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 0.72rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.15s ease;
             position: relative;
         }
+        .copy-template-btn:hover { background: #fff; border-color: #999; color: #333; }
 
-        .contact-points li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #666;
-        }
+        .contact-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .contact-disclaimer { font-size: 0.8rem; color: #888; }
 
-        .contact-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .contact-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            color: #1a1a1a;
-            text-decoration: none;
-            font-size: 0.9rem;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .contact-button:hover {
-            background-color: #f0f0f0;
-            border-color: #666;
-        }
-
-        .footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e8e8e8;
-        }
-
-        .footer-link {
-            display: inline-block;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-            margin-bottom: 2rem;
-        }
-
-        .footer-link:hover {
-            color: #1a1a1a;
-        }
-
-        .footer-note {
-            font-size: 0.9rem;
-            color: #666;
-            font-style: italic;
-            margin-top: 2rem;
-        }
+        .footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e8e8e8; }
+        .footer-link { display: inline-block; color: #666; text-decoration: none; font-size: 0.9rem; transition: color 0.2s ease; }
+        .footer-link:hover { color: #1a1a1a; }
 
         @media (max-width: 767px) {
-            .examples-table {
-                font-size: 0.85rem;
-            }
-
-            .examples-table th,
-            .examples-table td {
-                padding: 0.75rem 0.5rem;
-            }
+            .examples-table { font-size: 0.85rem; }
+            .examples-table th, .examples-table td { padding: 0.75rem 0.5rem; }
+            .career-badge { top: 0.7rem; right: 0.7rem; font-size: 0.6rem; }
+            .direction-title { padding-right: 2.5rem; font-size: 0.95rem; }
+            .contact-template { font-size: 0.78rem; }
         }
     </style>
 </head>
@@ -345,93 +306,91 @@
         </nav>
 
         <header>
-            <h1>Карьерная поддержка</h1>
-            <p class="subtitle">Упаковка опыта в аргументы: решения, ответственность, trade-offs.</p>
-            <p class="insight">Фокус — на ясности и структуре, а не на шаблонах.</p>
+            <h1>Разбор карьеры в аналитике</h1>
+            <p class="subtitle">Упаковываем опыт в решения: кейсы, метрики, trade-offs.<br>Готовим к интервью и росту до Lead/Head.</p>
+            <div class="career-strip">Фокус: кейсы → решения → narrative. Без воды и шаблонов.</div>
+            <div class="hero-buttons">
+                <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Профиль Solvery (18 отзывов) ↗</a>
+                <span class="career-chip" data-copy="@DataLake">@DataLake<span class="copy-tooltip">Скопировано</span></span>
+            </div>
         </header>
 
         <main>
-            <section class="how-work">
-                <h2>Как я работаю</h2>
-                <ul>
-                    <li>сначала вытаскиваем реальные решения и контекст</li>
-                    <li>затем строим narrative и структуру кейсов</li>
-                    <li>затем упаковываем под конкретную роль</li>
-                    <li>затем тренируем ответы и слабые места</li>
-                </ul>
-            </section>
-
             <section>
-                <h2>Два направления</h2>
+                <h2>Направления</h2>
                 <div class="directions-grid">
-                    <div class="direction-card">
-                        <div class="direction-title">Разбор для аналитиков (IC)</div>
-                        <div class="direction-tagline">Для product/data аналитиков, которые растут или меняют трек.</div>
+                    <div class="direction-card card-ic">
+                        <span class="career-badge">IC</span>
+                        <div class="direction-title">Карьерный разбор (IC)</div>
                         
-                        <div class="direction-section">
-                            <div class="direction-section-title">Когда полезно</div>
-                            <ul>
-                                <li>переход в продуктовую аналитику</li>
-                                <li>рост до лида/хэда</li>
-                                <li>сильный опыт, который «не звучит»</li>
-                            </ul>
-                        </div>
-
-                        <div class="direction-section">
-                            <div class="direction-section-title">Что делаем</div>
-                            <ul>
-                                <li>разбираем целевую роль и контекст</li>
-                                <li>вытаскиваем управленческие решения</li>
-                                <li>упаковываем опыт в аргументы</li>
-                                <li>готовим кейсы для интервью</li>
-                            </ul>
-                        </div>
-
-                        <div class="direction-section">
-                            <div class="direction-section-title">Результат</div>
-                            <ul>
-                                <li>ясная narrative-линия и позиционирование</li>
-                                <li>структурные ответы и уверенность</li>
-                            </ul>
-                        </div>
-
-                        <a href="/career/index.html#contact" class="direction-button">Записаться →</a>
+                        <div class="direction-label">Кому</div>
+                        <div class="direction-text">Junior → Senior, переход в продукт</div>
+                        
+                        <div class="direction-label">Результат</div>
+                        <ul class="direction-bullets">
+                            <li>структура кейсов: контекст → impact</li>
+                            <li>упаковка влияния и ответственности</li>
+                        </ul>
+                        
+                        <div class="direction-spacer"></div>
+                        <a href="#contact" class="direction-button">Разобрать мой кейс →</a>
                     </div>
 
-                    <div class="direction-card">
-                        <div class="direction-title">Executive career review</div>
-                        <div class="direction-tagline">Для Lead / Head / C-level: позиционирование решений и ответственности.</div>
+                    <div class="direction-card card-exec">
+                        <span class="career-badge">Lead/Head</span>
+                        <div class="direction-title">Executive review</div>
                         
-                        <div class="direction-section">
-                            <div class="direction-section-title">Когда полезно</div>
-                            <ul>
-                                <li>переход lead → head или head → C-level</li>
-                                <li>сложные интервью на управленческие роли</li>
-                                <li>ответственность за деньги/эксперименты/риски</li>
-                            </ul>
-                        </div>
+                        <div class="direction-label">Кому</div>
+                        <div class="direction-text">Lead/Head/C-level, зона влияния</div>
+                        
+                        <div class="direction-label">Результат</div>
+                        <ul class="direction-bullets">
+                            <li>narrative: система, а не задачи</li>
+                            <li>интервью с CPO / CEO</li>
+                        </ul>
+                        
+                        <div class="direction-spacer"></div>
+                        <a href="/career/executive/index.html" class="direction-button">Executive review →</a>
+                    </div>
 
-                        <div class="direction-section">
-                            <div class="direction-section-title">Что делаем</div>
-                            <ul>
-                                <li>разбираем управленческие решения и контекст</li>
-                                <li>вытаскиваем зону влияния и границы ответственности</li>
-                                <li>упаковываем опыт в аргументы уровня системы</li>
-                                <li>отрабатываем trade-offs и сложные ситуации</li>
-                            </ul>
-                        </div>
-
-                        <div class="direction-section">
-                            <div class="direction-section-title">Результат</div>
-                            <ul>
-                                <li>управленческая ясность и narrative-линия</li>
-                                <li>структурные ответы на уровне системы</li>
-                            </ul>
-                        </div>
-
-                        <a href="/career/executive/index.html" class="direction-button">Перейти</a>
+                    <div class="direction-card card-results">
+                        <span class="career-badge">Факты</span>
+                        <div class="direction-title">Результаты менторства</div>
+                        
+                        <div class="direction-label">Что внутри</div>
+                        <div class="direction-text">Факты, кейсы, где работают студенты</div>
+                        
+                        <div class="direction-label">Коротко</div>
+                        <ul class="direction-bullets">
+                            <li>18+ отзывов Solvery</li>
+                            <li>переходы в продукт/лидство</li>
+                        </ul>
+                        
+                        <div class="direction-spacer"></div>
+                        <a href="/career/results/" class="direction-button">Посмотреть →</a>
                     </div>
                 </div>
+            </section>
+
+            <div class="solvery-callout">
+                <div class="solvery-content">
+                    <div class="solvery-title">Solvery: 18 подтверждённых отзывов</div>
+                    <div class="solvery-subtitle">Про собеседования, карьерный рост и упаковку кейсов.</div>
+                </div>
+                <div class="solvery-actions">
+                    <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="solvery-link">Профиль Solvery ↗</a>
+                </div>
+            </div>
+
+            <section class="when-useful">
+                <h2>Когда это особенно полезно</h2>
+                <ul>
+                    <li>готовитесь к смене уровня или компании</li>
+                    <li>опыт есть, но он «не продаётся» на собеседованиях</li>
+                    <li>хотите перейти в продукт, монетизацию или лидство</li>
+                    <li>собеседования проходят, офферов нет</li>
+                </ul>
             </section>
 
             <section>
@@ -457,39 +416,94 @@
                             <td>Управлял давлением и устойчивостью; балансировал revenue и продукт</td>
                         </tr>
                         <tr>
-                            <td>Работал с продуктом</td>
-                            <td>Проектировал метрики и системы принятия решений; строил границы ответственности</td>
-                        </tr>
-                        <tr>
                             <td>Руководил командой</td>
                             <td>Выстраивал процессы и управлял рисками; брал ответственность за решения</td>
                         </tr>
-                        <tr>
-                            <td>Улучшал метрики</td>
-                            <td>Изменял системы через эксперименты; объяснял компромиссы и последствия</td>
-                        </tr>
                     </tbody>
                 </table>
+
+                <div class="how-verify">
+                    <div class="how-verify-title">Как проверяем</div>
+                    <ul>
+                        <li>Разбор реальных кейсов и решений (context → decision → trade-offs)</li>
+                        <li>Мок-интервью и отработка сложных вопросов</li>
+                        <li>План усиления: что подтянуть за 2–4 недели</li>
+                    </ul>
+                </div>
             </section>
+
+            <div class="companies-card">
+                <h2>Для компаний</h2>
+                <ul>
+                    <li>Диагностика конфликтов метрик и систем принятия решений</li>
+                    <li>Эксперименты, guardrails, ответственность, trade-offs</li>
+                </ul>
+                <a href="/companies/" class="direction-button">Обсудить задачу →</a>
+            </div>
 
             <section id="contact" class="contact-section">
                 <h2>Контакт</h2>
-                <p>Коротко опишите роль, цель и контекст. Я отвечу, подойдёт ли формат и что лучше сделать.</p>
-                <ul class="contact-points">
-                    <li>Целевая роль / уровень</li>
-                    <li>Что хотите улучшить: резюме / кейсы / интервью / позиционирование</li>
-                </ul>
-                <div class="contact-buttons">
-                    <a href="#" class="contact-button">Написать в Telegram</a>
-                    <a href="#" class="contact-button">Запросить разбор</a>
+                <p class="contact-intro">Напишите 3 пункта — отвечу, какой формат лучше и с чего начать.</p>
+                
+                <div class="contact-template">
+                    <div class="contact-template-header">
+                        <span class="contact-template-label">Шаблон сообщения</span>
+                        <button class="copy-template-btn" id="copyTemplateBtn">Скопировать<span class="copy-tooltip">Скопировано</span></button>
+                    </div>
+                    <div class="contact-template-row">Роль/уровень: ...</div>
+                    <div class="contact-template-row">Цель: ...</div>
+                    <div class="contact-template-row">Контекст: домен, компания, ограничения ...</div>
                 </div>
+                
+                <div class="contact-buttons">
+                    <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                    <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Solvery ↗</a>
+                    <span class="career-chip" data-copy="@DataLake">@DataLake<span class="copy-tooltip">Скопировано</span></span>
+                </div>
+                <div class="contact-disclaimer">Обычно отвечаю в течение дня.</div>
             </section>
         </main>
 
         <footer class="footer">
             <a href="/index.html" class="footer-link">← На главную</a>
-            <p class="footer-note">Сильный опыт не продаёт себя сам. Его нужно правильно структурировать.</p>
         </footer>
     </div>
+
+    <script>
+    (function() {
+        function copyToClipboard(text, anchorEl) {
+            navigator.clipboard.writeText(text).then(function() {
+                var tooltip = anchorEl.querySelector('.copy-tooltip');
+                if (tooltip) {
+                    tooltip.classList.add('show');
+                    setTimeout(function() {
+                        tooltip.classList.remove('show');
+                    }, 1200);
+                }
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+            });
+        }
+
+        // Handle career-chip clicks
+        document.querySelectorAll('.career-chip[data-copy]').forEach(function(chip) {
+            chip.addEventListener('click', function(e) {
+                e.preventDefault();
+                var text = chip.getAttribute('data-copy');
+                copyToClipboard(text, chip);
+            });
+        });
+
+        // Handle template copy button
+        var templateBtn = document.getElementById('copyTemplateBtn');
+        if (templateBtn) {
+            templateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var templateText = 'Роль/уровень: ...\nЦель: ...\nКонтекст: домен, компания, ограничения ...';
+                copyToClipboard(templateText, templateBtn);
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты менторства — Alex Davydov</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #ffffff;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 1rem; }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .breadcrumbs a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .breadcrumbs a:hover { color: #1a1a1a; }
+        .breadcrumbs span { color: #bbb; }
+        .breadcrumbs-current { color: #1a1a1a; }
+
+        /* Hero */
+        .hero { margin-bottom: 2.5rem; }
+        .hero h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.75rem; color: #1a1a1a; }
+        .hero-subtitle { font-size: 1.05rem; color: #666; margin-bottom: 1.5rem; line-height: 1.6; }
+        .hero-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 2rem; }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.7rem 1.4rem;
+            background: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.7rem 1.4rem;
+            background: #fff;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { background: #f5f5f5; border-color: #999; }
+
+        /* KPI Cards */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        @media (min-width: 600px) { .kpi-strip { grid-template-columns: repeat(4, 1fr); } }
+        .kpi-card {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+        .kpi-value { font-size: 1.4rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.2rem; }
+        .kpi-label { font-size: 0.78rem; color: #888; line-height: 1.4; }
+
+        /* Sections */
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.3rem; font-weight: 400; margin-bottom: 0.5rem; color: #1a1a1a; }
+        .section-subtitle { font-size: 0.9rem; color: #666; margin-bottom: 1.5rem; }
+
+        /* Facts Grid */
+        .facts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem 2rem;
+        }
+        @media (min-width: 600px) { .facts-grid { grid-template-columns: repeat(2, 1fr); } }
+        .facts-grid li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #1a1a1a;
+            padding-left: 1.25rem;
+            position: relative;
+            list-style: none;
+        }
+        .facts-grid li:before { content: "•"; position: absolute; left: 0; color: #888; }
+
+        /* Companies Grid */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 500px) { .companies-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 768px) { .companies-grid { grid-template-columns: repeat(4, 1fr); } }
+        .company-card {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+        .company-name { font-size: 0.95rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.25rem; }
+        .company-roles { font-size: 0.78rem; color: #888; }
+        .companies-disclaimer {
+            font-size: 0.78rem;
+            color: #999;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* Scenarios Grid */
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        @media (min-width: 768px) { .scenarios-grid { grid-template-columns: repeat(3, 1fr); } }
+        .scenario-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+            background: #fafafa;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .scenario-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 8px 0 0 8px;
+        }
+        .scenario-card.scenario-junior::before { background: #d8e0d8; }
+        .scenario-card.scenario-middle::before { background: #d0d8e8; }
+        .scenario-card.scenario-senior::before { background: #e8e0d8; }
+        .scenario-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
+        .scenario-title { font-size: 1rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.6rem; }
+        .scenario-bullets { list-style: none; padding-left: 0; margin: 0; }
+        .scenario-bullets li {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #555;
+            padding-left: 0.9rem;
+            position: relative;
+            margin-bottom: 0.25rem;
+        }
+        .scenario-bullets li:before { content: "•"; position: absolute; left: 0; color: #bbb; }
+
+        /* Quotes Grid */
+        .quotes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        @media (min-width: 768px) { .quotes-grid { grid-template-columns: repeat(3, 1fr); } }
+        .quote-card {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .quote-text {
+            font-size: 0.9rem;
+            color: #1a1a1a;
+            line-height: 1.6;
+            margin-bottom: auto;
+            padding-bottom: 0.75rem;
+            font-style: italic;
+        }
+        .quote-text::before { content: '"'; }
+        .quote-text::after { content: '"'; }
+        .quote-source {
+            font-size: 0.78rem;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 0.75rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .cta-title { font-size: 1.25rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.5rem; }
+        .cta-subtitle { font-size: 0.95rem; color: #666; margin-bottom: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+
+        /* Footer */
+        .footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e8e8e8; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .footer-link { display: inline-block; color: #666; text-decoration: none; font-size: 0.9rem; transition: color 0.2s ease; }
+        .footer-link:hover { color: #1a1a1a; }
+
+        @media (max-width: 767px) {
+            .scenario-card { padding: 1rem 1rem 1rem 1.25rem; }
+            .cta-section { padding: 1.5rem; }
+            .kpi-value { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumbs">
+            <a href="/index.html">Главная</a>
+            <span>→</span>
+            <a href="/career/">Карьера</a>
+            <span>→</span>
+            <span class="breadcrumbs-current">Результаты</span>
+        </nav>
+
+        <header class="hero">
+            <h1>Результаты менторства</h1>
+            <p class="hero-subtitle">Агрегированные результаты карьерного менторства аналитиков.<br>Только подтверждённые кейсы, публичные отзывы и обезличенные данные.</p>
+            <div class="hero-buttons">
+                <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Профиль Solvery ↗</a>
+            </div>
+
+            <div class="kpi-strip">
+                <div class="kpi-card">
+                    <div class="kpi-value">18+</div>
+                    <div class="kpi-label">подтверждённых отзывов на Solvery</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">300+</div>
+                    <div class="kpi-label">часов менторства</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">2019–2025</div>
+                    <div class="kpi-label">опыт работы</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">Junior→Lead</div>
+                    <div class="kpi-label">фактические кейсы</div>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #999; text-align: center; margin-top: -2rem; margin-bottom: 2rem;">Данные по состоянию на 2025 год.</p>
+        </header>
+
+        <main>
+            <section>
+                <h2>Факты</h2>
+                <p class="section-subtitle">Что удалось достичь со студентами за время работы.</p>
+                <ul class="facts-grid">
+                    <li>18+ подтверждённых отзывов на Solvery</li>
+                    <li>Типичный рост: +1 уровень за 3–6 месяцев (при активной подготовке)</li>
+                    <li>Переходы в продуктовые команды и монетизацию</li>
+                    <li>Офферы в Яндекс, Ozon, Тинькофф, Авито</li>
+                    <li>Переходы из IC в Lead и Head of Analytics</li>
+                    <li>Работа с аналитиками из России, Европы, США</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Где работают студенты</h2>
+                <p class="section-subtitle">По публичным отзывам, подтверждённым офферам и личным кейсам студентов.</p>
+                <div class="companies-grid">
+                    <div class="company-card">
+                        <div class="company-name">Яндекс</div>
+                        <div class="company-roles">Senior, Lead</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">Ozon</div>
+                        <div class="company-roles">Middle, Senior</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">Тинькофф</div>
+                        <div class="company-roles">Senior, Lead</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">Авито</div>
+                        <div class="company-roles">Middle, Senior</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">VK</div>
+                        <div class="company-roles">Senior</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">СберМаркет</div>
+                        <div class="company-roles">Lead</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">Delivery Club</div>
+                        <div class="company-roles">Senior</div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-name">Bolt</div>
+                        <div class="company-roles">Senior</div>
+                    </div>
+                </div>
+                <p class="companies-disclaimer">Примеры по публичным отзывам и личным кейсам; без раскрытия персональных данных.</p>
+            </section>
+
+            <section>
+                <h2>Типовые карьерные сценарии</h2>
+                <p class="section-subtitle">Три основных направления роста, с которыми работаем чаще всего.</p>
+                <div class="scenarios-grid">
+                    <div class="scenario-card scenario-junior">
+                        <span class="scenario-badge">Junior → Middle</span>
+                        <div class="scenario-title">Первый серьёзный рост</div>
+                        <ul class="scenario-bullets">
+                            <li>Структурирование опыта и формулировка impact</li>
+                            <li>Подготовка к первому повышению</li>
+                            <li>Переход в продуктовую аналитику</li>
+                        </ul>
+                    </div>
+                    <div class="scenario-card scenario-middle">
+                        <span class="scenario-badge">Middle → Senior</span>
+                        <div class="scenario-title">От задач к решениям</div>
+                        <ul class="scenario-bullets">
+                            <li>Упаковка ответственности и влияния</li>
+                            <li>Кейсы с trade-offs и ограничениями</li>
+                            <li>Переход от исполнителя к decision maker</li>
+                        </ul>
+                    </div>
+                    <div class="scenario-card scenario-senior">
+                        <span class="scenario-badge">Senior → Lead</span>
+                        <div class="scenario-title">Системное мышление</div>
+                        <ul class="scenario-bullets">
+                            <li>Зона влияния и управленческие решения</li>
+                            <li>Narrative про команду и процессы</li>
+                            <li>Подготовка к интервью с CPO / CEO</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Что говорят</h2>
+                <p class="section-subtitle">Цитаты из реальных отзывов студентов (Solvery и личная работа). Без имён, только суть.</p>
+                <div class="quotes-grid">
+                    <div class="quote-card">
+                        <div class="quote-text">После разбора понял, что продавал навыки, а не решения. Переформулировал кейсы — получил оффер.</div>
+                        <div class="quote-source">Senior Analyst, переход в Tier-1</div>
+                    </div>
+                    <div class="quote-card">
+                        <div class="quote-text">Помогло увидеть, где я отвечал за процесс, а где — за результат. Это изменило весь narrative.</div>
+                        <div class="quote-source">Middle → Senior, продуктовая аналитика</div>
+                    </div>
+                    <div class="quote-card">
+                        <div class="quote-text">Разобрали, как объяснять trade-offs и ограничения. На интервью с CPO это сработало.</div>
+                        <div class="quote-source">Lead Analyst, fintech</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="cta-section">
+                <div class="cta-title">Хотите разобрать свой кейс?</div>
+                <div class="cta-subtitle">Опишите роль, цель и контекст — отвечу, какой формат лучше и с чего начать.</div>
+                <div class="cta-buttons">
+                    <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                    <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Профиль Solvery ↗</a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <a href="/career/" class="footer-link">← Карьерная поддержка</a>
+            <a href="/index.html" class="footer-link">На главную</a>
+        </footer>
+    </div>
+</body>
+</html>

@@ -100,6 +100,76 @@
             }
         }
 
+        .career-grid {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 600px) {
+            .career-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .career-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 0.15rem 0.45rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.6rem;
+        }
+
+        .card-badge.badge-proof {
+            background: #f0f5f0;
+            border-color: #d0e0d0;
+            color: #5a7a5a;
+        }
+
+        .card-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+
+        .card-list li {
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0.3rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .card-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        .career-card--results {
+            transition: transform 0.18s ease-out,
+                        box-shadow 0.18s ease-out,
+                        border-color 0.18s ease-out;
+        }
+
+        .career-card--results:hover {
+            border-color: #9fd3b8;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            transform: scale(1.015);
+        }
+
         .card {
             border: 1px solid #e8e8e8;
             border-radius: 6px;
@@ -348,7 +418,7 @@
             <h2>Карьера</h2>
             <p class="muted" style="margin-bottom: 1.5rem;">Разбор опыта и решений: резюме, кейсы, интервью. Упор на структуру аргументов, ответственность и trade-offs.</p>
             
-            <div class="cards-grid tools-grid">
+            <div class="cards-grid career-grid">
                 <div class="card">
                     <div class="card-title">Карьерный разбор (аналитики)</div>
                     <div class="card-text">
@@ -363,6 +433,21 @@
                         Позиционирование уровня системы: зона влияния, границы ответственности, решения про деньги, риски и эксперименты.
                     </div>
                     <a href="/career/executive/index.html" class="card-button">Перейти →</a>
+                </div>
+
+                <div class="card career-card--results">
+                    <span class="card-badge badge-proof">Факты</span>
+                    <div class="card-title">Результаты менторства</div>
+                    <div class="card-text">
+                        Факты, кейсы и карьерные переходы аналитиков.<br>
+                        Где работают студенты и каких результатов они достигают.
+                    </div>
+                    <ul class="card-list">
+                        <li>18+ подтверждённых отзывов на Solvery</li>
+                        <li>Рост до Senior / Lead за 3–6 месяцев</li>
+                        <li>Продукт, монетизация, управление</li>
+                    </ul>
+                    <a href="/career/results/" class="card-button">Посмотреть →</a>
                 </div>
             </div>
         </section>
