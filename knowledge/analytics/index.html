@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика и эксперименты — База знаний</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 2rem 1rem;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2rem; }
+
+        .filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; gap: 0.25rem; }
+        .filter-group label { font-size: 0.8rem; color: #666; }
+        .filter-group select, .filter-group input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+        #search { min-width: 260px; }
+        .count { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.3; }
+        .card-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .badge { padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight: 500; white-space: nowrap; }
+        .badge-theme { border: 1px solid rgba(37,99,235,0.22); background: rgba(37,99,235,0.06); color: rgba(37,99,235,0.92); }
+        .badge-source { border: 1px solid rgba(16,185,129,0.22); background: rgba(16,185,129,0.06); color: rgba(16,185,129,0.92); }
+        .badge-company { border: 1px solid rgba(249,115,22,0.22); background: rgba(249,115,22,0.06); color: rgba(249,115,22,0.92); }
+        .card-actions { margin-top: auto; padding-top: 0.75rem; }
+        .card-button {
+            display: inline-block;
+            padding: 0.45rem 0.9rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .card-button:hover { background: #1d4ed8; }
+        .footer-link { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0; text-align: center; font-size: 0.9rem; }
+        .footer-link a { color: #666; text-decoration: none; }
+        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
+        .no-results { text-align: center; padding: 3rem 1rem; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a> → <a href="/knowledge/">База знаний</a> → Аналитика и эксперименты
+        </div>
+
+        <h1>Аналитика и эксперименты</h1>
+        <p class="subtitle">Статьи и материалы про A/B-тесты, статистику, метрики и аналитическую практику. Только внешние ссылки.</p>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="search">Поиск</label>
+                <input type="text" id="search" placeholder="Название...">
+            </div>
+            <div class="filter-group">
+                <label for="theme">Тема</label>
+                <select id="theme">
+                    <option value="">Все темы</option>
+                    <option value="experiments">Эксперименты</option>
+                    <option value="analytics-core">Аналитика</option>
+                    <option value="variance-reduction">Variance Reduction</option>
+                    <option value="multiple-testing">Multiple Testing</option>
+                    <option value="statistics">Статистика</option>
+                    <option value="causality">Causality</option>
+                    <option value="metrics">Метрики</option>
+                    <option value="anti-patterns">Антипаттерны</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="source">Источник</label>
+                <select id="source">
+                    <option value="">Все источники</option>
+                    <option value="habr">Habr</option>
+                    <option value="medium">Medium</option>
+                    <option value="telegram">Telegram</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="gopractice">GoPractice</option>
+                    <option value="vc">VC.ru</option>
+                    <option value="vk">VK</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="company">Компания</label>
+                <select id="company">
+                    <option value="">Все компании</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="count" id="count"></div>
+        <div class="cards-grid" id="cards"></div>
+        <div class="no-results" id="noResults" style="display:none;">Ничего не найдено</div>
+
+        <div class="footer-link">
+            <a href="/knowledge/">← Назад к базе знаний</a>
+        </div>
+    </div>
+
+    <script>
+        let DATA = [];
+
+        async function init() {
+            const res = await fetch('./index.json');
+            DATA = await res.json();
+            populateCompanyFilter();
+            render();
+            document.getElementById('search').addEventListener('input', render);
+            document.getElementById('theme').addEventListener('change', render);
+            document.getElementById('source').addEventListener('change', render);
+            document.getElementById('company').addEventListener('change', render);
+        }
+
+        function populateCompanyFilter() {
+            const companies = [...new Set(DATA.map(d => d.company).filter(c => c && c !== 'independent'))].sort();
+            const sel = document.getElementById('company');
+            companies.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                sel.appendChild(opt);
+            });
+            const indOpt = document.createElement('option');
+            indOpt.value = 'independent';
+            indOpt.textContent = 'Независимые';
+            sel.appendChild(indOpt);
+        }
+
+        function render() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const theme = document.getElementById('theme').value;
+            const source = document.getElementById('source').value;
+            const company = document.getElementById('company').value;
+
+            const filtered = DATA.filter(d => {
+                if (q && !d.title.toLowerCase().includes(q)) return false;
+                if (theme && !d.themes.includes(theme)) return false;
+                if (source && d.source !== source) return false;
+                if (company && d.company !== company) return false;
+                return true;
+            });
+
+            document.getElementById('count').textContent = `Найдено: ${filtered.length}`;
+            const container = document.getElementById('cards');
+            const noRes = document.getElementById('noResults');
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                noRes.style.display = 'block';
+                return;
+            }
+            noRes.style.display = 'none';
+
+            container.innerHTML = filtered.map(d => `
+                <div class="card">
+                    <div class="card-title">${escapeHtml(d.title)}</div>
+                    <div class="card-badges">
+                        ${d.themes.map(t => `<span class="badge badge-theme">${t}</span>`).join('')}
+                        <span class="badge badge-source">${d.source}</span>
+                        ${d.company !== 'independent' ? `<span class="badge badge-company">${d.company}</span>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <a href="${escapeHtml(d.link)}" target="_blank" rel="noopener noreferrer" class="card-button">Открыть ↗</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        init();
+    </script>
+</body>
+</html>
