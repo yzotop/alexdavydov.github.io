@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление аналитикой — База знаний</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 3rem 1rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2rem; }
+        .count { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title { font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.3; }
+        .card-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid rgba(37,99,235,0.22);
+            background: rgba(37,99,235,0.06);
+            color: rgba(37,99,235,0.92);
+        }
+        .card-text { color: #666; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; flex-grow: 1; }
+        .card-actions { margin-top: auto; padding-top: 0.75rem; }
+        .card-button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2563eb;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .card-button:hover { background: #1d4ed8; }
+        .footer-link { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e0e0e0; text-align: center; font-size: 0.9rem; }
+        .footer-link a { color: #666; text-decoration: none; }
+        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Главная</a> → <a href="/knowledge/">База знаний</a> → Управление аналитикой
+        </div>
+
+        <h1>Управление аналитикой</h1>
+        <p class="subtitle">Практические заметки о роли лидера аналитики: грейды, команда, ответственность, процессы и рост. Только внешние ссылки.</p>
+
+        <div class="count" id="count"></div>
+        <div class="cards-grid" id="cards"></div>
+
+        <div class="footer-link">
+            <a href="/knowledge/">← Назад к базе знаний</a>
+        </div>
+    </div>
+
+    <script>
+        async function init() {
+            const res = await fetch('./index.json');
+            const data = await res.json();
+            document.getElementById('count').textContent = `Статей: ${data.length}`;
+            document.getElementById('cards').innerHTML = data.map(d => `
+                <div class="card">
+                    <div class="card-title">${escapeHtml(d.title)}</div>
+                    <div class="card-badges">
+                        ${d.themes.map(t => `<span class="badge">${t}</span>`).join('')}
+                    </div>
+                    <div class="card-text">${escapeHtml(d.description)}</div>
+                    <div class="card-actions">
+                        <a href="${escapeHtml(d.link)}" target="_blank" rel="noopener noreferrer" class="card-button">Открыть ↗</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        init();
+    </script>
+</body>
+</html>
