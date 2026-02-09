@@ -1,0 +1,513 @@
+/* ── Heatmap matrix — styles ─────────────────────────────────
+   Used on: /knowledge/competencies/matrix/
+   No external dependencies.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Filters ─────────────────────────────────────────────── */
+
+.hm-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    align-items: flex-end;
+}
+
+.hm-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.hm-filter-item > label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hm-filter-item select,
+.hm-filter-item input[type="text"] {
+    padding: 0.4rem 0.65rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: #fff;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.hm-filter-item select:focus,
+.hm-filter-item input[type="text"]:focus {
+    border-color: #aaa;
+}
+
+.hm-filter-item select:disabled {
+    background: #f5f5f5;
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+.hm-filter-search {
+    flex: 1 1 120px;
+    min-width: 120px;
+}
+
+.hm-filter-search input {
+    width: 100%;
+}
+
+.hm-filter-check-wrap {
+    align-self: flex-end;
+    padding-bottom: 0.15rem;
+}
+
+.hm-filter-check {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.hm-filter-check input[type="checkbox"] {
+    accent-color: #5a7856;
+}
+
+/* ── Legend ───────────────────────────────────────────────── */
+
+.hm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.hm-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+.hm-legend-chip {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    text-align: center;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ── Summary ─────────────────────────────────────────────── */
+
+.hm-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 0.45rem;
+    padding: 0.4rem 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    color: #999;
+    line-height: 1.6;
+}
+
+.hm-sum-item { white-space: nowrap; }
+.hm-sum-item strong { color: #666; font-weight: 600; }
+.hm-sum-dot { color: #ddd; }
+.hm-sum-hint { font-style: italic; }
+.hm-sum-growth strong { color: #b47a3a; }
+
+/* ── Copy link button ────────────────────────────────────── */
+
+.hm-copy-link {
+    margin-left: auto;
+    align-self: flex-end;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #666;
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.hm-copy-link:hover {
+    border-color: #aaa;
+    color: #1a1a1a;
+}
+
+.hm-copy-done {
+    background: #f0f7ef;
+    border-color: #b8d4b0;
+    color: #5a7856;
+}
+
+/* ── Delta badge (compare mode) ──────────────────────────── */
+
+.hm-delta {
+    display: inline-block;
+    margin-left: 0.2em;
+    padding: 0 0.25em;
+    font-size: 0.62rem;
+    font-weight: 600;
+    border-radius: 3px;
+    vertical-align: super;
+    line-height: 1.4;
+}
+
+.hm-delta--pos { background: rgba(90, 120, 86, 0.13); color: #5a7856; }
+.hm-delta--neg { background: rgba(180, 122, 58, 0.13); color: #b47a3a; }
+.hm-delta--zero { background: rgba(0, 0, 0, 0.05); color: #aaa; }
+
+/* ── Tooltip compare line ────────────────────────────────── */
+
+.hm-tooltip-cmp {
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* ── Table wrapper ───────────────────────────────────────── */
+
+.hm-table-wrap {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 70vh;
+    margin-bottom: 2rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+
+.hm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+/* Header */
+.hm-table thead th {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: #f5f5f5;
+    border-bottom: 2px solid #e8e8e8;
+    white-space: nowrap;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.hm-table thead th:first-child {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    min-width: 180px;
+}
+
+/* Body cells */
+.hm-table tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 0.82rem;
+}
+
+/* Skill name (first column) */
+.hm-skill-name {
+    text-align: left !important;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #fff;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+    white-space: normal !important;
+    min-width: 180px;
+    max-width: 250px;
+    transition: background 0.15s, color 0.15s;
+}
+
+/* Group header */
+.hm-group-row td {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: #f8f8f8;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: left;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+/* ── Heatmap cell colours ────────────────────────────────── */
+
+.hm-cell {
+    cursor: pointer;
+    transition: filter 0.1s;
+}
+
+.hm-cell--lvl0 { background: #fafafa; color: #ccc; }
+.hm-cell--lvl1 { background: #f2f6f1; color: #8a9a85; }
+.hm-cell--lvl2 { background: #e2ecdf; color: #5a7856; }
+.hm-cell--lvl3 { background: #cfddc9; color: #3a6636; font-weight: 600; }
+
+/* ── Hover — row & column ────────────────────────────────── */
+
+.hm-skill-row:hover .hm-skill-name {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.hm-skill-row:hover .hm-cell {
+    filter: brightness(0.96);
+}
+
+th.hm-col-hover {
+    background: #ededed;
+}
+
+td.hm-col-hover {
+    filter: brightness(0.97);
+}
+
+/* ── Selected column (role filter active) ────────────────── */
+
+th.hm-col-selected {
+    background: #eef1f7;
+}
+
+td.hm-col-selected {
+    box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.12),
+                inset -2px 0 0 rgba(37, 99, 235, 0.12);
+}
+
+/* Active role — mute non-selected, enhance selected */
+.hm-table-wrap[data-selected-role] .hm-cell:not(.hm-col-selected) {
+    opacity: 0.4;
+}
+
+.hm-table-wrap[data-selected-role] .hm-th-role:not(.hm-col-selected) {
+    opacity: 0.4;
+}
+
+.hm-table-wrap[data-selected-role] th.hm-col-selected {
+    background: #e4eaf4;
+    color: #3a5a8a;
+}
+
+.hm-table-wrap[data-selected-role] td.hm-col-selected {
+    box-shadow: inset 2px 0 0 rgba(37, 99, 235, 0.22),
+                inset -2px 0 0 rgba(37, 99, 235, 0.22);
+}
+
+/* ── Tooltip ─────────────────────────────────────────────── */
+
+.hm-tooltip {
+    position: fixed;
+    z-index: 9999;
+    max-width: 320px;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    pointer-events: none;
+}
+
+.hm-tooltip[aria-hidden="true"] { display: none; }
+
+.hm-tooltip-title {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.15rem;
+}
+
+.hm-tooltip-role {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.hm-tooltip-sep {
+    height: 1px;
+    background: #eee;
+    margin: 0.4rem 0;
+}
+
+.hm-tooltip-level {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #5a7856;
+    margin-bottom: 0.25rem;
+}
+
+.hm-tooltip-desc {
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+.hm-tooltip-meaning {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #777;
+    margin-bottom: 0.25rem;
+}
+
+.hm-tooltip-weight {
+    font-size: 0.72rem;
+    color: #aaa;
+    margin-top: 0.3rem;
+}
+
+/* ── Expanded row ────────────────────────────────────────── */
+
+.hm-expanded-row td {
+    padding: 0 !important;
+    border-bottom: 2px solid #e0e0e0;
+    background: #fafafa;
+}
+
+.hm-expanded-content {
+    padding: 1rem 1.25rem;
+}
+
+.hm-expanded-levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.hm-expanded-level {
+    padding: 0.65rem 0.75rem;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+}
+
+.hm-expanded-level-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+}
+
+.hm-expanded-level p {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.hm-expanded-targets {
+    font-size: 0.78rem;
+    color: #888;
+    margin-bottom: 0.65rem;
+    line-height: 1.7;
+}
+
+.hm-expanded-targets span { white-space: nowrap; }
+.hm-expanded-targets strong { color: #5a7856; font-weight: 600; }
+
+.hm-collapse-btn {
+    padding: 0.3rem 0.85rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #666;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.hm-collapse-btn:hover {
+    border-color: #aaa;
+    color: #1a1a1a;
+}
+
+/* ── Error / Empty states ────────────────────────────────── */
+
+.hm-error,
+.hm-empty {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    .hm-delta { font-size: 0.55rem; padding: 0 0.15em; }
+    .hm-table-wrap {
+        max-height: 60vh;
+    }
+    .hm-expanded-levels {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 1400px) {
+    .hm-table-wrap {
+        max-height: 75vh;
+    }
+}
+
+@media (max-width: 639px) {
+    .hm-filters { gap: 0.65rem; padding: 0.75rem; }
+    .hm-filter-item { flex: 1 1 calc(50% - 0.5rem); }
+    .hm-filter-check-wrap { flex: 1 1 100%; }
+    .hm-table { font-size: 0.8rem; }
+    .hm-table thead th { padding: 0.5rem 0.55rem; font-size: 0.65rem; }
+    .hm-table tbody td { padding: 0.4rem 0.5rem; }
+    .hm-skill-name { min-width: 140px !important; max-width: 180px !important; font-size: 0.78rem; }
+    .hm-expanded-content { padding: 0.75rem; }
+    .hm-expanded-levels { grid-template-columns: 1fr; }
+    .hm-tooltip { max-width: 260px; }
+    .hm-copy-link { font-size: 0.72rem; padding: 0.3rem 0.55rem; }
+    .hm-summary { font-size: 0.7rem; }
+    .hm-delta { display: none; }
+}
