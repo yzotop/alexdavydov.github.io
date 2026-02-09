@@ -1,0 +1,286 @@
+/* ── Test tasks — styles ──────────────────────────────────────
+   Used on: /knowledge/test-tasks/
+   No external dependencies.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Filters ─────────────────────────────────────────────── */
+
+.tt-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    align-items: flex-end;
+}
+
+.tt-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.tt-filter-item > label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.tt-filter-item select,
+.tt-filter-item input[type="text"] {
+    padding: 0.4rem 0.65rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: #fff;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.tt-filter-item select:focus,
+.tt-filter-item input[type="text"]:focus {
+    border-color: #aaa;
+}
+
+.tt-filter-search {
+    flex: 1 1 140px;
+    min-width: 140px;
+}
+
+.tt-filter-search input { width: 100%; }
+
+.tt-filter-check-wrap {
+    align-self: flex-end;
+    padding-bottom: 0.15rem;
+}
+
+.tt-filter-check {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.tt-filter-check input[type="checkbox"] { accent-color: #5a7856; }
+
+/* ── Presets (quick tag chips) ────────────────────────────── */
+
+.tt-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.tt-preset {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #fff;
+    color: #666;
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.tt-preset:hover {
+    border-color: #aaa;
+    color: #1a1a1a;
+}
+
+.tt-preset--active {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    color: #fff;
+}
+
+.tt-preset--active:hover {
+    background: #333;
+    border-color: #333;
+}
+
+/* ── Counter ─────────────────────────────────────────────── */
+
+.tt-counter {
+    font-size: 0.78rem;
+    color: #999;
+    margin-bottom: 1rem;
+}
+
+.tt-counter strong { color: #666; }
+
+/* ── Cards grid ──────────────────────────────────────────── */
+
+.tt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.tt-card {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s;
+}
+
+.tt-card:hover { border-color: #999; }
+
+.tt-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.tt-card-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.tt-card-position {
+    font-size: 0.78rem;
+    color: #777;
+    line-height: 1.4;
+    margin-top: -0.3rem;
+    margin-bottom: 0.4rem;
+}
+
+.tt-card-position--unknown {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* ── Badges ──────────────────────────────────────────────── */
+
+.tt-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.tt-badge-grade {
+    background: #f0f0f0;
+    color: #666;
+    border: 1px solid #e0e0e0;
+}
+
+.tt-badge-grade--intern  { background: #f5f5f5; color: #999; }
+.tt-badge-grade--junior  { background: #f2f6f1; color: #5a7856; }
+.tt-badge-grade--middle  { background: #e8eef6; color: #3a5a8a; }
+.tt-badge-grade--senior  { background: #fdf6ef; color: #8a6a3a; }
+.tt-badge-grade--unknown { background: #f5f5f5; color: #bbb; }
+
+.tt-badge-new {
+    background: #fef3e2;
+    color: #b47a3a;
+    border: 1px solid #f0dfc0;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.tt-badge-dataset {
+    background: #f0f7ef;
+    color: #5a7856;
+    border: 1px solid #d4e4d0;
+    font-size: 0.62rem;
+}
+
+/* ── Tags row ────────────────────────────────────────────── */
+
+.tt-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.75rem;
+}
+
+.tt-tag {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    color: #888;
+}
+
+/* ── Card meta & CTA ────────────────────────────────────── */
+
+.tt-card-meta {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.tt-card-cta {
+    margin-top: auto;
+}
+
+.tt-card-btn {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.tt-card-btn:hover { background: #1d4ed8; }
+
+.tt-card-link-hint {
+    font-size: 0.65rem;
+    color: #aaa;
+    margin-top: 0.25rem;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+
+.tt-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 639px) {
+    .tt-filters { gap: 0.65rem; padding: 0.75rem; }
+    .tt-filter-item { flex: 1 1 calc(50% - 0.5rem); }
+    .tt-filter-check-wrap { flex: 1 1 100%; }
+    .tt-grid { grid-template-columns: 1fr; }
+    .tt-card-title { font-size: 0.88rem; }
+}
