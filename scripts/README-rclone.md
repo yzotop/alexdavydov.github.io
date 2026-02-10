@@ -42,7 +42,7 @@ rclone lsd gdrive: --drive-shared-with-me
 
 # Содержимое конкретной папки по ID (БЕЗ --drive-shared-with-me!)
 rclone lsf gdrive: \
-  --drive-root-folder-id "15e4bKPUIb3pEvI0OvoRTXfhV4g4aF10v" \
+  --drive-root-folder-id "1z7IYlaE8RK6yrQTBba4KGALu8cpd8EGR" \
   --max-depth 1
 ```
 
@@ -91,7 +91,7 @@ TT_PROGRESS=1 bash scripts/sync_test_tasks_from_gdrive.sh
 
 ```bash
 rclone copy gdrive: /tmp/test-folder/ \
-  --drive-root-folder-id "15e4bKPUIb3pEvI0OvoRTXfhV4g4aF10v" \
+  --drive-root-folder-id "1z7IYlaE8RK6yrQTBba4KGALu8cpd8EGR" \
   --fast-list \
   --transfers 4 --checkers 8 --tpslimit 10 \
   --retries 3 --low-level-retries 10 --timeout 30s --contimeout 20s \
