@@ -79,11 +79,13 @@ TT_PROGRESS=1 bash scripts/sync_test_tasks_from_gdrive.sh
 
 ## 5. Результат
 
+Данные хранятся **вне репозитория**: `~/data/public/davydov-my/test-tasks/`
+
 | Что | Где |
 |---|---|
-| Скачанные файлы | `data/test-tasks/raw/<Company — Position [id]>/` |
-| Лог | `data/test-tasks/rclone-sync.log` |
-| Логи ошибок (per-folder) | `data/test-tasks/rclone-fails/<folder_id>.log` |
+| Скачанные файлы | `~/data/public/davydov-my/test-tasks/raw/<Company — Position [id]>/` |
+| Лог | `~/data/public/davydov-my/test-tasks/rclone-sync.log` |
+| Логи ошибок (per-folder) | `~/data/public/davydov-my/test-tasks/rclone-fails/<folder_id>.log` |
 
 ## 6. Как работает rclone-команда
 
@@ -168,7 +170,7 @@ rclone lsd gdrive: --drive-shared-with-me   # OK: discovery
 bash scripts/sync_test_tasks_from_gdrive.sh --only-failed
 
 # Посмотреть подробный лог конкретной ошибки
-cat data/test-tasks/rclone-fails/<folder_id>.log
+cat ~/data/public/davydov-my/test-tasks/rclone-fails/<folder_id>.log
 ```
 
 `--only-failed` парсит `rclone-sync.log`, находит folder_id с последним статусом `FAILED_*`,

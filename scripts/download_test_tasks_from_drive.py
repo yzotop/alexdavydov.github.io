@@ -7,8 +7,8 @@ Usage:
     python3 scripts/download_test_tasks_from_drive.py --dry-run # preview only
 
 Requires: gdown (pip install gdown)
-Output:   data/test-tasks/raw/<folder_name>/
-Log:      data/test-tasks/download.log
+Output:   ~/data/public/davydov-my/test-tasks/raw/<folder_name>/
+Log:      ~/data/public/davydov-my/test-tasks/download.log
 """
 
 import argparse
@@ -26,8 +26,9 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parent.parent
 JSON_PATH = REPO_ROOT / "data" / "test-tasks.v1.json"
-OUTPUT_DIR = REPO_ROOT / "data" / "test-tasks" / "raw"
-LOG_PATH = REPO_ROOT / "data" / "test-tasks" / "download.log"
+DATA_ROOT = Path.home() / "data" / "public" / "davydov-my" / "test-tasks"
+OUTPUT_DIR = DATA_ROOT / "raw"
+LOG_PATH = DATA_ROOT / "download.log"
 
 # ---------------------------------------------------------------------------
 # Company / Position parsing (mirrors JS parseCompanyPosition)
