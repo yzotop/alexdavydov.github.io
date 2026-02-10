@@ -1,21 +1,281 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
     <title>A/B Test Simulator (Live)</title>
-    <meta name="description" content="Live A/B test simulator: arrivals, metrics over time, peeking, spillover, imbalance, aggregation mistakes." />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      /* Keep minimal defaults; Tailwind does the rest. */
-      html, body { height: 100%; }
-      body { margin: 0; background: #fff; color: #111827; }
-      .card { background: rgba(249,250,251,1); border: 1px solid rgba(229,231,235,1); border-radius: 12px; }
-      .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
-    </style>
+    <meta name="description" content="Live A/B test simulator: watch metrics, uplift and significance evolve over time — and decide when you would ship." />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="./assets/main.js"></script>
+
+    <!-- ════════ 1. TOPBAR ════════ -->
+    <header class="topbar">
+      <div class="topbar__left">
+        <div class="brand">
+          <div class="brand__title">
+            A/B Test Simulator
+            <span class="badge badge--live">Live</span>
+            <span class="badge badge--edu">Educational</span>
+          </div>
+          <div class="brand__subtitle">Watch metrics, uplift and significance evolve — decide when you would ship.</div>
+        </div>
+      </div>
+      <div class="topbar__right">
+        <span id="statusBadge" class="badge badge--paused">Paused</span>
+        <div class="seed">
+          <label class="seed__label" for="seedInput">Seed</label>
+          <input id="seedInput" class="seed__input" type="number" min="1" max="999999" value="42" />
+          <button id="randomizeSeedBtn" class="btn btn--ghost" title="Random seed">🎲</button>
+        </div>
+        <div class="topbar__buttons">
+          <button id="startPauseBtn" class="btn btn--primary">▶ Start</button>
+          <button id="stepBtn" class="btn btn--outline">Step +1d</button>
+          <button id="resetBtn" class="btn btn--outline">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ════════ SCENARIO SWITCHER ════════ -->
+    <div class="scenario-bar">
+      <span class="scenario-bar__label">Scenario</span>
+      <div class="scenario-bar__buttons">
+        <button class="scenario-btn active" data-scenario="big_early">Big Early Win</button>
+        <button class="scenario-btn" data-scenario="small_real">Small Real Win</button>
+        <button class="scenario-btn" data-scenario="early_spike">Early Spike</button>
+        <button class="scenario-btn" data-scenario="risky_sig">Risky but Significant</button>
+      </div>
+    </div>
+
+    <!-- ════════ 2. VERDICT BAR ════════ -->
+    <div class="verdict-bar">
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">Status</span>
+        <span id="vSignificance" class="verdict-pill verdict-pill--none">NOT SIGNIFICANT</span>
+      </div>
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">Δ Uplift</span>
+        <span id="vDelta" class="verdict-bar__value mono">—</span>
+      </div>
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">p-value</span>
+        <span id="vPValue" class="verdict-bar__value mono">—</span>
+      </div>
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">95% CI</span>
+        <span id="vCI" class="verdict-bar__value mono">—</span>
+      </div>
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">α</span>
+        <span class="verdict-bar__value mono">0.05</span>
+      </div>
+      <div class="verdict-bar__item">
+        <span class="verdict-bar__label">Time</span>
+        <span id="vTime" class="verdict-bar__value mono">Day 1</span>
+      </div>
+    </div>
+    <div id="verdictHint" class="verdict-hint" style="display:none">Significance answers 'is there an effect?' — not 'is this safe to ship?'</div>
+
+    <!-- ════════ PROGRESS BAR ════════ -->
+    <div class="progress-wrapper">
+      <div class="progress-track">
+        <div id="progressBar" class="progress-fill"></div>
+      </div>
+      <span id="progressText" class="progress-text mono">Day 1, 00:00 / Day 30</span>
+    </div>
+
+    <!-- ════════ MAIN LAYOUT ════════ -->
+    <main class="page">
+
+      <!-- ──── LEFT: Charts + Decision ──── -->
+      <div class="main-area">
+
+        <!-- 3. METRIC CARDS -->
+        <div class="cards-row">
+          <div class="card metric-card">
+            <div class="card__title">Users</div>
+            <div class="card__body">
+              <div class="metric-pair">
+                <span class="metric-pair__label">Control</span>
+                <span id="mCtrlUsers" class="metric-pair__value mono">0</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">Test</span>
+                <span id="mTestUsers" class="metric-pair__value mono">0</span>
+              </div>
+              <div class="metric-pair metric-pair--dim">
+                <span class="metric-pair__label">Total</span>
+                <span id="mTotalUsers" class="metric-pair__value mono">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="card__title">Conversion Rate</div>
+            <div class="card__body">
+              <div class="metric-pair">
+                <span class="metric-pair__label">Control</span>
+                <span id="mCRCtrl" class="metric-pair__value mono">—</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">Test</span>
+                <span id="mCRTest" class="metric-pair__value mono">—</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">Δ (abs)</span>
+                <span id="mDeltaAbs" class="metric-pair__value mono">—</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">Δ (rel)</span>
+                <span id="mDeltaRel" class="metric-pair__value mono">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <div class="card__title">Statistical Signal</div>
+            <div class="card__body">
+              <div class="metric-pair">
+                <span class="metric-pair__label">p-value</span>
+                <span id="mPValue" class="metric-pair__value mono">—</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">CI width</span>
+                <span id="mCIWidth" class="metric-pair__value mono">—</span>
+              </div>
+              <div class="metric-pair">
+                <span class="metric-pair__label">z-score</span>
+                <span id="mZScore" class="metric-pair__value mono">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card metric-card metric-card--risk">
+            <div class="card__title">Risk Flags</div>
+            <div class="card__body card__body--center">
+              <div id="riskCount" class="risk-count">0</div>
+              <div class="risk-count__label">active factors</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. MAIN CHART -->
+        <div class="card chart-card">
+          <div class="chart-card__header">
+            <span class="card__title">Conversion Rate Over Time</span>
+            <span class="chart-legend">
+              <span class="legend-dot legend-dot--ctrl"></span> Control
+              <span class="legend-dot legend-dot--test"></span> Test
+            </span>
+          </div>
+          <canvas id="chartMain" class="chart-canvas"></canvas>
+        </div>
+
+        <!-- 6. SECONDARY CHART -->
+        <div class="card chart-card">
+          <div class="chart-card__header">
+            <select id="secondaryChartSelect" class="chart-select">
+              <option value="pvalue">p-value over time</option>
+              <option value="ci">Confidence interval bounds</option>
+              <option value="users">Cumulative users</option>
+            </select>
+          </div>
+          <canvas id="chartSecondary" class="chart-canvas chart-canvas--sm"></canvas>
+        </div>
+
+        <!-- 7. DECISION ZONE -->
+        <div id="decisionZone" class="card decision-zone">
+          <div class="decision-zone__header">
+            <span class="card__title">Your Decision</span>
+            <span class="decision-zone__hint">Based on current data, what would you do?</span>
+          </div>
+          <div class="decision-zone__buttons">
+            <button id="btnShip" class="btn btn--ship">🚀 Запустить</button>
+            <button id="btnStop" class="btn btn--stop">✕ Остановить</button>
+            <button id="btnWait" class="btn btn--wait">⏳ Продолжить</button>
+          </div>
+        </div>
+
+        <!-- Decision outcome -->
+        <div id="decisionOutcome" class="card decision-outcome" style="display:none">
+          <div class="decision-outcome__header">
+            <span id="decisionLabel" class="decision-outcome__label"></span>
+            <span id="decisionTime" class="decision-outcome__time mono"></span>
+          </div>
+          <div id="decisionDetails" class="decision-outcome__details"></div>
+          <button id="btnReveal" class="btn btn--primary" style="display:none">Показать итог</button>
+        </div>
+
+        <!-- 8. REVEAL -->
+        <div id="revealPanel" class="card reveal-panel" style="display:none">
+          <div id="revealContent"></div>
+        </div>
+      </div>
+
+      <!-- ──── RIGHT SIDEBAR ──── -->
+      <aside class="sidebar">
+
+        <!-- 4. RISK FACTORS -->
+        <div class="card risk-panel">
+          <div class="card__title">Факторы риска</div>
+          <div class="card__subtitle">Factors reducing decision reliability</div>
+
+          <label class="risk-toggle">
+            <input id="riskImbalance" type="checkbox" class="risk-toggle__cb" />
+            <span class="risk-toggle__switch"></span>
+            <div class="risk-toggle__info">
+              <span class="risk-toggle__name">Sample Imbalance</span>
+              <span class="risk-toggle__desc">70/30 allocation instead of 50/50</span>
+            </div>
+          </label>
+
+          <label class="risk-toggle">
+            <input id="riskSpillover" type="checkbox" class="risk-toggle__cb" />
+            <span class="risk-toggle__switch"></span>
+            <div class="risk-toggle__info">
+              <span class="risk-toggle__name">Spillover / SUTVA</span>
+              <span class="risk-toggle__desc">15% of test effect leaks into control</span>
+            </div>
+          </label>
+        </div>
+
+        <!-- Explanation drawer -->
+        <div class="card explanation-panel">
+          <button id="explanationToggle" class="explanation-panel__toggle">
+            <span class="card__title">Что происходит?</span>
+            <span class="chevron">▸</span>
+          </button>
+          <div id="explanationBody" class="explanation-panel__body" style="display:none">
+            <div id="explanationContent">
+              <p>Запустите симуляцию, чтобы увидеть, как метрики A/B-теста меняются со временем.</p>
+              <p>p-value будет колебаться — это нормально. Вопрос: когда данных <em>достаточно</em> для решения?</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speed -->
+        <div class="card">
+          <div class="card__title">Speed</div>
+          <div class="speed-controls">
+            <button class="btn btn--ghost speed-btn active" data-speed="0.5">0.5×</button>
+            <button class="btn btn--ghost speed-btn" data-speed="1">1×</button>
+            <button class="btn btn--ghost speed-btn" data-speed="3">3×</button>
+          </div>
+        </div>
+
+        <!-- Key insight -->
+        <div class="card insight-card">
+          <div class="card__subtitle">Core insight</div>
+          <p class="insight-text">"Errors in A/B testing are usually not violations of rules — they are premature decisions."</p>
+        </div>
+      </aside>
+    </main>
+
+    <script src="./utils.js"></script>
+    <script src="./sim.js"></script>
+    <script src="./charts.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./main.js"></script>
   </body>
 </html>
