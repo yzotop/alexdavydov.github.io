@@ -21,9 +21,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 JSON_PATH="$REPO_ROOT/data/test-tasks.v1.json"
-OUTPUT_DIR="$REPO_ROOT/data/test-tasks/raw"
-LOG_FILE="$REPO_ROOT/data/test-tasks/rclone-sync.log"
-FAIL_LOG_DIR="$REPO_ROOT/data/test-tasks/rclone-fails"
+DATA_ROOT="$HOME/data/public/davydov-my/test-tasks"
+OUTPUT_DIR="$DATA_ROOT/raw"
+LOG_FILE="$DATA_ROOT/rclone-sync.log"
+FAIL_LOG_DIR="$DATA_ROOT/rclone-fails"
 REMOTE="gdrive"
 SIZE_LIMIT_MB=500
 
