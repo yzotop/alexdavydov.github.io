@@ -22,10 +22,12 @@ python3 scripts/download_test_tasks_from_drive.py
 
 ## Результат
 
+Данные хранятся **вне репозитория**: `~/data/public/davydov-my/test-tasks/`
+
 | Что | Где |
 |---|---|
-| Скачанные файлы | `data/test-tasks/raw/<folder>/` |
-| Лог скачивания | `data/test-tasks/download.log` |
+| Скачанные файлы | `~/data/public/davydov-my/test-tasks/raw/<folder>/` |
+| Лог скачивания | `~/data/public/davydov-my/test-tasks/download.log` |
 
 ## Ошибки доступа
 
