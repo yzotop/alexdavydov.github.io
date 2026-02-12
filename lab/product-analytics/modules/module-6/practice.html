@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 6. Эксперимент как инструмент понимания</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .case-expanded {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .case-expanded .case-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .case-expanded .case-setup { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 1.5rem; }
+        .phase-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+        .phase-item { padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8; border-radius: 4px; }
+        .phase-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .phase-title { font-size: 0.95rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.35rem; }
+        .phase-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+        .phase-metrics { font-size: 0.8rem; color: #666; margin-top: 0.35rem; font-style: italic; }
+        .case-decision {
+            padding: 1rem 1.25rem; background: #f5f5f0; border-left: 3px solid #d0cec0; margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .case-decision p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+
+        .result-chips { display: flex; gap: 0.5rem; margin: 0.75rem 0 1.25rem 0; flex-wrap: wrap; }
+        .result-chip {
+            padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #e8e8e8; background: #fff;
+        }
+        .result-chip.positive { border-color: #b8cdb8; color: #3a7; }
+        .result-chip.negative { border-color: #d4a0a0; color: #a55; }
+        .result-chip.neutral { border-color: #e8e8e8; color: #999; }
+
+        .questions-block {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.75rem; font-weight: 500;
+        }
+        .questions-list { list-style: none; padding-left: 0; margin: 0; }
+        .questions-list li {
+            font-size: 0.85rem; line-height: 1.55; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 1.25rem; position: relative;
+        }
+        .questions-list li:before { content: "?"; position: absolute; left: 0; color: #999; font-weight: 500; }
+
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 1.25rem;
+            margin-bottom: 1rem; background: #fafafa;
+        }
+        .mini-case .case-title { font-size: 1rem; margin-bottom: 0.5rem; }
+        .mini-case .case-context { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; margin-bottom: 0; }
+        .mini-case-analysis {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item { font-size: 0.8rem; line-height: 1.45; }
+        .mini-case-analysis-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.2rem; font-weight: 500;
+        }
+        .mini-case-analysis-value { color: #1a1a1a; }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 6</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 6. Эксперимент как инструмент понимания</p>
+
+        <!-- Flagship case -->
+        <div class="case-expanded">
+            <div class="case-title">Алгоритм рекомендаций: CTR вверх, diversity вниз</div>
+            <div class="case-setup">
+                Медиа-платформа тестирует новый алгоритм рекомендаций. Гипотеза команды: «более релевантные рекомендации повысят вовлечённость и долгосрочное удержание».
+            </div>
+
+            <div class="result-chips">
+                <span class="result-chip positive">CTR рекомендаций +20%</span>
+                <span class="result-chip positive">Time on platform +10%</span>
+                <span class="result-chip negative">Diversity index &minus;30%</span>
+                <span class="result-chip negative">Retention D30 &minus;3%</span>
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Гипотеза и механизм</div>
+                    <div class="phase-text">
+                        Гипотеза: релевантные рекомендации → пользователь находит интересный контент быстрее → больше потребляет → формирует привычку → retention растёт. Ожидаемый механизм: рост качества выбора, а не количества кликов.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Что произошло</div>
+                    <div class="phase-title">Оптимизация короткого цикла</div>
+                    <div class="phase-text">
+                        Алгоритм научился предсказывать, на что пользователь кликнет — и подсовывает похожий контент. CTR растёт. Time растёт (пользователь в «пузыре»). Но diversity падает на 30% — алгоритм сузил поле. Retention D30 падает: через месяц пользователь «выедает» свою нишу и теряет интерес. Короткий цикл (клик → клик) оптимизирован, длинный (открытие → привычка) разрушен.
+                    </div>
+                    <div class="phase-metrics">Конфликт: CTR и time = короткий цикл. Diversity и retention = долгосрочный механизм</div>
+                </div>
+
+                <div class="questions-block">
+                    <div class="questions-block-label">Вопросы для разбора</div>
+                    <ol class="questions-list">
+                        <li>Какая гипотеза была до запуска — и проверяет ли CTR эту гипотезу?</li>
+                        <li>Что именно произошло с механизмом «рекомендация → открытие нового → привычка»?</li>
+                        <li>Почему CTR +20% — не доказательство «алгоритм лучше»?</li>
+                        <li>Что означает diversity &minus;30% для долгосрочного здоровья платформы?</li>
+                        <li>Решение: катить / ограничить / переделать?</li>
+                        <li>Какие дополнительные метрики запросить (unique authors consumed, content fatigue, repeat clicks)?</li>
+                    </ol>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор</div>
+                    <div class="phase-title">CTR — не цель, а прокси</div>
+                    <div class="phase-text">
+                        CTR отражает совпадение рекомендации с текущим интересом. Но цель — не клики, а здоровое потребление, которое ведёт к retention. Новый алгоритм оптимизировал прокси (CTR) за счёт разрушения механизма (разнообразие → открытие → привычка). Падение retention D30 — прямое следствие. Это не «побочный эффект» — это сломанный механизм.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Итог: решение</div>
+                <p>
+                    Не катить в текущем виде. Ограничить: добавить constraint на diversity (минимум 40% уникальных авторов/тем в ленте). Переделать: оптимизировать не CTR, а «клик + возврат к автору через 3 дня» — прокси для здорового потребления. Запросить: unique content sources per user/week, content fatigue rate, repeat-click ratio.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Упрощение формы: заявки +15%, одобрения &minus;10%, выдача 0</div>
+                <div class="case-context">
+                    Финтех упростил форму заявки на кредит. Заявок +15% — барьер ниже. Но одобрений &minus;10%: упрощение привлекло менее качественные заявки. Итоговая конверсия в выдачу — без изменений. Два механизма компенсируют друг друга.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Механизм</div>
+                        <div class="mini-case-analysis-value">Рост заявок = снижение барьера (позитив). Падение одобрений = ухудшение качества входа (негатив)</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Конфликт</div>
+                        <div class="mini-case-analysis-value">«Ноль на выходе» — не отсутствие эффекта, а два эффекта, скрывающие друг друга</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Нет эффекта — откатываем» без анализа промежуточных шагов</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Следующий шаг</div>
+                        <div class="mini-case-analysis-value">Добавить pre-screening до формы. Сохранить простоту, улучшить качество входного потока</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Гарантия времени доставки: заказы +7%, NPS курьеров &minus;12</div>
+                <div class="case-context">
+                    Сервис доставки тестирует «гарантию 30 минут». Заказы +7%. Среднее время — без изменений, но дисперсия выросла вдвое. NPS курьеров &minus;12 пунктов. Гарантия создала давление на операционку, которое среднее не показывает.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Механизм</div>
+                        <div class="mini-case-analysis-value">Гарантия привлекает заказы (demand). Операционка не справляется (supply stress). Среднее стабильно, дисперсия взлетела</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Конфликт</div>
+                        <div class="mini-case-analysis-value">Primary (заказы) vs. stress системы (NPS курьеров, дисперсия). Guardrail нарушен</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Заказы +7%, среднее время ОК — катим» без анализа дисперсии и supply health</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Следующий шаг</div>
+                        <div class="mini-case-analysis-value">Ограничить гарантию зонами с достаточным supply. Мониторить p95 delivery time, не среднее</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Primary +3% (значимо), эффект только в 1 из 3 регионов</div>
+                <div class="case-context">
+                    A/B-тест новой фичи: primary +3%, p&lt;0.05 в агрегате. При разбивке по регионам: регион A +12%, регион B 0%, регион C &minus;2%. Эффект существует, но только в одном контексте. Агрегат «тянет» один регион.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Механизм</div>
+                        <div class="mini-case-analysis-value">Фича работает в контексте региона A (вероятно, специфика аудитории или supply). В остальных — нейтральна или негативна</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Конфликт</div>
+                        <div class="mini-case-analysis-value">Формальная значимость в агрегате vs. отсутствие эффекта в 2 из 3 регионов</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Значимый результат — катим глобально»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Следующий шаг</div>
+                        <div class="mini-case-analysis-value">Катить в регионе A. Для B и C — понять, почему механизм не сработал. Не масштабировать до понимания</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Null result, но diagnostic показывает изменение</div>
+                <div class="case-context">
+                    A/B-тест новой системы рейтингов. Primary (конверсия): 0%, не значимо. Но diagnostic: время на странице товара +15%, количество просмотренных отзывов +25%. Пользователи изменили поведение, но это не конвертировалось в покупки — пока.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Механизм</div>
+                        <div class="mini-case-analysis-value">Рейтинги меняют поведение (больше читают, дольше выбирают). Конверсия не выросла — возможно, лаг или «паралич выбора»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Конфликт</div>
+                        <div class="mini-case-analysis-value">Primary = null. Diagnostic = значимое изменение. Это не «нет эффекта» — это «эффект ещё не дошёл до primary»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Нет значимого эффекта — отбрасываем фичу»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Следующий шаг</div>
+                        <div class="mini-case-analysis-value">Продлить тест. Добавить guardrail window. Проверить, конвертируется ли «дольше выбирают» в «реже возвращают» (качество покупки)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

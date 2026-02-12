@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 7. Аналитик и управленческое решение</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .case-expanded {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .case-expanded .case-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .case-expanded .case-setup { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 1.5rem; }
+        .phase-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+        .phase-item { padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8; border-radius: 4px; }
+        .phase-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .phase-title { font-size: 0.95rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.35rem; }
+        .phase-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+
+        .result-chips { display: flex; gap: 0.5rem; margin: 0.75rem 0 1.25rem 0; flex-wrap: wrap; }
+        .result-chip {
+            padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #e8e8e8; background: #fff;
+        }
+        .result-chip.positive { border-color: #b8cdb8; color: #3a7; }
+        .result-chip.negative { border-color: #d4a0a0; color: #a55; }
+        .result-chip.neutral { border-color: #e8e8e8; color: #999; }
+        .result-chip.ambiguous { border-color: #d5c88e; color: #997; }
+
+        .questions-block {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.75rem; font-weight: 500;
+        }
+        .questions-list { list-style: none; padding-left: 0; margin: 0; }
+        .questions-list li {
+            font-size: 0.85rem; line-height: 1.55; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 1.25rem; position: relative;
+        }
+        .questions-list li:before { content: "?"; position: absolute; left: 0; color: #999; font-weight: 500; }
+
+        .case-decision {
+            padding: 1rem 1.25rem; background: #f5f5f0; border-left: 3px solid #d0cec0; margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .case-decision p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+
+        .formulation-block {
+            padding: 1rem 1.25rem; background: #f5f8f5; border-left: 3px solid #b8cdb8;
+            margin-top: 1rem;
+        }
+        .formulation-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.5rem; font-weight: 500;
+        }
+        .formulation-block p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; font-style: italic; }
+
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 1.25rem;
+            margin-bottom: 1rem; background: #fafafa;
+        }
+        .mini-case .case-title { font-size: 1rem; margin-bottom: 0.5rem; }
+        .mini-case .case-context { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; margin-bottom: 0; }
+        .mini-case-analysis {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item { font-size: 0.8rem; line-height: 1.45; }
+        .mini-case-analysis-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.2rem; font-weight: 500;
+        }
+        .mini-case-analysis-value { color: #1a1a1a; }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 7</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 7. Аналитик и управленческое решение</p>
+
+        <!-- Flagship case -->
+        <div class="case-expanded">
+            <div class="case-title">Эффект только в одном регионе: формулировка для CPO</div>
+            <div class="case-setup">
+                Вы провели A/B-тест новой фичи. Агрегат: primary +3%, статистически значимо. Guardrails без нарушений. Но при сегментации по регионам: регион A +12%, регион B 0%, регион C &minus;2%. Механизм, объясняющий разницу, не найден. CPO спрашивает: «Катим глобально?»
+            </div>
+
+            <div class="result-chips">
+                <span class="result-chip positive">Агрегат: +3%, p&lt;0.05</span>
+                <span class="result-chip positive">Регион A: +12%</span>
+                <span class="result-chip neutral">Регион B: 0%</span>
+                <span class="result-chip negative">Регион C: &minus;2%</span>
+                <span class="result-chip ambiguous">Механизм: не объяснён</span>
+            </div>
+
+            <div class="questions-block">
+                <div class="questions-block-label">Задание</div>
+                <ol class="questions-list">
+                    <li>Какие гипотезы могут объяснить региональную разницу?</li>
+                    <li>Какие риски у глобального выката при необъяснённом механизме?</li>
+                    <li>Какие 3 решения возможны — и какие последствия у каждого?</li>
+                    <li>Какую формулировку вы отправите CPO? (напишите дословно)</li>
+                    <li>Какой мониторинг обязателен после любого из решений?</li>
+                </ol>
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Разбор: гипотезы</div>
+                    <div class="phase-text">
+                        Возможные объяснения: (1) различие в аудитории — в регионе A фича попадает в потребность, в других нет; (2) различие в supply/контенте/ассортименте — фича работает только при определённом наполнении; (3) случайность — +12% в одном регионе мог быть outlier, особенно при малом размере. Без понимания «почему» — нет основания экстраполировать.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор: риски</div>
+                    <div class="phase-text">
+                        Глобальный выкат при необъяснённом механизме: (1) эффект в B и C может стать негативным при масштабе; (2) агрегат +3% может исчезнуть при изменении доли региона A; (3) мы масштабируем то, что не понимаем — и не сможем это чинить, если сломается.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор: три решения</div>
+                    <div class="phase-text">
+                        <strong>1) Катить в регионе A:</strong> Безопасно. Эффект подтверждён. Параллельно исследовать механизм. Риск: упустим потенциал в B/C.<br>
+                        <strong>2) Катить глобально:</strong> Максимальный upside, если эффект реален. Но мы не знаем, почему B и C — ноль. Риск: масштабируем неизвестность.<br>
+                        <strong>3) Не катить, продолжить исследование:</strong> Задержка запуска. Но снижает вероятность ошибки. Нужно поставить конкретный вопрос: «что отличает регион A?»
+                    </div>
+                </div>
+            </div>
+
+            <div class="formulation-block">
+                <div class="formulation-block-label">Пример сильной формулировки для CPO</div>
+                <p>
+                    «Агрегат +3% (значимо), guardrails стабильны. Однако эффект сконцентрирован в регионе A (+12%), в двух других — ноль и &minus;2%. Механизм разницы не установлен. Рекомендую: катить в регионе A, где эффект подтверждён. Для B и C — провести исследование: чем отличается аудитория/ассортимент в A. Глобальный выкат без понимания механизма — риск масштабирования необъяснённого результата. Мониторинг: primary и retention по каждому региону отдельно, 4 недели.»
+                </p>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Почему это сильный вывод</div>
+                <p>
+                    Факт отделён от интерпретации. Неопределённость названа. Риск масштабирования объяснён. Рекомендация конкретна: где катить, где нет, что исследовать, что мониторить. CPO получает не «да/нет», а карту решений с рисками. Это и есть работа аналитика.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">«Покажи, что работает»</div>
+                <div class="case-context">
+                    Руководитель просит подготовить данные к стейкхолдер-митингу. Фраза: «Покажи, что фича работает». У вас: primary +6%, один сегмент &minus;4%, guardrail NPS снизился на 3 пункта. Два варианта подачи: (1) «Primary +6%, фича работает» — удобный; (2) «Primary +6%, но сегмент X &minus;4%, NPS &minus;3» — честный.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Реальная дилемма</div>
+                        <div class="mini-case-analysis-value">Давление на подачу vs. профессиональная ответственность. «Удобный» вывод создаёт иллюзию, которая рассыпется при первом вопросе</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Зона ответственности</div>
+                        <div class="mini-case-analysis-value">Аналитик не обязан «показать, что работает». Обязан показать, что происходит. Включая неудобное</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">Подать только позитив — и потерять доверие, когда проблемы всплывут</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Сильная формулировка</div>
+                        <div class="mini-case-analysis-value">«Фича показала +6% по primary, но с оговорками: сегмент X отреагировал негативно, NPS просел. Рекомендую катить с мониторингом сегмента X и NPS»</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Null результат: повторять или менять гипотезу?</div>
+                <div class="case-context">
+                    Месяц A/B-теста. Primary: 0%, не значимо. Менеджер: «Давай повторим с другими параметрами». Но diagnostic метрики тоже не сдвинулись: engagement, time on page, клики — всё стабильно. Механизм не включился. Это не «не хватило мощности» — это «гипотеза неверна».
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Реальная дилемма</div>
+                        <div class="mini-case-analysis-value">Команда вложила месяц работы. Признать null = признать, что идея не сработала. Повторять легче, чем пересматривать</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Зона ответственности</div>
+                        <div class="mini-case-analysis-value">Различить «недостаточно данных» и «механизм не работает». Diagnostic без движения = вторая ситуация</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Не хватило мощности — повторим» без анализа diagnostic. Потеря ещё одного месяца</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Сильная формулировка</div>
+                        <div class="mini-case-analysis-value">«Результат null, но diagnostic тоже не сдвинулись — механизм не включился. Повтор с теми же параметрами маловероятно даст результат. Рекомендую: пересмотреть гипотезу, а не параметры теста»</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Primary растёт, ключевой сегмент падает</div>
+                <div class="case-context">
+                    A/B-тест нового интерфейса. Primary (конверсия): +5%. Но самый ценный сегмент (enterprise-клиенты, 60% выручки) показал &minus;3%. Рост primary за счёт mass-market сегмента с низким ARPU. В агрегате — «зелёное», но по бизнесу — тревога.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Реальная дилемма</div>
+                        <div class="mini-case-analysis-value">Формально тест положительный. Но рост за счёт дешёвого сегмента при потере дорогого — это потеря revenue, замаскированная ростом конверсии</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Зона ответственности</div>
+                        <div class="mini-case-analysis-value">Показать, что агрегат скрывает конфликт. Primary — не единственный критерий, когда сегменты разнонаправлены</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Primary +5%, катим» без сегментации. Enterprise уходит тихо — эффект проявится через 2–3 месяца</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Сильная формулировка</div>
+                        <div class="mini-case-analysis-value">«Конверсия +5% в агрегате, но enterprise (&minus;3%, 60% revenue) отреагировал негативно. Рекомендую: не катить глобально. Запустить для mass-market, для enterprise — итерировать. Мониторить ARPU и churn enterprise»</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Guardrail чуть ухудшился, primary сильно вырос</div>
+                <div class="case-context">
+                    Тест нового алгоритма поиска. Primary (click-through): +15%. Guardrail (diversity результатов): &minus;4%. Формально guardrail не нарушен критически (порог &minus;5%), но тренд тревожный. PM: «Guardrail в норме — катим».
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Реальная дилемма</div>
+                        <div class="mini-case-analysis-value">Guardrail &minus;4% при пороге &minus;5%: формально ОК, но trend = ещё не проявившаяся проблема. +15% primary создаёт сильное давление катить</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Зона ответственности</div>
+                        <div class="mini-case-analysis-value">Guardrail рядом с порогом — это не «ОК», это «ещё не красный, но уже жёлтый». Тренд важнее snapshot'а</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Не превышен порог — значит, всё в норме». Через 2 месяца diversity может просесть до &minus;8%, а пересмотреть алгоритм будет поздно</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Сильная формулировка</div>
+                        <div class="mini-case-analysis-value">«Primary +15% — сильный результат. Diversity &minus;4% — формально в норме, но близко к порогу. Рекомендую: катить с обязательным мониторингом diversity (недельные срезы, 6 недель). Если diversity продолжит падать — план отката»</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

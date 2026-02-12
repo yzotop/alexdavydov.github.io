@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 4. Время, лаги и динамика</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .sim-interactive .sim-title { font-size: 1.2rem; }
+        .sim-interactive .sim-description { max-width: 600px; }
+
+        .sim-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+            max-width: 500px;
+        }
+        .sim-control-group {
+            display: flex; flex-direction: column; gap: 0.35rem;
+        }
+        .sim-control-label { font-size: 0.8rem; color: #666; font-weight: 500; }
+        .sim-control-value {
+            font-size: 0.75rem; color: #999; font-variant-numeric: tabular-nums;
+        }
+        .sim-control-group input[type="range"] {
+            width: 100%; accent-color: #1a1a1a;
+        }
+        .sim-toggle-group {
+            grid-column: 1 / -1;
+            display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+        }
+        .sim-toggle-btn {
+            padding: 0.4rem 0.9rem; font-size: 0.8rem;
+            border: 1px solid #e8e8e8; border-radius: 4px;
+            background: #fff; color: #666; cursor: pointer;
+            transition: all 0.15s ease; font-family: inherit;
+        }
+        .sim-toggle-btn.active {
+            background: #1a1a1a; color: #fff; border-color: #1a1a1a;
+        }
+
+        .sim-chart-wrap {
+            position: relative; width: 100%; max-width: 600px;
+            height: 260px; margin: 1.5rem 0 0.5rem 0;
+        }
+        .sim-chart-wrap canvas { width: 100%; height: 100%; }
+        .sim-chart-legend {
+            display: flex; gap: 1.5rem; margin-bottom: 0.5rem;
+            font-size: 0.75rem; color: #666;
+        }
+        .sim-chart-legend span::before {
+            content: ''; display: inline-block; width: 12px; height: 2px;
+            margin-right: 0.35rem; vertical-align: middle;
+        }
+        .legend-test::before { background: #1a1a1a; }
+        .legend-control::before { background: #ccc; }
+        .legend-delta::before { background: #4a9; }
+
+        /* Delta chart (smaller) */
+        .sim-delta-wrap {
+            position: relative; width: 100%; max-width: 600px;
+            height: 100px; margin: 0.5rem 0 1rem 0;
+        }
+        .sim-delta-wrap canvas { width: 100%; height: 100%; }
+
+        .sim-reading {
+            font-size: 0.85rem; line-height: 1.5; color: #666;
+            font-style: italic; margin-top: 1rem; max-width: 600px;
+        }
+
+        /* Window sim */
+        .window-bracket {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+            max-width: 600px;
+        }
+        .window-result-card {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            max-width: 600px;
+            flex-wrap: wrap;
+        }
+        .window-result-item {
+            flex: 1; min-width: 140px;
+            padding: 0.75rem 1rem;
+            background: #fff; border: 1px solid #e8e8e8; border-radius: 4px;
+        }
+        .window-result-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.25rem; font-weight: 500;
+        }
+        .window-result-value {
+            font-size: 0.95rem; font-weight: 500; color: #1a1a1a;
+        }
+        .window-result-risk {
+            font-size: 0.8rem; color: #666; margin-top: 0.15rem;
+        }
+
+        @media (max-width: 600px) {
+            .sim-controls { grid-template-columns: 1fr; }
+            .window-result-card { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 4</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 4. Время, лаги и динамика</p>
+
+        <!-- Simulator 1: Effect Shapes -->
+        <div class="sim-interactive" id="shapes-sim">
+            <div class="sim-title">Симулятор форм эффекта</div>
+            <div class="sim-description">
+                Выберите форму эффекта и настройте параметры. Наблюдайте, как меняется траектория метрики и дельта — и на каком окне вывод был бы ошибочным.
+            </div>
+
+            <div class="sim-controls">
+                <div class="sim-toggle-group">
+                    <button class="sim-toggle-btn active" data-shape="step">Step</button>
+                    <button class="sim-toggle-btn" data-shape="ramp">Ramp-up</button>
+                    <button class="sim-toggle-btn" data-shape="decay">Decay</button>
+                    <button class="sim-toggle-btn" data-shape="novelty">Novelty</button>
+                    <button class="sim-toggle-btn" data-shape="rebound">Rebound</button>
+                    <button class="sim-toggle-btn" data-shape="regime">Regime</button>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Сила эффекта</label>
+                    <input type="range" id="shape-strength" min="5" max="40" value="20" step="5">
+                    <span class="sim-control-value" id="shape-strength-val">20</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Лаг (периоды)</label>
+                    <input type="range" id="shape-lag" min="0" max="10" value="2" step="1">
+                    <span class="sim-control-value" id="shape-lag-val">2</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Шум</label>
+                    <input type="range" id="shape-noise" min="0" max="30" value="5" step="5">
+                    <span class="sim-control-value" id="shape-noise-val">5</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Скорость затухания</label>
+                    <input type="range" id="shape-decay" min="1" max="10" value="5" step="1">
+                    <span class="sim-control-value" id="shape-decay-val">5</span>
+                </div>
+            </div>
+
+            <div class="sim-chart-legend">
+                <span class="legend-test">Тест</span>
+                <span class="legend-control">Контроль</span>
+            </div>
+            <div class="sim-chart-wrap">
+                <canvas id="shapes-chart"></canvas>
+            </div>
+            <div class="sim-chart-legend">
+                <span class="legend-delta">Дельта (тест &minus; контроль)</span>
+            </div>
+            <div class="sim-delta-wrap">
+                <canvas id="delta-chart"></canvas>
+            </div>
+            <div class="sim-reading" id="shapes-reading"></div>
+        </div>
+
+        <!-- Simulator 2: Window vs Conclusion -->
+        <div class="sim-interactive" id="window-sim">
+            <div class="sim-title">Окно наблюдения vs вывод</div>
+            <div class="sim-description">
+                Фиксированная траектория (novelty → decay → rebound). Двигайте границы окна — и смотрите, как меняется оценка дельты и интерпретация.
+            </div>
+
+            <div class="sim-controls" style="max-width:500px;">
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Начало окна (период)</label>
+                    <input type="range" id="win-start" min="0" max="35" value="0" step="1">
+                    <span class="sim-control-value" id="win-start-val">0</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Конец окна (период)</label>
+                    <input type="range" id="win-end" min="3" max="40" value="7" step="1">
+                    <span class="sim-control-value" id="win-end-val">7</span>
+                </div>
+            </div>
+
+            <div class="sim-chart-legend">
+                <span class="legend-delta">Дельта</span>
+            </div>
+            <div class="sim-chart-wrap" style="height:200px;">
+                <canvas id="window-chart"></canvas>
+            </div>
+
+            <div class="window-result-card" id="window-results">
+                <div class="window-result-item">
+                    <div class="window-result-label">Средняя дельта</div>
+                    <div class="window-result-value" id="win-delta">+10.2%</div>
+                </div>
+                <div class="window-result-item">
+                    <div class="window-result-label">Интерпретация</div>
+                    <div class="window-result-value" id="win-interp">Новизна</div>
+                </div>
+                <div class="window-result-item">
+                    <div class="window-result-label">Риск</div>
+                    <div class="window-result-risk" id="win-risk">Слишком рано</div>
+                </div>
+            </div>
+
+            <div class="sim-reading" id="window-reading"></div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    /* ==============================
+       Shared helpers
+       ============================== */
+    function seededRng(seed) {
+        var s = seed;
+        return function() { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+    }
+
+    function setDPR(canvas) {
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        var ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx: ctx, W: rect.width, H: rect.height };
+    }
+
+    function drawLine(ctx, data, W, H, padL, padR, padT, padB, minV, maxV, color, lw) {
+        var plotW = W - padL - padR, plotH = H - padT - padB;
+        var range = maxV - minV || 1;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lw || 2;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for (var i = 0; i < data.length; i++) {
+            var x = padL + plotW * (i / (data.length - 1));
+            var y = padT + plotH * (1 - (data[i] - minV) / range);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    }
+
+    function drawGrid(ctx, W, H, padL, padR, padT, padB, minV, maxV, steps) {
+        var plotH = H - padT - padB;
+        var range = maxV - minV || 1;
+        ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 1;
+        ctx.fillStyle = '#999'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'right';
+        for (var i = 0; i <= (steps||4); i++) {
+            var y = padT + plotH * (i / (steps||4));
+            ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+            var val = maxV - range * (i / (steps||4));
+            ctx.fillText(Math.round(val), padL - 5, y + 3);
+        }
+    }
+
+    /* ==============================
+       Simulator 1: Effect Shapes
+       ============================== */
+    (function() {
+        var mainCanvas = document.getElementById('shapes-chart');
+        var deltaCanvas = document.getElementById('delta-chart');
+        var strengthEl = document.getElementById('shape-strength');
+        var lagEl = document.getElementById('shape-lag');
+        var noiseEl = document.getElementById('shape-noise');
+        var decayEl = document.getElementById('shape-decay');
+        var readingEl = document.getElementById('shapes-reading');
+        var shapeBtns = document.querySelectorAll('#shapes-sim .sim-toggle-btn');
+
+        var shape = 'step';
+        var STEPS = 42;
+        var BASE = 100;
+
+        function genShape(str, lag, noise, decayRate, sh) {
+            var rng = seededRng(7);
+            var control = [], test = [];
+            var s = str;
+            var d = decayRate / 10;
+
+            for (var t = 0; t < STEPS; t++) {
+                var n = (rng() - 0.5) * noise * 2;
+                control[t] = BASE + (rng() - 0.5) * noise;
+                var eff = t < lag ? 0 : (function(tt) {
+                    var a = tt - lag;
+                    switch(sh) {
+                        case 'step': return s;
+                        case 'ramp': return s * (1 - Math.exp(-a * d * 0.3));
+                        case 'decay': return s * Math.exp(-a * d * 0.08);
+                        case 'novelty': return s * Math.exp(-a * d * 0.15);
+                        case 'rebound':
+                            var peak = s * Math.exp(-a * d * 0.1);
+                            var back = a > 10/d ? -(s * 0.4) * (1 - Math.exp(-(a - 10/d) * d * 0.1)) : 0;
+                            return peak + back;
+                        case 'regime':
+                            var threshold = 20 - lag;
+                            return a < threshold ? s * 0.05 * a / threshold : s * (0.05 + 0.95 * (1 - Math.exp(-(a - threshold) * 0.3)));
+                        default: return 0;
+                    }
+                })(t);
+                test[t] = BASE + eff + n;
+            }
+            return { control: control, test: test };
+        }
+
+        function draw() {
+            var str = +strengthEl.value;
+            var lag = +lagEl.value;
+            var noise = +noiseEl.value;
+            var decayRate = +decayEl.value;
+
+            document.getElementById('shape-strength-val').textContent = str;
+            document.getElementById('shape-lag-val').textContent = lag;
+            document.getElementById('shape-noise-val').textContent = noise;
+            document.getElementById('shape-decay-val').textContent = decayRate;
+
+            var d = genShape(str, lag, noise, decayRate, shape);
+            var all = d.control.concat(d.test);
+            var minV = Math.min.apply(null, all) - 5;
+            var maxV = Math.max.apply(null, all) + 5;
+
+            // Main chart
+            var m = setDPR(mainCanvas);
+            var pL=40, pR=10, pT=m.H*0.05, pB=m.H*0.1;
+            m.ctx.clearRect(0, 0, m.W, m.H);
+            drawGrid(m.ctx, m.W, m.H, pL, pR, pT, pB, minV, maxV, 4);
+            drawLine(m.ctx, d.control, m.W, m.H, pL, pR, pT, pB, minV, maxV, '#ccc', 1.5);
+            drawLine(m.ctx, d.test, m.W, m.H, pL, pR, pT, pB, minV, maxV, '#1a1a1a', 2);
+
+            // Delta chart
+            var delta = d.test.map(function(v, i) { return v - d.control[i]; });
+            var dMin = Math.min.apply(null, delta) - 3;
+            var dMax = Math.max.apply(null, delta) + 3;
+            var dc = setDPR(deltaCanvas);
+            var dpT=dc.H*0.1, dpB=dc.H*0.12;
+            dc.ctx.clearRect(0, 0, dc.W, dc.H);
+            drawGrid(dc.ctx, dc.W, dc.H, pL, pR, dpT, dpB, dMin, dMax, 2);
+            // Zero line
+            var zeroY = dpT + (dc.H - dpT - dpB) * (1 - (0 - dMin) / (dMax - dMin));
+            dc.ctx.strokeStyle = '#e8e8e8'; dc.ctx.lineWidth = 1;
+            dc.ctx.setLineDash([3,3]);
+            dc.ctx.beginPath(); dc.ctx.moveTo(pL, zeroY); dc.ctx.lineTo(dc.W - pR, zeroY); dc.ctx.stroke();
+            dc.ctx.setLineDash([]);
+            drawLine(dc.ctx, delta, dc.W, dc.H, pL, pR, dpT, dpB, dMin, dMax, '#4a9', 2);
+
+            updateReading(str, lag, shape);
+        }
+
+        var shapeReadings = {
+            step: 'Step: мгновенный сдвиг на новый уровень. Ошибочное окно — первые 2–3 дня (может показаться novelty, если есть шум).',
+            ramp: 'Ramp-up: эффект нарастает. На коротком окне кажется, что эффекта нет или он слабый. Опасно остановить наблюдение слишком рано.',
+            decay: 'Decay: пик в начале, затем затухание. Оценка по первой неделе переоценит устойчивый эффект в 2–5 раз.',
+            novelty: 'Novelty spike: всплеск новизны, быстрое возвращение к базе. Любое окно короче 3 недель даст завышенную оценку.',
+            rebound: 'Rebound: рост, затем откат ниже нуля. На коротком окне — «успех». На длинном — деградация. Самая дорогая ловушка.',
+            regime: 'Regime shift: долгое «ничего», потом резкий перелом. Остановка наблюдения до перелома — ложный вывод «нет эффекта».'
+        };
+
+        function updateReading(str, lag, sh) {
+            readingEl.textContent = shapeReadings[sh] || '';
+        }
+
+        shapeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                shape = this.dataset.shape;
+                shapeBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                draw();
+            });
+        });
+
+        [strengthEl, lagEl, noiseEl, decayEl].forEach(function(el) {
+            el.addEventListener('input', draw);
+        });
+        window.addEventListener('resize', draw);
+        draw();
+    })();
+
+    /* ==============================
+       Simulator 2: Window vs Conclusion
+       ============================== */
+    (function() {
+        var canvas = document.getElementById('window-chart');
+        var startEl = document.getElementById('win-start');
+        var endEl = document.getElementById('win-end');
+        var startValEl = document.getElementById('win-start-val');
+        var endValEl = document.getElementById('win-end-val');
+        var deltaEl = document.getElementById('win-delta');
+        var interpEl = document.getElementById('win-interp');
+        var riskEl = document.getElementById('win-risk');
+        var readingEl = document.getElementById('window-reading');
+
+        var STEPS = 42;
+        // Fixed trajectory: novelty → decay → rebound
+        var trajectory = [];
+        (function() {
+            var rng = seededRng(13);
+            for (var t = 0; t < STEPS; t++) {
+                var novelty = 18 * Math.exp(-t * 0.12);
+                var rebound = t > 15 ? -8 * (1 - Math.exp(-(t - 15) * 0.08)) : 0;
+                var n = (rng() - 0.5) * 3;
+                trajectory[t] = novelty + rebound + n;
+            }
+        })();
+
+        function draw() {
+            var ws = +startEl.value;
+            var we = +endEl.value;
+            if (we <= ws) we = ws + 1;
+
+            startValEl.textContent = ws;
+            endValEl.textContent = we;
+
+            var c = setDPR(canvas);
+            var pL = 40, pR = 10, pT = c.H * 0.08, pB = c.H * 0.12;
+
+            var minV = Math.min.apply(null, trajectory) - 3;
+            var maxV = Math.max.apply(null, trajectory) + 3;
+
+            c.ctx.clearRect(0, 0, c.W, c.H);
+            drawGrid(c.ctx, c.W, c.H, pL, pR, pT, pB, minV, maxV, 3);
+
+            // Zero line
+            var plotH = c.H - pT - pB;
+            var range = maxV - minV;
+            var zeroY = pT + plotH * (1 - (0 - minV) / range);
+            c.ctx.strokeStyle = '#e8e8e8'; c.ctx.lineWidth = 1;
+            c.ctx.setLineDash([3,3]);
+            c.ctx.beginPath(); c.ctx.moveTo(pL, zeroY); c.ctx.lineTo(c.W - pR, zeroY); c.ctx.stroke();
+            c.ctx.setLineDash([]);
+
+            // Window highlight
+            var plotW = c.W - pL - pR;
+            var x1 = pL + plotW * (ws / (STEPS - 1));
+            var x2 = pL + plotW * (we / (STEPS - 1));
+            c.ctx.fillStyle = 'rgba(74, 170, 153, 0.08)';
+            c.ctx.fillRect(x1, pT, x2 - x1, plotH);
+            c.ctx.strokeStyle = 'rgba(74, 170, 153, 0.3)';
+            c.ctx.lineWidth = 1;
+            c.ctx.strokeRect(x1, pT, x2 - x1, plotH);
+
+            // Trajectory
+            drawLine(c.ctx, trajectory, c.W, c.H, pL, pR, pT, pB, minV, maxV, '#4a9', 2);
+
+            // Compute avg delta in window
+            var sum = 0, cnt = 0;
+            for (var i = ws; i <= Math.min(we, STEPS - 1); i++) {
+                sum += trajectory[i]; cnt++;
+            }
+            var avgDelta = cnt > 0 ? sum / cnt : 0;
+
+            deltaEl.textContent = (avgDelta >= 0 ? '+' : '') + avgDelta.toFixed(1) + '%';
+            deltaEl.style.color = avgDelta >= 0 ? '#1a1a1a' : '#c66';
+
+            // Interpretation
+            var interp, risk;
+            if (we <= 7) {
+                interp = 'Новизна';
+                risk = 'Слишком рано — видите пик, а не устойчивый эффект';
+            } else if (ws <= 3 && we <= 14) {
+                interp = 'Смесь новизны и затухания';
+                risk = 'Оценка завышена — новизна ещё в окне';
+            } else if (ws >= 7 && we <= 20) {
+                interp = 'Затухание';
+                risk = avgDelta > 2 ? 'Возможно устойчивый остаток' : 'Эффект почти исчез';
+            } else if (ws >= 7 && we >= 25) {
+                interp = avgDelta < -1 ? 'Деградация (rebound)' : 'Устойчивый эффект';
+                risk = avgDelta < -1 ? 'Пропустили деградацию, если смотрели только первые недели' : 'Надёжное окно — видите и затухание, и стабилизацию';
+            } else if (ws >= 20) {
+                interp = avgDelta < -1 ? 'Rebound / деградация' : 'Плато';
+                risk = avgDelta < -1 ? 'Побочный эффект проявился — нужен guardrail' : 'Поздний срез — проверьте, не пропустили ли вы ранний рост';
+            } else {
+                interp = 'Полная картина';
+                risk = we >= 30 ? 'Широкое окно — усредняет разные фазы' : 'Промежуточная оценка';
+            }
+
+            interpEl.textContent = interp;
+            riskEl.textContent = risk;
+
+            readingEl.textContent = 'Окно [' + ws + '–' + we + ']: средняя дельта ' + avgDelta.toFixed(1) + '%. ' + interp + '. Сдвиньте окно — и вывод изменится.';
+        }
+
+        startEl.addEventListener('input', function() {
+            if (+endEl.value <= +startEl.value + 2) endEl.value = +startEl.value + 3;
+            draw();
+        });
+        endEl.addEventListener('input', function() {
+            if (+startEl.value >= +endEl.value - 2) startEl.value = +endEl.value - 3;
+            draw();
+        });
+        window.addEventListener('resize', draw);
+        draw();
+    })();
+    </script>
+</body>
+</html>

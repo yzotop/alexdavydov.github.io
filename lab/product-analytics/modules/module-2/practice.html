@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 2. Метрики и их смысл</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Expanded case */
+        .case-expanded {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .case-expanded .case-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .case-expanded .case-setup {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+        .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .phase-item {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+        .phase-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .phase-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.35rem;
+        }
+        .phase-text {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+        }
+        .phase-metrics {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.35rem;
+            font-style: italic;
+        }
+        .case-decision {
+            padding: 1rem 1.25rem;
+            background: #f5f5f0;
+            border-left: 3px solid #d0cec0;
+            margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .case-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        /* Questions block */
+        .questions-block {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .questions-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .questions-list li {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+        .questions-list li:before {
+            content: "?";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-weight: 500;
+        }
+
+        /* Mini cases */
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+        .mini-case .case-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .mini-case .case-context {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+        .mini-case .case-question {
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+        }
+        .mini-case-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item {
+            font-size: 0.8rem;
+            line-height: 1.45;
+        }
+        .mini-case-analysis-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #999;
+            margin-bottom: 0.2rem;
+            font-weight: 500;
+        }
+        .mini-case-analysis-value {
+            color: #1a1a1a;
+        }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 2</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 2. Метрики и их смысл</p>
+
+        <!-- Flagship case: OKR по DAU -->
+        <div class="case-expanded">
+            <div class="case-title">OKR по DAU</div>
+            <div class="case-setup">
+                Продуктовая команда поставила OKR: вырастить DAU на 15% за квартал. Инструменты: push-уведомления, ежедневные бонусы, облегчённый онбординг. К концу квартала — DAU +18%. Одновременно: revenue/user &minus;12%, NPS снизился на 8 пунктов, доля пользователей с ≥3 сессиями в неделю упала.
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Дано</div>
+                    <div class="phase-text">
+                        Цель квартала: DAU +15%. Команда получила бюджет на рост. Запущены push-кампании, ежедневная геймификация (streak-бонусы), упрощён вход для новых пользователей. В конце квартала DAU +18% — формально цель перевыполнена.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Симптомы</div>
+                    <div class="phase-title">Что показали метрики</div>
+                    <div class="phase-text">
+                        DAU +18%. Revenue/user &minus;12%. NPS &minus;8 пунктов. Доля «ядра» (пользователи с ≥3 сессий/неделю и ≥1 целевым действием) в DAU снизилась с 45% до 32%. Retention D7 новых когорт — ниже на 20% vs. органика прошлого квартала.
+                    </div>
+                    <div class="phase-metrics">Сигнал: DAU растёт, но структура аудитории размывается</div>
+                </div>
+
+                <div class="questions-block">
+                    <div class="questions-block-label">Вопросы для разбора</div>
+                    <ol class="questions-list">
+                        <li>Какую реальную цель стояла за OKR по DAU?</li>
+                        <li>Какой механизм связывает DAU с ценностью продукта — и сработал ли он?</li>
+                        <li>Почему DAU вырос, а revenue/user упал — что за сегмент пришёл?</li>
+                        <li>В какой момент DAU перестал быть хорошим прокси — и как бы вы это заметили раньше?</li>
+                        <li>Какую метрику стоило сделать primary вместо DAU?</li>
+                        <li>Какие guardrails остановили бы деградацию раньше?</li>
+                        <li>Стоит ли считать квартал успешным — и как объяснить это стейкхолдерам?</li>
+                    </ol>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор · ход мыслей</div>
+                    <div class="phase-title">Почему DAU оказался плохим surrogate</div>
+                    <div class="phase-text">
+                        Реальная цель — рост здоровой аудитории: пользователей, которые получают ценность, возвращаются сами и генерируют выручку. DAU коррелировал с этой целью при органическом росте, но при искусственном стимулировании корреляция разорвалась. Push-и и streak-бонусы привлекли пользователей с низким intent — они заходят, но не совершают целевых действий. Доля ядра в DAU снизилась, ARPU упал, NPS ухудшился из-за более агрессивного UX (пуши, баннеры). Это классический Goodhart: когда метрика стала целью оптимизации, она перестала измерять то, ради чего была создана.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Итог: решение и риски</div>
+                <p>
+                    Заменить primary на «weekly active users с ≥1 целевым действием». Добавить guardrails: revenue/user не падает более 5%, retention D14 новых когорт не ниже baseline, NPS не снижается. Риск: новая метрика сложнее для коммуникации и требует инфраструктуры для трекинга целевых действий. Но она защищает от повторения Goodhart-ловушки.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Конверсия после редизайна карточки товара</div>
+                <div class="case-context">
+                    E-commerce: после редизайна карточки товара конверсия в покупку +8%. Средний чек &minus;15%. Доля возвратов выросла на 4 п.п. Новый дизайн упрощает покупку, но скрывает детали — пользователи покупают быстрее, но менее осознанно.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Подмена</div>
+                        <div class="mini-case-analysis-value">Конверсия — прокси для выручки, но не учитывает чек и возвраты</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Метрика-цель</div>
+                        <div class="mini-case-analysis-value">Revenue per visitor или gross margin per order</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Guardrails</div>
+                        <div class="mini-case-analysis-value">Средний чек, return rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Оптимизация времени в приложении</div>
+                <div class="case-context">
+                    Новостное приложение добавило бесконечную ленту рекомендаций. Время сессии выросло на 20%. Но дочитывания статей до конца упали на 30%, а уникальные сессии в неделю снизились. Пользователи скроллят дольше, но читают меньше и приходят реже.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Подмена</div>
+                        <div class="mini-case-analysis-value">Время сессии — прокси для вовлечённости, но бесконечный скролл ≠ ценность</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Метрика-цель</div>
+                        <div class="mini-case-analysis-value">Статьи, дочитанные до конца, за неделю</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Guardrails</div>
+                        <div class="mini-case-analysis-value">Weekly sessions, scroll-to-read ratio</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Транзакции как north star</div>
+                <div class="case-context">
+                    Финтех-сервис использует «количество транзакций» как north star. После программы лояльности транзакции +30%. Но 60% прироста — микротранзакции ради бонусов: переводы по 1 рублю между своими счетами. Метрика выросла, реальная активность — нет.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Подмена</div>
+                        <div class="mini-case-analysis-value">Goodhart: пользователи оптимизируют метрику вместе с командой</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Метрика-цель</div>
+                        <div class="mini-case-analysis-value">Транзакции ≥ порогового чека или unique payees/week</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Guardrails</div>
+                        <div class="mini-case-analysis-value">Median transaction amount, доля органических транзакций</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Одинаковый retention — разная форма</div>
+                <div class="case-context">
+                    Две когорты подписочного сервиса: retention D30 у обеих 45%. Но когорта A теряет пользователей плавно (каждый день &minus;2–3%), а когорта B — резкий обрыв на D7 (&minus;40%) и затем плато. У A будет плавное снижение дальше. У B — устойчивое ядро, которое уже прошло отсев.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Подмена</div>
+                        <div class="mini-case-analysis-value">Одно число (retention D30) скрывает форму кривой и прогноз</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Метрика-цель</div>
+                        <div class="mini-case-analysis-value">Retention curve shape + LTV прогноз на D90</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Guardrails</div>
+                        <div class="mini-case-analysis-value">D7 retention, churn velocity (скорость оттока)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 6. Эксперимент как инструмент понимания</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .chain-schema {
+            display: flex; align-items: stretch; gap: 0; margin: 2rem 0 2.5rem 0; max-width: 700px;
+        }
+        .chain-step {
+            flex: 1; padding: 1rem 1rem; background: #fafafa;
+            border: 1px solid #e8e8e8; position: relative;
+        }
+        .chain-step:first-child { border-radius: 6px 0 0 6px; }
+        .chain-step:last-child { border-radius: 0 6px 6px 0; }
+        .chain-step + .chain-step { border-left: none; }
+        .chain-step-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.25rem; font-weight: 500;
+        }
+        .chain-step-text { font-size: 0.8rem; line-height: 1.4; color: #1a1a1a; }
+        .chain-step-error { font-size: 0.7rem; line-height: 1.35; color: #999; font-style: italic; margin-top: 0.3rem; }
+        .chain-arrow {
+            display: flex; align-items: center; color: #ccc; font-size: 1.2rem;
+            padding: 0 0.1rem; flex-shrink: 0;
+        }
+
+        .example-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+        }
+        .example-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+        .example-chain { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 1rem; }
+        .example-chain-item { display: flex; gap: 0.75rem; align-items: baseline; }
+        .example-chain-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+            color: #999; min-width: 140px; flex-shrink: 0; font-weight: 500;
+        }
+        .example-chain-value { font-size: 0.9rem; line-height: 1.5; color: #1a1a1a; }
+
+        .result-chips {
+            display: flex; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap;
+        }
+        .result-chip {
+            padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #e8e8e8; background: #fff;
+        }
+        .result-chip.positive { border-color: #b8cdb8; color: #3a7; }
+        .result-chip.negative { border-color: #d4a0a0; color: #a55; }
+        .result-chip.neutral { border-color: #e8e8e8; color: #999; }
+
+        .error-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fff8f6; border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; color: #1a1a1a; }
+        .error-block p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+        .error-block .error-wrong { color: #996; font-style: italic; margin-bottom: 0.5rem; }
+
+        .principles-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #f5f8f5; border-left: 3px solid #b8cdb8;
+        }
+        .principles-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+        .principle-item {
+            margin-bottom: 0.6rem; font-size: 0.9rem; line-height: 1.55; color: #1a1a1a;
+            padding-left: 1.25rem; position: relative;
+        }
+        .principle-item:before {
+            content: "\2022"; position: absolute; left: 0; color: #999;
+        }
+        .principle-emphasis { font-weight: 500; }
+
+        .outcome-list { list-style: none; padding-left: 0; }
+        .outcome-list li {
+            font-size: 0.9rem; line-height: 1.6; color: #1a1a1a;
+            margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714"; position: absolute; left: 0; color: #999; font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .chain-schema { flex-direction: column; }
+            .chain-step + .chain-step { border-left: 1px solid #e8e8e8; border-top: none; }
+            .chain-step:first-child { border-radius: 6px 6px 0 0; }
+            .chain-step:last-child { border-radius: 0 0 6px 6px; }
+            .chain-arrow { justify-content: center; padding: 0.15rem 0; transform: rotate(90deg); }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 6
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 6. Эксперимент как инструмент понимания</h1>
+
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Эксперимент — не машина для измерения дельты. Это способ проверить гипотезу о механизме: «мы думаем, что если сделаем X, произойдёт Y через механизм Z». Результат эксперимента отвечает не на вопрос «выросло или нет», а на вопрос «работает ли механизм, который мы предположили».
+            </p>
+            <p>
+                Типовая ошибка — свести результат к одной строке: «+5%, p&lt;0.05, катим». Это игнорирует guardrails, форму эффекта, сегменты и механизм. Primary выросла — но за счёт чего? Для кого? Что сломалось рядом? Без ответов на эти вопросы решение основано на числе, а не на понимании.
+            </p>
+        </section>
+
+        <!-- Experiment structure -->
+        <section class="section">
+            <h2>Структура хорошего эксперимента</h2>
+
+            <div class="chain-schema">
+                <div class="chain-step">
+                    <div class="chain-step-label">Гипотеза</div>
+                    <div class="chain-step-text">Что мы предполагаем</div>
+                    <div class="chain-step-error">Нет гипотезы = «посмотрим, что будет»</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Механизм</div>
+                    <div class="chain-step-text">Через что это должно работать</div>
+                    <div class="chain-step-error">Нет механизма = стрельба по метрике</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Primary</div>
+                    <div class="chain-step-text">Что измеряем</div>
+                    <div class="chain-step-error">Primary без связи с механизмом = ловушка Goodhart</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Diagnostic</div>
+                    <div class="chain-step-text">Что объясняет результат</div>
+                    <div class="chain-step-error">Без diagnostic: «выросло, но не знаем почему»</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Guardrails</div>
+                    <div class="chain-step-text">Что ограничивает вред</div>
+                    <div class="chain-step-error">Без приоритета = игнорируется при росте primary</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Решение</div>
+                    <div class="chain-step-text">Go / no-go / iterate</div>
+                    <div class="chain-step-error">Решение по одной метрике = иллюзия</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flagship example -->
+        <div class="example-block">
+            <h3>Пример: новый онбординг</h3>
+
+            <div class="result-chips">
+                <span class="result-chip positive">Primary: конверсия +5%, p&lt;0.05</span>
+                <span class="result-chip negative">Guardrail: время до покупки +40%</span>
+                <span class="result-chip neutral">Retention D14: без изменений</span>
+            </div>
+
+            <div class="example-chain">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Ожидаемый механизм</span>
+                    <span class="example-chain-value">Новый онбординг помогает понять ценность продукта быстрее → пользователь покупает осознаннее и раньше</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что произошло</span>
+                    <span class="example-chain-value">Конверсия выросла, но время до покупки увеличилось на 40%. Онбординг не ускорил решение — он создал больше «точек давления» (баннеры, напоминания), которые конвертируют, но не убеждают</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что значит +40% времени</span>
+                    <span class="example-chain-value">Пользователи покупают не потому, что поняли ценность, а потому, что устали от давления. Это не осознанная конверсия — это compliance. Retention D14 не вырос — подтверждение</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Решение</span>
+                    <span class="example-chain-value">Не катить. Primary формально положительная, но механизм сломан: рост конверсии за счёт давления, а не ценности. Guardrail сигнализирует. Следующий шаг: итерация онбординга без pressure-элементов, проверка связи «понимание → покупка»</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«Primary +5%, p&lt;0.05 — тест положительный, катим.»</p>
+            <p>
+                p&lt;0.05 говорит, что разница не случайна. Не говорит, что она полезна. Рост primary при нарушенном guardrail означает: мы нашли способ двинуть метрику, но не через тот механизм, который хотели. Это не успех — это сигнал, что нужно разобраться.
+            </p>
+        </div>
+
+        <!-- 5 principles -->
+        <div class="principles-block">
+            <h3>Как читать эксперимент как систему</h3>
+            <div class="principle-item"><span class="principle-emphasis">Primary без guardrails — опасно.</span> Любая метрика растёт, если не ограничивать побочные эффекты</div>
+            <div class="principle-item"><span class="principle-emphasis">Конфликт метрик важнее дельты.</span> Primary +5% и guardrail &minus;10% — это не «+5%», это конфликт, требующий разбора</div>
+            <div class="principle-item"><span class="principle-emphasis">Null — тоже результат.</span> Отсутствие эффекта на primary при изменении diagnostic = механизм не работает, но что-то происходит</div>
+            <div class="principle-item"><span class="principle-emphasis">Сегменты важнее среднего.</span> +3% в среднем может быть +15% для одних и &minus;5% для других</div>
+            <div class="principle-item"><span class="principle-emphasis">Форма эффекта важнее финальной цифры.</span> +5% на первой неделе и +5% на шестой — разные истории о разных механизмах</div>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>Эксперимент как проверку механизма, а не как измерение дельты</li>
+                <li>Конфликт между primary и guardrail — и почему он ценнее, чем «всё зелёное»</li>
+                <li>Ситуации, когда положительная primary маскирует сломанный механизм</li>
+                <li>Null-результаты, которые несут больше информации, чем «значимый рост»</li>
+                <li>Как формулировать гипотезу так, чтобы эксперимент мог её опровергнуть</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>Алгоритм рекомендаций: CTR vs. diversity — развёрнутый кейс</li>
+                <li>Упрощение формы заявки: компенсирующие эффекты</li>
+                <li>Гарантия времени доставки: primary vs. stress системы</li>
+                <li>Primary только в одном регионе</li>
+                <li>Null result с изменением diagnostic</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Конструктор эксперимента</li>
+                <li>Primary vs Guardrail</li>
+                <li>Симулятор ложной уверенности</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-5/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../module-7/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>

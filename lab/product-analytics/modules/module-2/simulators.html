@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 2. Метрики и их смысл</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .sim-interactive .sim-title { font-size: 1.2rem; }
+        .sim-interactive .sim-description { max-width: 600px; }
+
+        /* Controls */
+        .sim-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+            max-width: 500px;
+        }
+        .sim-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .sim-control-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+        .sim-control-value {
+            font-size: 0.75rem;
+            color: #999;
+            font-variant-numeric: tabular-nums;
+        }
+        .sim-control-group input[type="range"] {
+            width: 100%;
+            accent-color: #1a1a1a;
+        }
+
+        /* Toggle buttons */
+        .sim-toggle-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .sim-toggle-btn {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.8rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fff;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .sim-toggle-btn.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        /* Chart */
+        .sim-chart-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 280px;
+            margin: 1.5rem 0 1rem 0;
+        }
+        .sim-chart-wrap canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .sim-chart-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        .sim-chart-legend span::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 2px;
+            margin-right: 0.35rem;
+            vertical-align: middle;
+        }
+        .legend-proxy::before { background: #1a1a1a; }
+        .legend-true::before { background: #4a9; }
+        .legend-diverge::before { background: #d88; width: 8px; height: 8px; border-radius: 50%; }
+
+        .sim-reading {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 600px;
+        }
+
+        /* Metric constructor */
+        .constructor-goals {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        .constructor-goal-btn {
+            padding: 0.45rem 0.9rem;
+            font-size: 0.85rem;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #fff;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .constructor-goal-btn:hover { border-color: #999; }
+        .constructor-goal-btn.active {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+
+        .constructor-result {
+            max-width: 600px;
+            display: none;
+        }
+        .constructor-result.visible { display: block; }
+
+        .metric-set-group {
+            margin-bottom: 1.25rem;
+        }
+        .metric-set-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .metric-set-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .metric-chip {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            color: #1a1a1a;
+        }
+        .metric-chip.chip-ns { border-color: #1a1a1a; font-weight: 500; }
+        .metric-chip.chip-proxy { border-left: 3px solid #aac; }
+        .metric-chip.chip-diag { border-left: 3px solid #ca9; }
+        .metric-chip.chip-guard { border-left: 3px solid #c99; }
+
+        .constructor-explanation {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #666;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        @media (max-width: 600px) {
+            .sim-controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 2</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 2. Метрики и их смысл</p>
+
+        <!-- Simulator 1: Metric vs Goal -->
+        <div class="sim-interactive" id="divergence-sim">
+            <div class="sim-title">Метрика vs Цель во времени</div>
+            <div class="sim-description">
+                Прокси-метрика и реальная ценность начинают двигаться вместе. Но при оптимизации прокси они расходятся. Выберите сценарий и параметры — наблюдайте, когда расхождение становится видимым.
+            </div>
+
+            <div class="sim-controls">
+                <div class="sim-toggle-group">
+                    <button class="sim-toggle-btn active" data-scenario="goodhart">Goodhart</button>
+                    <button class="sim-toggle-btn" data-scenario="mix-shift">Микс-шифт</button>
+                    <button class="sim-toggle-btn" data-scenario="noise">Шум</button>
+                    <button class="sim-toggle-btn" data-scenario="delay">Задержка</button>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Сила оптимизации</label>
+                    <input type="range" id="opt-strength" min="0" max="100" value="50" step="5">
+                    <span class="sim-control-value" id="opt-strength-val">50</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Лаг (периоды)</label>
+                    <input type="range" id="opt-lag" min="0" max="10" value="3" step="1">
+                    <span class="sim-control-value" id="opt-lag-val">3</span>
+                </div>
+            </div>
+
+            <div class="sim-chart-legend">
+                <span class="legend-proxy">Прокси-метрика</span>
+                <span class="legend-true">Реальная ценность</span>
+                <span class="legend-diverge">Точка расхождения</span>
+            </div>
+            <div class="sim-chart-wrap">
+                <canvas id="divergence-chart"></canvas>
+            </div>
+            <div class="sim-reading" id="divergence-reading">
+                Goodhart: чем сильнее оптимизация прокси, тем раньше она отвязывается от цели.
+            </div>
+        </div>
+
+        <!-- Simulator 2: Metric Constructor -->
+        <div class="sim-interactive" id="constructor-sim">
+            <div class="sim-title">Конструктор метрик под задачу</div>
+            <div class="sim-description">
+                Выберите бизнес-цель — и посмотрите рекомендованный набор метрик: north star, proxy, diagnostics и guardrails. С пояснением, почему именно они.
+            </div>
+
+            <div class="constructor-goals" id="constructor-goals">
+                <button class="constructor-goal-btn" data-goal="revenue">Рост выручки</button>
+                <button class="constructor-goal-btn" data-goal="retention">Удержание</button>
+                <button class="constructor-goal-btn" data-goal="quality">Качество продукта</button>
+            </div>
+
+            <div class="constructor-result" id="constructor-result"></div>
+
+            <div class="sim-reading" id="constructor-reading" style="min-height: 2em;">
+                Выберите бизнес-цель, чтобы увидеть рекомендованный набор метрик.
+            </div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    /* ==============================
+       Simulator 1: Metric vs Goal
+       ============================== */
+    (function() {
+        const canvas = document.getElementById('divergence-chart');
+        const ctx = canvas.getContext('2d');
+        const strengthEl = document.getElementById('opt-strength');
+        const lagEl = document.getElementById('opt-lag');
+        const strengthVal = document.getElementById('opt-strength-val');
+        const lagVal = document.getElementById('opt-lag-val');
+        const readingEl = document.getElementById('divergence-reading');
+        const scenarioBtns = document.querySelectorAll('#divergence-sim .sim-toggle-btn');
+
+        let scenario = 'goodhart';
+        const STEPS = 40;
+        const BASE = 100;
+
+        function setDPR() {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        // Simple seeded pseudo-random for consistent noise
+        function seededRandom(seed) {
+            let s = seed;
+            return function() {
+                s = (s * 16807 + 0) % 2147483647;
+                return (s - 1) / 2147483646;
+            };
+        }
+
+        function simulate(strength, lag, sc) {
+            const s = strength / 100;
+            const proxy = new Array(STEPS);
+            const truth = new Array(STEPS);
+            const rng = seededRandom(42);
+            let divergePoint = -1;
+
+            for (let t = 0; t < STEPS; t++) {
+                const phase = t / STEPS;
+
+                if (sc === 'goodhart') {
+                    // Proxy keeps climbing; truth peaks then falls
+                    proxy[t] = BASE + t * (1.5 + s * 2.5);
+                    const peakT = STEPS * (0.65 - s * 0.25);
+                    if (t < peakT) {
+                        truth[t] = BASE + t * (1.2 + s * 0.5);
+                    } else {
+                        const decay = (t - peakT) * (0.8 + s * 1.5);
+                        truth[t] = BASE + peakT * (1.2 + s * 0.5) - decay;
+                    }
+                } else if (sc === 'mix-shift') {
+                    // Both rise initially, then truth drops as mix changes
+                    proxy[t] = BASE + t * (1.0 + s * 1.8);
+                    const shiftStart = STEPS * 0.4;
+                    if (t < shiftStart) {
+                        truth[t] = BASE + t * (1.0 + s * 1.2);
+                    } else {
+                        const erosion = (t - shiftStart) * (0.5 + s * 1.2);
+                        truth[t] = BASE + shiftStart * (1.0 + s * 1.2) + (t - shiftStart) * 0.3 - erosion;
+                    }
+                } else if (sc === 'noise') {
+                    // Both trend up but proxy is noisy; hard to see divergence
+                    const trend = t * (0.8 + s * 0.8);
+                    const noise = (rng() - 0.5) * (15 + s * 25);
+                    proxy[t] = BASE + trend + noise;
+                    truth[t] = BASE + trend * (1 - s * 0.3 * phase);
+                } else if (sc === 'delay') {
+                    // Truth lags behind proxy
+                    proxy[t] = BASE + t * (1.2 + s * 2.0);
+                    const delayedT = Math.max(0, t - lag);
+                    truth[t] = BASE + delayedT * (1.0 + s * 1.0);
+                    // After enough time, truth reveals problems
+                    if (t > STEPS * 0.6) {
+                        truth[t] -= (t - STEPS * 0.6) * (0.5 + s * 1.0);
+                    }
+                }
+            }
+
+            // Find divergence point (where gap > threshold)
+            const threshold = 8 + (1 - s) * 12;
+            for (let t = 1; t < STEPS; t++) {
+                if (Math.abs(proxy[t] - truth[t]) > threshold) {
+                    divergePoint = t;
+                    break;
+                }
+            }
+
+            return { proxy, truth, divergePoint };
+        }
+
+        function draw() {
+            setDPR();
+            const rect = canvas.getBoundingClientRect();
+            const W = rect.width;
+            const H = rect.height;
+            const strength = +strengthEl.value;
+            const lag = +lagEl.value;
+
+            const { proxy, truth, divergePoint } = simulate(strength, lag, scenario);
+            const allVals = proxy.concat(truth);
+            const maxV = Math.max(...allVals) * 1.05;
+            const minV = Math.min(...allVals) * 0.95;
+            const range = maxV - minV || 1;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const padL = 40, padR = 10, padT = H * 0.05, padB = H * 0.08;
+            const plotW = W - padL - padR;
+            const plotH = H - padT - padB;
+
+            function xPos(t) { return padL + plotW * (t / (STEPS - 1)); }
+            function yPos(v) { return padT + plotH * (1 - (v - minV) / range); }
+
+            // Grid
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padT + plotH * (i / 4);
+                ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+            }
+
+            // Y labels
+            ctx.fillStyle = '#999';
+            ctx.font = '10px -apple-system, sans-serif';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const y = padT + plotH * (i / 4);
+                const val = maxV - (range) * (i / 4);
+                ctx.fillText(Math.round(val), padL - 5, y + 3);
+            }
+
+            // X labels
+            ctx.textAlign = 'center';
+            for (let i = 0; i < STEPS; i += 5) {
+                ctx.fillText(i, xPos(i), H - 2);
+            }
+
+            // Divergence point marker
+            if (divergePoint > 0) {
+                const dx = xPos(divergePoint);
+                ctx.fillStyle = 'rgba(221,136,136,0.1)';
+                ctx.fillRect(dx, padT, W - padR - dx, plotH);
+                ctx.strokeStyle = '#d88';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath(); ctx.moveTo(dx, padT); ctx.lineTo(dx, padT + plotH); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#d88';
+                ctx.font = '9px -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('расхождение', dx, padT - 4);
+            }
+
+            // Truth line
+            ctx.strokeStyle = '#4a9';
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            for (let t = 0; t < STEPS; t++) {
+                const x = xPos(t), y = yPos(truth[t]);
+                t === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Proxy line
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let t = 0; t < STEPS; t++) {
+                const x = xPos(t), y = yPos(proxy[t]);
+                t === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            updateReading(strength, lag, divergePoint);
+        }
+
+        const readings = {
+            goodhart: function(s, l, dp) {
+                if (dp < 0) return 'При низкой силе оптимизации метрика и цель движутся вместе. Увеличьте силу — и увидите, как они расходятся.';
+                if (s > 70) return 'Сильная оптимизация: прокси растёт, а реальная ценность падает. Расхождение началось на периоде ' + dp + '. Классический Goodhart — метрика стала целью.';
+                return 'Прокси-метрика обгоняет реальную ценность с периода ' + dp + '. Чем сильнее оптимизация, тем раньше и глубже расхождение.';
+            },
+            'mix-shift': function(s, l, dp) {
+                if (dp < 0) return 'Микс аудитории ещё не изменился. Попробуйте увеличить силу оптимизации.';
+                return 'Микс-шифт: прокси растёт за счёт нового сегмента, но ценность этого сегмента ниже. Расхождение с периода ' + dp + '. Агрегированная метрика скрывает ухудшение.';
+            },
+            noise: function(s, l, dp) {
+                return 'Шум маскирует расхождение. Прокси колеблется, и заметить момент отрыва от цели сложно без сглаживания. Именно поэтому guardrails нужно проверять на скользящем окне, а не по точкам.';
+            },
+            delay: function(s, l, dp) {
+                if (dp < 0) return 'При малой силе и лаге ' + l + ' расхождение ещё не проявилось. Увеличьте параметры.';
+                return 'Задержка ' + l + ' периодов: прокси рапортует рост, пока реальная ценность отстаёт. С периода ' + dp + ' расхождение видимо. Длинный лаг — территория ложных выводов.';
+            }
+        };
+
+        function updateReading(s, l, dp) {
+            readingEl.textContent = readings[scenario](s, l, dp);
+        }
+
+        strengthEl.addEventListener('input', function() { strengthVal.textContent = this.value; draw(); });
+        lagEl.addEventListener('input', function() { lagVal.textContent = this.value; draw(); });
+        scenarioBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                scenario = this.dataset.scenario;
+                scenarioBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                draw();
+            });
+        });
+
+        window.addEventListener('resize', draw);
+        draw();
+    })();
+
+    /* ==============================
+       Simulator 2: Metric Constructor
+       ============================== */
+    (function() {
+        var goalData = {
+            revenue: {
+                label: 'Рост выручки',
+                northStar: 'Revenue per active user (ARPU)',
+                proxy: ['MRR', 'Конверсия в покупку'],
+                diagnostics: ['Средний чек', 'Частота покупок', 'Доля повторных покупок'],
+                guardrails: ['Retention D30', 'Refund rate'],
+                explanation: 'ARPU отражает ценность в пересчёте на одного активного пользователя — это ближе к реальному здоровью бизнеса, чем общая выручка, которая растёт и при росте убыточного трафика. Proxy помогают понять рычаги (конверсия, чек). Guardrails защищают от ситуации, когда выручка растёт за счёт разовых покупок без удержания.'
+            },
+            retention: {
+                label: 'Удержание',
+                northStar: 'Weekly active users с целевым действием',
+                proxy: ['Retention D7', 'DAU/MAU ratio'],
+                diagnostics: ['Retention curve shape', 'Время до первого целевого действия', 'Доля пользователей с ≥2 сессий/неделю'],
+                guardrails: ['Churn rate по когортам', 'NPS или CSAT'],
+                explanation: 'Удержание — не одно число, а форма кривой. North Star привязана к целевому действию, а не к простому визиту. DAU/MAU ratio и D7 retention — быстрые прокси, но без анализа формы кривой и когортного churn легко принять стабильность за здоровье.'
+            },
+            quality: {
+                label: 'Качество продукта',
+                northStar: 'Task success rate (доля успешных целевых действий)',
+                proxy: ['NPS', 'Support ticket rate'],
+                diagnostics: ['Время до выполнения задачи', 'Error rate', 'Доля пользователей, использующих ≥3 фичи'],
+                guardrails: ['Churn rate', 'Доля 1-session users'],
+                explanation: 'Качество продукта — это то, насколько хорошо пользователь решает свою задачу. Task success rate измеряет это напрямую. NPS и тикеты — прокси с лагом: NPS реагирует медленно, тикеты покрывают только тех, кто жалуется. Guardrails отслеживают, чтобы улучшение фич не вело к усложнению и оттоку.'
+            }
+        };
+
+        var goalBtns = document.querySelectorAll('.constructor-goal-btn');
+        var resultEl = document.getElementById('constructor-result');
+        var readingEl = document.getElementById('constructor-reading');
+        var activeGoal = null;
+
+        goalBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var key = this.dataset.goal;
+
+                if (activeGoal === key) {
+                    activeGoal = null;
+                    goalBtns.forEach(function(b) { b.classList.remove('active'); });
+                    resultEl.classList.remove('visible');
+                    resultEl.innerHTML = '';
+                    readingEl.textContent = 'Выберите бизнес-цель, чтобы увидеть рекомендованный набор метрик.';
+                    return;
+                }
+
+                activeGoal = key;
+                goalBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+
+                var d = goalData[key];
+                var html = '';
+
+                html += '<div class="metric-set-group">';
+                html += '<div class="metric-set-label">North Star</div>';
+                html += '<div class="metric-set-items"><span class="metric-chip chip-ns">' + d.northStar + '</span></div>';
+                html += '</div>';
+
+                html += '<div class="metric-set-group">';
+                html += '<div class="metric-set-label">Proxy</div>';
+                html += '<div class="metric-set-items">' + d.proxy.map(function(m) { return '<span class="metric-chip chip-proxy">' + m + '</span>'; }).join('') + '</div>';
+                html += '</div>';
+
+                html += '<div class="metric-set-group">';
+                html += '<div class="metric-set-label">Diagnostics</div>';
+                html += '<div class="metric-set-items">' + d.diagnostics.map(function(m) { return '<span class="metric-chip chip-diag">' + m + '</span>'; }).join('') + '</div>';
+                html += '</div>';
+
+                html += '<div class="metric-set-group">';
+                html += '<div class="metric-set-label">Guardrails</div>';
+                html += '<div class="metric-set-items">' + d.guardrails.map(function(m) { return '<span class="metric-chip chip-guard">' + m + '</span>'; }).join('') + '</div>';
+                html += '</div>';
+
+                html += '<div class="constructor-explanation">' + d.explanation + '</div>';
+
+                resultEl.innerHTML = html;
+                resultEl.classList.add('visible');
+                readingEl.textContent = '';
+            });
+        });
+    })();
+    </script>
+</body>
+</html>
