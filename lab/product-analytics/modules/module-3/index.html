@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 3. Воронки, потоки и ограничения</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Chain schema */
+        .chain-schema {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin: 2rem 0 2.5rem 0;
+            max-width: 700px;
+        }
+        .chain-step {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            position: relative;
+        }
+        .chain-step:first-child { border-radius: 6px 0 0 6px; }
+        .chain-step:last-child { border-radius: 0 6px 6px 0; }
+        .chain-step + .chain-step { border-left: none; }
+        .chain-step-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .chain-step-text {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #1a1a1a;
+        }
+        .chain-arrow {
+            display: flex;
+            align-items: center;
+            color: #ccc;
+            font-size: 1.2rem;
+            padding: 0 0.15rem;
+            flex-shrink: 0;
+        }
+
+        /* Principle block */
+        .principle-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #f5f8f5;
+            border-left: 3px solid #b8cdb8;
+        }
+        .principle-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+        .principle-block p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        .principle-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.75rem;
+        }
+        .principle-list li {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+        .principle-list li:before {
+            content: "\2022";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        /* Example block */
+        .example-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        .example-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        .example-chain {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .example-chain-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+        }
+        .example-chain-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            min-width: 140px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        .example-chain-value {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+        }
+
+        /* Funnel diagram */
+        .funnel-diagram {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            margin: 1.25rem 0;
+            max-width: 500px;
+            height: 80px;
+        }
+        .funnel-bar {
+            flex: 1;
+            background: #e8e8e8;
+            border-radius: 2px 2px 0 0;
+            position: relative;
+            transition: background 0.2s;
+        }
+        .funnel-bar.bottleneck { background: #d4a0a0; }
+        .funnel-bar-label {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            color: #999;
+            white-space: nowrap;
+        }
+        .funnel-bar-pct {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Error block */
+        .error-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fff8f6;
+            border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+        .error-block p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        .error-block .error-wrong {
+            color: #996;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Outcome list */
+        .outcome-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .outcome-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .chain-schema { flex-direction: column; }
+            .chain-step + .chain-step {
+                border-left: 1px solid #e8e8e8;
+                border-top: none;
+            }
+            .chain-step:first-child { border-radius: 6px 6px 0 0; }
+            .chain-step:last-child { border-radius: 0 0 6px 6px; }
+            .chain-arrow {
+                justify-content: center;
+                padding: 0.15rem 0;
+                transform: rotate(90deg);
+            }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 3
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 3. Воронки, потоки и ограничения</h1>
+
+        <!-- About -->
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Воронка — не последовательность процентов, а поток. Пользователи входят, проходят шаги, застревают на одних, пролетают через другие. У потока есть узкие места — ограничения, которые определяют пропускную способность всей системы. Всё, что шире самого узкого места, не увеличивает выход.
+            </p>
+            <p>
+                Типовая ошибка — оптимизировать шаг с наибольшим процентом потерь. Но потери — это не то же самое, что ограничение. Шаг теряет 60% пользователей — и это может быть нормой. А шаг с потерей 15% может быть настоящим bottleneck, потому что именно он задаёт потолок всей воронки.
+            </p>
+        </section>
+
+        <!-- Chain schema -->
+        <section class="section">
+            <h2>Как искать ограничение</h2>
+
+            <div class="chain-schema">
+                <div class="chain-step">
+                    <div class="chain-step-label">Поток</div>
+                    <div class="chain-step-text">Откуда приходят пользователи</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Шаги</div>
+                    <div class="chain-step-text">Через что проходят</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Ограничение</div>
+                    <div class="chain-step-text">Что задаёт потолок</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Оптимизация</div>
+                    <div class="chain-step-text">Расширить узкое место</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Проверка</div>
+                    <div class="chain-step-text">Вырос ли выход</div>
+                </div>
+            </div>
+
+            <p>
+                Ключевой вопрос — не «где мы теряем больше всего», а «что ограничивает выход». Это разные вопросы. Первый ведёт к работе с самым заметным, второй — с самым важным.
+            </p>
+        </section>
+
+        <!-- Principle block -->
+        <div class="principle-block">
+            <h3>Три правила ограничений</h3>
+            <ol class="principle-list">
+                <li>Ограничение одно — в каждый момент есть ровно одно узкое место, которое задаёт потолок потока</li>
+                <li>Расширение не-ограничения бесполезно — конверсия шага вырастет, но выход не изменится</li>
+                <li>После расширения ограничение перемещается — оно не исчезает, а переходит на следующий узкий шаг</li>
+            </ol>
+        </div>
+
+        <!-- Funnel diagram -->
+        <div class="example-block">
+            <h3>Пример: загрузка документов в онлайн-банке</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #666; margin-bottom: 1rem;">
+                Воронка кредитной заявки: 5 шагов от заявки до выдачи. Команда видит, что «загрузка документов» теряет 60% — и оптимизирует этот шаг. Но выход не растёт.
+            </p>
+
+            <div class="funnel-diagram">
+                <div class="funnel-bar" style="height: 100%;">
+                    <div class="funnel-bar-pct">100%</div>
+                    <div class="funnel-bar-label">Заявка</div>
+                </div>
+                <div class="funnel-bar" style="height: 75%;">
+                    <div class="funnel-bar-pct">75%</div>
+                    <div class="funnel-bar-label">Анкета</div>
+                </div>
+                <div class="funnel-bar bottleneck" style="height: 40%;">
+                    <div class="funnel-bar-pct">40%</div>
+                    <div class="funnel-bar-label">Документы</div>
+                </div>
+                <div class="funnel-bar" style="height: 35%;">
+                    <div class="funnel-bar-pct">35%</div>
+                    <div class="funnel-bar-label">Скоринг</div>
+                </div>
+                <div class="funnel-bar" style="height: 18%;">
+                    <div class="funnel-bar-pct">18%</div>
+                    <div class="funnel-bar-label">Выдача</div>
+                </div>
+            </div>
+
+            <div class="example-chain" style="margin-top: 2.5rem;">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Видимая проблема</span>
+                    <span class="example-chain-value">Загрузка документов — 40% конверсии, самый «дырявый» шаг</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что сделали</span>
+                    <span class="example-chain-value">Упростили загрузку: камера вместо файлов, автораспознавание. Конверсия шага выросла до 65%</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Результат</span>
+                    <span class="example-chain-value">Выдача кредитов не выросла — 18% осталось. Больше заявок дошло до скоринга, но скоринг отсёк ту же долю</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Реальное ограничение</span>
+                    <span class="example-chain-value">Скоринговая модель отсеивает ~50% заявок. Расширение шага загрузки привело лишнюю аудиторию — к скорингу, где она и отвалилась</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что делать</span>
+                    <span class="example-chain-value">Анализировать причины отказов скоринга, калибровать модель, или фильтровать аудиторию раньше — до загрузки документов</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«На этом шаге потеря 60% — значит, это главная проблема воронки.»</p>
+            <p>
+                Большая потеря на шаге — не равно ограничение. Если шаг после него тоже отсеивает, улучшение первого просто перекидывает отсев дальше. Выход воронки определяется самым узким местом, а не самым заметным. Прежде чем оптимизировать шаг, нужно проверить: вырастет ли выход, если этот шаг станет шире.
+            </p>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>Воронку как поток с ограничением, а не как последовательность процентов</li>
+                <li>Разницу между потерей на шаге и bottleneck системы</li>
+                <li>Почему рост конверсии на одном шаге может не дать роста на выходе</li>
+                <li>Где ограничение перемещается после того, как вы расширили текущее</li>
+                <li>Ситуации, когда улучшение шага ухудшает итоговый результат (сдвиг микса, снижение среднего чека)</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>Загрузка документов в онлайн-банке — развёрнутый кейс</li>
+                <li>Отзывы и фото на карточке отеля</li>
+                <li>Раннее предложение покупки в мобильной игре</li>
+                <li>Длинный первый урок</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Симулятор потока с ограничениями</li>
+                <li>Калькулятор чувствительности воронки</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-2/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../module-4/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>

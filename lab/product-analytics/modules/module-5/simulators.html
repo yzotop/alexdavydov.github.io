@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 5. Сегменты и неоднородность</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .sim-interactive .sim-title { font-size: 1.2rem; }
+        .sim-interactive .sim-description { max-width: 600px; }
+
+        .sim-controls {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.25rem; margin: 1.5rem 0; max-width: 500px;
+        }
+        .sim-control-group { display: flex; flex-direction: column; gap: 0.35rem; }
+        .sim-control-label { font-size: 0.8rem; color: #666; font-weight: 500; }
+        .sim-control-value { font-size: 0.75rem; color: #999; font-variant-numeric: tabular-nums; }
+        .sim-control-group input[type="range"] { width: 100%; accent-color: #1a1a1a; }
+
+        .sim-toggle-group {
+            grid-column: 1 / -1; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+        }
+        .sim-toggle-btn {
+            padding: 0.4rem 0.9rem; font-size: 0.8rem;
+            border: 1px solid #e8e8e8; border-radius: 4px;
+            background: #fff; color: #666; cursor: pointer;
+            transition: all 0.15s ease; font-family: inherit;
+        }
+        .sim-toggle-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+        .sim-reading {
+            font-size: 0.85rem; line-height: 1.5; color: #666;
+            font-style: italic; margin-top: 1rem; max-width: 600px;
+        }
+
+        /* Aggregate display */
+        .agg-display {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem; margin: 1.5rem 0; max-width: 500px;
+        }
+        .agg-card {
+            padding: 0.75rem 1rem; background: #fff;
+            border: 1px solid #e8e8e8; border-radius: 4px; text-align: center;
+        }
+        .agg-card-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.25rem; font-weight: 500;
+        }
+        .agg-card-value {
+            font-size: 1.1rem; font-weight: 500; color: #1a1a1a;
+            font-variant-numeric: tabular-nums;
+        }
+        .agg-card.warning { border-color: #d4a0a0; background: #faf5f5; }
+        .agg-warning-text {
+            grid-column: 1 / -1; font-size: 0.8rem; color: #c66;
+            padding: 0.5rem 0.75rem; background: #faf5f5;
+            border: 1px solid #e8c8c8; border-radius: 4px;
+        }
+
+        /* Distribution chart */
+        .sim-chart-wrap {
+            position: relative; width: 100%; max-width: 500px;
+            height: 200px; margin: 1.5rem 0 1rem 0;
+        }
+        .sim-chart-wrap canvas { width: 100%; height: 100%; }
+
+        /* Mix calculator segments */
+        .mix-segment-row {
+            display: grid; grid-template-columns: 80px 1fr 50px 1fr 50px;
+            gap: 0.75rem; align-items: center; margin-bottom: 0.5rem;
+        }
+        .mix-segment-name { font-size: 0.8rem; color: #1a1a1a; font-weight: 500; }
+        .mix-segment-val { font-size: 0.8rem; color: #999; text-align: right; font-variant-numeric: tabular-nums; }
+        .mix-results {
+            margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e8e8e8; max-width: 500px;
+        }
+        .mix-result-row {
+            display: grid; grid-template-columns: 80px 1fr 80px;
+            gap: 0.75rem; align-items: center; margin-bottom: 0.35rem;
+        }
+        .mix-bar-track {
+            height: 14px; background: #f0f0f0; border-radius: 2px;
+            position: relative; overflow: hidden;
+        }
+        .mix-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+        .mix-result-name { font-size: 0.8rem; color: #1a1a1a; }
+        .mix-result-val { font-size: 0.8rem; color: #666; text-align: right; font-variant-numeric: tabular-nums; }
+
+        @media (max-width: 600px) {
+            .sim-controls { grid-template-columns: 1fr; }
+            .agg-display { grid-template-columns: 1fr; }
+            .mix-segment-row { grid-template-columns: 60px 1fr 40px 1fr 40px; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 5</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 5. Сегменты и неоднородность</p>
+
+        <!-- Simulator 1: Simpson's Paradox -->
+        <div class="sim-interactive" id="simpson-sim">
+            <div class="sim-title">Симулятор парадокса Симпсона</div>
+            <div class="sim-description">
+                Два сегмента, у каждого свой показатель. Двигайте доли и метрики — наблюдайте, как агрегат может расти, пока оба сегмента падают.
+            </div>
+
+            <div class="sim-controls" id="simpson-controls">
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Метрика сегмента A</label>
+                    <input type="range" id="s-metA" min="5" max="80" value="60" step="1">
+                    <span class="sim-control-value" id="s-metA-val">60%</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Метрика сегмента B</label>
+                    <input type="range" id="s-metB" min="5" max="80" value="25" step="1">
+                    <span class="sim-control-value" id="s-metB-val">25%</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Доля сегмента A (до)</label>
+                    <input type="range" id="s-shareA-before" min="5" max="95" value="30" step="5">
+                    <span class="sim-control-value" id="s-shareA-before-val">30%</span>
+                </div>
+                <div class="sim-control-group">
+                    <label class="sim-control-label">Доля сегмента A (после)</label>
+                    <input type="range" id="s-shareA-after" min="5" max="95" value="60" step="5">
+                    <span class="sim-control-value" id="s-shareA-after-val">60%</span>
+                </div>
+            </div>
+
+            <div class="agg-display" id="simpson-display">
+                <div class="agg-card">
+                    <div class="agg-card-label">Сегмент A</div>
+                    <div class="agg-card-value" id="s-valA">60%</div>
+                </div>
+                <div class="agg-card">
+                    <div class="agg-card-label">Сегмент B</div>
+                    <div class="agg-card-value" id="s-valB">25%</div>
+                </div>
+                <div class="agg-card" id="s-agg-card">
+                    <div class="agg-card-label">Агрегат (до → после)</div>
+                    <div class="agg-card-value" id="s-agg">35% → 46%</div>
+                </div>
+            </div>
+            <div id="simpson-warning" style="max-width:500px;"></div>
+
+            <div class="sim-reading" id="simpson-reading"></div>
+        </div>
+
+        <!-- Simulator 2: Distribution Visualization -->
+        <div class="sim-interactive" id="dist-sim">
+            <div class="sim-title">Визуализация распределений</div>
+            <div class="sim-description">
+                Три сценария с одинаковым средним, но разной структурой. Переключайте — и убедитесь: среднее ничего не говорит о форме.
+            </div>
+
+            <div class="sim-controls" style="max-width:400px;">
+                <div class="sim-toggle-group">
+                    <button class="sim-toggle-btn active" data-dist="unimodal">Одна гора</button>
+                    <button class="sim-toggle-btn" data-dist="bimodal">Две горы</button>
+                    <button class="sim-toggle-btn" data-dist="longtail">Длинный хвост</button>
+                </div>
+            </div>
+
+            <div class="sim-chart-wrap">
+                <canvas id="dist-chart"></canvas>
+            </div>
+
+            <div class="agg-display" style="max-width:300px;">
+                <div class="agg-card">
+                    <div class="agg-card-label">Среднее</div>
+                    <div class="agg-card-value" id="dist-mean">50</div>
+                </div>
+                <div class="agg-card">
+                    <div class="agg-card-label">Медиана</div>
+                    <div class="agg-card-value" id="dist-median">50</div>
+                </div>
+            </div>
+
+            <div class="sim-reading" id="dist-reading">Одна гора: среднее описывает типичного пользователя. Переключитесь на «Две горы» — и увидите, что среднее оказывается между двумя группами, не описывая ни одну.</div>
+        </div>
+
+        <!-- Simulator 3: Mix Calculator -->
+        <div class="sim-interactive" id="mix-sim">
+            <div class="sim-title">Калькулятор микса</div>
+            <div class="sim-description">
+                Задайте метрику и долю каждого сегмента. Посмотрите вклад в агрегат — и что будет, если доли изменятся.
+            </div>
+
+            <div id="mix-controls" style="max-width:500px; margin:1.5rem 0;">
+                <div class="mix-segment-row">
+                    <span class="mix-segment-name">Сегмент 1</span>
+                    <input type="range" data-seg="0" data-type="metric" min="5" max="95" value="70" step="5">
+                    <span class="mix-segment-val" data-seg="0" data-type="metric-val">70%</span>
+                    <input type="range" data-seg="0" data-type="share" min="5" max="90" value="40" step="5">
+                    <span class="mix-segment-val" data-seg="0" data-type="share-val">40%</span>
+                </div>
+                <div class="mix-segment-row">
+                    <span class="mix-segment-name">Сегмент 2</span>
+                    <input type="range" data-seg="1" data-type="metric" min="5" max="95" value="35" step="5">
+                    <span class="mix-segment-val" data-seg="1" data-type="metric-val">35%</span>
+                    <input type="range" data-seg="1" data-type="share" min="5" max="90" value="35" step="5">
+                    <span class="mix-segment-val" data-seg="1" data-type="share-val">35%</span>
+                </div>
+                <div class="mix-segment-row">
+                    <span class="mix-segment-name">Сегмент 3</span>
+                    <input type="range" data-seg="2" data-type="metric" min="5" max="95" value="15" step="5">
+                    <span class="mix-segment-val" data-seg="2" data-type="metric-val">15%</span>
+                    <input type="range" data-seg="2" data-type="share" min="5" max="90" value="25" step="5">
+                    <span class="mix-segment-val" data-seg="2" data-type="share-val">25%</span>
+                </div>
+            </div>
+
+            <div class="mix-results" id="mix-results"></div>
+
+            <div class="agg-display" style="max-width:300px; margin-top:1rem;">
+                <div class="agg-card">
+                    <div class="agg-card-label">Агрегат</div>
+                    <div class="agg-card-value" id="mix-agg">44.8%</div>
+                </div>
+            </div>
+
+            <div class="sim-reading" id="mix-reading"></div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    /* ==============================
+       Simulator 1: Simpson's Paradox
+       ============================== */
+    (function() {
+        var metA = document.getElementById('s-metA');
+        var metB = document.getElementById('s-metB');
+        var shareAb = document.getElementById('s-shareA-before');
+        var shareAa = document.getElementById('s-shareA-after');
+        var valA = document.getElementById('s-valA');
+        var valB = document.getElementById('s-valB');
+        var aggEl = document.getElementById('s-agg');
+        var aggCard = document.getElementById('s-agg-card');
+        var warnEl = document.getElementById('simpson-warning');
+        var readingEl = document.getElementById('simpson-reading');
+
+        function render() {
+            var mA = +metA.value, mB = +metB.value;
+            var sAb = +shareAb.value / 100, sAa = +shareAa.value / 100;
+            document.getElementById('s-metA-val').textContent = mA + '%';
+            document.getElementById('s-metB-val').textContent = mB + '%';
+            document.getElementById('s-shareA-before-val').textContent = shareAb.value + '%';
+            document.getElementById('s-shareA-after-val').textContent = shareAa.value + '%';
+
+            var aggBefore = mA * sAb + mB * (1 - sAb);
+            var aggAfter = mA * sAa + mB * (1 - sAa);
+
+            valA.textContent = mA + '%';
+            valB.textContent = mB + '%';
+            aggEl.textContent = aggBefore.toFixed(1) + '% → ' + aggAfter.toFixed(1) + '%';
+
+            var paradox = (aggAfter > aggBefore && mA === mA && mB === mB && sAa !== sAb);
+            var delta = aggAfter - aggBefore;
+
+            if (delta > 0 && sAa > sAb && mA > mB) {
+                warnEl.innerHTML = '<div class="agg-warning-text">Агрегат вырос на ' + delta.toFixed(1) + ' п.п., но ни один сегмент не изменился. Рост — только за счёт сдвига доли сегмента A.</div>';
+                aggCard.classList.add('warning');
+            } else if (delta < 0 && sAa < sAb && mA > mB) {
+                warnEl.innerHTML = '<div class="agg-warning-text">Агрегат упал на ' + Math.abs(delta).toFixed(1) + ' п.п., хотя сегменты не изменились. Падение — за счёт снижения доли более сильного сегмента.</div>';
+                aggCard.classList.add('warning');
+            } else {
+                warnEl.innerHTML = '';
+                aggCard.classList.remove('warning');
+            }
+
+            readingEl.textContent = 'Сегмент A: ' + mA + '%, доля ' + shareAb.value + '% → ' + shareAa.value + '%. Сегмент B: ' + mB + '%. Агрегат: ' + aggBefore.toFixed(1) + '% → ' + aggAfter.toFixed(1) + '%. Попробуйте поменять только доли, не трогая метрики — и посмотрите, как двигается агрегат.';
+        }
+
+        [metA, metB, shareAb, shareAa].forEach(function(el) { el.addEventListener('input', render); });
+        render();
+    })();
+
+    /* ==============================
+       Simulator 2: Distributions
+       ============================== */
+    (function() {
+        var canvas = document.getElementById('dist-chart');
+        var meanEl = document.getElementById('dist-mean');
+        var medianEl = document.getElementById('dist-median');
+        var readingEl = document.getElementById('dist-reading');
+        var btns = document.querySelectorAll('#dist-sim .sim-toggle-btn');
+        var distType = 'unimodal';
+
+        function gauss(x, mu, sigma) {
+            return Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2)) / (sigma * Math.sqrt(2 * Math.PI));
+        }
+
+        function genDist(type) {
+            var pts = 100, data = new Array(pts);
+            for (var i = 0; i < pts; i++) {
+                var x = i;
+                if (type === 'unimodal') {
+                    data[i] = gauss(x, 50, 15);
+                } else if (type === 'bimodal') {
+                    data[i] = 0.5 * gauss(x, 30, 8) + 0.5 * gauss(x, 70, 8);
+                } else {
+                    data[i] = gauss(x, 25, 12) * 0.7 + gauss(x, 60, 25) * 0.3;
+                }
+            }
+            return data;
+        }
+
+        function calcStats(data) {
+            var sum = 0, totalW = 0;
+            for (var i = 0; i < data.length; i++) { sum += i * data[i]; totalW += data[i]; }
+            var mean = sum / totalW;
+            var cumul = 0, median = 50;
+            for (var i = 0; i < data.length; i++) {
+                cumul += data[i] / totalW;
+                if (cumul >= 0.5) { median = i; break; }
+            }
+            return { mean: mean, median: median };
+        }
+
+        function setDPR() {
+            var dpr = window.devicePixelRatio || 1;
+            var rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            var ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            return { ctx: ctx, W: rect.width, H: rect.height };
+        }
+
+        function draw() {
+            var c = setDPR();
+            var data = genDist(distType);
+            var stats = calcStats(data);
+            var maxV = Math.max.apply(null, data);
+            var pL = 10, pR = 10, pT = 20, pB = 25;
+            var plotW = c.W - pL - pR, plotH = c.H - pT - pB;
+
+            c.ctx.clearRect(0, 0, c.W, c.H);
+
+            // Fill area
+            c.ctx.fillStyle = 'rgba(200, 216, 200, 0.4)';
+            c.ctx.beginPath();
+            c.ctx.moveTo(pL, pT + plotH);
+            for (var i = 0; i < data.length; i++) {
+                var x = pL + plotW * (i / (data.length - 1));
+                var y = pT + plotH * (1 - data[i] / maxV);
+                c.ctx.lineTo(x, y);
+            }
+            c.ctx.lineTo(pL + plotW, pT + plotH);
+            c.ctx.closePath();
+            c.ctx.fill();
+
+            // Line
+            c.ctx.strokeStyle = '#4a9';
+            c.ctx.lineWidth = 2;
+            c.ctx.lineJoin = 'round';
+            c.ctx.beginPath();
+            for (var i = 0; i < data.length; i++) {
+                var x = pL + plotW * (i / (data.length - 1));
+                var y = pT + plotH * (1 - data[i] / maxV);
+                i === 0 ? c.ctx.moveTo(x, y) : c.ctx.lineTo(x, y);
+            }
+            c.ctx.stroke();
+
+            // Mean line
+            var mx = pL + plotW * (stats.mean / (data.length - 1));
+            c.ctx.strokeStyle = '#1a1a1a';
+            c.ctx.lineWidth = 1.5;
+            c.ctx.setLineDash([4, 3]);
+            c.ctx.beginPath(); c.ctx.moveTo(mx, pT); c.ctx.lineTo(mx, pT + plotH); c.ctx.stroke();
+            c.ctx.setLineDash([]);
+            c.ctx.fillStyle = '#1a1a1a';
+            c.ctx.font = '10px -apple-system, sans-serif';
+            c.ctx.textAlign = 'center';
+            c.ctx.fillText('среднее', mx, pT - 5);
+
+            // X axis
+            c.ctx.strokeStyle = '#e8e8e8'; c.ctx.lineWidth = 1;
+            c.ctx.beginPath(); c.ctx.moveTo(pL, pT + plotH); c.ctx.lineTo(pL + plotW, pT + plotH); c.ctx.stroke();
+
+            meanEl.textContent = Math.round(stats.mean);
+            medianEl.textContent = stats.median;
+
+            var readings = {
+                unimodal: 'Одна гора: среднее описывает типичного пользователя. Большинство — вокруг среднего.',
+                bimodal: 'Две горы: среднее = 50, но ни один пользователь не «живёт» в районе 50. Есть группа на 30 и группа на 70. Оптимизация под среднего — мимо обеих.',
+                longtail: 'Длинный хвост: большинство — в левой части, но правый хвост тянет среднее вверх. Медиана ниже среднего. Типичный пользователь — не средний.'
+            };
+            readingEl.textContent = readings[distType];
+        }
+
+        btns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                distType = this.dataset.dist;
+                btns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                draw();
+            });
+        });
+        window.addEventListener('resize', draw);
+        draw();
+    })();
+
+    /* ==============================
+       Simulator 3: Mix Calculator
+       ============================== */
+    (function() {
+        var controlsEl = document.getElementById('mix-controls');
+        var resultsEl = document.getElementById('mix-results');
+        var aggEl = document.getElementById('mix-agg');
+        var readingEl = document.getElementById('mix-reading');
+
+        var names = ['Сегмент 1', 'Сегмент 2', 'Сегмент 3'];
+        var colors = ['#1a1a1a', '#4a9', '#c8a060'];
+
+        function getData() {
+            var segs = [];
+            for (var i = 0; i < 3; i++) {
+                var mEl = controlsEl.querySelector('[data-seg="' + i + '"][data-type="metric"]');
+                var sEl = controlsEl.querySelector('[data-seg="' + i + '"][data-type="share"]');
+                segs.push({ metric: +mEl.value, share: +sEl.value });
+            }
+            return segs;
+        }
+
+        function render() {
+            var segs = getData();
+            var totalShare = segs.reduce(function(s, seg) { return s + seg.share; }, 0);
+
+            // Update labels
+            for (var i = 0; i < 3; i++) {
+                controlsEl.querySelector('[data-seg="' + i + '"][data-type="metric-val"]').textContent = segs[i].metric + '%';
+                controlsEl.querySelector('[data-seg="' + i + '"][data-type="share-val"]').textContent = segs[i].share + '%';
+            }
+
+            // Compute weighted aggregate
+            var agg = 0;
+            var contributions = [];
+            for (var i = 0; i < 3; i++) {
+                var normShare = segs[i].share / totalShare;
+                var contrib = segs[i].metric * normShare;
+                contributions.push(contrib);
+                agg += contrib;
+            }
+
+            aggEl.textContent = agg.toFixed(1) + '%';
+
+            // Result bars
+            var maxContrib = Math.max.apply(null, contributions);
+            var html = '';
+            for (var i = 0; i < 3; i++) {
+                var barW = maxContrib > 0 ? (contributions[i] / maxContrib * 100) : 0;
+                var normShare = (segs[i].share / totalShare * 100).toFixed(0);
+                html += '<div class="mix-result-row">';
+                html += '<span class="mix-result-name">' + names[i] + '</span>';
+                html += '<div class="mix-bar-track"><div class="mix-bar-fill" style="width:' + barW + '%;background:' + colors[i] + '"></div></div>';
+                html += '<span class="mix-result-val">' + contributions[i].toFixed(1) + ' (' + normShare + '%)</span>';
+                html += '</div>';
+            }
+            resultsEl.innerHTML = html;
+
+            // Find dominant
+            var maxIdx = contributions.indexOf(Math.max.apply(null, contributions));
+            readingEl.textContent = 'Наибольший вклад в агрегат — ' + names[maxIdx] + ' (' + contributions[maxIdx].toFixed(1) + ' из ' + agg.toFixed(1) + '). Попробуйте изменить только доли, не трогая метрики — увидите, как агрегат двигается без изменения эффективности.';
+        }
+
+        controlsEl.querySelectorAll('input[type="range"]').forEach(function(el) {
+            el.addEventListener('input', render);
+        });
+        render();
+    })();
+    </script>
+</body>
+</html>

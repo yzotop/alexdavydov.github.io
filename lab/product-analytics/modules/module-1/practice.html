@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 1. Продукт как система</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Expanded case */
+        .case-expanded {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .case-expanded .case-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .case-expanded .case-setup {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+        .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .phase-item {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+        .phase-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .phase-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.35rem;
+        }
+        .phase-text {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+        }
+        .phase-metrics {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.35rem;
+            font-style: italic;
+        }
+        .case-decision {
+            padding: 1rem 1.25rem;
+            background: #f5f5f0;
+            border-left: 3px solid #d0cec0;
+            margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .case-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        /* Mini cases */
+        .mini-cases-section h2 {
+            margin-bottom: 1rem;
+        }
+        .mini-case {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+        .mini-case .case-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .mini-case .case-context {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+        .mini-case .case-question {
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 1</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 1. Продукт как система</p>
+
+        <!-- Main expanded case -->
+        <div class="case-expanded">
+            <div class="case-title">Бесплатная доставка для новых пользователей</div>
+            <div class="case-setup">
+                Маркетплейс доставки еды запускает акцию: бесплатная доставка на первые 3 заказа для новых пользователей. Регистрации растут на 40%. Задача — проследить, что происходит с системой дальше.
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Краткосрочный эффект · первые 2 недели</div>
+                    <div class="phase-title">Рост входящего потока</div>
+                    <div class="phase-text">
+                        Регистрации растут, конверсия в первый заказ увеличивается. Дашборд выглядит отлично. Но структура аудитории меняется: доля ценочувствительных пользователей растёт.
+                    </div>
+                    <div class="phase-metrics">Метрики: регистрации, конверсия в первый заказ, CPA</div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Среднесрочный эффект · месяц 1–2</div>
+                    <div class="phase-title">Разделение когорт</div>
+                    <div class="phase-text">
+                        Промо-когорта завершает 3 бесплатных заказа. Возврат к платной доставке — и retention падает. Одновременно средний чек этой когорты ниже, чем у органической аудитории.
+                    </div>
+                    <div class="phase-metrics">Метрики: retention D30, средний чек по когортам, повторные заказы</div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Долгосрочный эффект · месяц 3+</div>
+                    <div class="phase-title">Нагрузка на юнит-экономику</div>
+                    <div class="phase-text">
+                        LTV промо-когорты не покрывает CAC. При масштабировании акции доля убыточных пользователей в базе растёт. Агрегированный ARPU снижается, хотя общая выручка может ещё расти за счёт объёма.
+                    </div>
+                    <div class="phase-metrics">Метрики: LTV/CAC, ARPU, доля активной базы из промо</div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Влияние на unit-экономику</div>
+                    <div class="phase-title">Иллюзия роста</div>
+                    <div class="phase-text">
+                        Суммарная выручка растёт (больше пользователей), но маржинальность падает. Каждый новый промо-пользователь в среднем стоит дороже, чем приносит. Если не отслеживать когортную экономику — проблема не видна до момента, когда маржа становится отрицательной.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Управленческое решение</div>
+                <p>
+                    Не масштабировать до анализа когортной unit-экономики. Возможные шаги: ограничить промо по сегментам (география, средний чек района), добавить условие на удержание (бонус на 4-й заказ вместо бесплатной доставки), отслеживать retention промо-когорты как ключевой guard-метрику.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Автоплей следующего эпизода</div>
+                <div class="case-context">
+                    Стриминговый сервис добавил автоплей. Время сессии +25%. Через 2 недели — рост отписок. Механизм: автоплей удлиняет сессию, но создаёт ощущение потери контроля. У части аудитории это вызывает усталость и уход.
+                </div>
+                <div class="case-question">Что нужно отслеживать, чтобы отличить здоровый рост вовлечённости от выгорания?</div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Ежедневные push-напоминания</div>
+                <div class="case-context">
+                    Фитнес-приложение включает ежедневные пуши. DAU растёт, но доля пользователей с отключёнными уведомлениями удваивается за месяц. Две петли: вовлечение → привычка (усиливающая) и раздражение → отключение → потеря канала (балансирующая).
+                </div>
+                <div class="case-question">В какой момент балансирующая петля начинает доминировать — и как это увидеть в данных?</div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Ускорение онбординга</div>
+                <div class="case-context">
+                    B2B-платформа сократила онбординг с 5 шагов до 2. Конверсия в первую сессию выросла, но конверсия в платящего через 30 дней не изменилась. Ускорение сняло барьер входа, но не помогло пользователю понять ценность продукта.
+                </div>
+                <div class="case-question">Где в цепочке «потерялось» ускорение — и какой следующий шаг анализа?</div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

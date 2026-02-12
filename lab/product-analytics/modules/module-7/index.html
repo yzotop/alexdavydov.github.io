@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 7. Аналитик и управленческое решение</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .chain-schema {
+            display: flex; align-items: stretch; gap: 0; margin: 2rem 0 2.5rem 0; max-width: 700px;
+        }
+        .chain-step {
+            flex: 1; padding: 1rem 1rem; background: #fafafa;
+            border: 1px solid #e8e8e8; position: relative;
+        }
+        .chain-step:first-child { border-radius: 6px 0 0 6px; }
+        .chain-step:last-child { border-radius: 0 6px 6px 0; }
+        .chain-step + .chain-step { border-left: none; }
+        .chain-step-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.25rem; font-weight: 500;
+        }
+        .chain-step-num {
+            font-size: 0.65rem; color: #ccc; font-weight: 600; margin-bottom: 0.15rem;
+        }
+        .chain-step-text { font-size: 0.8rem; line-height: 1.4; color: #1a1a1a; }
+        .chain-step-error { font-size: 0.7rem; line-height: 1.35; color: #999; font-style: italic; margin-top: 0.3rem; }
+        .chain-arrow {
+            display: flex; align-items: center; color: #ccc; font-size: 1.2rem;
+            padding: 0 0.1rem; flex-shrink: 0;
+        }
+
+        .example-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+        }
+        .example-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+        .example-chain { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 1rem; }
+        .example-chain-item { display: flex; gap: 0.75rem; align-items: baseline; }
+        .example-chain-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+            color: #999; min-width: 160px; flex-shrink: 0; font-weight: 500;
+        }
+        .example-chain-value { font-size: 0.9rem; line-height: 1.5; color: #1a1a1a; }
+
+        .result-chips {
+            display: flex; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap;
+        }
+        .result-chip {
+            padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #e8e8e8; background: #fff;
+        }
+        .result-chip.positive { border-color: #b8cdb8; color: #3a7; }
+        .result-chip.negative { border-color: #d4a0a0; color: #a55; }
+        .result-chip.neutral { border-color: #e8e8e8; color: #999; }
+        .result-chip.ambiguous { border-color: #d5c88e; color: #997; }
+
+        .decision-options {
+            display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 1rem;
+        }
+        .decision-option {
+            padding: 0.75rem 1rem; background: #fff; border: 1px solid #e8e8e8; border-radius: 4px;
+        }
+        .decision-option-label {
+            font-size: 0.8rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.2rem;
+        }
+        .decision-option-text { font-size: 0.8rem; line-height: 1.5; color: #666; }
+
+        .formulation-block {
+            padding: 1rem 1.25rem; background: #f5f8f5; border-left: 3px solid #b8cdb8;
+            margin-top: 1rem;
+        }
+        .formulation-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.5rem; font-weight: 500;
+        }
+        .formulation-block p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; font-style: italic; }
+
+        .error-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fff8f6; border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; color: #1a1a1a; }
+        .error-block p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+        .error-block .error-wrong { color: #996; font-style: italic; margin-bottom: 0.5rem; }
+
+        .boundary-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #f8f5f0; border-left: 3px solid #d0c8b0;
+        }
+        .boundary-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+        .boundary-item {
+            margin-bottom: 0.6rem; font-size: 0.9rem; line-height: 1.55; color: #1a1a1a;
+            padding-left: 1.25rem; position: relative;
+        }
+        .boundary-item:before {
+            content: "\2022"; position: absolute; left: 0; color: #999;
+        }
+        .boundary-emphasis { font-weight: 500; }
+
+        .outcome-list { list-style: none; padding-left: 0; }
+        .outcome-list li {
+            font-size: 0.9rem; line-height: 1.6; color: #1a1a1a;
+            margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714"; position: absolute; left: 0; color: #999; font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .chain-schema { flex-direction: column; }
+            .chain-step + .chain-step { border-left: 1px solid #e8e8e8; border-top: none; }
+            .chain-step:first-child { border-radius: 6px 6px 0 0; }
+            .chain-step:last-child { border-radius: 0 0 6px 6px; }
+            .chain-arrow { justify-content: center; padding: 0.15rem 0; transform: rotate(90deg); }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 7
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 7. Аналитик и управленческое решение</h1>
+
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Данные не принимают решения. Решения принимают люди. Но формулировка аналитика влияет на решение сильнее, чем сами цифры. Одни и те же данные можно подать как «рост +4%» или как «неопределённость от &minus;1% до +9%». Первое ведёт к выкатке, второе — к вопросам. Аналитик формирует поле решений, даже если формально «только отвечает на вопрос».
+            </p>
+            <p>
+                Типовая ошибка — спрятаться за фразой «данные показывают...» Данные ничего не показывают. Данные — набор чисел. Показывает аналитик: что выделил, что опустил, как расставил акценты, какой контекст дал. Это не нейтральная операция — это ответственность.
+            </p>
+            <p>
+                Этот модуль — про последний шаг: от числа к решению. Про то, как формулировать вывод при неопределённости, как работать с конфликтами метрик, как говорить «я не знаю» и при этом быть полезным.
+            </p>
+        </section>
+
+        <!-- Conclusion structure schema -->
+        <section class="section">
+            <h2>Структура управленческого вывода</h2>
+
+            <div class="chain-schema">
+                <div class="chain-step">
+                    <div class="chain-step-num">1</div>
+                    <div class="chain-step-label">Факт</div>
+                    <div class="chain-step-text">Что наблюдаем в данных</div>
+                    <div class="chain-step-error">Ошибка: смешать факт с интерпретацией</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-num">2</div>
+                    <div class="chain-step-label">Неопределённость</div>
+                    <div class="chain-step-text">Что мы не знаем</div>
+                    <div class="chain-step-error">Ошибка: скрыть ширину интервала</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-num">3</div>
+                    <div class="chain-step-label">Механизм</div>
+                    <div class="chain-step-text">Почему это произошло</div>
+                    <div class="chain-step-error">Ошибка: пропустить «почему» и сразу к «что делать»</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-num">4</div>
+                    <div class="chain-step-label">Риски</div>
+                    <div class="chain-step-text">Что может пойти не так</div>
+                    <div class="chain-step-error">Ошибка: описать только upside</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-num">5</div>
+                    <div class="chain-step-label">Рекомендация</div>
+                    <div class="chain-step-text">Что делать и с каким мониторингом</div>
+                    <div class="chain-step-error">Ошибка: «данные говорят» вместо «я рекомендую»</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flagship example -->
+        <div class="example-block">
+            <h3>Пример: A/B нового тарифа</h3>
+
+            <div class="result-chips">
+                <span class="result-chip positive">Primary: +4%</span>
+                <span class="result-chip ambiguous">CI: от &minus;1% до +9%</span>
+                <span class="result-chip neutral">Guardrails: без нарушений</span>
+            </div>
+
+            <p style="font-size:0.85rem;color:#666;margin-bottom:1rem;font-style:italic;">
+                PM спрашивает: «Катим?»
+            </p>
+
+            <div class="example-chain">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что можно утверждать</span>
+                    <span class="example-chain-value">Точечная оценка +4%. Guardrails стабильны. Направление эффекта — положительное</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Чего утверждать нельзя</span>
+                    <span class="example-chain-value">Что эффект точно положительный: интервал включает 0. Нельзя гарантировать +4% — реальный эффект может быть от &minus;1% до +9%</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Риски</span>
+                    <span class="example-chain-value">Эффект может быть нулевым (CI включает 0). Эффект может быть сконцентрирован в одном сегменте. Мы не проверяли долгосрочное поведение (retention, LTV)</span>
+                </div>
+            </div>
+
+            <div class="decision-options">
+                <div class="decision-option">
+                    <div class="decision-option-label">Вариант 1: Катить</div>
+                    <div class="decision-option-text">Если стоимость отката низкая, а upside значим. Обязателен мониторинг 4 недели + guardrail window</div>
+                </div>
+                <div class="decision-option">
+                    <div class="decision-option-label">Вариант 2: Продлить тест</div>
+                    <div class="decision-option-text">Если нужно сузить интервал. Определить: при каком CI решение станет однозначным?</div>
+                </div>
+                <div class="decision-option">
+                    <div class="decision-option-label">Вариант 3: Катить частично</div>
+                    <div class="decision-option-text">Запустить на 20–30% трафика. Собрать данные по LTV и retention. Решение через 4 недели</div>
+                </div>
+            </div>
+
+            <div class="formulation-block">
+                <div class="formulation-block-label">Пример сильного управленческого вывода</div>
+                <p>
+                    «Точечная оценка +4%, но интервал включает ноль (&minus;1%...+9%). Guardrails стабильны. Механизм не опровергнут, но и не подтверждён надёжно. Рекомендую: катить на 30% трафика с мониторингом конверсии, retention D14 и ARPU. Через 3 недели — решение о полном выкате или остановке. Если CI не сузится — пересмотреть тариф.»
+                </p>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«Primary +4%, guardrails ОК — катим.»</p>
+            <p>
+                Эта формулировка подменяет рекомендацию фактом. Она скрывает, что интервал включает ноль, не упоминает риски, не описывает мониторинг. PM прочитает «катим» — и примет это как ваш вывод. Через месяц, если эффект окажется нулевым, вопрос будет не к данным, а к вам: «Почему вы не предупредили?»
+            </p>
+        </div>
+
+        <!-- Analyst boundaries -->
+        <div class="boundary-block">
+            <h3>Где проходит граница аналитика</h3>
+            <div class="boundary-item"><span class="boundary-emphasis">Аналитик не принимает решение, но формирует поле решений.</span> То, как вы описали ситуацию — и определит, какие варианты PM увидит</div>
+            <div class="boundary-item"><span class="boundary-emphasis">Нельзя подменять рекомендацию фактом.</span> «Данные показывают +4%» — это не рекомендация. Это перекладывание ответственности за интерпретацию</div>
+            <div class="boundary-item"><span class="boundary-emphasis">Нельзя скрывать неопределённость.</span> Если интервал широкий — скажите. Если механизм непонятен — скажите. Умолчание — не нейтральность</div>
+            <div class="boundary-item"><span class="boundary-emphasis">Нельзя давать иллюзию точности.</span> «+4.2%» звучит точнее, чем «от &minus;1% до +9%». Но первое — обман, второе — честность</div>
+            <div class="boundary-item"><span class="boundary-emphasis">Нельзя избегать позиции.</span> «Данные неоднозначные» без рекомендации — это отказ от своей роли. Аналитик может сказать «я не знаю» — но должен объяснить, что нужно, чтобы узнать</div>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>Разницу между фактом, интерпретацией и рекомендацией — в каждом выводе</li>
+                <li>Ситуации, когда формулировка аналитика подталкивает к решению, которое данные не поддерживают</li>
+                <li>Как формулировать вывод при широком интервале: не «не знаю», а «вот что нужно, чтобы узнать»</li>
+                <li>Когда нужно сказать «нет» — и как это сделать, не разрушая отношения</li>
+                <li>Что ваша позиция — это часть вывода, а не субъективность</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>Эффект только в одном регионе — формулировка для CPO</li>
+                <li>«Покажи, что работает» — давление руководителя</li>
+                <li>Null результат — повторять или менять гипотезу?</li>
+                <li>Primary растёт, ключевой сегмент падает</li>
+                <li>Guardrail чуть ухудшился, primary сильно вырос</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Тренажёр формулировки вывода</li>
+                <li>Решение при неопределённости</li>
+                <li>Давление стейкхолдера</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-6/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <span class="nav-disabled">Последний модуль</span>
+        </nav>
+    </div>
+</body>
+</html>

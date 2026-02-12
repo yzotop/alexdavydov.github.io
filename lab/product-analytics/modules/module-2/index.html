@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 2. Метрики и их смысл</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Chain schema */
+        .chain-schema {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin: 2rem 0 2.5rem 0;
+            max-width: 700px;
+        }
+        .chain-step {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            position: relative;
+        }
+        .chain-step:first-child { border-radius: 6px 0 0 6px; }
+        .chain-step:last-child { border-radius: 0 6px 6px 0; }
+        .chain-step + .chain-step { border-left: none; }
+        .chain-step-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .chain-step-text {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #1a1a1a;
+        }
+        .chain-arrow {
+            display: flex;
+            align-items: center;
+            color: #ccc;
+            font-size: 1.2rem;
+            padding: 0 0.15rem;
+            flex-shrink: 0;
+        }
+
+        /* Metric types map */
+        .metric-types {
+            max-width: 700px;
+            margin-bottom: 3rem;
+        }
+        .metric-type-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 1fr;
+            gap: 0.75rem;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: baseline;
+        }
+        .metric-type-row:last-child { border-bottom: none; }
+        .metric-type-row-header {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            font-weight: 500;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .metric-type-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        .metric-type-purpose {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #1a1a1a;
+        }
+        .metric-type-error {
+            font-size: 0.8rem;
+            line-height: 1.45;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Example block */
+        .example-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        .example-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        .example-chain {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .example-chain-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+        }
+        .example-chain-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            min-width: 140px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        .example-chain-value {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+        }
+
+        /* Error block */
+        .error-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fff8f6;
+            border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+        .error-block p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        .error-block .error-wrong {
+            color: #996;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Outcome list */
+        .outcome-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .outcome-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .chain-schema { flex-direction: column; }
+            .chain-step + .chain-step {
+                border-left: 1px solid #e8e8e8;
+                border-top: none;
+            }
+            .chain-step:first-child { border-radius: 6px 6px 0 0; }
+            .chain-step:last-child { border-radius: 0 0 6px 6px; }
+            .chain-arrow {
+                justify-content: center;
+                padding: 0.15rem 0;
+                transform: rotate(90deg);
+            }
+            .metric-type-row {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+            .metric-type-row-header { display: none; }
+            .metric-type-name { margin-bottom: 0.15rem; }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 2
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 2. Метрики и их смысл</h1>
+
+        <!-- About -->
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Метрика — не объяснение, а сигнал. Она говорит «что-то изменилось», но не отвечает ни «почему», ни «хорошо ли это». Метрика полезна, когда вы понимаете, какой механизм за ней стоит. Без этого понимания числа превращаются в иллюзию контроля.
+            </p>
+            <p>
+                Типовая ошибка — оптимизировать число, не проверив, отражает ли оно цель. Команда ставит OKR по DAU, растит DAU, но ценность продукта не растёт. Метрика стала целью вместо того, чтобы остаться индикатором. Модуль учит различать: что метрика измеряет, зачем она выбрана и когда она перестаёт работать.
+            </p>
+        </section>
+
+        <!-- Chain schema -->
+        <section class="section">
+            <h2>Как устроена связь между целью и метрикой</h2>
+
+            <div class="chain-schema">
+                <div class="chain-step">
+                    <div class="chain-step-label">Цель</div>
+                    <div class="chain-step-text">Чего хотим достичь</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Механизм</div>
+                    <div class="chain-step-text">Через что это работает</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Метрика-прокси</div>
+                    <div class="chain-step-text">Что измеряем вместо цели</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Риск подмены</div>
+                    <div class="chain-step-text">Когда прокси расходится с целью</div>
+                </div>
+                <div class="chain-arrow">→</div>
+                <div class="chain-step">
+                    <div class="chain-step-label">Guardrails</div>
+                    <div class="chain-step-text">Что ограничивает вред</div>
+                </div>
+            </div>
+
+            <p>
+                Прокси-метрика — это всегда компромисс: она проще, быстрее, доступнее реальной цели. Но чем активнее вы оптимизируете прокси, тем выше риск, что она отвяжется от цели. Guardrails нужны, чтобы вовремя это заметить.
+            </p>
+        </section>
+
+        <!-- Metric types map -->
+        <section class="section">
+            <h2>Карта типов метрик</h2>
+
+            <div class="metric-types">
+                <div class="metric-type-row metric-type-row-header">
+                    <div>Тип</div>
+                    <div>Зачем</div>
+                    <div>Типовая ошибка</div>
+                </div>
+                <div class="metric-type-row">
+                    <div class="metric-type-name">North Star</div>
+                    <div class="metric-type-purpose">Отражает ценность продукта для пользователя в долгосрочной перспективе</div>
+                    <div class="metric-type-error">Ставить North Star, которую легко считать, а не ту, что отражает ценность</div>
+                </div>
+                <div class="metric-type-row">
+                    <div class="metric-type-name">Primary</div>
+                    <div class="metric-type-purpose">Основная метрика в эксперименте — по ней принимается решение go/no-go</div>
+                    <div class="metric-type-error">Выбирать primary, не проверив связь с North Star</div>
+                </div>
+                <div class="metric-type-row">
+                    <div class="metric-type-name">Proxy</div>
+                    <div class="metric-type-purpose">Измеряет то, что коррелирует с целью, но быстрее или проще доступно</div>
+                    <div class="metric-type-error">Оптимизировать прокси до точки, где корреляция с целью исчезает (Goodhart)</div>
+                </div>
+                <div class="metric-type-row">
+                    <div class="metric-type-name">Diagnostic</div>
+                    <div class="metric-type-purpose">Помогает понять механизм: почему primary изменилась или не изменилась</div>
+                    <div class="metric-type-error">Игнорировать диагностику, если primary выглядит хорошо</div>
+                </div>
+                <div class="metric-type-row">
+                    <div class="metric-type-name">Guardrail</div>
+                    <div class="metric-type-purpose">Сигнализирует, что оптимизация основной метрики наносит побочный вред</div>
+                    <div class="metric-type-error">Не ставить guardrails или ставить, но не реагировать на их срабатывание</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flagship example -->
+        <div class="example-block">
+            <h3>Пример: OKR по DAU</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #666; margin-bottom: 1rem;">
+                Продуктовая команда ставит цель: DAU +15% за квартал. В конце квартала DAU +18%, но revenue/user &minus;12%, а NPS упал. Что произошло?
+            </p>
+            <div class="example-chain">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Реальная цель</span>
+                    <span class="example-chain-value">Рост здоровой аудитории — пользователей, которые получают ценность и платят</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что выбрали</span>
+                    <span class="example-chain-value">DAU как прокси — легко считать, понятно для стейкхолдеров</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Механизм роста</span>
+                    <span class="example-chain-value">Пуши, акции, геймификация — привлекли и вернули пользователей с низкой ценностью</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Подмена прокси</span>
+                    <span class="example-chain-value">DAU рос за счёт «пустых» визитов. Доля активных платящих пользователей в DAU снизилась</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что ставить вместо</span>
+                    <span class="example-chain-value">North Star: weekly active users с ≥1 целевым действием. Guardrails: revenue/user, NPS, retention D14</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«DAU вырос на 18% — квартал успешный, цель достигнута.»</p>
+            <p>
+                DAU — прокси, а не цель. Рост DAU за счёт низкоценных визитов размывает аудиторию, снижает ARPU и ухудшает продукт для ядра. Квартал «успешный» только по формальной метрике. Без guardrails и проверки механизма роста — это Goodhart в чистом виде.
+            </p>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>Разницу между метрикой-целью и метрикой-прокси — и момент, когда прокси отвязывается от цели</li>
+                <li>Ситуации, когда «метрика выросла» не означает «стало лучше»</li>
+                <li>Как выбрать primary, diagnostics и guardrails под конкретную задачу</li>
+                <li>Где в вашем продукте уже работает закон Гудхарта — и как это проверить</li>
+                <li>Почему форма кривой (retention, usage) говорит больше, чем одно число</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>OKR по DAU — развёрнутый кейс</li>
+                <li>Конверсия после редизайна карточки товара</li>
+                <li>Оптимизация времени в приложении</li>
+                <li>Транзакции как north star</li>
+                <li>Одинаковый retention — разная форма</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Метрика vs Цель во времени</li>
+                <li>Конструктор метрик под задачу</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-1/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../module-3/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>

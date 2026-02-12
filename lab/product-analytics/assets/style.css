@@ -1,0 +1,568 @@
+/* ===========================
+   Base
+   =========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    padding: 3rem 1rem;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ===========================
+   Navigation
+   =========================== */
+
+.breadcrumbs {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 1rem;
+}
+
+.breadcrumbs a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumbs a:hover {
+    color: #1a1a1a;
+}
+
+.back-to-home {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.back-to-home:hover {
+    color: #1a1a1a;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.nav-links a.active {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #1a1a1a;
+}
+
+/* ===========================
+   Typography
+   =========================== */
+
+h1 {
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+h2 {
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+}
+
+h2:first-of-type {
+    margin-top: 0;
+}
+
+.kicker {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+/* ===========================
+   Main page — intro sections
+   =========================== */
+
+.intro {
+    max-width: 700px;
+    margin-bottom: 3rem;
+}
+
+.intro p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.audience-section {
+    max-width: 700px;
+    margin-bottom: 3rem;
+}
+
+.audience-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.audience-section li {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.audience-section li:before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+.how-to {
+    max-width: 700px;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background: #fafafa;
+    border-radius: 4px;
+}
+
+.how-to h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.how-to ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.how-to li {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.how-to li:before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: #666;
+}
+
+.what-not {
+    max-width: 700px;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background: #fafafa;
+    border-left: 3px solid #e8e8e8;
+}
+
+.what-not h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+}
+
+.what-not p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #666;
+}
+
+.what-not p + p {
+    margin-top: 0.75rem;
+}
+
+.related-section {
+    margin-top: 4rem;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+.related-links {
+    list-style: none;
+    padding-left: 0;
+}
+
+.related-links li {
+    margin-bottom: 0.75rem;
+}
+
+.related-links a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.related-links a:hover {
+    color: #1a1a1a;
+}
+
+.footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+.footer p {
+    font-size: 0.85rem;
+    color: #999;
+    font-style: italic;
+}
+
+/* ===========================
+   Module cards — main page
+   =========================== */
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.module-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 1.5rem;
+    background: #fafafa;
+}
+
+.module-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+.module-key-idea {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.module-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+.module-card-meta {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.75rem;
+}
+
+.module-card-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.module-card-link {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    color: #666;
+    text-decoration: none;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.module-card-link:hover {
+    border-color: #999;
+    color: #1a1a1a;
+}
+
+.module-card-link-primary {
+    color: #1a1a1a;
+    border-color: #1a1a1a;
+    font-weight: 500;
+}
+
+.module-card-link-primary:hover {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+/* ===========================
+   Module page — sections
+   =========================== */
+
+.section {
+    max-width: 700px;
+    margin-bottom: 3rem;
+}
+
+.section p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.learn-block {
+    max-width: 700px;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    background: #fafafa;
+    border-left: 3px solid #e8e8e8;
+}
+
+.learn-block h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+}
+
+.learn-block p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+/* ===========================
+   Module page — preview lists
+   =========================== */
+
+.preview-section {
+    max-width: 700px;
+    margin-bottom: 2.5rem;
+}
+
+.preview-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.25rem;
+}
+
+.preview-list li {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+    margin-bottom: 0.4rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.preview-list li:before {
+    content: "\2014";
+    position: absolute;
+    left: 0;
+    color: #999;
+}
+
+/* ===========================
+   Buttons — nav-cards
+   =========================== */
+
+.nav-cards {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.nav-card {
+    display: inline-block;
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-card:hover {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.nav-card-secondary {
+    border-color: #ccc;
+    color: #666;
+    font-weight: 400;
+}
+
+.nav-card-secondary:hover {
+    background: #fafafa;
+    color: #1a1a1a;
+    border-color: #999;
+}
+
+/* ===========================
+   Case cards — practice
+   =========================== */
+
+.case-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #fafafa;
+}
+
+.case-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+}
+
+.case-context {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.case-question {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #666;
+    font-style: italic;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e8e8e8;
+}
+
+/* ===========================
+   Simulator cards
+   =========================== */
+
+.sim-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #fafafa;
+}
+
+.sim-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+}
+
+.sim-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.sim-insight {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #666;
+    font-style: italic;
+}
+
+.concept-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    background: #f0f0f0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+}
+
+/* ===========================
+   Module bottom navigation
+   =========================== */
+
+.module-nav {
+    max-width: 700px;
+    margin: 3rem 0 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #e8e8e8;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.module-nav a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    color: #666;
+    text-decoration: none;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.module-nav a:hover {
+    border-color: #999;
+    color: #1a1a1a;
+}
+
+.module-nav .nav-disabled {
+    color: #ccc;
+    border-color: #f0f0f0;
+    cursor: default;
+    pointer-events: none;
+}

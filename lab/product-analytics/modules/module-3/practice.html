@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 3. Воронки, потоки и ограничения</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Expanded case */
+        .case-expanded {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .case-expanded .case-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .case-expanded .case-setup {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+        }
+        .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .phase-item {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+        .phase-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .phase-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.35rem;
+        }
+        .phase-text {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+        }
+        .phase-metrics {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.35rem;
+            font-style: italic;
+        }
+        .case-decision {
+            padding: 1rem 1.25rem;
+            background: #f5f5f0;
+            border-left: 3px solid #d0cec0;
+            margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+        .case-decision p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        /* Questions block */
+        .questions-block {
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .questions-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .questions-list li {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0.4rem;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+        .questions-list li:before {
+            content: "?";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-weight: 500;
+        }
+
+        /* Mini cases */
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+        .mini-case .case-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .mini-case .case-context {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0;
+        }
+        .mini-case .case-question {
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+        }
+        .mini-case-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item {
+            font-size: 0.8rem;
+            line-height: 1.45;
+        }
+        .mini-case-analysis-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #999;
+            margin-bottom: 0.2rem;
+            font-weight: 500;
+        }
+        .mini-case-analysis-value {
+            color: #1a1a1a;
+        }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 3</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 3. Воронки, потоки и ограничения</p>
+
+        <!-- Flagship case -->
+        <div class="case-expanded">
+            <div class="case-title">Загрузка документов в онлайн-банке</div>
+            <div class="case-setup">
+                Онлайн-банк: воронка кредитной заявки из 5 шагов. Конверсия на шаге «загрузка документов» — 40%, самая низкая в воронке. Команда упростила загрузку (камера вместо файлов, автораспознавание). Конверсия шага выросла до 65%. Итоговая конверсия в выдачу кредита — не изменилась.
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Дано · воронка</div>
+                    <div class="phase-text">
+                        Заявка (100%) → Заполнение анкеты (75%) → Загрузка документов (40%) → Скоринг (35%) → Выдача кредита (18%). Самая заметная потеря — на шаге загрузки: минус 35 п.п. Команда решила, что это главная проблема.
+                    </div>
+                    <div class="phase-metrics">Метрики: конверсия по шагам, время на шаге, drop-off rate</div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Оптимизация · что сделали</div>
+                    <div class="phase-title">Упростили загрузку</div>
+                    <div class="phase-text">
+                        Фото через камеру вместо загрузки файлов, автораспознавание типа документа, подсказки по качеству фото. Конверсия шага: 40% → 65%. На следующий шаг (скоринг) стало проходить на 60% больше заявок.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Результат · что не сработало</div>
+                    <div class="phase-title">Выход воронки не вырос</div>
+                    <div class="phase-text">
+                        Скоринг получил больше заявок — и отсёк ту же долю. Многие из «дополнительных» заявок были от пользователей с низким скоринговым баллом — именно их раньше останавливала сложная загрузка. Барьер загрузки работал как естественный фильтр: мотивированные пользователи с хорошим профилем доходили, остальные — нет.
+                    </div>
+                    <div class="phase-metrics">Ключевое: ограничение было не на шаге загрузки, а на скоринге</div>
+                </div>
+
+                <div class="questions-block">
+                    <div class="questions-block-label">Вопросы для разбора</div>
+                    <ol class="questions-list">
+                        <li>Почему команда выбрала именно шаг загрузки — и что в этом решении было ошибкой?</li>
+                        <li>Как отличить «большую потерю на шаге» от «реального ограничения потока»?</li>
+                        <li>Если бы вы заранее знали про скоринг — что бы вы оптимизировали?</li>
+                        <li>Может ли барьер на раннем шаге быть полезным? Когда?</li>
+                        <li>Что произойдёт, если убрать и этот барьер, и смягчить скоринг?</li>
+                        <li>Как бы вы проверили гипотезу «ограничение — в скоринге» до начала работы?</li>
+                    </ol>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор · ход мыслей</div>
+                    <div class="phase-title">Найти ограничение до оптимизации</div>
+                    <div class="phase-text">
+                        Прежде чем расширять шаг, нужно проверить: вырастет ли выход. Способ — посмотреть на профиль пользователей, которые теряются на шаге, и сравнить с теми, кто проходит дальше. Если «потерянные» всё равно не прошли бы скоринг — шаг загрузки не является ограничением. Он выглядит как bottleneck, но работает как фильтр. Реальное ограничение — скоринг, который задаёт потолок выхода.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Итог: решение</div>
+                <p>
+                    Анализировать причины отказов скоринга: какие профили отсекаются и можно ли калибровать модель без увеличения риска. Альтернатива — предварительный скоринг до загрузки документов, чтобы не тратить ресурсы на заведомо неподходящие заявки. Упрощение загрузки можно оставить как UX-улучшение, но не ожидать от него роста выхода.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Отзывы и фото на карточке отеля</div>
+                <div class="case-context">
+                    Сервис бронирования. Конверсия «просмотр → бронирование» была низкой. Добавили отзывы и фото — конверсия шага выросла. Но выручка снизилась: средняя цена бронирования упала на 12%. Отзывы и фото помогли пользователям выбирать — но выбирали они более дешёвые варианты.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ограничение</div>
+                        <div class="mini-case-analysis-value">Не конверсия шага, а средний чек. Улучшение конверсии сдвинуло микс в сторону дешёвых отелей</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что проверять</div>
+                        <div class="mini-case-analysis-value">Revenue per search, распределение цен в бронированиях, конверсия по ценовым сегментам</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Раннее предложение покупки в мобильной игре</div>
+                <div class="case-context">
+                    Первое предложение покупки — после уровня 5. Доходят 90%, покупают 2%. Команда перенесла предложение на уровень 3. Конверсия покупки выросла до 3%, но LTV когорты через 30 дней оказался ниже. Ранний paywall оттолкнул часть пользователей, которые купили бы позже, за бо́льшую сумму.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ограничение</div>
+                        <div class="mini-case-analysis-value">Не момент показа, а уровень вовлечения до покупки. Перенос шага не устранил bottleneck — «недостаточная вовлечённость»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что проверять</div>
+                        <div class="mini-case-analysis-value">LTV по когортам (ранний vs. поздний paywall), конверсия в повторную покупку, engagement до первого предложения</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Длинный первый урок</div>
+                <div class="case-context">
+                    Образовательная платформа: 70% пользователей не переходят от первого урока ко второму. Среднее время первого урока — 45 минут. Формат перегружен: видео, тесты, задания. Пользователи завершают урок, но устают и не возвращаются. Ограничение — не контент, а формат и ожидания: пользователь ожидал «попробовать», а получил марафон.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ограничение</div>
+                        <div class="mini-case-analysis-value">Несоответствие формата ожиданиям. «Порог входа» во второй урок завышен первым</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что проверять</div>
+                        <div class="mini-case-analysis-value">Время первого урока vs. конверсия во второй, completion rate по сегментам, retention по длине первого урока</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

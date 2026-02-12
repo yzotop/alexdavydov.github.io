@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 4. Время, лаги и динамика</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Trajectory table */
+        .traj-table {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .traj-table th {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+            font-weight: 500;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .traj-table td {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+        .traj-table tr:last-child td { border-bottom: none; }
+        .traj-name {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .traj-error {
+            font-size: 0.8rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Window block */
+        .window-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #f5f8f5;
+            border-left: 3px solid #b8cdb8;
+        }
+        .window-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        .window-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        .window-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+        }
+        .window-item-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            min-width: 140px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        .window-item-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+        }
+        .window-rule {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #d0e0d0;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Example block */
+        .example-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        .example-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        .example-chain {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .example-chain-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+        }
+        .example-chain-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            min-width: 140px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        .example-chain-value {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+        }
+
+        /* Error block */
+        .error-block {
+            max-width: 700px;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #fff8f6;
+            border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+        .error-block p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+        .error-block .error-wrong {
+            color: #996;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Outcome list */
+        .outcome-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .outcome-list li {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .traj-table { font-size: 0.8rem; }
+            .traj-table th, .traj-table td { padding: 0.5rem 0.4rem; }
+            .window-item { flex-direction: column; gap: 0.15rem; }
+            .window-item-label { min-width: unset; }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 4
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 4. Время, лаги и динамика</h1>
+
+        <!-- About -->
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Почти все продуктовые эффекты разворачиваются во времени. Метрика на 7-й день, на 21-й и на 42-й — это три разных наблюдения одного и того же процесса. Они могут показывать рост, стагнацию и деградацию — одновременно, в одном эксперименте.
+            </p>
+            <p>
+                Типовая ошибка — сделать вывод по короткому окну. На 7-й день всё растёт — катим. Но это может быть эффект новизны, который затухнет через 3 недели. Или медленная деградация, которая не видна на коротком горизонте. Вывод зависит не только от данных, но и от того, когда именно вы посмотрели.
+            </p>
+        </section>
+
+        <!-- Trajectory language -->
+        <section class="section">
+            <h2>Язык траекторий</h2>
+
+            <table class="traj-table">
+                <thead>
+                    <tr>
+                        <th>Форма</th>
+                        <th>Как выглядит</th>
+                        <th>Что обычно означает</th>
+                        <th>Типовая ошибка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="traj-name">Step</td>
+                        <td>Резкий сдвиг, потом плато на новом уровне</td>
+                        <td>Механическое изменение (цена, лимит, порог) — эффект мгновенный и устойчивый</td>
+                        <td class="traj-error">Принять за устойчивый эффект то, что ещё не успело затухнуть</td>
+                    </tr>
+                    <tr>
+                        <td class="traj-name">Ramp-up</td>
+                        <td>Медленный рост, ускоряется со временем</td>
+                        <td>Сетевой эффект, обучение, накопление привычки</td>
+                        <td class="traj-error">Остановить эксперимент до выхода на плато — «нет эффекта»</td>
+                    </tr>
+                    <tr>
+                        <td class="traj-name">Decay</td>
+                        <td>Пик в начале, затем плавное снижение</td>
+                        <td>Затухание интереса, адаптация, насыщение</td>
+                        <td class="traj-error">Оценить по пику — переоценить устойчивый эффект</td>
+                    </tr>
+                    <tr>
+                        <td class="traj-name">Novelty spike</td>
+                        <td>Резкий всплеск, быстрое возвращение к базе</td>
+                        <td>Эффект новизны — пользователи пробуют, потом возвращаются к привычному</td>
+                        <td class="traj-error">Выкатить на основе первой недели — потом удивиться, что «рост исчез»</td>
+                    </tr>
+                    <tr>
+                        <td class="traj-name">Rebound</td>
+                        <td>Рост, затем откат ниже исходного уровня</td>
+                        <td>Побочный эффект сработал с задержкой: каннибализация, усталость, отток качественной аудитории</td>
+                        <td class="traj-error">Увидеть рост, выкатить, а деградацию списать на «внешние факторы»</td>
+                    </tr>
+                    <tr>
+                        <td class="traj-name">Regime shift</td>
+                        <td>Долго без изменений, затем резкий перелом</td>
+                        <td>Порог: система накопила изменения и сменила режим</td>
+                        <td class="traj-error">«Ничего не происходит» — остановить наблюдение до перелома</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Observation window -->
+        <div class="window-block">
+            <h3>Окно наблюдения = часть дизайна</h3>
+            <div class="window-grid">
+                <div class="window-item">
+                    <span class="window-item-label">Evaluation window</span>
+                    <span class="window-item-text">Окно оценки эффекта. На каком горизонте мы считаем дельту и принимаем решение go/no-go</span>
+                </div>
+                <div class="window-item">
+                    <span class="window-item-label">Guardrail window</span>
+                    <span class="window-item-text">Окно мониторинга рисков. Шире evaluation — ловит отложенные побочные эффекты</span>
+                </div>
+                <div class="window-item">
+                    <span class="window-item-label">Stability window</span>
+                    <span class="window-item-text">Окно устойчивости. Подтверждает, что эффект не затухает и не откатывается</span>
+                </div>
+            </div>
+            <div class="window-rule">
+                Правило: какую часть траектории мы считаем эффектом — это решение, а не факт. Оно должно быть принято до эксперимента и зафиксировано в дизайне.
+            </div>
+        </div>
+
+        <!-- Flagship example -->
+        <div class="example-block">
+            <h3>Пример: новое ранжирование в мессенджере</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #666; margin-bottom: 1rem;">
+                Мессенджер изменил алгоритм ранжирования чатов. Время в приложении: неделя 1 — +12%, неделя 3 — +3%, неделя 6 — ниже контроля.
+            </p>
+            <div class="example-chain">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Форма эффекта</span>
+                    <span class="example-chain-value">Novelty spike → Decay → Rebound. Классическая «кривая разочарования»: новизна привлекает внимание, привычка не формируется, побочный эффект проявляется с лагом</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Решение на день 7</span>
+                    <span class="example-chain-value">«+12%, катим» — опасно. На 7-й день видна только новизна. Устойчивый эффект ещё не проявился, а деградация не успела начаться</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что смотреть</span>
+                    <span class="example-chain-value">Diagnostics: доля возвращающихся пользователей (не из push), глубина сессии (не только длина), negative feedback (скрытие чатов, жалобы). Guardrails: retention D14, churn ядра</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Правильное окно</span>
+                    <span class="example-chain-value">Evaluation: ≥3 недели (дождаться затухания новизны). Guardrail window: 6 недель. Stability: проверить, что дельта не снижается на неделях 3–6</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«Метрика выросла на первой неделе — эффект подтверждён.»</p>
+            <p>
+                Первая неделя почти всегда содержит эффект новизны. Рост на 7-й день — это наблюдение, а не подтверждение. Чтобы отличить новизну от устойчивого эффекта, нужно увидеть, что произойдёт после затухания. Решение на основе пика — одна из самых дорогих ошибок в продуктовой аналитике.
+            </p>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>Форму эффекта — step, ramp, decay, novelty, rebound, regime shift — и что каждая означает для решения</li>
+                <li>Лаг между воздействием и откликом — и почему «ничего не произошло» часто значит «ещё не проявилось»</li>
+                <li>Разницу между эффектом новизны и устойчивым эффектом — и как их разделить</li>
+                <li>Медленную деградацию, которая не видна на коротком окне, но разрушает продукт на длинном</li>
+                <li>Зависимость вывода от выбора окна — и почему окно нужно фиксировать до эксперимента</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>Окно наблюдения ломает вывод — развёрнутый кейс</li>
+                <li>Динамическое ценообразование: просадка перед ростом</li>
+                <li>Годовая подписка: короткий проигрыш, длинный выигрыш</li>
+                <li>CTR рекомендаций vs. подписки с лагом</li>
+                <li>Расширение радиуса доставки: отложенная деградация</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Симулятор форм эффекта</li>
+                <li>Окно наблюдения vs вывод</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-3/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../module-5/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>

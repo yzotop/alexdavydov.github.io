@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 6. Эксперимент как инструмент понимания</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .sim-interactive h2 { font-size: 1.15rem; margin-bottom: 0.35rem; font-weight: 500; }
+        .sim-description { font-size: 0.85rem; color: #666; margin-bottom: 1.5rem; line-height: 1.55; }
+        .sim-controls { margin-bottom: 1.5rem; }
+        .sim-control-group { margin-bottom: 1rem; }
+        .sim-control-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.35rem; display: block; font-weight: 500;
+        }
+        .sim-control-value { font-size: 0.85rem; color: #1a1a1a; font-weight: 500; margin-left: 0.5rem; }
+        .sim-slider {
+            width: 100%; max-width: 400px; margin-top: 0.25rem;
+            -webkit-appearance: none; appearance: none; height: 4px; background: #ddd;
+            border-radius: 2px; outline: none;
+        }
+        .sim-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 16px; height: 16px; background: #1a1a1a; border-radius: 50%; cursor: pointer;
+        }
+
+        .sim-toggle-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.35rem; }
+        .sim-toggle-btn {
+            padding: 0.4rem 0.9rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #ddd; background: #fff; cursor: pointer; transition: all 0.15s;
+        }
+        .sim-toggle-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+        .sim-output {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1rem;
+        }
+        .sim-output-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.5rem; font-weight: 500;
+        }
+        .sim-output-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+
+        /* Experiment constructor: scenario cards */
+        .scenario-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .scenario-card {
+            padding: 0.75rem 1rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; cursor: default;
+        }
+        .scenario-card.green-zone { border-left: 3px solid #6a9; }
+        .scenario-card.yellow-zone { border-left: 3px solid #da5; }
+        .scenario-card.red-zone { border-left: 3px solid #a55; }
+        .scenario-card.grey-zone { border-left: 3px solid #aaa; }
+        .scenario-card-title { font-size: 0.8rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.25rem; }
+        .scenario-card-text { font-size: 0.75rem; line-height: 1.45; color: #666; }
+        .scenario-card-decision { font-size: 0.7rem; color: #999; font-style: italic; margin-top: 0.3rem; }
+
+        /* Primary vs guardrail plane */
+        .plane-container { position: relative; width: 100%; max-width: 500px; margin: 0 auto 1rem; }
+        .plane-canvas { width: 100%; border: 1px solid #e8e8e8; border-radius: 4px; cursor: crosshair; background: #fff; }
+        .plane-legend {
+            display: flex; gap: 1rem; justify-content: center;
+            margin-top: 0.75rem; flex-wrap: wrap;
+        }
+        .plane-legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #666; }
+        .plane-legend-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .plane-legend-dot.green { background: rgba(100, 170, 100, 0.6); }
+        .plane-legend-dot.yellow { background: rgba(220, 180, 60, 0.6); }
+        .plane-legend-dot.red { background: rgba(180, 80, 80, 0.6); }
+        .plane-decision-card {
+            text-align: center; padding: 0.75rem; margin-top: 1rem;
+            background: #fff; border: 1px solid #e8e8e8; border-radius: 4px;
+        }
+        .plane-decision-label { font-size: 0.85rem; font-weight: 500; color: #1a1a1a; }
+        .plane-decision-text { font-size: 0.8rem; color: #666; margin-top: 0.25rem; }
+
+        /* False confidence */
+        .fc-chart-area { width: 100%; max-width: 500px; margin: 0 auto 1rem; }
+        .fc-canvas { width: 100%; border: 1px solid #e8e8e8; border-radius: 4px; background: #fff; }
+        .fc-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+        .fc-card {
+            text-align: center; padding: 0.75rem; background: #fff;
+            border: 1px solid #e8e8e8; border-radius: 4px;
+        }
+        .fc-card-value { font-size: 1.1rem; font-weight: 500; color: #1a1a1a; }
+        .fc-card-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-top: 0.15rem; }
+        .fc-warning {
+            padding: 0.75rem 1rem; background: #fff8f6; border-left: 3px solid #d4a0a0;
+            font-size: 0.85rem; color: #1a1a1a; line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .scenario-cards { grid-template-columns: 1fr; }
+            .fc-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 6</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 6. Эксперимент как инструмент понимания</p>
+
+        <!-- ========== Simulator 1: Experiment Constructor ========== -->
+        <div class="sim-interactive">
+            <h2>Конструктор эксперимента</h2>
+            <p class="sim-description">
+                Задайте гипотезу и набор метрик — система покажет возможные сценарии результатов и как читать каждый из них.
+            </p>
+
+            <div class="sim-controls">
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Гипотеза</span>
+                    <div class="sim-toggle-group" id="hyp-toggles">
+                        <button class="sim-toggle-btn active" data-hyp="onboarding">Новый онбординг ↑ конверсию</button>
+                        <button class="sim-toggle-btn" data-hyp="algo">Алгоритм ↑ вовлечённость</button>
+                        <button class="sim-toggle-btn" data-hyp="pricing">Цена ↑ выручку</button>
+                    </div>
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Primary</span>
+                    <div id="exp-primary" style="font-size:0.85rem;color:#1a1a1a;margin-top:0.2rem;">Конверсия в первую покупку</div>
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Diagnostic</span>
+                    <div id="exp-diagnostic" style="font-size:0.85rem;color:#1a1a1a;margin-top:0.2rem;">Время до покупки, шаги онбординга пройдены</div>
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Guardrails</span>
+                    <div id="exp-guardrails" style="font-size:0.85rem;color:#1a1a1a;margin-top:0.2rem;">Retention D14, NPS</div>
+                </div>
+            </div>
+
+            <div class="sim-output">
+                <div class="sim-output-label">Возможные сценарии результатов</div>
+            </div>
+
+            <div class="scenario-cards" id="scenario-cards">
+                <div class="scenario-card green-zone">
+                    <div class="scenario-card-title">Primary ↑ + Guardrails ОК</div>
+                    <div class="scenario-card-text">Механизм работает. Метрика выросла, ничего не сломано.</div>
+                    <div class="scenario-card-decision">→ Катим. Мониторим guardrails 2–4 недели</div>
+                </div>
+                <div class="scenario-card yellow-zone">
+                    <div class="scenario-card-title">Primary ↑ + Guardrail ↓</div>
+                    <div class="scenario-card-text">Метрика выросла, но побочный эффект сигнализирует. Рост за счёт давления или подмены.</div>
+                    <div class="scenario-card-decision">→ Не катим. Разбираем механизм. Итерируем</div>
+                </div>
+                <div class="scenario-card grey-zone">
+                    <div class="scenario-card-title">Primary 0 + Diagnostic ↑</div>
+                    <div class="scenario-card-text">Нет изменения primary, но поведение сдвинулось. Механизм включился, но не дошёл до метрики.</div>
+                    <div class="scenario-card-decision">→ Не отбрасываем. Продлить тест или уточнить primary</div>
+                </div>
+                <div class="scenario-card red-zone">
+                    <div class="scenario-card-title">Primary ↑ + Сегмент ↓</div>
+                    <div class="scenario-card-text">Среднее выросло, но один сегмент пострадал. Рост за счёт другого сегмента.</div>
+                    <div class="scenario-card-decision">→ Не катим глобально. Сегментируем решение</div>
+                </div>
+            </div>
+
+            <div class="sim-output" id="exp-reading">
+                <div class="sim-output-label">Чтение</div>
+                <div class="sim-output-text">
+                    Один эксперимент — минимум 4 варианта исхода. Для каждого нужно заранее знать: какое решение принимаем. Если вы не описали это до запуска — вы не тестируете гипотезу, вы смотрите на числа.
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Simulator 2: Primary vs Guardrail Plane ========== -->
+        <div class="sim-interactive">
+            <h2>Primary vs Guardrail</h2>
+            <p class="sim-description">
+                Двумерная плоскость решений: X — изменение primary, Y — изменение guardrail. Передвигайте точку — система показывает зону и рекомендацию.
+            </p>
+
+            <div class="plane-container">
+                <canvas id="plane-canvas" class="plane-canvas" width="500" height="400"></canvas>
+                <div class="plane-legend">
+                    <div class="plane-legend-item"><div class="plane-legend-dot green"></div> Катим</div>
+                    <div class="plane-legend-item"><div class="plane-legend-dot yellow"></div> Осторожно</div>
+                    <div class="plane-legend-item"><div class="plane-legend-dot red"></div> Нельзя</div>
+                </div>
+            </div>
+
+            <div class="plane-decision-card" id="plane-decision">
+                <div class="plane-decision-label">Кликните на плоскость</div>
+                <div class="plane-decision-text">Чтобы увидеть решение для конкретной комбинации primary/guardrail</div>
+            </div>
+
+            <div class="sim-output" style="margin-top:1rem;">
+                <div class="sim-output-label">Чтение</div>
+                <div class="sim-output-text">
+                    Решение — не одна метрика, а область допустимых комбинаций. «Primary +5%, guardrail &minus;2%» — это одна точка на плоскости. Без guardrail-оси любой рост primary кажется «зелёным».
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Simulator 3: False Confidence ========== -->
+        <div class="sim-interactive">
+            <h2>Симулятор ложной уверенности</h2>
+            <p class="sim-description">
+                Как p-value ведёт себя по мере накопления данных. Меняйте параметры и наблюдайте, как легко «поймать значимость», если подглядывать в результаты.
+            </p>
+
+            <div class="sim-controls">
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Истинный эффект <span class="sim-control-value" id="fc-effect-val">0%</span></span>
+                    <input type="range" class="sim-slider" id="fc-effect" min="0" max="10" step="0.5" value="0">
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Шум (дисперсия) <span class="sim-control-value" id="fc-noise-val">50</span></span>
+                    <input type="range" class="sim-slider" id="fc-noise" min="10" max="100" step="5" value="50">
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Размер выборки <span class="sim-control-value" id="fc-sample-val">500</span></span>
+                    <input type="range" class="sim-slider" id="fc-sample" min="100" max="5000" step="100" value="500">
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Подглядывание</span>
+                    <div class="sim-toggle-group" id="fc-peek-toggles">
+                        <button class="sim-toggle-btn active" data-peek="none">Нет</button>
+                        <button class="sim-toggle-btn" data-peek="daily">Каждый день</button>
+                        <button class="sim-toggle-btn" data-peek="hourly">Каждый час</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fc-chart-area">
+                <canvas id="fc-canvas" class="fc-canvas" width="500" height="250"></canvas>
+            </div>
+
+            <div class="fc-cards" id="fc-stats">
+                <div class="fc-card">
+                    <div class="fc-card-value" id="fc-pval">—</div>
+                    <div class="fc-card-label">P-value (финал)</div>
+                </div>
+                <div class="fc-card">
+                    <div class="fc-card-value" id="fc-crosses">—</div>
+                    <div class="fc-card-label">Сколько раз p&lt;0.05</div>
+                </div>
+                <div class="fc-card">
+                    <div class="fc-card-value" id="fc-verdict">—</div>
+                    <div class="fc-card-label">Вердикт</div>
+                </div>
+            </div>
+
+            <div class="fc-warning" id="fc-warning" style="display:none;">
+                Вы смотрите слишком рано. При ежедневном подглядывании вероятность хотя бы раз увидеть p&lt;0.05 при нулевом эффекте — существенно выше 5%.
+            </div>
+
+            <div class="sim-output" style="margin-top:1rem;">
+                <div class="sim-output-label">Чтение</div>
+                <div class="sim-output-text" id="fc-reading">
+                    Выставьте параметры и нажмите «Запуск» — вы увидите, как p-value скачет по мере накопления данных.
+                </div>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <button class="sim-toggle-btn active" id="fc-run-btn" style="padding:0.5rem 1.5rem;">Запуск</button>
+            </div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    (function() {
+        // ========================
+        // Simulator 1: Experiment Constructor
+        // ========================
+        const hypotheses = {
+            onboarding: {
+                primary: 'Конверсия в первую покупку',
+                diagnostic: 'Время до покупки, шаги онбординга пройдены',
+                guardrails: 'Retention D14, NPS',
+                scenarios: [
+                    { title: 'Primary ↑ + Guardrails ОК', text: 'Онбординг работает: понимание ценности → осознанная покупка → retention стабилен.', decision: '→ Катим. Мониторим guardrails 2–4 недели', zone: 'green-zone' },
+                    { title: 'Primary ↑ + Guardrail ↓', text: 'Конверсия выросла, но время до покупки +40%. Давление, а не ценность.', decision: '→ Не катим. Убрать pressure-элементы. Итерировать', zone: 'yellow-zone' },
+                    { title: 'Primary 0 + Diagnostic ↑', text: 'Больше шагов пройдено, но конверсия не выросла. Онбординг вовлекает, но не конвертирует.', decision: '→ Продлить тест. Проверить лаг до покупки (D7/D14)', zone: 'grey-zone' },
+                    { title: 'Primary ↑ + Сегмент ↓', text: 'Конверсия +8% у новых, –3% у возвращающихся. Онбординг мешает опытным.', decision: '→ Сегментировать: показывать только новым пользователям', zone: 'red-zone' }
+                ]
+            },
+            algo: {
+                primary: 'CTR рекомендаций',
+                diagnostic: 'Diversity index, unique sources/user, time on platform',
+                guardrails: 'Retention D30, content fatigue rate',
+                scenarios: [
+                    { title: 'Primary ↑ + Guardrails ОК', text: 'CTR вырос, diversity стабильна, retention не упал. Алгоритм находит релевантный и разнообразный контент.', decision: '→ Катим. Мониторим diversity и retention D30', zone: 'green-zone' },
+                    { title: 'Primary ↑ + Guardrail ↓', text: 'CTR +20%, но diversity –30%. Пузырь рекомендаций. Retention упадёт с лагом.', decision: '→ Не катим. Добавить diversity constraint в алгоритм', zone: 'yellow-zone' },
+                    { title: 'Primary 0 + Diagnostic ↑', text: 'CTR без изменений, но unique sources +15%. Пользователи начали читать новых авторов.', decision: '→ Продлить. Возможно, CTR — неправильная primary для этой гипотезы', zone: 'grey-zone' },
+                    { title: 'Primary ↑ + Поздний lag ↓', text: 'Первые 2 недели: всё зелёное. Неделя 4: retention начинает падать.', decision: '→ Остановить. Эффект новизны + усталость от пузыря', zone: 'red-zone' }
+                ]
+            },
+            pricing: {
+                primary: 'Revenue per user',
+                diagnostic: 'Конверсия, средний чек, частота покупок',
+                guardrails: 'Churn rate, NPS, обращения в поддержку',
+                scenarios: [
+                    { title: 'Primary ↑ + Guardrails ОК', text: 'Revenue вырос за счёт чека, конверсия стабильна, churn не растёт. Ценность оправдывает цену.', decision: '→ Катим. Мониторим churn 4–6 недель (лаг)', zone: 'green-zone' },
+                    { title: 'Primary ↑ + Guardrail ↓', text: 'Revenue +10%, но churn +5%. Зарабатываем больше с тех, кто остался, теряем чувствительных.', decision: '→ Не катим глобально. Проверить по сегментам дохода', zone: 'yellow-zone' },
+                    { title: 'Primary 0 + Diagnostic ↑', text: 'Revenue без изменений: чек вырос, частота упала. Компенсация.', decision: '→ Разобрать: снижение частоты — адаптация или уход?', zone: 'grey-zone' },
+                    { title: 'Primary ↑ + Сегмент ↓', text: 'Revenue +8% в high-income. Low-income уходят. Микс сдвигается.', decision: '→ Дифференцировать цены или удерживать low-income', zone: 'red-zone' }
+                ]
+            }
+        };
+
+        let currentHyp = 'onboarding';
+
+        function renderConstructor() {
+            const h = hypotheses[currentHyp];
+            document.getElementById('exp-primary').textContent = h.primary;
+            document.getElementById('exp-diagnostic').textContent = h.diagnostic;
+            document.getElementById('exp-guardrails').textContent = h.guardrails;
+
+            const container = document.getElementById('scenario-cards');
+            container.innerHTML = '';
+            h.scenarios.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card ' + s.zone;
+                card.innerHTML =
+                    '<div class="scenario-card-title">' + s.title + '</div>' +
+                    '<div class="scenario-card-text">' + s.text + '</div>' +
+                    '<div class="scenario-card-decision">' + s.decision + '</div>';
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('hyp-toggles').addEventListener('click', function(e) {
+            const btn = e.target.closest('.sim-toggle-btn');
+            if (!btn) return;
+            this.querySelectorAll('.sim-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentHyp = btn.dataset.hyp;
+            renderConstructor();
+        });
+
+        // ========================
+        // Simulator 2: Primary vs Guardrail Plane
+        // ========================
+        const planeCanvas = document.getElementById('plane-canvas');
+        const planeCtx = planeCanvas.getContext('2d');
+
+        function setDPR(canvas, ctx, w, h) {
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+        }
+
+        function drawPlane(pointX, pointY) {
+            const W = 500, H = 400;
+            setDPR(planeCanvas, planeCtx, W, H);
+            const ctx = planeCtx;
+            const m = { l: 60, r: 20, t: 20, b: 50 };
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Zones (primary = x, guardrail change = y; y positive = guardrail improves, y negative = guardrail worsens)
+            // Green: primary > 0, guardrail >= -2
+            // Yellow: primary > 0, -5 < guardrail < -2  OR  primary 0..small, guardrail OK
+            // Red: guardrail < -5  OR  primary < 0 & guardrail < 0
+
+            // Draw zone backgrounds
+            // x range: -10 to +15 (primary %)
+            // y range: -15 to +10 (guardrail %)
+            const xMin = -10, xMax = 15, yMin = -15, yMax = 10;
+
+            function toCanvasX(val) { return m.l + (val - xMin) / (xMax - xMin) * pw; }
+            function toCanvasY(val) { return m.t + (1 - (val - yMin) / (yMax - yMin)) * ph; }
+
+            // Red zone: guardrail < -5
+            ctx.fillStyle = 'rgba(180,80,80,0.12)';
+            ctx.fillRect(m.l, toCanvasY(-5), pw, toCanvasY(yMin) - toCanvasY(-5));
+
+            // Yellow zone: guardrail -5..-2, primary > 0
+            ctx.fillStyle = 'rgba(220,180,60,0.12)';
+            const yTop = toCanvasY(-2);
+            const yBot = toCanvasY(-5);
+            ctx.fillRect(toCanvasX(0), yTop, toCanvasX(xMax) - toCanvasX(0), yBot - yTop);
+
+            // Also yellow: primary < 0, guardrail > -5
+            ctx.fillRect(m.l, m.t, toCanvasX(0) - m.l, toCanvasY(-5) - m.t);
+
+            // Green zone: primary > 0, guardrail > -2
+            ctx.fillStyle = 'rgba(100,170,100,0.12)';
+            ctx.fillRect(toCanvasX(0), m.t, toCanvasX(xMax) - toCanvasX(0), yTop - m.t);
+
+            // Grid
+            ctx.strokeStyle = '#e8e8e8';
+            ctx.lineWidth = 0.5;
+            for (let x = xMin; x <= xMax; x += 5) {
+                const cx = toCanvasX(x);
+                ctx.beginPath(); ctx.moveTo(cx, m.t); ctx.lineTo(cx, H - m.b); ctx.stroke();
+            }
+            for (let y = yMin; y <= yMax; y += 5) {
+                const cy = toCanvasY(y);
+                ctx.beginPath(); ctx.moveTo(m.l, cy); ctx.lineTo(W - m.r, cy); ctx.stroke();
+            }
+
+            // Zero lines
+            ctx.strokeStyle = '#bbb';
+            ctx.lineWidth = 1;
+            const zx = toCanvasX(0), zy = toCanvasY(0);
+            ctx.beginPath(); ctx.moveTo(zx, m.t); ctx.lineTo(zx, H - m.b); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(m.l, zy); ctx.lineTo(W - m.r, zy); ctx.stroke();
+
+            // Axis labels
+            ctx.fillStyle = '#999';
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            for (let x = xMin; x <= xMax; x += 5) {
+                ctx.fillText((x > 0 ? '+' : '') + x + '%', toCanvasX(x), H - m.b + 18);
+            }
+            ctx.textAlign = 'right';
+            for (let y = yMin; y <= yMax; y += 5) {
+                ctx.fillText((y > 0 ? '+' : '') + y + '%', m.l - 8, toCanvasY(y) + 4);
+            }
+
+            // Axis titles
+            ctx.fillStyle = '#666';
+            ctx.font = '12px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Primary metric, %', W / 2, H - 5);
+            ctx.save();
+            ctx.translate(14, H / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Guardrail, %', 0, 0);
+            ctx.restore();
+
+            // Point
+            if (pointX !== null && pointY !== null) {
+                const cx = toCanvasX(pointX);
+                const cy = toCanvasY(pointY);
+                ctx.fillStyle = '#1a1a1a';
+                ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.stroke();
+            }
+        }
+
+        function getPlaneDecision(px, py) {
+            if (py < -5) return { label: 'Нельзя катить', text: 'Guardrail нарушен критически. Любой рост primary не компенсирует вред.', cls: 'red' };
+            if (px > 0 && py >= -2) return { label: 'Катим', text: 'Primary положительная, guardrail в пределах нормы. Мониторим 2–4 недели.', cls: 'green' };
+            if (px > 0 && py < -2) return { label: 'Осторожно', text: 'Primary вверх, но guardrail просел. Разобрать механизм. Возможно, нужна итерация.', cls: 'yellow' };
+            if (px <= 0 && py >= 0) return { label: 'Осторожно', text: 'Primary не выросла, но guardrail стабилен. Проверить diagnostic — возможно, лаг.', cls: 'yellow' };
+            return { label: 'Осторожно / Нет', text: 'Primary не выросла, guardrail просел. Механизм не работает и есть побочный эффект.', cls: 'yellow' };
+        }
+
+        drawPlane(null, null);
+
+        planeCanvas.addEventListener('click', function(e) {
+            const rect = planeCanvas.getBoundingClientRect();
+            const sx = (e.clientX - rect.left) / rect.width;
+            const sy = (e.clientY - rect.top) / rect.height;
+            const m = { l: 60, r: 20, t: 20, b: 50 };
+            const W = 500, H = 400;
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+            const xMin = -10, xMax = 15, yMin = -15, yMax = 10;
+            const normX = (sx * W - m.l) / pw;
+            const normY = (sy * H - m.t) / ph;
+            const px = xMin + normX * (xMax - xMin);
+            const py = yMax - normY * (yMax - yMin);
+
+            if (px < xMin || px > xMax || py < yMin || py > yMax) return;
+
+            drawPlane(px, py);
+
+            const d = getPlaneDecision(px, py);
+            const card = document.getElementById('plane-decision');
+            card.innerHTML =
+                '<div class="plane-decision-label" style="color:' + (d.cls === 'green' ? '#3a7' : d.cls === 'red' ? '#a55' : '#b90') + '">' + d.label + '</div>' +
+                '<div class="plane-decision-text">' + d.text + '</div>' +
+                '<div style="font-size:0.75rem;color:#999;margin-top:0.3rem;">Primary: ' + (px > 0 ? '+' : '') + px.toFixed(1) + '% · Guardrail: ' + (py > 0 ? '+' : '') + py.toFixed(1) + '%</div>';
+        });
+
+        // ========================
+        // Simulator 3: False Confidence
+        // ========================
+        const fcCanvas = document.getElementById('fc-canvas');
+        const fcCtx = fcCanvas.getContext('2d');
+        let peekMode = 'none';
+
+        document.getElementById('fc-peek-toggles').addEventListener('click', function(e) {
+            const btn = e.target.closest('.sim-toggle-btn');
+            if (!btn) return;
+            this.querySelectorAll('.sim-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            peekMode = btn.dataset.peek;
+        });
+
+        ['fc-effect', 'fc-noise', 'fc-sample'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', function() {
+                document.getElementById(id + '-val').textContent = id === 'fc-effect' ? this.value + '%' : this.value;
+            });
+        });
+
+        function gaussRandom() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        function runFalseConfidence() {
+            const effect = parseFloat(document.getElementById('fc-effect').value);
+            const noise = parseFloat(document.getElementById('fc-noise').value);
+            const totalN = parseInt(document.getElementById('fc-sample').value);
+
+            // Determine check points
+            let checkPoints = [];
+            if (peekMode === 'none') {
+                checkPoints = [totalN];
+            } else if (peekMode === 'daily') {
+                const step = Math.max(Math.floor(totalN / 14), 20);
+                for (let i = step; i <= totalN; i += step) checkPoints.push(i);
+                if (checkPoints[checkPoints.length - 1] !== totalN) checkPoints.push(totalN);
+            } else {
+                const step = Math.max(Math.floor(totalN / 50), 10);
+                for (let i = step; i <= totalN; i += step) checkPoints.push(i);
+                if (checkPoints[checkPoints.length - 1] !== totalN) checkPoints.push(totalN);
+            }
+
+            // Generate data
+            const controlData = [];
+            const testData = [];
+            for (let i = 0; i < totalN; i++) {
+                controlData.push(100 + gaussRandom() * noise);
+                testData.push(100 + effect + gaussRandom() * noise);
+            }
+
+            // Calculate p-values at each checkpoint (two-sample t-test approximation)
+            const pValues = [];
+            let crossCount = 0;
+            for (let ci = 0; ci < checkPoints.length; ci++) {
+                const n = checkPoints[ci];
+                let sumC = 0, sumT = 0, sumC2 = 0, sumT2 = 0;
+                for (let i = 0; i < n; i++) {
+                    sumC += controlData[i]; sumT += testData[i];
+                    sumC2 += controlData[i] * controlData[i];
+                    sumT2 += testData[i] * testData[i];
+                }
+                const meanC = sumC / n, meanT = sumT / n;
+                const varC = sumC2 / n - meanC * meanC;
+                const varT = sumT2 / n - meanT * meanT;
+                const se = Math.sqrt((varC + varT) / n);
+                const t = se > 0 ? Math.abs(meanT - meanC) / se : 0;
+                // Approximate p-value from t using normal distribution
+                const p = Math.exp(-0.717 * t - 0.416 * t * t);
+                pValues.push({ n: n, p: Math.min(p, 1) });
+                if (p < 0.05) crossCount++;
+            }
+
+            // Draw chart
+            const W = 500, H = 250;
+            setDPR(fcCanvas, fcCtx, W, H);
+            const ctx = fcCtx;
+            const m = { l: 60, r: 20, t: 20, b: 40 };
+
+            ctx.clearRect(0, 0, W, H);
+
+            // P=0.05 line
+            const pw = W - m.l - m.r;
+            const ph = H - m.t - m.b;
+            function toX(n) { return m.l + (n / totalN) * pw; }
+            function toY(p) { return m.t + (1 - p) * ph; }
+
+            // Background
+            ctx.fillStyle = 'rgba(180,80,80,0.05)';
+            ctx.fillRect(m.l, m.t, pw, toY(0.05) - m.t);
+            ctx.fillStyle = 'rgba(100,170,100,0.05)';
+            ctx.fillRect(m.l, toY(0.05), pw, H - m.b - toY(0.05));
+
+            // Grid
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 0.5;
+            for (let p = 0; p <= 1; p += 0.2) {
+                const y = toY(p);
+                ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(W - m.r, y); ctx.stroke();
+            }
+
+            // P=0.05 line
+            ctx.strokeStyle = '#d4a0a0';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            const y05 = toY(0.05);
+            ctx.beginPath(); ctx.moveTo(m.l, y05); ctx.lineTo(W - m.r, y05); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#a55';
+            ctx.font = '10px system-ui, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('p = 0.05', W - m.r - 45, y05 - 5);
+
+            // P-value line
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < pValues.length; i++) {
+                const x = toX(pValues[i].n);
+                const y = toY(pValues[i].p);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Points that cross threshold
+            for (let i = 0; i < pValues.length; i++) {
+                if (pValues[i].p < 0.05) {
+                    const x = toX(pValues[i].n);
+                    const y = toY(pValues[i].p);
+                    ctx.fillStyle = '#a55';
+                    ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+
+            // Axis labels
+            ctx.fillStyle = '#999';
+            ctx.font = '11px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            for (let n = 0; n <= totalN; n += Math.ceil(totalN / 5 / 100) * 100) {
+                if (n === 0) continue;
+                ctx.fillText(n, toX(n), H - m.b + 16);
+            }
+            ctx.fillText('Размер выборки', W / 2, H - 4);
+
+            ctx.textAlign = 'right';
+            for (let p = 0; p <= 1; p += 0.2) {
+                ctx.fillText(p.toFixed(1), m.l - 8, toY(p) + 4);
+            }
+            ctx.save();
+            ctx.translate(14, H / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('p-value', 0, 0);
+            ctx.restore();
+
+            // Update stats
+            const finalP = pValues[pValues.length - 1].p;
+            document.getElementById('fc-pval').textContent = finalP.toFixed(3);
+            document.getElementById('fc-crosses').textContent = crossCount + ' из ' + pValues.length;
+
+            let verdict = '';
+            if (effect === 0 && crossCount > 0) verdict = 'Ложная тревога';
+            else if (effect === 0 && crossCount === 0) verdict = 'Корректно: нет эффекта';
+            else if (effect > 0 && finalP < 0.05) verdict = 'Эффект найден';
+            else verdict = 'Не хватило мощности';
+            document.getElementById('fc-verdict').textContent = verdict;
+
+            // Warning
+            const warn = document.getElementById('fc-warning');
+            if (peekMode !== 'none' && effect === 0 && crossCount > 0) {
+                warn.style.display = 'block';
+                warn.textContent = 'При подглядывании p-value пересекла 0.05 в ' + crossCount + ' из ' + pValues.length + ' проверок — даже без реального эффекта. Это и есть «ложная уверенность»: чем чаще смотришь, тем выше шанс «поймать значимость».';
+            } else if (peekMode !== 'none') {
+                warn.style.display = 'block';
+                warn.textContent = 'Подглядывание: ' + pValues.length + ' проверок. Каждая — шанс принять решение на шуме. При нулевом эффекте попробуйте несколько раз — и увидите, как легко получить «значимый» результат.';
+            } else {
+                warn.style.display = 'none';
+            }
+
+            // Reading
+            const reading = document.getElementById('fc-reading');
+            if (effect === 0 && peekMode !== 'none') {
+                reading.textContent = 'Эффект = 0%. При частом подглядывании вы рискуете принять шум за сигнал. Каждая проверка — лотерейный билет с шансом 5% на «ложную значимость».';
+            } else if (effect === 0) {
+                reading.textContent = 'Эффект = 0%. При единичной проверке p-value скорее всего выше 0.05. Но каждый запуск может дать разный результат — это нормальная дисперсия.';
+            } else if (effect > 0 && finalP < 0.05) {
+                reading.textContent = 'Эффект ' + effect + '% обнаружен при выборке ' + totalN + '. Чем больше выборка и чем ниже шум — тем стабильнее результат. Подглядывание не нужно.';
+            } else {
+                reading.textContent = 'Эффект ' + effect + '% не обнаружен: не хватило мощности. Увеличьте выборку или уменьшите шум. Подглядывание не поможет — только создаст иллюзию.';
+            }
+        }
+
+        document.getElementById('fc-run-btn').addEventListener('click', runFalseConfidence);
+
+        // Draw empty fc canvas
+        (function() {
+            const W = 500, H = 250;
+            setDPR(fcCanvas, fcCtx, W, H);
+            fcCtx.fillStyle = '#f5f5f5';
+            fcCtx.fillRect(0, 0, W, H);
+            fcCtx.fillStyle = '#ccc';
+            fcCtx.font = '13px system-ui, sans-serif';
+            fcCtx.textAlign = 'center';
+            fcCtx.fillText('Нажмите «Запуск»', W / 2, H / 2);
+        })();
+
+    })();
+    </script>
+</body>
+</html>

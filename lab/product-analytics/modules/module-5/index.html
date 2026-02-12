@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 5. Сегменты и неоднородность</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        /* Distortions table */
+        .distort-table {
+            max-width: 700px; margin-bottom: 3rem; border-collapse: collapse; width: 100%;
+        }
+        .distort-table th {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; font-weight: 500; text-align: left;
+            padding: 0.5rem 0.75rem; border-bottom: 1px solid #e8e8e8;
+        }
+        .distort-table td {
+            font-size: 0.85rem; line-height: 1.5; color: #1a1a1a;
+            padding: 0.65rem 0.75rem; border-bottom: 1px solid #f0f0f0; vertical-align: top;
+        }
+        .distort-table tr:last-child td { border-bottom: none; }
+        .distort-name { font-weight: 500; white-space: nowrap; }
+        .distort-error { font-size: 0.8rem; color: #999; font-style: italic; }
+
+        /* Example block */
+        .example-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+        }
+        .example-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; color: #1a1a1a; }
+        .example-chain { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 1rem; }
+        .example-chain-item { display: flex; gap: 0.75rem; align-items: baseline; }
+        .example-chain-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+            color: #999; min-width: 140px; flex-shrink: 0; font-weight: 500;
+        }
+        .example-chain-value { font-size: 0.9rem; line-height: 1.5; color: #1a1a1a; }
+
+        /* Segment breakdown mini-table */
+        .seg-breakdown {
+            display: grid; grid-template-columns: auto 1fr 1fr; gap: 0 1.5rem;
+            margin: 0.75rem 0; font-size: 0.85rem;
+        }
+        .seg-breakdown-head {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; font-weight: 500; padding-bottom: 0.3rem; border-bottom: 1px solid #e8e8e8;
+        }
+        .seg-breakdown-cell { padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0; color: #1a1a1a; }
+        .seg-breakdown-cell.negative { color: #c66; }
+        .seg-breakdown-cell.positive { color: #4a9; }
+
+        /* Error block */
+        .error-block {
+            max-width: 700px; margin-bottom: 3rem; padding: 1.5rem;
+            background: #fff8f6; border-left: 3px solid #e0c4bc;
+        }
+        .error-block h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; color: #1a1a1a; }
+        .error-block p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+        .error-block .error-wrong { color: #996; font-style: italic; margin-bottom: 0.5rem; }
+
+        /* Outcome list */
+        .outcome-list { list-style: none; padding-left: 0; }
+        .outcome-list li {
+            font-size: 0.9rem; line-height: 1.6; color: #1a1a1a;
+            margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;
+        }
+        .outcome-list li:before {
+            content: "\2714"; position: absolute; left: 0; color: #999; font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .distort-table { font-size: 0.8rem; }
+            .distort-table th, .distort-table td { padding: 0.5rem 0.4rem; }
+            .example-chain-item { flex-direction: column; gap: 0.15rem; }
+            .example-chain-label { min-width: unset; }
+            .seg-breakdown { font-size: 0.8rem; gap: 0 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / Модуль 5
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 5. Сегменты и неоднородность</h1>
+
+        <section class="section">
+            <h2>Основная идея</h2>
+            <p>
+                Среднее значение может не описывать ни одного реального пользователя. Средняя конверсия 10% — это, возможно, 30% у одного сегмента и 2% у другого. Решение «по среднему» одинаково плохо для обоих.
+            </p>
+            <p>
+                Рост агрегированной метрики часто означает не рост эффективности, а сдвиг пропорций: стало больше сегмента с высоким показателем — среднее выросло, хотя ни один сегмент не улучшился. Это не теоретический парадокс — это повседневная ситуация в продуктовой аналитике.
+            </p>
+            <p>
+                Модуль учит видеть неоднородность до принятия решения и задавать три вопроса: «для кого это среднее?», «за счёт какого сегмента?» и «что будет, если микс изменится?».
+            </p>
+        </section>
+
+        <!-- Distortions table -->
+        <section class="section">
+            <h2>Типовые искажения агрегата</h2>
+
+            <table class="distort-table">
+                <thead>
+                    <tr>
+                        <th>Искажение</th>
+                        <th>Как выглядит</th>
+                        <th>Почему возникает</th>
+                        <th>Типовая ошибка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="distort-name">Mix shift</td>
+                        <td>Агрегат растёт, хотя ни один сегмент не улучшился</td>
+                        <td>Изменились пропорции сегментов — стало больше «хорошего» сегмента</td>
+                        <td class="distort-error">Считать рост агрегата результатом улучшения продукта</td>
+                    </tr>
+                    <tr>
+                        <td class="distort-name">Парадокс Симпсона</td>
+                        <td>Агрегат растёт, а каждый сегмент в отдельности падает</td>
+                        <td>Сегмент с высоким показателем стал весить больше</td>
+                        <td class="distort-error">Принять решение go на основе агрегата, не разбив по сегментам</td>
+                    </tr>
+                    <tr>
+                        <td class="distort-name">Скрытая неоднородность</td>
+                        <td>Одно среднее скрывает два разных «холма» в распределении</td>
+                        <td>Аудитория состоит из двух непохожих групп</td>
+                        <td class="distort-error">Оптимизировать под «среднего пользователя», которого не существует</td>
+                    </tr>
+                    <tr>
+                        <td class="distort-name">Эффект малого сегмента</td>
+                        <td>Маленький сегмент показывает огромный рост, сдвигая агрегат</td>
+                        <td>Высокий процентный рост при малой базе</td>
+                        <td class="distort-error">Масштабировать решение, основанное на выбросе</td>
+                    </tr>
+                    <tr>
+                        <td class="distort-name">Дифференцированное воздействие</td>
+                        <td>Фича — win для одних и loss для других, агрегат — около нуля</td>
+                        <td>Изменение полезно одному сегменту и вредно другому</td>
+                        <td class="distort-error">«Нет эффекта» — отбросить фичу, вместо того чтобы катить по сегментам</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Flagship example -->
+        <div class="example-block">
+            <h3>Пример: промокод и сдвиг микса каналов</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #666; margin-bottom: 0.75rem;">
+                Маркетплейс запустил промокод. Средняя конверсия +10%. Но при разбивке по каналам — картина другая:
+            </p>
+
+            <div class="seg-breakdown">
+                <div class="seg-breakdown-head">Канал</div>
+                <div class="seg-breakdown-head">Эффект</div>
+                <div class="seg-breakdown-head">Доля до → после</div>
+
+                <div class="seg-breakdown-cell">Органика</div>
+                <div class="seg-breakdown-cell">0%</div>
+                <div class="seg-breakdown-cell">45% → 30%</div>
+
+                <div class="seg-breakdown-cell">Платный</div>
+                <div class="seg-breakdown-cell positive">+35%</div>
+                <div class="seg-breakdown-cell">30% → 50%</div>
+
+                <div class="seg-breakdown-cell">Реферальный</div>
+                <div class="seg-breakdown-cell negative">&minus;5%</div>
+                <div class="seg-breakdown-cell">25% → 20%</div>
+            </div>
+
+            <div class="example-chain" style="margin-top: 1.25rem;">
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Что произошло</span>
+                    <span class="example-chain-value">Промокод привлёк платный трафик с высокой конверсией. Доля платного выросла с 30% до 50%. Агрегат вырос за счёт смены микса, а не за счёт улучшения конверсии</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Тест: доля платного = 30%</span>
+                    <span class="example-chain-value">Если доля платного вернётся к 30%, агрегированная конверсия будет +7–8%, а не +10%. «Эффект» частично исчезнет</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Опасное решение</span>
+                    <span class="example-chain-value">«Промокод дал +10% конверсии — масштабируем». Без контроля микса это означает: масштабируем закупку платного трафика, а не промокод</span>
+                </div>
+                <div class="example-chain-item">
+                    <span class="example-chain-label">Разумное решение</span>
+                    <span class="example-chain-value">Оценить эффект промокода внутри каждого канала отдельно. Платный +35% — хорошо. Органика 0% — промокод не влияет. Реферальный &minus;5% — возможно каннибализация. Решение: промокод только на платный, мониторинг реферального</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error block -->
+        <div class="error-block">
+            <h3>Типовая ошибка интерпретации</h3>
+            <p class="error-wrong">«Средняя конверсия выросла на 10% — промокод работает для всех.»</p>
+            <p>
+                Агрегат — взвешенная сумма сегментов. Если веса (доли каналов) изменились одновременно с воздействием, невозможно отделить эффект от сдвига микса. «+10% в среднем» может означать «+35% для одних, 0% для других, &minus;5% для третьих» — и решение для каждой группы разное.
+            </p>
+        </div>
+
+        <!-- Outcomes -->
+        <div class="learn-block">
+            <h3>Что вы начинаете видеть после модуля</h3>
+            <ul class="outcome-list">
+                <li>«Для кого этот эффект?» — прежде чем радоваться росту агрегата</li>
+                <li>«За счёт какого сегмента?» — рост эффективности или сдвиг микса</li>
+                <li>«Что будет при смене микса?» — устойчив ли результат</li>
+                <li>«Существует ли эффект вообще?» — или это парадокс Симпсона</li>
+                <li>«Не уничтожаем ли основной сегмент?» — win для малого, loss для ядра</li>
+            </ul>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>Новая программа тренировок: новички vs. опытные — развёрнутый кейс</li>
+                <li>Видеосервис: стабильный retention из разнонаправленных сегментов</li>
+                <li>E-commerce: рост среднего чека при потере сегмента</li>
+                <li>B2B: ARPU растёт, малые клиенты уходят</li>
+                <li>Финтех: конверсия растёт только в high-income</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Симулятор парадокса Симпсона</li>
+                <li>Визуализация распределений</li>
+                <li>Калькулятор микса</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../module-4/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../module-6/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
