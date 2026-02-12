@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 5. Сегменты и неоднородность</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .case-expanded {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .case-expanded .case-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .case-expanded .case-setup { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 1.5rem; }
+        .phase-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+        .phase-item { padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8; border-radius: 4px; }
+        .phase-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .phase-title { font-size: 0.95rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.35rem; }
+        .phase-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+        .phase-metrics { font-size: 0.8rem; color: #666; margin-top: 0.35rem; font-style: italic; }
+        .case-decision {
+            padding: 1rem 1.25rem; background: #f5f5f0; border-left: 3px solid #d0cec0; margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .case-decision p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+
+        .seg-breakdown {
+            display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 0 1rem;
+            margin: 0.75rem 0; font-size: 0.85rem;
+        }
+        .seg-breakdown-head {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; font-weight: 500; padding-bottom: 0.3rem; border-bottom: 1px solid #e8e8e8;
+        }
+        .seg-breakdown-cell { padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0; color: #1a1a1a; }
+        .seg-breakdown-cell.negative { color: #c66; }
+        .seg-breakdown-cell.positive { color: #4a9; }
+        .seg-breakdown-cell.bold { font-weight: 500; }
+
+        .questions-block {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.75rem; font-weight: 500;
+        }
+        .questions-list { list-style: none; padding-left: 0; margin: 0; }
+        .questions-list li {
+            font-size: 0.85rem; line-height: 1.55; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 1.25rem; position: relative;
+        }
+        .questions-list li:before { content: "?"; position: absolute; left: 0; color: #999; font-weight: 500; }
+
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 1.25rem;
+            margin-bottom: 1rem; background: #fafafa;
+        }
+        .mini-case .case-title { font-size: 1rem; margin-bottom: 0.5rem; }
+        .mini-case .case-context { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; margin-bottom: 0; }
+        .mini-case-analysis {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item { font-size: 0.8rem; line-height: 1.45; }
+        .mini-case-analysis-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.2rem; font-weight: 500;
+        }
+        .mini-case-analysis-value { color: #1a1a1a; }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis { grid-template-columns: 1fr; gap: 0.5rem; }
+            .seg-breakdown { font-size: 0.8rem; gap: 0 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 5</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 5. Сегменты и неоднородность</p>
+
+        <!-- Flagship case -->
+        <div class="case-expanded">
+            <div class="case-title">Новая программа тренировок: новички vs. опытные</div>
+            <div class="case-setup">
+                Фитнес-приложение. A/B-тест новой программы тренировок. Средний engagement +8%. При разбивке по сегментам — картина другая.
+            </div>
+
+            <div class="seg-breakdown">
+                <div class="seg-breakdown-head">Сегмент</div>
+                <div class="seg-breakdown-head">Engagement</div>
+                <div class="seg-breakdown-head">Доля</div>
+                <div class="seg-breakdown-head">Доля выручки</div>
+
+                <div class="seg-breakdown-cell bold">Новички</div>
+                <div class="seg-breakdown-cell positive">+25%</div>
+                <div class="seg-breakdown-cell">55%</div>
+                <div class="seg-breakdown-cell">30%</div>
+
+                <div class="seg-breakdown-cell bold">Опытные</div>
+                <div class="seg-breakdown-cell negative">&minus;5%</div>
+                <div class="seg-breakdown-cell">45%</div>
+                <div class="seg-breakdown-cell">70%</div>
+
+                <div class="seg-breakdown-cell bold">Агрегат</div>
+                <div class="seg-breakdown-cell">+8%</div>
+                <div class="seg-breakdown-cell">100%</div>
+                <div class="seg-breakdown-cell">100%</div>
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Что говорит агрегат</div>
+                    <div class="phase-text">
+                        Средний engagement +8%. Формально — успех. Но агрегат = 55% × (+25%) + 45% × (&minus;5%) = +13.75% &minus; 2.25% ≈ +8%. Число «+8%» — не реальность ни одного из двух сегментов.
+                    </div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Для кого эффект</div>
+                    <div class="phase-title">Новички выигрывают, опытные проигрывают</div>
+                    <div class="phase-text">
+                        Новая программа проще — новичкам проще начать. Но опытным она кажется примитивной, engagement падает. Опытные генерируют 70% выручки. Средний +8% маскирует деградацию ядра.
+                    </div>
+                    <div class="phase-metrics">Ключевое: решение «для всех» убыточно для основного сегмента</div>
+                </div>
+
+                <div class="questions-block">
+                    <div class="questions-block-label">Вопросы для разбора</div>
+                    <ol class="questions-list">
+                        <li>Что произойдёт с revenue, если катить для всех? (подсказка: 70% выручки — опытные)</li>
+                        <li>Можно ли катить только новичкам? Какие риски?</li>
+                        <li>Что если доля новичков изменится (сезонность, маркетинг)?</li>
+                        <li>Какой агрегат мы увидим, если доля опытных вырастет до 60%?</li>
+                        <li>Какие данные ещё запросить, прежде чем принять решение?</li>
+                    </ol>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор</div>
+                    <div class="phase-title">Агрегат — взвешенная сумма, а не факт</div>
+                    <div class="phase-text">
+                        Агрегат +8% не означает «стало лучше». Он означает: «стало лучше для 55% пользователей и хуже для 45%, которые приносят 70% денег». Если катить для всех — engagement новичков вырастет, но revenue на опытных упадёт. Чистый эффект на revenue — скорее отрицательный. Правильный подход: катить новичкам, сохранить старую программу для опытных, запросить retention и revenue по сегментам через 4 недели.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Итог: решение</div>
+                <p>
+                    Не катить для всех. Катить новичкам (сегментированный rollout). Для опытных — оставить текущую или перепроектировать программу отдельно. Запросить: revenue по сегментам, retention D14 по сегментам, переход новичков в «опытные» (через какое время новая программа перестаёт подходить). Риск «для всех»: потеря 70% revenue-сегмента ради +25% engagement у менее прибыльного.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Видеосервис: стабильный retention из разнонаправленных трендов</div>
+                <div class="case-context">
+                    Retention D30 = 50%, стабилен месяц к месяцу. Но «сериальные» пользователи (retention 70%) теряют долю. «Фильмовые» (retention 30%) — растут. Агрегат стабилен, потому что падение одних компенсирует рост других.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ловушка агрегата</div>
+                        <div class="mini-case-analysis-value">Стабильность агрегата скрывает потерю самого ценного сегмента</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ключевой сегмент</div>
+                        <div class="mini-case-analysis-value">«Сериальные» — выше retention и выше LTV. Их уход обрушит агрегат с лагом</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что будет при смене микса</div>
+                        <div class="mini-case-analysis-value">Если доля «сериальных» упадёт с 40% до 25%, retention D30 ≈ 40% — резкое падение «из ниоткуда»</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Retention стабилен — всё ок» без проверки сегментов</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">E-commerce: рост среднего чека при потере сегмента</div>
+                <div class="case-context">
+                    Средний чек +12% после редизайна. Заказы с чеком > 5000 выросли. Заказы < 1000 — резко упали. Общее количество заказов снизилось. Средний чек вырос не потому, что клиенты стали покупать дороже, а потому что дешёвый сегмент ушёл.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ловушка агрегата</div>
+                        <div class="mini-case-analysis-value">Рост среднего чека — следствие потери нижнего сегмента, а не роста ценности</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ключевой сегмент</div>
+                        <div class="mini-case-analysis-value">Дешёвый — он давал объём. Его потеря снизит total revenue</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что будет при смене микса</div>
+                        <div class="mini-case-analysis-value">Если вернуть дешёвый сегмент — средний чек упадёт, но total GMV вырастет</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«Средний чек вырос — редизайн успешен»</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">B2B: ARPU растёт, малые клиенты уходят</div>
+                <div class="case-context">
+                    SaaS B2B-платформа. Средний ARPU вырос на 15% за квартал. При анализе: крупные клиенты (Enterprise) платят больше и остаются. Малые (SMB) — churn вырос на 30%. ARPU рос не потому, что клиенты платят больше, а потому что уходящие SMB тянули среднее вниз.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ловушка агрегата</div>
+                        <div class="mini-case-analysis-value">ARPU растёт за счёт «выживания сильных», а не улучшения монетизации</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ключевой сегмент</div>
+                        <div class="mini-case-analysis-value">SMB — pipeline для Enterprise. Потеря SMB = потеря будущего роста</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что будет при смене микса</div>
+                        <div class="mini-case-analysis-value">Если SMB-отток продолжится, ARPU будет расти — но total revenue упадёт</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">«ARPU +15% — монетизация улучшается» без анализа churn по сегментам</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Финтех: конверсия растёт только в high-income</div>
+                <div class="case-context">
+                    Финтех-сервис: A/B-тест нового flow. Конверсия в целом +6%. При разбивке: high-income (+18%), mid-income (+2%), low-income (&minus;3%). Новый flow предполагает больше данных — high-income легче их предоставить, low-income отсеивается.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ловушка агрегата</div>
+                        <div class="mini-case-analysis-value">+6% — это win для верхнего сегмента и loss для нижнего</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ключевой сегмент</div>
+                        <div class="mini-case-analysis-value">Зависит от стратегии: mass market → low-income критичен; premium → high-income достаточен</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Что будет при смене микса</div>
+                        <div class="mini-case-analysis-value">При масштабировании доля low-income вырастет — агрегат упадёт</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Преждевременное решение</div>
+                        <div class="mini-case-analysis-value">Катить всем без сегментированного rollout</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

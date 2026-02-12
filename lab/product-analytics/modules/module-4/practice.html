@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 4. Время, лаги и динамика</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .case-expanded {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .case-expanded .case-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .case-expanded .case-setup {
+            font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; margin-bottom: 1.5rem;
+        }
+        .phase-grid {
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem;
+        }
+        .phase-item {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8; border-radius: 4px;
+        }
+        .phase-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .phase-title {
+            font-size: 0.95rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.35rem;
+        }
+        .phase-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+        .phase-metrics { font-size: 0.8rem; color: #666; margin-top: 0.35rem; font-style: italic; }
+        .case-decision {
+            padding: 1rem 1.25rem; background: #f5f5f0; border-left: 3px solid #d0cec0; margin-top: 0.5rem;
+        }
+        .case-decision-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .case-decision p { font-size: 0.9rem; line-height: 1.6; color: #1a1a1a; }
+
+        .questions-block {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1.25rem;
+        }
+        .questions-block-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.75rem; font-weight: 500;
+        }
+        .questions-list { list-style: none; padding-left: 0; margin: 0; }
+        .questions-list li {
+            font-size: 0.85rem; line-height: 1.55; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 1.25rem; position: relative;
+        }
+        .questions-list li:before {
+            content: "?"; position: absolute; left: 0; color: #999; font-weight: 500;
+        }
+
+        .mini-cases-section h2 { margin-bottom: 1rem; }
+        .mini-case {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 1.25rem;
+            margin-bottom: 1rem; background: #fafafa;
+        }
+        .mini-case .case-title { font-size: 1rem; margin-bottom: 0.5rem; }
+        .mini-case .case-context {
+            font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; margin-bottom: 0;
+        }
+        .mini-case-analysis {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem;
+            border-top: 1px solid #e8e8e8;
+        }
+        .mini-case-analysis-item { font-size: 0.8rem; line-height: 1.45; }
+        .mini-case-analysis-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.2rem; font-weight: 500;
+        }
+        .mini-case-analysis-value { color: #1a1a1a; }
+
+        @media (max-width: 600px) {
+            .mini-case-analysis { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 4</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">Модуль 4. Время, лаги и динамика</p>
+
+        <!-- Flagship case -->
+        <div class="case-expanded">
+            <div class="case-title">Окно наблюдения ломает вывод</div>
+            <div class="case-setup">
+                Мессенджер изменил алгоритм ранжирования чатов. Результаты по времени в приложении: неделя 1 — +12%, неделя 3 — +3%, неделя 6 — &minus;2% (ниже контроля). Три среза одного эксперимента дают три разных вывода.
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-item">
+                    <div class="phase-label">Дано · три среза</div>
+                    <div class="phase-text">
+                        Неделя 1: +12% time in app. Вывод по этому окну — «ранжирование работает, катим».
+                        Неделя 3: +3%. Вывод — «эффект есть, но слабый».
+                        Неделя 6: &minus;2%. Вывод — «изменение вредит».
+                    </div>
+                    <div class="phase-metrics">Все три наблюдения — правда. Но они описывают разные фазы одной траектории</div>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Форма эффекта</div>
+                    <div class="phase-title">Novelty → Decay → Rebound</div>
+                    <div class="phase-text">
+                        Первая неделя — эффект новизны: пользователи исследуют новый порядок чатов, время растёт. Недели 2–4 — привыкание, эффект затухает. Неделя 5–6 — побочный эффект: часть пользователей не находит нужные чаты, раздражается, открывает приложение реже. Время падает ниже контроля.
+                    </div>
+                </div>
+
+                <div class="questions-block">
+                    <div class="questions-block-label">Вопросы для разбора</div>
+                    <ol class="questions-list">
+                        <li>Какая форма эффекта? Подходит ли одно число (средняя дельта) для описания?</li>
+                        <li>Где лаг между воздействием и настоящим откликом системы?</li>
+                        <li>Какое окно оценки вы бы выбрали — и почему?</li>
+                        <li>Какие guardrails могли проявиться позже (за пределами evaluation window)?</li>
+                        <li>Какие сегменты могут объяснить смену знака (новые vs. старые, активные vs. casual)?</li>
+                        <li>Решение: катить / не катить / продлить / катить частично — что и почему?</li>
+                        <li>Что мониторить после выката: через 2 недели? через 6 недель?</li>
+                    </ol>
+                </div>
+
+                <div class="phase-item">
+                    <div class="phase-label">Разбор · идеальная логика</div>
+                    <div class="phase-title">Не оценивать по пику</div>
+                    <div class="phase-text">
+                        Evaluation window: ≥3 недели — дождаться затухания новизны и увидеть устойчивую дельту. На неделе 3 дельта +3% — это ещё не устойчивость, а хвост затухания. Правильный подход — подождать, пока кривая стабилизируется (плато или устойчивый тренд). Guardrail window: 6 недель. Смотреть retention D14, долю organic returns (без push), negative feedback. Сегментация: разбить по активности — если ядро теряет время, а casual-пользователи выросли на новизне — это маскировка деградации агрегатом.
+                    </div>
+                </div>
+            </div>
+
+            <div class="case-decision">
+                <div class="case-decision-label">Итог: решение и риски</div>
+                <p>
+                    Не катить на основе недели 1. Продлить наблюдение до 6 недель. Если на плато (недели 4–6) дельта ≤0% — не катить. Если +2–5% и guardrails чистые — катить с мониторингом ядра. Риск: решение на основе короткого окна выкатывает фичу, которая через месяц ухудшает продукт для основной аудитории.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mini cases -->
+        <section class="mini-cases-section">
+            <h2>Мини-задачи</h2>
+
+            <div class="mini-case">
+                <div class="case-title">Динамическое ценообразование: просадка перед ростом</div>
+                <div class="case-context">
+                    Логистическая платформа ввела dynamic pricing. Неделя 1: выручка &minus;8% (водители адаптируются). Неделя 3: выручка +2%. Конец месяца: +8%. Форма — ramp-up с начальной просадкой. Лаг обусловлен адаптацией supply-side.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ранняя / поздняя метрика</div>
+                        <div class="mini-case-analysis-value">Ранняя: acceptance rate водителей. Поздняя: выручка, LTV заказа</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Мониторинг: нед. 1 / 3 / 6</div>
+                        <div class="mini-case-analysis-value">1: acceptance rate, отток водителей. 3: выручка, средний чек. 6: retention пассажиров, NPS</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Какой лаг</div>
+                        <div class="mini-case-analysis-value">1–2 недели (адаптация supply к новой модели)</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Опасное решение</div>
+                        <div class="mini-case-analysis-value">«Выручка упала — откатываем» на 7-й день</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Годовая подписка: короткий проигрыш, длинный выигрыш</div>
+                <div class="case-context">
+                    SaaS переключил дефолт на годовую подписку. Месяц 1: конверсия &minus;20%. Месяц 6: churn втрое ниже, LTV когорты +40%. Метрика конверсии — ранняя и быстрая. LTV — поздняя и правильная. На коротком окне — провал. На длинном — успех.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ранняя / поздняя метрика</div>
+                        <div class="mini-case-analysis-value">Ранняя: конверсия в подписку. Поздняя: LTV, annual churn</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Мониторинг: нед. 1 / 3 / 6</div>
+                        <div class="mini-case-analysis-value">1: конверсия. 3: activation rate годовых. 6: renewal intent, churn trajectory</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Какой лаг</div>
+                        <div class="mini-case-analysis-value">3–6 месяцев (LTV реализуется только через цикл подписки)</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Опасное решение</div>
+                        <div class="mini-case-analysis-value">«Конверсия &minus;20% — возвращаем месячную» на 30-й день</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">CTR рекомендаций vs. подписки на авторов</div>
+                <div class="case-context">
+                    Контент-платформа включила «похожие авторы». День 1: CTR рекомендаций 15%. Месяц 1: CTR 4%. Одновременно подписки на новых авторов растут — но с лагом 2 недели. CTR — новизна, подписки — устойчивый эффект. Две метрики одной фичи, но с разной формой и таймингом.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ранняя / поздняя метрика</div>
+                        <div class="mini-case-analysis-value">Ранняя: CTR (шумная, novelty). Поздняя: подписки, retention подписчиков</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Мониторинг: нед. 1 / 3 / 6</div>
+                        <div class="mini-case-analysis-value">1: CTR (ожидать спад). 3: подписки, возвраты к рекомендованным авторам. 6: retention подписчиков</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Какой лаг</div>
+                        <div class="mini-case-analysis-value">~2 недели (подписка требует нескольких касаний с автором)</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Опасное решение</div>
+                        <div class="mini-case-analysis-value">«CTR упал в 4 раза — фича не работает» на неделе 4</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-case">
+                <div class="case-title">Расширение радиуса доставки: отложенная деградация</div>
+                <div class="case-context">
+                    Сервис доставки увеличил радиус. Заказы сразу +15%. Через 3 недели — жалобы на время доставки. Через 6 недель — retention новых зон хуже старых на 25%. Ранний сигнал (заказы) позитивный, поздние сигналы (качество, retention) — негативные.
+                </div>
+                <div class="mini-case-analysis">
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Ранняя / поздняя метрика</div>
+                        <div class="mini-case-analysis-value">Ранняя: заказы, GMV. Поздняя: delivery time, retention по зонам, complaints</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Мониторинг: нед. 1 / 3 / 6</div>
+                        <div class="mini-case-analysis-value">1: заказы, delivery time p95. 3: complaints, reorder rate. 6: retention новых зон vs. старых</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Какой лаг</div>
+                        <div class="mini-case-analysis-value">3 недели (жалобы), 6 недель (retention)</div>
+                    </div>
+                    <div class="mini-case-analysis-item">
+                        <div class="mini-case-analysis-label">Опасное решение</div>
+                        <div class="mini-case-analysis-value">«Заказы +15%, расширяем дальше» без guardrail-мониторинга</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./simulators.html">Симуляторы →</a>
+        </nav>
+    </div>
+</body>
+</html>

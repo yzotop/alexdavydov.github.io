@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 7. Аналитик и управленческое решение</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8; border-radius: 6px; padding: 2rem;
+            margin-bottom: 2.5rem; background: #fafafa;
+        }
+        .sim-interactive h2 { font-size: 1.15rem; margin-bottom: 0.35rem; font-weight: 500; }
+        .sim-description { font-size: 0.85rem; color: #666; margin-bottom: 1.5rem; line-height: 1.55; }
+        .sim-controls { margin-bottom: 1.5rem; }
+        .sim-control-group { margin-bottom: 1rem; }
+        .sim-control-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.35rem; display: block; font-weight: 500;
+        }
+        .sim-control-value { font-size: 0.85rem; color: #1a1a1a; font-weight: 500; margin-left: 0.5rem; }
+
+        .sim-toggle-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.35rem; }
+        .sim-toggle-btn {
+            padding: 0.4rem 0.9rem; font-size: 0.8rem; border-radius: 4px;
+            border: 1px solid #ddd; background: #fff; cursor: pointer; transition: all 0.15s;
+        }
+        .sim-toggle-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+        .sim-output {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1rem;
+        }
+        .sim-output-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.5rem; font-weight: 500;
+        }
+        .sim-output-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+
+        /* Conclusion trainer */
+        .data-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+        .data-card {
+            padding: 0.75rem 1rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; text-align: center;
+        }
+        .data-card-value { font-size: 1.1rem; font-weight: 500; color: #1a1a1a; }
+        .data-card-value.positive { color: #3a7; }
+        .data-card-value.negative { color: #a55; }
+        .data-card-value.neutral { color: #999; }
+        .data-card-value.ambiguous { color: #997; }
+        .data-card-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-top: 0.15rem; }
+
+        .conclusion-textarea {
+            width: 100%; min-height: 120px; padding: 0.75rem 1rem; font-size: 0.85rem;
+            line-height: 1.55; border: 1px solid #ddd; border-radius: 4px; resize: vertical;
+            font-family: system-ui, -apple-system, sans-serif; color: #1a1a1a;
+            background: #fff; box-sizing: border-box;
+        }
+        .conclusion-textarea:focus { outline: none; border-color: #999; }
+        .conclusion-textarea::placeholder { color: #ccc; }
+
+        .checklist { margin-top: 1rem; }
+        .checklist-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.8rem; line-height: 1.5; color: #1a1a1a; margin-bottom: 0.35rem;
+        }
+        .checklist-icon {
+            width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 0.65rem;
+        }
+        .checklist-icon.pass { background: #e8f5e8; color: #3a7; }
+        .checklist-icon.fail { background: #f5e8e8; color: #a55; }
+
+        /* Uncertainty simulator */
+        .sim-slider {
+            width: 100%; max-width: 400px; margin-top: 0.25rem;
+            -webkit-appearance: none; appearance: none; height: 4px; background: #ddd;
+            border-radius: 2px; outline: none;
+        }
+        .sim-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 16px; height: 16px; background: #1a1a1a; border-radius: 50%; cursor: pointer;
+        }
+
+        .ci-visual {
+            position: relative; height: 60px; margin: 1rem 0; max-width: 500px;
+        }
+        .ci-bar {
+            position: absolute; top: 20px; height: 20px; background: rgba(100,170,100,0.2);
+            border: 1px solid rgba(100,170,100,0.4); border-radius: 3px;
+        }
+        .ci-point {
+            position: absolute; top: 16px; width: 8px; height: 28px;
+            background: #1a1a1a; border-radius: 2px;
+        }
+        .ci-zero {
+            position: absolute; top: 10px; bottom: 0; width: 1px;
+            border-left: 1px dashed #ccc;
+        }
+        .ci-label {
+            position: absolute; top: 48px; font-size: 0.7rem; color: #999;
+            transform: translateX(-50%);
+        }
+
+        .decision-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+        .decision-card {
+            padding: 0.75rem; background: #fff; border: 2px solid #e8e8e8;
+            border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.15s;
+        }
+        .decision-card:hover { border-color: #999; }
+        .decision-card.selected { border-color: #1a1a1a; }
+        .decision-card-title { font-size: 0.85rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.15rem; }
+        .decision-card-sub { font-size: 0.7rem; color: #999; }
+
+        .scenario-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.8rem; }
+        .scenario-table th {
+            text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid #e8e8e8;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; font-weight: 500;
+        }
+        .scenario-table td {
+            padding: 0.5rem 0.75rem; border-bottom: 1px solid #f0f0f0;
+            color: #1a1a1a; line-height: 1.45;
+        }
+        .scenario-table .scenario-good { color: #3a7; }
+        .scenario-table .scenario-bad { color: #a55; }
+        .scenario-table .scenario-meh { color: #997; }
+
+        /* Stakeholder pressure */
+        .scenario-context {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; margin-bottom: 1.25rem;
+        }
+        .scenario-context-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #999; margin-bottom: 0.5rem; font-weight: 500;
+        }
+        .scenario-context-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+
+        .response-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+        .response-card {
+            padding: 0.75rem 1rem; background: #fff; border: 2px solid #e8e8e8;
+            border-radius: 6px; cursor: pointer; transition: all 0.15s;
+        }
+        .response-card:hover { border-color: #999; }
+        .response-card.selected { border-color: #1a1a1a; }
+        .response-card-title { font-size: 0.85rem; font-weight: 500; color: #1a1a1a; margin-bottom: 0.2rem; }
+        .response-card-quote { font-size: 0.75rem; color: #666; font-style: italic; line-height: 1.4; }
+
+        .risk-display {
+            padding: 1rem 1.25rem; background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 4px; display: none;
+        }
+        .risk-display.visible { display: block; }
+        .risk-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: #999; margin-bottom: 0.35rem; font-weight: 500;
+        }
+        .risk-text { font-size: 0.85rem; line-height: 1.55; color: #1a1a1a; }
+        .risk-rating {
+            display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem;
+            font-weight: 500; margin-top: 0.35rem;
+        }
+        .risk-rating.high { background: #f5e8e8; color: #a55; }
+        .risk-rating.medium { background: #f5f0e0; color: #997; }
+        .risk-rating.low { background: #e8f5e8; color: #3a7; }
+
+        @media (max-width: 600px) {
+            .data-card-grid { grid-template-columns: 1fr; }
+            .decision-cards { grid-template-columns: 1fr; }
+            .response-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 7</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 7. Аналитик и управленческое решение</p>
+
+        <!-- ========== Simulator 1: Conclusion Trainer ========== -->
+        <div class="sim-interactive">
+            <h2>Тренажёр формулировки вывода</h2>
+            <p class="sim-description">
+                Перед вами — результаты эксперимента. Напишите управленческий вывод. Система проверит, содержит ли он ключевые элементы сильной формулировки.
+            </p>
+
+            <div class="sim-controls">
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Сценарий</span>
+                    <div class="sim-toggle-group" id="ct-scenario-toggles">
+                        <button class="sim-toggle-btn active" data-scenario="tariff">Новый тариф</button>
+                        <button class="sim-toggle-btn" data-scenario="search">Алгоритм поиска</button>
+                        <button class="sim-toggle-btn" data-scenario="onboarding">Онбординг</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-card-grid" id="ct-data-cards">
+                <div class="data-card">
+                    <div class="data-card-value positive" id="ct-primary">+4%</div>
+                    <div class="data-card-label">Primary</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-card-value ambiguous" id="ct-ci">&minus;1%...+9%</div>
+                    <div class="data-card-label">CI 95%</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-card-value neutral" id="ct-guardrail">без изменений</div>
+                    <div class="data-card-label">Guardrail</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-card-value neutral" id="ct-segments">Регион A +10%, B &minus;1%</div>
+                    <div class="data-card-label">Сегменты</div>
+                </div>
+            </div>
+
+            <textarea class="conclusion-textarea" id="ct-textarea" placeholder="Напишите управленческий вывод для CPO..."></textarea>
+
+            <div style="margin-top:0.75rem;">
+                <button class="sim-toggle-btn active" id="ct-check-btn" style="padding:0.5rem 1.5rem;">Проверить</button>
+            </div>
+
+            <div class="checklist" id="ct-checklist" style="display:none;">
+                <!-- filled by JS -->
+            </div>
+
+            <div class="sim-output" id="ct-reading" style="margin-top:1rem;">
+                <div class="sim-output-label">Чтение</div>
+                <div class="sim-output-text">
+                    Качество вывода определяется не данными, а дисциплиной формулировки. Факт, неопределённость, механизм, риски, рекомендация — пять элементов, без которых вывод неполон.
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Simulator 2: Decision under Uncertainty ========== -->
+        <div class="sim-interactive">
+            <h2>Решение при неопределённости</h2>
+            <p class="sim-description">
+                Вы видите результат эксперимента с доверительным интервалом. Выберите решение — система покажет последствия в трёх сценариях.
+            </p>
+
+            <div class="sim-controls">
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Точечная оценка <span class="sim-control-value" id="unc-effect-val">+4%</span></span>
+                    <input type="range" class="sim-slider" id="unc-effect" min="-5" max="15" step="1" value="4">
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Ширина CI <span class="sim-control-value" id="unc-ci-val">&plusmn;5%</span></span>
+                    <input type="range" class="sim-slider" id="unc-ci" min="1" max="12" step="1" value="5">
+                </div>
+                <div class="sim-control-group">
+                    <span class="sim-control-label">Стоимость ошибки (если эффект отрицательный)</span>
+                    <div class="sim-toggle-group" id="unc-cost-toggles">
+                        <button class="sim-toggle-btn active" data-cost="low">Низкая</button>
+                        <button class="sim-toggle-btn" data-cost="medium">Средняя</button>
+                        <button class="sim-toggle-btn" data-cost="high">Высокая</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ci-visual" id="unc-ci-visual">
+                <!-- rendered by JS -->
+            </div>
+
+            <div class="decision-cards" id="unc-decision-cards">
+                <div class="decision-card" data-decision="ship">
+                    <div class="decision-card-title">Катить</div>
+                    <div class="decision-card-sub">Полный выкат</div>
+                </div>
+                <div class="decision-card" data-decision="extend">
+                    <div class="decision-card-title">Продлить тест</div>
+                    <div class="decision-card-sub">Сузить интервал</div>
+                </div>
+                <div class="decision-card" data-decision="stop">
+                    <div class="decision-card-title">Не катить</div>
+                    <div class="decision-card-sub">Отказ от запуска</div>
+                </div>
+            </div>
+
+            <table class="scenario-table" id="unc-scenario-table" style="display:none;">
+                <thead>
+                    <tr><th>Сценарий</th><th>Последствие</th><th>Оценка</th></tr>
+                </thead>
+                <tbody id="unc-scenario-body">
+                </tbody>
+            </table>
+
+            <div class="sim-output" id="unc-reading">
+                <div class="sim-output-label">Инсайт</div>
+                <div class="sim-output-text">
+                    Решение при неопределённости — это выбор между рисками, а не между «да» и «нет». Каждое решение несёт свой тип ошибки. Вопрос не «что правильно», а «какую ошибку мы готовы совершить».
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== Simulator 3: Stakeholder Pressure ========== -->
+        <div class="sim-interactive">
+            <h2>Давление стейкхолдера</h2>
+            <p class="sim-description">
+                Ситуация: результаты эксперимента неоднозначны. У каждого стейкхолдера — своя позиция. Выберите стиль ответа — система покажет риски.
+            </p>
+
+            <div class="scenario-context">
+                <div class="scenario-context-label">Ситуация</div>
+                <div class="scenario-context-text" id="sh-context">
+                    A/B-тест новой фичи. Primary +6% (значимо). Один сегмент (20% аудитории) показал &minus;8%. Guardrail NPS: &minus;2 пункта (в пределах нормы, но тренд). Продакт хочет катить: «+6% — отличный результат». Финансы против: «Сегмент с &minus;8% — это наши VIP-клиенты». Вы — аналитик. Данные перед вами. Что скажете?
+                </div>
+            </div>
+
+            <div class="response-cards" id="sh-responses">
+                <div class="response-card" data-response="ship">
+                    <div class="response-card-title">Уверенно катим</div>
+                    <div class="response-card-quote">«+6% значимо. Guardrail в норме. Рекомендую полный выкат»</div>
+                </div>
+                <div class="response-card" data-response="cautious">
+                    <div class="response-card-title">Осторожная рекомендация</div>
+                    <div class="response-card-quote">«+6% в агрегате, но VIP-сегмент &minus;8%. Рекомендую катить без VIP, мониторить 4 недели»</div>
+                </div>
+                <div class="response-card" data-response="refuse">
+                    <div class="response-card-title">Отказ от рекомендации</div>
+                    <div class="response-card-quote">«Данные неоднозначные. Не могу рекомендовать выкат до дополнительного анализа»</div>
+                </div>
+                <div class="response-card" data-response="extend">
+                    <div class="response-card-title">Запрос доп. теста</div>
+                    <div class="response-card-quote">«Предлагаю: 2 недели дополнительного теста с фокусом на VIP-сегмент и NPS trend»</div>
+                </div>
+            </div>
+
+            <div class="risk-display" id="sh-risk-display">
+                <div class="risk-label" id="sh-risk-label">Риски выбранного ответа</div>
+                <div class="risk-text" id="sh-risk-text"></div>
+                <div class="risk-rating" id="sh-risk-rating"></div>
+            </div>
+
+            <div class="sim-output" style="margin-top:1rem;">
+                <div class="sim-output-label">Чтение</div>
+                <div class="sim-output-text">
+                    Нет идеального ответа. Есть ответ с осознанными рисками. Аналитик не обязан соглашаться с продактом или финансами. Но обязан объяснить, что он видит в данных — включая неудобное.
+                </div>
+            </div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    (function() {
+        // ========================
+        // Simulator 1: Conclusion Trainer
+        // ========================
+        const scenarios = {
+            tariff: {
+                primary: '+4%', ci: '&minus;1%...+9%', guardrail: 'без изменений',
+                segments: 'Регион A +10%, B &minus;1%',
+                primaryCls: 'positive', ciCls: 'ambiguous', guardrailCls: 'neutral', segmentsCls: 'neutral'
+            },
+            search: {
+                primary: '+15%', ci: '+8%...+22%', guardrail: 'diversity &minus;4%',
+                segments: 'Mobile +20%, Desktop +5%',
+                primaryCls: 'positive', ciCls: 'positive', guardrailCls: 'negative', segmentsCls: 'neutral'
+            },
+            onboarding: {
+                primary: '+5%', ci: '+1%...+9%', guardrail: 'время до покупки +40%',
+                segments: 'Новые +12%, Возвращающиеся &minus;3%',
+                primaryCls: 'positive', ciCls: 'positive', guardrailCls: 'negative', segmentsCls: 'ambiguous'
+            }
+        };
+
+        let currentScenario = 'tariff';
+
+        function renderScenario() {
+            const s = scenarios[currentScenario];
+            document.getElementById('ct-primary').innerHTML = s.primary;
+            document.getElementById('ct-primary').className = 'data-card-value ' + s.primaryCls;
+            document.getElementById('ct-ci').innerHTML = s.ci;
+            document.getElementById('ct-ci').className = 'data-card-value ' + s.ciCls;
+            document.getElementById('ct-guardrail').innerHTML = s.guardrail;
+            document.getElementById('ct-guardrail').className = 'data-card-value ' + s.guardrailCls;
+            document.getElementById('ct-segments').innerHTML = s.segments;
+            document.getElementById('ct-segments').className = 'data-card-value ' + s.segmentsCls;
+            document.getElementById('ct-checklist').style.display = 'none';
+        }
+
+        document.getElementById('ct-scenario-toggles').addEventListener('click', function(e) {
+            const btn = e.target.closest('.sim-toggle-btn');
+            if (!btn) return;
+            this.querySelectorAll('.sim-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentScenario = btn.dataset.scenario;
+            renderScenario();
+        });
+
+        const checkKeywords = [
+            { label: 'Указана неопределённость', keywords: ['интервал', 'ci', 'неопределённость', 'неоднозначн', 'от.*до', 'включает ноль', 'не гарантир', 'не однозначн', 'ширин'] },
+            { label: 'Факт отделён от рекомендации', keywords: ['рекомендую', 'предлагаю', 'считаю', 'моя рекомендация', 'моё предложение', 'на мой взгляд'] },
+            { label: 'Описан механизм или причина', keywords: ['механизм', 'потому что', 'за счёт', 'причин', 'объяснен', 'гипотез', 'почему'] },
+            { label: 'Обозначены риски', keywords: ['риск', 'опасн', 'может', 'если.*то', 'угроз', 'проблем', 'ухудш', 'негативн'] },
+            { label: 'Указан следующий шаг', keywords: ['мониторинг', 'мониторить', 'следующий шаг', 'дополнительн', 'проверить', 'продлить', 'исследов', 'отслежив', 'недел'] }
+        ];
+
+        document.getElementById('ct-check-btn').addEventListener('click', function() {
+            const text = document.getElementById('ct-textarea').value.toLowerCase();
+            const checklist = document.getElementById('ct-checklist');
+            checklist.style.display = 'block';
+            checklist.innerHTML = '';
+
+            if (!text.trim()) {
+                checklist.innerHTML = '<div style="font-size:0.85rem;color:#999;">Напишите вывод, чтобы проверить</div>';
+                return;
+            }
+
+            let passCount = 0;
+            checkKeywords.forEach(function(item) {
+                const found = item.keywords.some(function(kw) {
+                    return new RegExp(kw, 'i').test(text);
+                });
+                if (found) passCount++;
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.innerHTML =
+                    '<div class="checklist-icon ' + (found ? 'pass' : 'fail') + '">' + (found ? '&#10003;' : '&#10007;') + '</div>' +
+                    '<span>' + item.label + '</span>';
+                checklist.appendChild(div);
+            });
+
+            const summary = document.createElement('div');
+            summary.style.cssText = 'margin-top:0.75rem;font-size:0.85rem;color:#666;';
+            if (passCount === 5) {
+                summary.textContent = 'Отлично: все ключевые элементы присутствуют. Это структурированный управленческий вывод.';
+            } else if (passCount >= 3) {
+                summary.textContent = 'Хорошая основа, но не хватает ' + (5 - passCount) + ' элементов. Без них вывод неполон.';
+            } else {
+                summary.textContent = 'Пока больше похоже на факт, чем на рекомендацию. Добавьте неопределённость, риски и конкретный следующий шаг.';
+            }
+            checklist.appendChild(summary);
+        });
+
+        // ========================
+        // Simulator 2: Decision under Uncertainty
+        // ========================
+        let uncCost = 'low';
+
+        function updateCIVisual() {
+            const effect = parseInt(document.getElementById('unc-effect').value);
+            const ciW = parseInt(document.getElementById('unc-ci').value);
+            document.getElementById('unc-effect-val').textContent = (effect >= 0 ? '+' : '') + effect + '%';
+            document.getElementById('unc-ci-val').innerHTML = '&plusmn;' + ciW + '%';
+
+            const container = document.getElementById('unc-ci-visual');
+            const low = effect - ciW;
+            const high = effect + ciW;
+            const range = 30; // -15 to +15
+            const offset = 15;
+
+            function toPercent(val) { return ((val + offset) / range) * 100; }
+
+            container.innerHTML =
+                '<div class="ci-zero" style="left:' + toPercent(0) + '%;"></div>' +
+                '<div class="ci-bar" style="left:' + toPercent(low) + '%;width:' + ((high - low) / range * 100) + '%;"></div>' +
+                '<div class="ci-point" style="left:calc(' + toPercent(effect) + '% - 4px);"></div>' +
+                '<div class="ci-label" style="left:' + toPercent(0) + '%;">0</div>' +
+                '<div class="ci-label" style="left:' + toPercent(low) + '%;">' + low + '%</div>' +
+                '<div class="ci-label" style="left:' + toPercent(high) + '%;">' + high + '%</div>';
+
+            // Reset selection
+            document.querySelectorAll('#unc-decision-cards .decision-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('unc-scenario-table').style.display = 'none';
+        }
+
+        document.getElementById('unc-effect').addEventListener('input', updateCIVisual);
+        document.getElementById('unc-ci').addEventListener('input', updateCIVisual);
+        document.getElementById('unc-cost-toggles').addEventListener('click', function(e) {
+            const btn = e.target.closest('.sim-toggle-btn');
+            if (!btn) return;
+            this.querySelectorAll('.sim-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            uncCost = btn.dataset.cost;
+        });
+
+        document.getElementById('unc-decision-cards').addEventListener('click', function(e) {
+            const card = e.target.closest('.decision-card');
+            if (!card) return;
+            this.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            const decision = card.dataset.decision;
+            const effect = parseInt(document.getElementById('unc-effect').value);
+            const ciW = parseInt(document.getElementById('unc-ci').value);
+            const low = effect - ciW;
+            const includesZero = low <= 0;
+
+            const costLabel = { low: 'низкая', medium: 'средняя', high: 'высокая' }[uncCost];
+            const scenarios = getScenarios(decision, effect, ciW, uncCost);
+
+            const tbody = document.getElementById('unc-scenario-body');
+            tbody.innerHTML = '';
+            scenarios.forEach(function(s) {
+                const tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td>' + s.name + '</td>' +
+                    '<td>' + s.result + '</td>' +
+                    '<td class="' + s.cls + '">' + s.verdict + '</td>';
+                tbody.appendChild(tr);
+            });
+            document.getElementById('unc-scenario-table').style.display = 'table';
+
+            // Update reading
+            const reading = document.getElementById('unc-reading');
+            reading.querySelector('.sim-output-text').textContent =
+                'Вы выбрали: «' + { ship: 'катить', extend: 'продлить тест', stop: 'не катить' }[decision] + '». ' +
+                'Стоимость ошибки: ' + costLabel + '. ' +
+                (includesZero ? 'CI включает ноль — эффект не подтверждён надёжно. ' : 'CI не включает ноль — эффект подтверждён. ') +
+                'Каждое решение — это выбор между типами ошибок: не запустить работающее, запустить нерабочее, или потратить время.';
+        });
+
+        function getScenarios(decision, effect, ciW, cost) {
+            if (decision === 'ship') {
+                return [
+                    { name: 'Эффект реальный (' + (effect > 0 ? '+' : '') + effect + '%)',
+                      result: 'Получаем рост. Решение правильное.',
+                      verdict: 'Выигрыш', cls: 'scenario-good' },
+                    { name: 'Эффект нулевой (0%)',
+                      result: 'Выкатили бесполезное изменение. Шум в системе, потраченные ресурсы.',
+                      verdict: cost === 'high' ? 'Потери' : 'Нейтрально', cls: cost === 'high' ? 'scenario-bad' : 'scenario-meh' },
+                    { name: 'Эффект отрицательный (' + (effect - ciW) + '%)',
+                      result: cost === 'high' ? 'Серьёзный ущерб: потеря выручки, churn, репутация.' : 'Негативный результат. Нужен откат.',
+                      verdict: cost === 'high' ? 'Критические потери' : 'Потери', cls: 'scenario-bad' }
+                ];
+            } else if (decision === 'extend') {
+                return [
+                    { name: 'Эффект реальный (' + (effect > 0 ? '+' : '') + effect + '%)',
+                      result: 'Задержали выкат на 2–4 недели, но подтвердим эффект. Решение запоздало, но надёжно.',
+                      verdict: 'Умеренный выигрыш', cls: 'scenario-good' },
+                    { name: 'Эффект нулевой (0%)',
+                      result: 'Узнаем правду. Сэкономим на бесполезном выкате. Потратили время.',
+                      verdict: 'Информация', cls: 'scenario-meh' },
+                    { name: 'Эффект отрицательный (' + (effect - ciW) + '%)',
+                      result: 'Вовремя остановились. Избежали ущерба.',
+                      verdict: 'Избежали потерь', cls: 'scenario-good' }
+                ];
+            } else {
+                return [
+                    { name: 'Эффект реальный (' + (effect > 0 ? '+' : '') + effect + '%)',
+                      result: 'Упустили реальный рост. Competitor advantage потерян.',
+                      verdict: 'Упущенная выгода', cls: 'scenario-bad' },
+                    { name: 'Эффект нулевой (0%)',
+                      result: 'Ничего не потеряли. Правильное решение.',
+                      verdict: 'Нейтрально', cls: 'scenario-meh' },
+                    { name: 'Эффект отрицательный (' + (effect - ciW) + '%)',
+                      result: 'Избежали ущерба. Сэкономили ресурсы.',
+                      verdict: 'Избежали потерь', cls: 'scenario-good' }
+                ];
+            }
+        }
+
+        updateCIVisual();
+
+        // ========================
+        // Simulator 3: Stakeholder Pressure
+        // ========================
+        const responses = {
+            ship: {
+                label: 'Уверенно катим',
+                risks: 'VIP-сегмент (&minus;8%) — 20% аудитории, но часто > 40% выручки. Вы проигнорировали сигнал. Если VIP начнёт уходить — потери проявятся через 2–3 месяца, когда откатить будет сложно. NPS тренд не учтён. Продакт доволен, но через квартал вопросы будут к вам: «Почему не предупредили?»',
+                rating: 'high',
+                ratingLabel: 'Высокий риск'
+            },
+            cautious: {
+                label: 'Осторожная рекомендация',
+                risks: 'Сбалансированный подход. Основная аудитория получает фичу. VIP защищены. Мониторинг позволяет отследить ухудшение. Минус: запуск медленнее, нужны ресурсы на сегментацию. Но вы сохраняете контроль и доверие обеих сторон. Самый профессиональный ответ.',
+                rating: 'low',
+                ratingLabel: 'Низкий риск'
+            },
+            refuse: {
+                label: 'Отказ от рекомендации',
+                risks: 'Вы не заняли позицию. Формально безопасно: «я не рекомендовал». На практике — бесполезно: решение всё равно примут, но без вашего input. Аналитик, который не может дать рекомендацию при неопределённости — аналитик, который не нужен в момент принятия решения.',
+                rating: 'medium',
+                ratingLabel: 'Средний риск'
+            },
+            extend: {
+                label: 'Запрос доп. теста',
+                risks: 'Разумно, если есть конкретный вопрос: «как ведёт себя VIP через 2 недели?» Неразумно, если это способ отложить решение. Продакт расстроен: задержка. Финансы довольны: осторожность. Риск: если вопрос не будет поставлен конкретно — через 2 недели данные будут такие же неоднозначные.',
+                rating: 'medium',
+                ratingLabel: 'Средний риск'
+            }
+        };
+
+        document.getElementById('sh-responses').addEventListener('click', function(e) {
+            const card = e.target.closest('.response-card');
+            if (!card) return;
+            this.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            const resp = responses[card.dataset.response];
+            const display = document.getElementById('sh-risk-display');
+            display.classList.add('visible');
+            document.getElementById('sh-risk-label').textContent = 'Риски: «' + resp.label + '»';
+            document.getElementById('sh-risk-text').innerHTML = resp.risks;
+            const rating = document.getElementById('sh-risk-rating');
+            rating.textContent = resp.ratingLabel;
+            rating.className = 'risk-rating ' + resp.rating;
+        });
+
+    })();
+    </script>
+</body>
+</html>

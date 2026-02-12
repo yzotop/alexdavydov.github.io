@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 3. Воронки, потоки и ограничения</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+        .sim-interactive {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            background: #fafafa;
+        }
+        .sim-interactive .sim-title { font-size: 1.2rem; }
+        .sim-interactive .sim-description { max-width: 600px; }
+
+        /* Funnel flow simulator */
+        .funnel-sim-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            max-width: 550px;
+        }
+        .funnel-step-control {
+            display: grid;
+            grid-template-columns: 110px 1fr 50px;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .funnel-step-name {
+            font-size: 0.8rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .funnel-step-control input[type="range"] {
+            width: 100%;
+            accent-color: #1a1a1a;
+        }
+        .funnel-step-val {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Funnel visual */
+        .funnel-visual-wrap {
+            max-width: 550px;
+            margin: 1.5rem 0;
+        }
+        .funnel-visual-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 120px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 0;
+        }
+        .funnel-vbar {
+            flex: 1;
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s ease, background 0.3s ease;
+            position: relative;
+            min-height: 2px;
+        }
+        .funnel-vbar-pct {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+        .funnel-vbar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            color: #999;
+            white-space: nowrap;
+        }
+        .funnel-output-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.75rem;
+            padding: 0.75rem 1rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            max-width: 550px;
+        }
+        .funnel-output-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .funnel-output-val {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .sim-reading {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            max-width: 600px;
+        }
+
+        /* Sensitivity calculator */
+        .sens-controls {
+            margin: 1.5rem 0;
+            max-width: 550px;
+        }
+        .sens-step-row {
+            display: grid;
+            grid-template-columns: 110px 1fr 50px 70px;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .sens-step-row input[type="range"] {
+            width: 100%;
+            accent-color: #1a1a1a;
+        }
+        .sens-step-name {
+            font-size: 0.8rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .sens-step-val {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .sens-step-impact {
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .sens-boost-row {
+            display: grid;
+            grid-template-columns: 110px 1fr 50px;
+            gap: 0.75rem;
+            align-items: center;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+        }
+        .sens-boost-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+        .sens-boost-val {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .sens-results {
+            margin-top: 1.25rem;
+            max-width: 550px;
+        }
+        .sens-result-bar-row {
+            display: grid;
+            grid-template-columns: 110px 1fr 60px;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        .sens-result-bar-name {
+            font-size: 0.8rem;
+            color: #1a1a1a;
+        }
+        .sens-result-bar-track {
+            height: 16px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        .sens-result-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+        .sens-result-bar-val {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 600px) {
+            .funnel-step-control { grid-template-columns: 80px 1fr 40px; }
+            .sens-step-row { grid-template-columns: 80px 1fr 40px 55px; }
+            .sens-boost-row { grid-template-columns: 80px 1fr 40px; }
+            .sens-result-bar-row { grid-template-columns: 80px 1fr 50px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../index.html">Курс</a> / <a href="./index.html">Модуль 3</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Модуль 3. Воронки, потоки и ограничения</p>
+
+        <!-- Simulator 1: Flow with constraints -->
+        <div class="sim-interactive" id="flow-sim">
+            <div class="sim-title">Симулятор потока с ограничениями</div>
+            <div class="sim-description">
+                Настройте конверсию каждого шага. Наблюдайте: расширение какого шага реально увеличивает выход? Только расширение ограничения меняет итог.
+            </div>
+
+            <div class="funnel-sim-controls" id="flow-controls">
+                <div class="funnel-step-control">
+                    <span class="funnel-step-name">Вход</span>
+                    <input type="range" data-step="0" min="10" max="100" value="100" step="5" disabled>
+                    <span class="funnel-step-val">100%</span>
+                </div>
+                <div class="funnel-step-control">
+                    <span class="funnel-step-name">Регистрация</span>
+                    <input type="range" data-step="1" min="10" max="95" value="70" step="5">
+                    <span class="funnel-step-val">70%</span>
+                </div>
+                <div class="funnel-step-control">
+                    <span class="funnel-step-name">Активация</span>
+                    <input type="range" data-step="2" min="10" max="95" value="50" step="5">
+                    <span class="funnel-step-val">50%</span>
+                </div>
+                <div class="funnel-step-control">
+                    <span class="funnel-step-name">Первый заказ</span>
+                    <input type="range" data-step="3" min="10" max="95" value="30" step="5">
+                    <span class="funnel-step-val">30%</span>
+                </div>
+                <div class="funnel-step-control">
+                    <span class="funnel-step-name">Повторный</span>
+                    <input type="range" data-step="4" min="10" max="95" value="55" step="5">
+                    <span class="funnel-step-val">55%</span>
+                </div>
+            </div>
+
+            <div class="funnel-visual-wrap">
+                <div class="funnel-visual-bars" id="flow-bars"></div>
+            </div>
+
+            <div class="funnel-output-row">
+                <span class="funnel-output-label">Выход воронки (от входа)</span>
+                <span class="funnel-output-val" id="flow-output">5.8%</span>
+            </div>
+
+            <div class="sim-reading" id="flow-reading">
+                Попробуйте увеличить конверсию разных шагов. Заметьте: увеличение шага, который не является ограничением, почти не меняет выход.
+            </div>
+        </div>
+
+        <!-- Simulator 2: Sensitivity calculator -->
+        <div class="sim-interactive" id="sens-sim">
+            <div class="sim-title">Калькулятор чувствительности воронки</div>
+            <div class="sim-description">
+                Задайте конверсии шагов и размер буста. Калькулятор покажет, какой шаг даёт максимальный рост выхода — это и есть текущее ограничение.
+            </div>
+
+            <div class="sens-controls" id="sens-controls">
+                <div class="sens-step-row">
+                    <span class="sens-step-name">Регистрация</span>
+                    <input type="range" data-step="0" min="10" max="95" value="65" step="5">
+                    <span class="sens-step-val">65%</span>
+                    <span class="sens-step-impact" data-impact="0"></span>
+                </div>
+                <div class="sens-step-row">
+                    <span class="sens-step-name">Онбординг</span>
+                    <input type="range" data-step="1" min="10" max="95" value="45" step="5">
+                    <span class="sens-step-val">45%</span>
+                    <span class="sens-step-impact" data-impact="1"></span>
+                </div>
+                <div class="sens-step-row">
+                    <span class="sens-step-name">Первая покупка</span>
+                    <input type="range" data-step="2" min="10" max="95" value="20" step="5">
+                    <span class="sens-step-val">20%</span>
+                    <span class="sens-step-impact" data-impact="2"></span>
+                </div>
+                <div class="sens-step-row">
+                    <span class="sens-step-name">Подписка</span>
+                    <input type="range" data-step="3" min="10" max="95" value="60" step="5">
+                    <span class="sens-step-val">60%</span>
+                    <span class="sens-step-impact" data-impact="3"></span>
+                </div>
+                <div class="sens-boost-row">
+                    <span class="sens-boost-label">Буст</span>
+                    <input type="range" id="sens-boost" min="5" max="50" value="10" step="5">
+                    <span class="sens-boost-val" id="sens-boost-val">+10 п.п.</span>
+                </div>
+            </div>
+
+            <div class="sens-results" id="sens-results"></div>
+
+            <div class="sim-reading" id="sens-reading">
+                Шаг с наибольшим эффектом на выход — текущее ограничение. Попробуйте изменить конверсии и заметьте, как ограничение перемещается.
+            </div>
+        </div>
+
+        <nav class="module-nav">
+            <a href="./index.html">← К модулю</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="./practice.html">Практика →</a>
+        </nav>
+    </div>
+
+    <script>
+    /* ==============================
+       Simulator 1: Flow with constraints
+       ============================== */
+    (function() {
+        var controls = document.getElementById('flow-controls');
+        var barsWrap = document.getElementById('flow-bars');
+        var outputEl = document.getElementById('flow-output');
+        var readingEl = document.getElementById('flow-reading');
+
+        var names = ['Вход', 'Регистрация', 'Активация', 'Первый заказ', 'Повторный'];
+        var sliders = controls.querySelectorAll('input[type="range"]');
+        var valEls = controls.querySelectorAll('.funnel-step-val');
+
+        function getConversions() {
+            var convs = [];
+            sliders.forEach(function(s) { convs.push(+s.value / 100); });
+            return convs;
+        }
+
+        function calcFlow(convs) {
+            var flow = [1.0];
+            for (var i = 1; i < convs.length; i++) {
+                flow.push(flow[i - 1] * convs[i]);
+            }
+            return flow;
+        }
+
+        function findBottleneck(convs) {
+            var minConv = 1;
+            var minIdx = 1;
+            for (var i = 1; i < convs.length; i++) {
+                if (convs[i] < minConv) {
+                    minConv = convs[i];
+                    minIdx = i;
+                }
+            }
+            return minIdx;
+        }
+
+        function render() {
+            var convs = getConversions();
+            var flow = calcFlow(convs);
+            var bottleneck = findBottleneck(convs);
+            var output = flow[flow.length - 1];
+
+            // Update val labels
+            sliders.forEach(function(s, i) {
+                valEls[i].textContent = s.value + '%';
+            });
+
+            // Render bars
+            barsWrap.innerHTML = '';
+            for (var i = 0; i < flow.length; i++) {
+                var bar = document.createElement('div');
+                bar.className = 'funnel-vbar';
+                var pct = flow[i] * 100;
+                bar.style.height = Math.max(2, pct) + '%';
+                bar.style.background = (i === bottleneck) ? '#d4a0a0' : '#c8d8c8';
+
+                var pctEl = document.createElement('div');
+                pctEl.className = 'funnel-vbar-pct';
+                pctEl.textContent = pct.toFixed(1) + '%';
+                bar.appendChild(pctEl);
+
+                var lbl = document.createElement('div');
+                lbl.className = 'funnel-vbar-label';
+                lbl.textContent = names[i];
+                bar.appendChild(lbl);
+
+                barsWrap.appendChild(bar);
+            }
+
+            outputEl.textContent = (output * 100).toFixed(1) + '%';
+
+            readingEl.textContent = 'Ограничение сейчас — шаг «' + names[bottleneck] + '» (' + (convs[bottleneck] * 100).toFixed(0) + '%). Попробуйте увеличить его — и другой шаг, чтобы сравнить эффект на выход.';
+        }
+
+        sliders.forEach(function(s) {
+            s.addEventListener('input', render);
+        });
+
+        render();
+    })();
+
+    /* ==============================
+       Simulator 2: Sensitivity calculator
+       ============================== */
+    (function() {
+        var controlsEl = document.getElementById('sens-controls');
+        var resultsEl = document.getElementById('sens-results');
+        var readingEl = document.getElementById('sens-reading');
+        var boostSlider = document.getElementById('sens-boost');
+        var boostValEl = document.getElementById('sens-boost-val');
+
+        var stepNames = ['Регистрация', 'Онбординг', 'Первая покупка', 'Подписка'];
+        var sliders = controlsEl.querySelectorAll('.sens-step-row input[type="range"]');
+        var valEls = controlsEl.querySelectorAll('.sens-step-val');
+        var impactEls = controlsEl.querySelectorAll('.sens-step-impact');
+
+        function getConvs() {
+            var c = [];
+            sliders.forEach(function(s) { c.push(+s.value / 100); });
+            return c;
+        }
+
+        function baseOutput(convs) {
+            var out = 1;
+            for (var i = 0; i < convs.length; i++) out *= convs[i];
+            return out;
+        }
+
+        function render() {
+            var convs = getConvs();
+            var boost = +boostSlider.value / 100;
+            var base = baseOutput(convs);
+
+            boostValEl.textContent = '+' + boostSlider.value + ' п.п.';
+            sliders.forEach(function(s, i) { valEls[i].textContent = s.value + '%'; });
+
+            // Calc impact for each step
+            var impacts = [];
+            var maxImpact = 0;
+            var maxIdx = 0;
+            for (var i = 0; i < convs.length; i++) {
+                var boosted = convs.slice();
+                boosted[i] = Math.min(1, boosted[i] + boost);
+                var newOut = baseOutput(boosted);
+                var delta = newOut - base;
+                var pctGain = base > 0 ? (delta / base * 100) : 0;
+                impacts.push({ delta: delta, pctGain: pctGain });
+                if (pctGain > maxImpact) {
+                    maxImpact = pctGain;
+                    maxIdx = i;
+                }
+            }
+
+            // Update impact labels
+            impactEls.forEach(function(el, i) {
+                var g = impacts[i].pctGain;
+                el.textContent = g > 0 ? '+' + g.toFixed(1) + '%' : '0%';
+                el.style.color = (i === maxIdx) ? '#1a1a1a' : '#999';
+            });
+
+            // Render bar chart
+            var html = '';
+            for (var i = 0; i < stepNames.length; i++) {
+                var barWidth = maxImpact > 0 ? (impacts[i].pctGain / maxImpact * 100) : 0;
+                var color = (i === maxIdx) ? '#1a1a1a' : '#c8d8c8';
+                html += '<div class="sens-result-bar-row">';
+                html += '<span class="sens-result-bar-name">' + stepNames[i] + '</span>';
+                html += '<div class="sens-result-bar-track"><div class="sens-result-bar-fill" style="width:' + barWidth + '%;background:' + color + '"></div></div>';
+                html += '<span class="sens-result-bar-val">+' + impacts[i].pctGain.toFixed(1) + '%</span>';
+                html += '</div>';
+            }
+            resultsEl.innerHTML = html;
+
+            readingEl.textContent = 'Наибольший эффект от буста +' + boostSlider.value + ' п.п. — на шаге «' + stepNames[maxIdx] + '». Это текущее ограничение воронки. Базовый выход: ' + (base * 100).toFixed(2) + '%.';
+        }
+
+        sliders.forEach(function(s) { s.addEventListener('input', render); });
+        boostSlider.addEventListener('input', render);
+
+        render();
+    })();
+    </script>
+</body>
+</html>
