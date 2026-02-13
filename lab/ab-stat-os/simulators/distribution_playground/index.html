@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Distribution Playground — AB Stat OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1e293b;--muted:#64748b;--muted2:#94a3b8;--border:#e2e8f0;--accent:#3b82f6;--ok:#059669;--warn:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;--ctrl:#3b82f6;--test:#e67700}
+html{height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--bg);min-height:100%;line-height:1.5}
+
+header{padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border)}
+header h1{font-size:18px;font-weight:700}
+header p{font-size:12px;color:var(--muted);margin-top:2px}
+.nav{font-size:12px;color:var(--muted2);margin-bottom:4px}
+.nav a{color:var(--accent);text-decoration:none}
+.nav a:hover{text-decoration:underline}
+
+.main{padding:16px 24px;max-width:1200px;margin:0 auto}
+.cols{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;margin-top:14px}
+label:first-of-type{margin-top:0}
+select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--bg)}
+select:focus{outline:none;border-color:var(--accent)}
+
+.slider-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent)}
+.slider-val{font-size:12px;font-family:var(--mono);color:var(--text);min-width:36px;text-align:right}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;width:100%}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{filter:brightness(1.1)}
+
+/* Right panel */
+.right{display:flex;flex-direction:column;gap:12px}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:var(--shadow)}
+.chart-wrap canvas{width:100%;height:220px;display:block}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow)}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.stat-val{font-size:18px;font-weight:800;margin-top:2px}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+
+.rec-box{padding:12px 14px;border-radius:8px;border-left:4px solid var(--accent);background:rgba(59,130,246,.04);margin-bottom:8px}
+.rec-box h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.rec-box p{font-size:12px;color:var(--muted)}
+.rec-box--ok{border-left-color:var(--ok);background:rgba(5,150,105,.04)}
+.rec-box--warn{border-left-color:var(--warn);background:rgba(217,119,6,.04)}
+
+.warn-box{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:rgba(217,119,6,.04);margin-bottom:6px}
+.warn-box p{font-size:12px;color:var(--text)}
+.warn-box .warn-label{font-weight:700;color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+
+.assumption{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin:2px 4px 2px 0;background:rgba(59,130,246,.06);color:var(--accent);border:1px solid rgba(59,130,246,.12)}
+.assumption--met{background:rgba(5,150,105,.06);color:var(--ok);border-color:rgba(5,150,105,.12)}
+.assumption--broken{background:rgba(220,38,38,.06);color:var(--danger);border-color:rgba(220,38,38,.12)}
+
+.legend{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:6px}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+
+.empty-msg{text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px}
+.section{margin-bottom:12px}
+.section h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav"><a href="../../index.html">← Курс</a> · Модуль 03 — Распределения</div>
+  <h1>Distribution Playground</h1>
+  <p>Сгенерируйте данные, увидьте форму распределения и получите рекомендацию по статтесту</p>
+</header>
+
+<div class="main">
+<div class="cols">
+
+  <!-- LEFT: controls -->
+  <div class="panel">
+    <h2>Параметры</h2>
+
+    <label for="fMetric">Тип метрики</label>
+    <select id="fMetric">
+      <option value="proportion">Доля (proportion)</option>
+      <option value="per_user" selected>Поюзерная (per-user)</option>
+      <option value="ratio">Ratio-метрика</option>
+      <option value="conditional">Условная (conditional)</option>
+    </select>
+
+    <label>Zero inflation (p₀)</label>
+    <div class="slider-row">
+      <input id="sZero" type="range" min="0" max="95" value="0" step="5"/>
+      <span id="vZero" class="slider-val">0%</span>
+    </div>
+
+    <label>Тяжесть хвоста</label>
+    <div class="slider-row">
+      <input id="sTail" type="range" min="0" max="100" value="20" step="5"/>
+      <span id="vTail" class="slider-val">0.20</span>
+    </div>
+
+    <label>Размер группы (n)</label>
+    <div class="slider-row">
+      <input id="sN" type="range" min="500" max="100000" value="10000" step="500"/>
+      <span id="vN" class="slider-val">10000</span>
+    </div>
+
+    <label>Эффект (% lift)</label>
+    <div class="slider-row">
+      <input id="sLift" type="range" min="0" max="30" value="5" step="1"/>
+      <span id="vLift" class="slider-val">5%</span>
+    </div>
+
+    <button class="btn btn--primary" id="btnGen">Сгенерировать</button>
+  </div>
+
+  <!-- RIGHT: output -->
+  <div class="right">
+    <div id="emptyMsg" class="chart-wrap empty-msg">Настройте параметры и нажмите «Сгенерировать»</div>
+
+    <div id="output" style="display:none">
+      <div class="chart-wrap">
+        <canvas id="cvHist" width="800" height="220"></canvas>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:var(--ctrl)"></span>Контроль (A)</span>
+          <span><span class="legend-dot" style="background:var(--test)"></span>Тест (B)</span>
+        </div>
+      </div>
+
+      <div class="stats" id="statsGrid"></div>
+
+      <div class="panel">
+        <div class="section">
+          <h3>Рекомендованный подход</h3>
+          <div id="rRec" class="rec-box"></div>
+        </div>
+        <div id="rVarWrap" class="section" style="display:none">
+          <h3>Снижение дисперсии</h3>
+          <div id="rVar" class="rec-box rec-box--ok"></div>
+        </div>
+        <div class="section">
+          <h3>Допущения</h3>
+          <div id="rAssumptions"></div>
+        </div>
+        <div id="rWarnWrap" class="section" style="display:none">
+          <h3>Предупреждения</h3>
+          <div id="rWarnList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+ *  Seeded RNG (Mulberry32)
+ * ══════════════════════════════════════════════════════ */
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* Box-Muller for normal variates */
+function randNorm(rng, mu, sigma) {
+  let u, v, s;
+  do { u = rng() * 2 - 1; v = rng() * 2 - 1; s = u * u + v * v; } while (s >= 1 || s === 0);
+  return mu + sigma * u * Math.sqrt(-2 * Math.log(s) / s);
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Data generation
+ * ══════════════════════════════════════════════════════ */
+function generateSample(rng, n, metric, p0, tail, liftFrac) {
+  const base = 100; // base mean for per_user/ratio
+  const arr = new Float64Array(n);
+
+  if (metric === 'proportion') {
+    const p = 0.08 * (1 + liftFrac); // base CR ~8%
+    for (let i = 0; i < n; i++) arr[i] = rng() < p ? 1 : 0;
+    return arr;
+  }
+
+  // sigma for lognormal scales with tail param
+  const sigma = 0.3 + tail * 2.5; // 0.3 (light) to 2.8 (extreme)
+  const mu = Math.log(base * (1 + liftFrac)) - sigma * sigma / 2;
+
+  for (let i = 0; i < n; i++) {
+    // zero inflation
+    if (rng() < p0) { arr[i] = 0; continue; }
+    // lognormal
+    arr[i] = Math.exp(randNorm(rng, mu, sigma));
+  }
+
+  if (metric === 'conditional') {
+    // conditional: only keep non-zero, replace zeros with NaN-like marker
+    // we still store zeros for histogram, but stats are computed on non-zero
+  }
+  return arr;
+}
+
+function stats(arr, conditional) {
+  let vals = conditional ? Array.from(arr).filter(x => x > 0) : Array.from(arr);
+  if (vals.length === 0) vals = [0];
+  vals.sort((a, b) => a - b);
+  const n = vals.length;
+  const sum = vals.reduce((a, b) => a + b, 0);
+  const mean = sum / n;
+  const median = n % 2 === 0 ? (vals[n / 2 - 1] + vals[n / 2]) / 2 : vals[Math.floor(n / 2)];
+  const p99 = vals[Math.min(Math.floor(n * 0.99), n - 1)];
+  const zeroFrac = Array.from(arr).filter(x => x === 0).length / arr.length;
+  // top 1% share
+  const top1idx = Math.max(0, Math.floor(n * 0.99));
+  const top1sum = vals.slice(top1idx).reduce((a, b) => a + b, 0);
+  const top1share = sum > 0 ? top1sum / sum : 0;
+  // skewness
+  const variance = vals.reduce((a, x) => a + (x - mean) ** 2, 0) / n;
+  const sd = Math.sqrt(variance);
+  const skew = sd > 0 ? vals.reduce((a, x) => a + ((x - mean) / sd) ** 3, 0) / n : 0;
+  return { mean, median, p99, zeroFrac, top1share, skew, sd, n: arr.length, nActive: vals.length };
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Histogram drawing (Canvas)
+ * ══════════════════════════════════════════════════════ */
+function drawHistogram(canvas, dataA, dataB, metric) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = 220 * dpr;
+  ctx.scale(dpr, dpr);
+  const w = canvas.clientWidth, h = 220;
+  ctx.clearRect(0, 0, w, h);
+
+  const all = [...dataA, ...dataB];
+  let minV = 0, maxV;
+  if (metric === 'proportion') {
+    maxV = 1;
+  } else {
+    // clip at P99 for visual
+    const sorted = Float64Array.from(all).sort();
+    maxV = sorted[Math.floor(sorted.length * 0.995)] || 1;
+  }
+  if (maxV <= minV) maxV = minV + 1;
+
+  const nBins = metric === 'proportion' ? 2 : 40;
+  const binW = (maxV - minV) / nBins;
+
+  function toBins(data) {
+    const bins = new Array(nBins).fill(0);
+    for (const v of data) {
+      if (metric === 'proportion') { bins[v > 0.5 ? 1 : 0]++; continue; }
+      let idx = Math.floor((v - minV) / binW);
+      if (idx < 0) idx = 0;
+      if (idx >= nBins) idx = nBins - 1;
+      bins[idx]++;
+    }
+    return bins.map(c => c / data.length);
+  }
+
+  const binsA = toBins(dataA);
+  const binsB = toBins(dataB);
+  const maxBin = Math.max(...binsA, ...binsB) || 1;
+
+  const pad = { l: 50, r: 12, t: 8, b: 28 };
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+
+  // grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + plotH * (1 - i / 4);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.font = '10px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+    ctx.textAlign = 'right';
+    ctx.fillText((maxBin * i / 4 * 100).toFixed(0) + '%', pad.l - 6, y + 3);
+  }
+
+  const barW = plotW / nBins;
+  const halfBar = barW * 0.4;
+
+  // Draw bars
+  function drawBars(bins, color, offsetX) {
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.6;
+    for (let i = 0; i < nBins; i++) {
+      const x = pad.l + i * barW + offsetX;
+      const barH = (bins[i] / maxBin) * plotH;
+      ctx.fillRect(x, pad.t + plotH - barH, halfBar, barH);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  drawBars(binsA, '#3b82f6', 0);
+  drawBars(binsB, '#e67700', halfBar);
+
+  // X-axis labels
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.font = '10px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+  ctx.textAlign = 'center';
+  if (metric === 'proportion') {
+    ctx.fillText('0', pad.l + barW * 0.5, h - 6);
+    ctx.fillText('1', pad.l + barW * 1.5, h - 6);
+  } else {
+    for (let i = 0; i <= 4; i++) {
+      const val = minV + (maxV - minV) * i / 4;
+      const x = pad.l + plotW * i / 4;
+      ctx.fillText(val >= 1000 ? (val / 1000).toFixed(1) + 'K' : val.toFixed(0), x, h - 6);
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Recommendation engine
+ * ══════════════════════════════════════════════════════ */
+function recommend(metric, p0, tail, n, stA, stB) {
+  const r = { test: '', detail: '', variance: null, assumptions: [], warnings: [] };
+  const heavy = tail > 0.5;
+  const zeroHigh = p0 > 0.3;
+  const large = n >= 10000;
+
+  if (metric === 'conditional') {
+    r.test = 'Двухэтапная процедура / регрессия';
+    r.detail = 'Условная метрика → selection bias. Наивное сравнение средних по подвыборке некорректно.';
+    r.assumptions.push({ text: 'Подвыборка не зависит от treatment', met: false });
+    r.warnings.push('Selection bias: состав подвыборки зависит от treatment.');
+  } else if (metric === 'proportion') {
+    r.test = large ? 'z-test для долей' : 'Точный тест Фишера / bootstrap';
+    r.detail = large
+      ? 'Бинарная метрика + большая выборка → CLT работает. Стандартный z-test.'
+      : 'Малая выборка → нормальная аппроксимация ненадёжна. Точный тест или bootstrap.';
+    r.assumptions.push({ text: 'Бинарный исход (0/1)', met: true });
+    r.assumptions.push({ text: 'Независимость наблюдений', met: true });
+  } else if (metric === 'ratio') {
+    r.test = heavy || !large ? 'Bootstrap отношения' : 'Delta-method / линеаризация';
+    r.detail = heavy
+      ? 'Ratio + heavy tail → delta-method нестабилен. Bootstrap отношения надёжнее.'
+      : 'Ratio при достаточной выборке. Delta-method корректно учитывает ковариацию.';
+    r.assumptions.push({ text: 'Знаменатель > 0', met: null });
+    r.warnings.push('Гетерогенность знаменателя: t-test на поюзерных средних ratio некорректен.');
+  } else {
+    // per_user
+    if (heavy) {
+      r.test = 'Bootstrap / trimmed mean / winsorization';
+      r.detail = 'Heavy tail → среднее нестабильно, t-test чувствителен к выбросам.';
+    } else {
+      r.test = large ? 't-test / Welch t-test' : 'Bootstrap / permutation test';
+      r.detail = large
+        ? 'Поюзерная метрика без heavy tail + большая выборка → стандартный t-test.'
+        : 'Малая выборка → bootstrap надёжнее.';
+    }
+    r.assumptions.push({ text: 'Одно значение на пользователя', met: true });
+    r.assumptions.push({ text: 'Нет heavy tail', met: !heavy });
+  }
+
+  // Zero inflation warning
+  if (zeroHigh && metric !== 'proportion') {
+    r.warnings.push('Zero inflation (' + (p0 * 100).toFixed(0) + '%): мощность падает. Рассмотрите разделение на CR + среднее среди ненулевых.');
+  }
+
+  // Heavy tail warning
+  if (heavy && metric !== 'proportion' && metric !== 'conditional') {
+    r.warnings.push('Heavy tail (top-1% = ' + (stA.top1share * 100).toFixed(0) + '% суммы): среднее определяется хвостом. Bootstrap или winsorization.');
+  }
+
+  // Skewness warning
+  if (Math.abs(stA.skew) > 3 && metric !== 'proportion') {
+    r.warnings.push('Сильная асимметрия (skewness = ' + stA.skew.toFixed(1) + '): CLT сходится медленно.');
+  }
+
+  // CUPED hint
+  if (metric !== 'conditional' && metric !== 'proportion') {
+    r.variance = { name: 'CUPED (при наличии pre-period)', detail: 'Если есть данные до эксперимента — CUPED снизит дисперсию на 30–50%.' };
+  }
+
+  r.warnings = r.warnings.slice(0, 3);
+  return r;
+}
+
+/* ══════════════════════════════════════════════════════
+ *  DOM wiring
+ * ══════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+
+// Slider display
+function wireSlider(sliderId, displayId, fmt) {
+  const s = $(sliderId), d = $(displayId);
+  s.addEventListener('input', () => { d.textContent = fmt(s.value); });
+  d.textContent = fmt(s.value);
+}
+wireSlider('sZero', 'vZero', v => v + '%');
+wireSlider('sTail', 'vTail', v => (v / 100).toFixed(2));
+wireSlider('sN', 'vN', v => Number(v).toLocaleString());
+wireSlider('sLift', 'vLift', v => v + '%');
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+$('btnGen').addEventListener('click', () => {
+  const metric = $('fMetric').value;
+  const p0 = +$('sZero').value / 100;
+  const tail = +$('sTail').value / 100;
+  const n = +$('sN').value;
+  const lift = +$('sLift').value / 100;
+
+  // deterministic seed from inputs
+  const seed = (metric.length * 1000 + Math.round(p0 * 100) * 13 + Math.round(tail * 100) * 7 + n + Math.round(lift * 100) * 3) | 0;
+  const rngA = mulberry32(seed);
+  const rngB = mulberry32(seed + 99999);
+
+  const dataA = generateSample(rngA, n, metric, p0, tail, 0);
+  const dataB = generateSample(rngB, n, metric, p0, tail, lift);
+
+  const isCond = metric === 'conditional';
+  const stA = stats(dataA, isCond);
+  const stB = stats(dataB, isCond);
+
+  // Draw histogram
+  $('emptyMsg').style.display = 'none';
+  $('output').style.display = '';
+  drawHistogram($('cvHist'), dataA, dataB, metric);
+
+  // Stats
+  function fmtN(v) { return v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v.toFixed(1); }
+  function fmtPct(v) { return (v * 100).toFixed(1) + '%'; }
+
+  const statsHtml = [
+    { label: 'Среднее (A)', val: fmtN(stA.mean), sub: '' },
+    { label: 'Среднее (B)', val: fmtN(stB.mean), sub: 'Δ ' + ((stB.mean - stA.mean) / (stA.mean || 1) * 100).toFixed(1) + '%' },
+    { label: 'Медиана (A)', val: fmtN(stA.median), sub: '' },
+    { label: '% нулей', val: fmtPct(stA.zeroFrac), sub: '' },
+    { label: 'Top-1% доля', val: fmtPct(stA.top1share), sub: 'от суммы (A)' },
+    { label: 'Skewness (A)', val: stA.skew.toFixed(1), sub: '' },
+  ];
+  $('statsGrid').innerHTML = statsHtml.map(s =>
+    '<div class="stat"><div class="stat-label">' + s.label + '</div><div class="stat-val">' + s.val + '</div>' +
+    (s.sub ? '<div class="stat-sub">' + s.sub + '</div>' : '') + '</div>'
+  ).join('');
+
+  // Recommendation
+  const rec = recommend(metric, p0, tail, n, stA, stB);
+
+  $('rRec').innerHTML = '<h4>' + esc(rec.test) + '</h4><p>' + esc(rec.detail) + '</p>';
+
+  if (rec.variance) {
+    $('rVarWrap').style.display = '';
+    $('rVar').innerHTML = '<h4>' + esc(rec.variance.name) + '</h4><p>' + esc(rec.variance.detail) + '</p>';
+  } else {
+    $('rVarWrap').style.display = 'none';
+  }
+
+  $('rAssumptions').innerHTML = rec.assumptions.map(a => {
+    let cls = 'assumption';
+    if (a.met === true) cls += ' assumption--met';
+    else if (a.met === false) cls += ' assumption--broken';
+    const icon = a.met === true ? '✓ ' : a.met === false ? '✗ ' : '? ';
+    return '<span class="' + cls + '">' + icon + esc(a.text) + '</span>';
+  }).join('');
+
+  if (rec.warnings.length) {
+    $('rWarnWrap').style.display = '';
+    $('rWarnList').innerHTML = rec.warnings.map(w =>
+      '<div class="warn-box"><div class="warn-label">⚠ Предупреждение</div><p>' + esc(w) + '</p></div>'
+    ).join('');
+  } else {
+    $('rWarnWrap').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

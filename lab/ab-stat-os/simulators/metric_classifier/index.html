@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Классификатор метрик — AB Stat OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1e293b;--muted:#64748b;--muted2:#94a3b8;--border:#e2e8f0;--accent:#3b82f6;--ok:#059669;--warn:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--bg);min-height:100%;line-height:1.5}
+
+header{padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border)}
+header h1{font-size:18px;font-weight:700}
+header p{font-size:12px;color:var(--muted);margin-top:2px}
+
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px;max-width:1200px;margin:0 auto}
+@media(max-width:800px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;margin-top:12px}
+label:first-of-type{margin-top:0}
+input[type=text],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--bg)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:36px}
+
+.cb-row{display:flex;align-items:center;gap:8px;margin-top:12px}
+.cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.cb-row span{font-size:13px}
+
+.preset-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
+.preset-row select{flex:1}
+.preset-row .hint{font-size:11px;color:var(--muted2);white-space:nowrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;width:100%}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{filter:brightness(1.1)}
+.btn--reset{background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:8px}
+.btn--reset:hover{border-color:var(--accent);color:var(--text)}
+
+/* Result */
+.result{display:none}
+.result.show{display:block}
+.result-empty{text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px}
+
+.type-badge{display:inline-block;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:700;letter-spacing:.3px;margin-bottom:12px}
+.type-badge--ratio{background:rgba(99,102,241,.1);color:#6366f1}
+.type-badge--per_user{background:rgba(59,130,246,.1);color:#3b82f6}
+.type-badge--proportion{background:rgba(5,150,105,.1);color:#059669}
+.type-badge--conditional{background:rgba(217,119,6,.1);color:#d97706}
+
+.result-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.result-desc{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+.section{margin-bottom:16px}
+.section h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.section p,.section li{font-size:13px;line-height:1.6}
+.section ul{padding-left:18px}
+.section li{margin-bottom:4px}
+
+.rec-box{padding:12px 14px;border-radius:8px;border-left:4px solid var(--accent);background:rgba(59,130,246,.04);margin-bottom:12px}
+.rec-box h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.rec-box p{font-size:12px;color:var(--muted)}
+
+.warn-box{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:rgba(217,119,6,.04);margin-bottom:8px}
+.warn-box p{font-size:12px;color:var(--text)}
+.warn-box .warn-label{font-weight:700;color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+
+.input-summary{font-size:12px;color:var(--muted2);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Классификатор метрик</h1>
+  <p>Определите тип метрики и подходящий статкритерий для A/B-теста</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: inputs -->
+  <div class="panel">
+    <h2>Входные данные</h2>
+
+    <div class="preset-row">
+      <div style="flex:1">
+        <label for="preset">Пресет</label>
+        <select id="preset">
+          <option value="">— выберите пример —</option>
+          <option value="ctr">CTR (Click-Through Rate)</option>
+          <option value="cr">CR (Conversion Rate)</option>
+          <option value="arpu">ARPU</option>
+          <option value="arppu">ARPPU</option>
+          <option value="aov">AOV (Average Order Value)</option>
+          <option value="gmv_user">GMV per user</option>
+          <option value="refund">Refund Rate</option>
+          <option value="share_active">Доля активных пользователей</option>
+          <option value="delivery">Время доставки (per order)</option>
+          <option value="rpm">RPM (Revenue Per Mille)</option>
+          <option value="orders_user">Заказы на пользователя</option>
+          <option value="conv_exposed">Конверсия среди увидевших фичу</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="fName">Название метрики</label>
+    <input id="fName" type="text" placeholder="например: ARPU"/>
+
+    <label for="fNum">Числитель</label>
+    <input id="fNum" type="text" placeholder="что считаем в числителе"/>
+
+    <label for="fDen">Знаменатель (если есть)</label>
+    <input id="fDen" type="text" placeholder="оставьте пустым, если нет"/>
+
+    <label for="fUnit">Единица анализа</label>
+    <select id="fUnit">
+      <option value="user">Пользователь (user)</option>
+      <option value="session">Сессия (session)</option>
+      <option value="order">Заказ (order)</option>
+      <option value="impression">Показ (impression)</option>
+      <option value="request">Запрос (request)</option>
+      <option value="geo_cluster">Гео-кластер</option>
+    </select>
+
+    <label for="fAgg">Уровень агрегации</label>
+    <select id="fAgg">
+      <option value="per_user_mean">Среднее по пользователям (per-user mean)</option>
+      <option value="global_ratio">Глобальное отношение (total X / total Y)</option>
+      <option value="proportion">Доля (proportion: 0/1 на пользователя)</option>
+      <option value="conditional_mean">Условное среднее (conditional mean)</option>
+    </select>
+
+    <div class="cb-row">
+      <input id="fCond" type="checkbox"/>
+      <span>Метрика считается по подмножеству (есть условие)</span>
+    </div>
+    <div id="condWrap" style="display:none">
+      <label for="fCondText">Условие отбора</label>
+      <input id="fCondText" type="text" placeholder='например: "среди покупателей"'/>
+    </div>
+
+    <button class="btn btn--primary" id="btnClassify">Классифицировать</button>
+    <button class="btn btn--reset" id="btnReset">Сбросить</button>
+  </div>
+
+  <!-- RIGHT: output -->
+  <div class="panel">
+    <h2>Результат классификации</h2>
+
+    <div id="empty" class="result-empty">
+      Заполните поля слева и нажмите «Классифицировать»
+    </div>
+
+    <div id="result" class="result">
+      <span id="rBadge" class="type-badge"></span>
+      <div id="rTitle" class="result-title"></div>
+      <div id="rDesc" class="result-desc"></div>
+
+      <div class="section">
+        <h3>Рекомендованный подход</h3>
+        <div id="rRec" class="rec-box"></div>
+      </div>
+
+      <div id="rWarnings" class="section" style="display:none">
+        <h3>Предупреждения</h3>
+        <div id="rWarnList"></div>
+      </div>
+
+      <div id="rSummary" class="input-summary"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+ *  Presets — each has _type override for guaranteed correctness
+ * ══════════════════════════════════════════════════════ */
+const PRESETS = {
+  ctr:          { name:'CTR (Click-Through Rate)',        num:'Клики',                          den:'Показы (impressions)',         unit:'impression', agg:'global_ratio',  cond:false, condText:'', _type:'proportion' },
+  cr:           { name:'CR (Conversion Rate)',            num:'Пользователи с покупкой',        den:'Все пользователи',             unit:'user',       agg:'proportion',    cond:false, condText:'', _type:'proportion' },
+  arpu:         { name:'ARPU',                            num:'Выручка пользователя',           den:'',                             unit:'user',       agg:'per_user_mean', cond:false, condText:'', _type:'per_user' },
+  arppu:        { name:'ARPPU',                           num:'Выручка пользователя',           den:'',                             unit:'user',       agg:'per_user_mean', cond:true,  condText:'Среди пользователей, совершивших покупку', _type:'conditional' },
+  aov:          { name:'AOV (Average Order Value)',       num:'GMV (стоимость заказов)',         den:'Количество заказов',            unit:'order',      agg:'global_ratio',  cond:false, condText:'', _type:'ratio' },
+  gmv_user:     { name:'GMV per user',                    num:'Сумма стоимости заказов',         den:'',                             unit:'user',       agg:'per_user_mean', cond:false, condText:'', _type:'per_user' },
+  refund:       { name:'Refund Rate',                     num:'Количество возвратов',            den:'Количество заказов',            unit:'order',      agg:'global_ratio',  cond:false, condText:'', _type:'proportion' },
+  share_active: { name:'Доля активных пользователей',     num:'Пользователи с ≥1 сессией',      den:'Все пользователи',             unit:'user',       agg:'proportion',    cond:false, condText:'', _type:'proportion' },
+  delivery:     { name:'Время доставки (per order)',      num:'Суммарное время доставки',        den:'Количество доставок',           unit:'order',      agg:'global_ratio',  cond:false, condText:'', _type:'ratio' },
+  rpm:          { name:'RPM (Revenue Per Mille)',         num:'Рекламная выручка',               den:'Количество показов',            unit:'impression', agg:'global_ratio',  cond:false, condText:'', _type:'ratio' },
+  orders_user:  { name:'Заказы на пользователя',          num:'Количество заказов пользователя', den:'',                             unit:'user',       agg:'per_user_mean', cond:false, condText:'', _type:'per_user' },
+  conv_exposed: { name:'Конверсия среди увидевших фичу',  num:'Пользователи с целевым действием',den:'Все пользователи',             unit:'user',       agg:'proportion',    cond:true,  condText:'Среди пользователей, увидевших фичу', _type:'conditional' },
+};
+
+/* ══════════════════════════════════════════════════════
+ *  Type definitions
+ * ══════════════════════════════════════════════════════ */
+const TYPES = {
+  conditional: {
+    label: 'Conditional',
+    labelRu: 'Условная метрика',
+    desc: 'Метрика вычисляется только для подмножества, определённого post-treatment поведением. Это создаёт риск selection bias.',
+    cls: 'conditional',
+    rec: 'Двухэтапная процедура / bootstrap с коррекцией на selection bias / регрессия',
+    recDetail: 'Нельзя просто сравнивать средние по подвыборкам — состав групп зависит от treatment. Нужна коррекция или альтернативная метрика.',
+  },
+  proportion: {
+    label: 'Долей',
+    labelRu: 'Метрика долей',
+    desc: 'Каждая единица анализа имеет бинарный исход (0 или 1). Числитель — подсчёт событий, знаменатель — количество экспозиций. CTR, конверсия, refund rate — всё это доли.',
+    cls: 'proportion',
+    rec: 'z-test / chi-square / bootstrap',
+    recDetail: 'Биномиальная интуиция: каждая экспозиция — независимое испытание Бернулли. CLT работает хорошо при достаточном n. При малых n — точный тест Фишера.',
+  },
+  ratio: {
+    label: 'Ratio',
+    labelRu: 'Ratio-метрика',
+    desc: 'Отношение двух величин разной природы. Числитель (деньги, время) не является подсчётом бинарных событий знаменателя. Примеры: AOV = GMV / заказы, RPM = выручка / показы.',
+    cls: 'ratio',
+    rec: 'Delta-method / линеаризация / bootstrap отношения',
+    recDetail: 'Обычный t-test некорректен — дисперсия отношения зависит от ковариации числителя и знаменателя. Нужна линеаризация или delta-method.',
+  },
+  per_user: {
+    label: 'Per-user',
+    labelRu: 'Поюзерная метрика',
+    desc: 'Одно числовое значение на пользователя. Агрегируется как среднее по пользователям.',
+    cls: 'per_user',
+    rec: 't-test / Welch t-test (или bootstrap при heavy tail)',
+    recDetail: 'Стандартный подход. При сильном heavy tail (revenue, GMV) предпочтительнее bootstrap или winsorization.',
+  },
+};
+
+/* ══════════════════════════════════════════════════════
+ *  Classification — heuristic for proportion vs ratio
+ * ══════════════════════════════════════════════════════ */
+
+/* Keywords suggesting the numerator counts binary events per denominator unit */
+const RE_BINARY_NUM = /клик|click|покуп|purchas|buy|возврат|refund|актив|active|конверс|conver|ошиб|error|вернувш|подписк|subscri|регистр|signup|sign.up|пользовател.* с /i;
+/* Keywords suggesting the denominator counts exposures / units */
+const RE_EXPOSURE_DEN = /показ|impression|пользовател|user|заказ|order|визит|visit|сессия|session|запрос|request|доставк|deliver/i;
+/* Keywords suggesting a continuous quantity (money, time) in the numerator → true ratio */
+const RE_CONTINUOUS_NUM = /выручк|revenue|gmv|доход|стоимост|оплат|суммарн|сумм.* стоимост|время|time|длительност/i;
+
+function looksLikeProportion(input) {
+  // If numerator is continuous (money/time), it's a true ratio regardless
+  if (RE_CONTINUOUS_NUM.test(input.num)) return false;
+  // If numerator counts binary events and denominator is exposure → proportion
+  return RE_BINARY_NUM.test(input.num) && RE_EXPOSURE_DEN.test(input.den);
+}
+
+function classify(input) {
+  // 0. Preset override — always correct for known presets
+  if (input._type) return input._type;
+  // 1. Condition overrides everything
+  if (input.cond) return 'conditional';
+  // 2. Explicit proportion aggregation
+  if (input.agg === 'proportion') return 'proportion';
+  // 3. Conditional mean → conditional
+  if (input.agg === 'conditional_mean') return 'conditional';
+  // 4. Global ratio with denominator — distinguish proportion vs true ratio
+  if (input.agg === 'global_ratio' && input.den.trim()) {
+    return looksLikeProportion(input) ? 'proportion' : 'ratio';
+  }
+  // 5. Per-user mean → per_user
+  if (input.agg === 'per_user_mean') return 'per_user';
+  // 6. Fallback
+  return 'per_user';
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Warnings — prioritised, max 2
+ * ══════════════════════════════════════════════════════ */
+function getWarnings(type, input) {
+  const all = [];
+  const hasRevenue = RE_CONTINUOUS_NUM.test(input.num);
+  const denIsExposure = /показ|impression|визит|visit|сессия|session/i.test(input.den);
+
+  // P1: Selection bias (conditional)
+  if (type === 'conditional') {
+    all.push({ p:1, label:'Selection bias',
+      text:'Подмножество, по которому считается метрика, зависит от treatment. Состав подвыборок в контроле и тесте различается. Прямое сравнение средних некорректно.' });
+  }
+
+  // P2: Treatment-affected exposure (proportion with non-user denominator)
+  if (type === 'proportion' && input.den.trim() && denIsExposure && input.unit !== 'user') {
+    all.push({ p:2, label:'Treatment-affected exposure',
+      text:'Знаменатель может меняться из-за эксперимента: treatment влияет на количество экспозиций (показов, визитов). Это искажает сравнение долей между группами.' });
+  }
+
+  // P3: Heavy tail (ratio / per-user with money or time)
+  if ((type === 'per_user' || type === 'ratio') && hasRevenue) {
+    all.push({ p:3, label:'Heavy tail',
+      text:'Метрики на основе денег или времени часто имеют тяжёлые хвосты. Среднее нестабильно, t-test может давать ложные результаты. Рассмотрите bootstrap, trimmed mean или winsorization.' });
+  }
+
+  // P4: Ratio-specific denominator warnings
+  if (type === 'ratio') {
+    all.push({ p:4, label:'Гетерогенность знаменателя',
+      text:'Числитель и знаменатель — величины разной природы. Их ковариация влияет на дисперсию отношения. Delta-method или линеаризация корректно это учитывают.' });
+  }
+
+  // P5: Unit mismatch
+  if (input.unit !== 'user' && input.agg === 'per_user_mean') {
+    all.push({ p:5, label:'Несоответствие единиц',
+      text:'Единица анализа (' + input.unit + ') не совпадает с уровнем агрегации (per-user mean). Per-user и global ratio интерпретируются по-разному.' });
+  }
+
+  // P6: Geo cluster
+  if (input.unit === 'geo_cluster') {
+    all.push({ p:6, label:'Кластерная рандомизация',
+      text:'При рандомизации по гео-кластерам эффективный размер выборки значительно меньше числа пользователей. Нужен кластерный анализ (design effect, ICC).' });
+  }
+
+  // Sort by priority, return max 2
+  all.sort((a, b) => a.p - b.p);
+  return all.slice(0, 2);
+}
+
+/* ══════════════════════════════════════════════════════
+ *  DOM wiring
+ * ══════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const els = {
+  preset: $('preset'), name: $('fName'), num: $('fNum'), den: $('fDen'),
+  unit: $('fUnit'), agg: $('fAgg'), cond: $('fCond'), condText: $('fCondText'),
+  condWrap: $('condWrap'),
+  empty: $('empty'), result: $('result'),
+  badge: $('rBadge'), title: $('rTitle'), desc: $('rDesc'),
+  rec: $('rRec'), warnings: $('rWarnings'), warnList: $('rWarnList'),
+  summary: $('rSummary'),
+};
+
+// Preset fill
+els.preset.addEventListener('change', () => {
+  const p = PRESETS[els.preset.value];
+  if (!p) return;
+  els.name.value = p.name;
+  els.num.value = p.num;
+  els.den.value = p.den;
+  els.unit.value = p.unit;
+  els.agg.value = p.agg;
+  els.cond.checked = p.cond;
+  els.condText.value = p.condText;
+  els.condWrap.style.display = p.cond ? '' : 'none';
+});
+
+// Condition toggle
+els.cond.addEventListener('change', () => {
+  els.condWrap.style.display = els.cond.checked ? '' : 'none';
+});
+
+// Classify
+$('btnClassify').addEventListener('click', () => {
+  const presetKey = els.preset.value;
+  const preset = presetKey ? PRESETS[presetKey] : null;
+
+  const input = {
+    name: els.name.value.trim(),
+    num: els.num.value.trim(),
+    den: els.den.value.trim(),
+    unit: els.unit.value,
+    agg: els.agg.value,
+    cond: els.cond.checked,
+    condText: els.condText.value.trim(),
+    _type: preset ? preset._type : null,
+  };
+
+  if (!input.name && !input.num) { els.name.focus(); return; }
+
+  const typeId = classify(input);
+  const type = TYPES[typeId];
+  const warnings = getWarnings(typeId, input);
+
+  // Badge
+  els.badge.textContent = type.label;
+  els.badge.className = 'type-badge type-badge--' + type.cls;
+
+  // Title & desc
+  els.title.textContent = type.labelRu;
+  els.desc.textContent = type.desc;
+
+  // Recommendation
+  els.rec.innerHTML = '<h4>' + type.rec + '</h4><p>' + type.recDetail + '</p>';
+
+  // Warnings (max 2, already sliced)
+  if (warnings.length) {
+    els.warnings.style.display = '';
+    els.warnList.innerHTML = warnings.map(w =>
+      '<div class="warn-box"><div class="warn-label">⚠ ' + w.label + '</div><p>' + w.text + '</p></div>'
+    ).join('');
+  } else {
+    els.warnings.style.display = 'none';
+  }
+
+  // Summary
+  const unitLabels = { user:'user', session:'session', order:'order', impression:'impression', request:'request', geo_cluster:'geo_cluster' };
+  const aggLabels = { per_user_mean:'per-user mean', global_ratio:'global ratio', proportion:'proportion', conditional_mean:'conditional mean' };
+  let sum = input.name || '(без названия)';
+  sum += ' · unit=' + (unitLabels[input.unit] || input.unit);
+  sum += ' · agg=' + (aggLabels[input.agg] || input.agg);
+  if (input.den) sum += ' · den="' + input.den + '"';
+  if (input.cond) sum += ' · condition="' + (input.condText || 'yes') + '"';
+  sum += ' → ' + type.label;
+  els.summary.textContent = sum;
+
+  // Show
+  els.empty.style.display = 'none';
+  els.result.classList.add('show');
+});
+
+// Reset
+$('btnReset').addEventListener('click', () => {
+  els.preset.value = '';
+  els.name.value = ''; els.num.value = ''; els.den.value = '';
+  els.unit.value = 'user'; els.agg.value = 'per_user_mean';
+  els.cond.checked = false; els.condText.value = '';
+  els.condWrap.style.display = 'none';
+  els.empty.style.display = '';
+  els.result.classList.remove('show');
+});
+</script>
+</body>
+</html>

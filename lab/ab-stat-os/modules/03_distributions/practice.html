@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 3. Распределения</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 3</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">
+            Для каждой задачи определите форму распределения, ключевой риск для A/B-теста и предложите подход.
+        </p>
+
+        <!-- Task 1 -->
+        <div class="task-card">
+            <div class="task-title">Задача 1. Revenue per user в e-commerce</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 100K пользователей. 78% = 0₽, 18% = 50–500₽, 3% = 500–5000₽, 1% = 5000–80 000₽. Среднее = 120₽, медиана = 0₽. Топ-1% = 42% суммарной выручки. Нужно обнаружить +5% эффект в A/B-тесте.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> zero-inflated + heavy tail (Pareto-like правый хвост). Двухкомпонентная смесь: нулевой процесс (не купил) + тяжёлохвостое распределение чеков.</p>
+                    <p><strong>Риск:</strong> t-test нестабилен — несколько whale users определяют среднее. p-value будет «прыгать» при повторных запусках. Power analysis на основе нормального предположения завысит мощность.</p>
+                    <p><strong>Подход:</strong> (1) Разделить на CR (proportion, z-test) + revenue среди покупателей (bootstrap/winsorization). (2) Если нужна единая метрика — bootstrap с winsorization на P99. (3) CUPED с pre-period revenue (если доступен).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-card">
+            <div class="task-title">Задача 2. CTR рекламных баннеров</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 5M показов. Каждый показ — клик (1) или нет (0). CTR ≈ 2.1%. Нужно обнаружить +0.1 п.п. (абсолютный рост).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> Bernoulli на уровне показа, биномиальное в агрегации.</p>
+                    <p><strong>Риск:</strong> минимальный для формы — CLT работает быстро для биномиальных данных при N = 5M. Главный риск не в распределении, а в дизайне: treatment-affected exposure (если treatment меняет число показов на пользователя).</p>
+                    <p><strong>Подход:</strong> z-test для долей. При 5M показов и целевом +0.1 п.п. мощность достаточна. Проверить стабильность числа показов между группами.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-card">
+            <div class="task-title">Задача 3. Время загрузки страницы (latency)</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 200K запросов. Медиана = 180ms, среднее = 450ms, P95 = 1200ms, P99 = 8500ms. Распределение: резкий пик в 100–300ms, длинный хвост до 30 секунд. Нужно обнаружить улучшение.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> смесь: быстрые запросы (cache hit, CDN) + медленные (backend, cold start). Тяжёлый правый хвост. Возможно — Weibull или смесь двух экспоненциальных.</p>
+                    <p><strong>Риск:</strong> среднее в 2.5× больше медианы — heavy tail. Несколько запросов &gt;10 секунд двигают среднее непропорционально. t-test на средних нестабилен.</p>
+                    <p><strong>Подход:</strong> (1) Winsorization на P95 или P99 — ограничить влияние «застрявших» запросов. (2) Анализировать P50 (медиану) и P95 как отдельные метрики — они информативнее среднего. (3) Bootstrap для оценки доверительного интервала.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-card">
+            <div class="task-title">Задача 4. Число заказов на пользователя (overdispersion)</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 50K пользователей за месяц. 60% = 0 заказов, 25% = 1, 10% = 2–3, 5% = 4–20. Среднее = 1.1, дисперсия = 3.4. Нужно обнаружить +10% рост числа заказов.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> Zero-inflated Negative Binomial. Overdispersion: дисперсия = 3.4 &gt;&gt; среднее = 1.1 (для Poisson было бы = 1.1). Масса в нуле = 60%.</p>
+                    <p><strong>Риск:</strong> (1) Zero inflation → мощность t-test падает. (2) Overdispersion → стандартный Poisson-тест завышает значимость.</p>
+                    <p><strong>Подход:</strong> (1) Разделить на CR (0/1 хотя бы один заказ, z-test) + число заказов среди заказавших (t-test/bootstrap). (2) Welch t-test на всех (работает при N = 50K, но power будет ниже ожидаемого). (3) CUPED с pre-period числом заказов.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task-card">
+            <div class="task-title">Задача 5. LTV 90 дней</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 30K пользователей. Медиана = 0₽, среднее = 850₽, P99 = 25 000₽. Gini coefficient ≈ 0.85. Log(LTV + 1) распределение визуально похоже на нормальное для ненулевых.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> Zero-inflated log-normal. В log-шкале ненулевые значения — приблизительно нормальные. Gini = 0.85 подтверждает экстремальное неравенство.</p>
+                    <p><strong>Риск:</strong> (1) Heavy tail: small fraction определяет среднее. (2) Zero inflation: 50%+ нулей. (3) t-test требует огромной выборки для стабильного p-value.</p>
+                    <p><strong>Подход:</strong> (1) Разделить: CR (z-test) + LTV среди конвертировавших (bootstrap/log-transform). (2) Winsorization на P99. (3) CUPED с pre-period LTV — если когорта не новая. (4) Log1p-трансформация с осторожностью (&gt;50% нулей → log1p нежелателен).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task-card">
+            <div class="task-title">Задача 6. Конверсия 0.3% (редкое событие)</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 80K пользователей на группу. Конверсия в подписку = 0.3%. Нужно обнаружить +20% отн. рост (до 0.36%).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> Bernoulli с p = 0.003. Ожидаемое число событий ≈ 240 на группу.</p>
+                    <p><strong>Риск:</strong> при p &lt;&lt; 1 нормальная аппроксимация биномиального распределения неточна. z-test может давать некорректные p-value и доверительные интервалы.</p>
+                    <p><strong>Подход:</strong> (1) Точный тест Фишера (предпочтительнее z-test при малом числе событий). (2) Bootstrap (permutation test). (3) Power analysis: при 240 событиях и +20% отн. рост — проверить, хватает ли мощности (скорее всего нет; нужно 200K+ на группу).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task-card">
+            <div class="task-title">Задача 7. AOV с «нормальными» чеками</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> AOV = GMV / заказы. 60K пользователей, 90K заказов. Чеки: медиана = 1200₽, среднее = 1350₽, P99 = 4500₽. Распределение чеков — умеренно-скошенное, без экстремальных выбросов. Аналитик хочет применить t-test на поюзерных средних AOV.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> ratio двух случайных величин (GMV и число заказов). Хотя распределение чеков умеренное, AOV — не per-user метрика.</p>
+                    <p><strong>Риск:</strong> t-test на средних AOV по пользователям игнорирует, что знаменатель (число заказов) — случайная величина. Пользователь с 1 заказом и пользователь с 20 заказами вносят одинаковый вес — это некорректно.</p>
+                    <p><strong>Подход:</strong> Delta-method или линеаризация. При умеренных хвостах — delta-method надёжен при N = 60K. Форма распределения чеков здесь не проблема — проблема в <em>типе метрики</em> (ratio).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task-card">
+            <div class="task-title">Задача 8. Bimodal latency (cache hit vs miss)</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> 500K запросов. Гистограмма: два чётких пика — 50ms и 800ms. Соотношение ~70% / 30%. Нужно оценить эффект новой CDN.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> смесь (mixture) двух распределений — cache hit (~50ms) и cache miss (~800ms). Среднее ≈ 275ms — не описывает ни одну из подгрупп.</p>
+                    <p><strong>Риск:</strong> t-test на среднем неинформативен. Эффект CDN может улучшать только cache miss (→ мода сдвигается с 800ms на 400ms), не затрагивая cache hit. Среднее изменится умеренно, но пользовательский опыт для 30% улучшится радикально.</p>
+                    <p><strong>Подход:</strong> (1) Анализировать P50 и P95 отдельно. (2) Стратифицировать: cache hit и cache miss как отдельные подгруппы (pre-treatment, не post-treatment!). (3) Бутстреп с раздельными квантильными метриками.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task-card">
+            <div class="task-title">Задача 9. Revenue + winsorization — какой порог?</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> Revenue per user. Аналитик планирует winsorization перед t-test. Вопрос: P95, P99 или P99.5? Предварительный анализ показывает:</p>
+                <ul>
+                    <li>При P95: effect = +3.2%, p = 0.04</li>
+                    <li>При P99: effect = +5.1%, p = 0.02</li>
+                    <li>При P99.5: effect = +7.8%, p = 0.08</li>
+                    <li>Без winsorization: effect = +12.3%, p = 0.35</li>
+                </ul>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> (1) Результат зависит от выбора порога — это degree of freedom для аналитика (p-hacking risk). (2) Без winsorization p-value нестабилен (0.35 → heavy tail). (3) Чем мягче winsorization, тем больше эффект, но больше и дисперсия.</p>
+                    <p><strong>Риск:</strong> аналитик может (осознанно или нет) выбрать порог, дающий «хороший» p-value.</p>
+                    <p><strong>Подход:</strong> (1) Зафиксировать порог <strong>до</strong> эксперимента (в analysis plan). (2) Показать все варианты как sensitivity analysis. (3) P99 — стандартный компромисс. (4) Bootstrap как alternative — не зависит от выбора порога.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task-card">
+            <div class="task-title">Задача 10. «Удалим outliers» — почему нельзя</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> Revenue per user. 3 пользователя с revenue &gt;100K₽ (при среднем 120₽). Аналитик предлагает «удалить outliers» перед тестом. Аргумент: «это боты или ошибки».</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> (1) Если это реальные whale users — удаление создаёт downward bias. Treatment мог <em>создать</em> этих whale users (промо для крупных клиентов). (2) Если удалять в обеих группах — selection bias: вы удаляете разных пользователей в тесте и контроле. (3) Решение об удалении принимается <em>после</em> просмотра данных → p-hacking.</p>
+                    <p><strong>Риск:</strong> изменение выборки post-hoc нарушает pre-registration. Результат зависит от определения «outlier».</p>
+                    <p><strong>Подход:</strong> (1) Winsorization (не удаление — замена на P99). (2) Проверить: это боты? → отдельный фильтр по ботам, до анализа. (3) Показать результат с outliers и без — как sensitivity check. (4) Если treatment targeting крупных клиентов — удалять их нельзя категорически.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task-card">
+            <div class="task-title">Задача 11. Log-трансформация с 40% нулей</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> Revenue per user. 40% = 0₽. Ненулевые — log-normal. Аналитик предлагает log(revenue + 1) и t-test на трансформированных данных.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> (1) log(0 + 1) = 0 → 40% наблюдений «склеиваются» в одной точке. (2) log-трансформация предназначена для непрерывных положительных данных. При 40% нулей распределение log(x+1) — не нормальное (масса в нуле + колокол для ненулевых). (3) Интерпретация: вы тестируете <em>геометрическое</em> среднее — но что означает геометрическое среднее, если 40% = 0?</p>
+                    <p><strong>Риск:</strong> мощность теста снижается. Эффект на ненулевых «разбавляется» массой нулей. Результат трудно интерпретировать бизнесу.</p>
+                    <p><strong>Подход:</strong> (1) Разделить: CR (z-test) + revenue среди покупателей (log-transform допустим, если нулей &lt;5%). (2) Bootstrap на оригинальных данных (без трансформации). (3) log1p допустим только при &lt;10–15% нулей.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task-card">
+            <div class="task-title">Задача 12. Identical means, different distributions</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> два варианта checkout. Среднее число шагов до покупки: тест = 3.2, контроль = 3.2. p-value = 0.95. Вывод аналитика: «нет эффекта».</p>
+                <p>Но: распределение в тесте — бимодальное (пик в 2 и пик в 5). В контроле — нормальное (пик в 3).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> средние одинаковы, но распределения радикально различны. Часть пользователей в тесте проходит checkout быстрее (2 шага), часть — медленнее (5 шагов). Это два разных пользовательских опыта.</p>
+                    <p><strong>Риск:</strong> t-test и z-test сравнивают только средние. Одинаковые средние не означают одинаковый опыт. Treatment может создавать winners и losers одновременно.</p>
+                    <p><strong>Подход:</strong> (1) Визуальная диагностика: гистограммы обеих групп. (2) Квантильные тесты: сравнить P25, P50, P75. (3) Kolmogorov-Smirnov тест (H0: распределения одинаковы). (4) Segmentation: кто «выиграл» от нового checkout, кто «проиграл»?</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 13 -->
+        <div class="task-card">
+            <div class="task-title">Задача 13. Overdispersion в pushes per user</div>
+            <div class="task-body">
+                <p><strong>Данные:</strong> число push-уведомлений, отправленных пользователю за неделю. Среднее = 12, дисперсия = 180. Нужно тестировать новый алгоритм push-рассылки.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Форма:</strong> сильная overdispersion (дисперсия в 15× больше среднего). Не Poisson (где var = mean). Negative Binomial или mixture.</p>
+                    <p><strong>Риск:</strong> (1) Стандартные CI на основе Poisson-предположения будут слишком узкими → ложная значимость. (2) Распределение, вероятно, heavy-tailed: некоторые пользователи получают 100+ pushes.</p>
+                    <p><strong>Подход:</strong> (1) Welch t-test (допускает unequal variances). (2) Bootstrap для robustness. (3) Проверить: есть ли heavy tail в pushes (P99 vs mean). (4) Рассмотреть winsorization, если whale-users (&gt;100 pushes) сильно влияют на среднее.</p>
+                </div>
+            </details>
+        </div>
+
+        <nav class="module-nav">
+            <a href="../02_metric_types/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../04_stat_tests_map/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

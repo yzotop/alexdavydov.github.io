@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cluster Simulator — AB Stat OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1e293b;--muted:#64748b;--muted2:#94a3b8;--border:#e2e8f0;--accent:#3b82f6;--ok:#059669;--warn:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--bg);min-height:100%;line-height:1.5}
+
+header{padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border)}
+header h1{font-size:18px;font-weight:700}
+header p{font-size:12px;color:var(--muted);margin-top:2px}
+.nav{font-size:12px;color:var(--muted2);margin-bottom:4px}
+.nav a{color:var(--accent);text-decoration:none}
+.nav a:hover{text-decoration:underline}
+
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;padding:16px 24px;max-width:1200px;margin:0 auto}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;margin-top:14px}
+label:first-of-type{margin-top:0}
+select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--bg)}
+select:focus{outline:none;border-color:var(--accent)}
+
+.slider-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent)}
+.slider-val{font-size:12px;font-family:var(--mono);color:var(--text);min-width:48px;text-align:right}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;width:100%}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{filter:brightness(1.1)}
+
+.right{display:flex;flex-direction:column;gap:12px}
+.empty-msg{text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow)}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.stat-val{font-size:18px;font-weight:800;margin-top:2px}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.stat--highlight .stat-val{color:var(--ok)}
+.stat--danger .stat-val{color:var(--danger)}
+
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--shadow)}
+.chart-wrap canvas{width:100%;display:block}
+.chart-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+
+.section{margin-bottom:12px}
+.section h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+
+.rec-box{padding:12px 14px;border-radius:8px;border-left:4px solid var(--accent);background:rgba(59,130,246,.04);margin-bottom:8px}
+.rec-box h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.rec-box p{font-size:12px;color:var(--muted)}
+.rec-box--ok{border-left-color:var(--ok);background:rgba(5,150,105,.04)}
+.rec-box--warn{border-left-color:var(--warn);background:rgba(217,119,6,.04)}
+.rec-box--danger{border-left-color:var(--danger);background:rgba(220,38,38,.04)}
+
+.warn-box{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:rgba(217,119,6,.04);margin-bottom:6px}
+.warn-box p{font-size:12px;color:var(--text)}
+.warn-box .warn-label{font-weight:700;color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.warn-box--danger{border-left-color:var(--danger);background:rgba(220,38,38,.04)}
+.warn-box--danger .warn-label{color:var(--danger)}
+
+.assumption{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin:2px 4px 2px 0;background:rgba(59,130,246,.06);color:var(--accent);border:1px solid rgba(59,130,246,.12)}
+.assumption--met{background:rgba(5,150,105,.06);color:var(--ok);border-color:rgba(5,150,105,.12)}
+.assumption--broken{background:rgba(220,38,38,.06);color:var(--danger);border-color:rgba(220,38,38,.12)}
+
+.legend{display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--muted)}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav"><a href="../../index.html">&larr; Курс</a> &middot; Модуль 06 — Кластерные эксперименты</div>
+  <h1>Cluster Simulator</h1>
+  <p>Увидьте, как ICC и размер кластера раздувают дисперсию и ломают наивный t-test.</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT PANEL: INPUTS -->
+  <div class="panel">
+    <h2>Параметры</h2>
+
+    <label>Кластеров на группу</label>
+    <div class="slider-row">
+      <input id="sK" type="range" min="4" max="60" value="15" step="1"/>
+      <span id="vK" class="slider-val">15</span>
+    </div>
+
+    <label>Средний размер кластера (m)</label>
+    <div class="slider-row">
+      <input id="sM" type="range" min="20" max="5000" value="500" step="10"/>
+      <span id="vM" class="slider-val">500</span>
+    </div>
+
+    <label>ICC (Intraclass Correlation)</label>
+    <div class="slider-row">
+      <input id="sICC" type="range" min="0" max="300" value="20" step="1"/>
+      <span id="vICC" class="slider-val">0.020</span>
+    </div>
+
+    <label>Истинный эффект (% lift)</label>
+    <div class="slider-row">
+      <input id="sLift" type="range" min="0" max="30" value="5" step="1"/>
+      <span id="vLift" class="slider-val">5%</span>
+    </div>
+
+    <label>Разброс размеров кластеров</label>
+    <select id="selHet">
+      <option value="low">Низкий (одинаковые)</option>
+      <option value="high">Высокий (разные размеры)</option>
+    </select>
+
+    <button class="btn btn--primary" id="btnCalc">Симулировать</button>
+  </div>
+
+  <!-- RIGHT PANEL: OUTPUTS -->
+  <div class="right">
+    <div id="emptyMsg" class="empty-msg">Настройте параметры и нажмите «Симулировать»</div>
+
+    <div id="output" style="display:none">
+
+      <!-- Stats grid -->
+      <div class="stats" id="statsGrid"></div>
+
+      <!-- Bar chart: naive vs cluster SE -->
+      <div class="chart-wrap">
+        <div class="chart-title">Naive SE vs Cluster-adjusted SE</div>
+        <canvas id="cvBars" height="200"></canvas>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:var(--muted2)"></span>Naive SE</span>
+          <span><span class="legend-dot" style="background:var(--accent)"></span>Cluster SE</span>
+        </div>
+      </div>
+
+      <!-- Cluster means scatter -->
+      <div class="chart-wrap">
+        <div class="chart-title">Средние кластеров (Test vs Control)</div>
+        <canvas id="cvScatter" height="200"></canvas>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:var(--accent)"></span>Test</span>
+          <span><span class="legend-dot" style="background:var(--muted2)"></span>Control</span>
+        </div>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="panel">
+        <div class="section">
+          <h3>Вывод</h3>
+          <div id="rRec"></div>
+        </div>
+        <div class="section">
+          <h3>Допущения</h3>
+          <div id="rAssump"></div>
+        </div>
+        <div id="rWarnWrap" class="section" style="display:none">
+          <h3>Предупреждения</h3>
+          <div id="rWarnList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════
+ *  Seeded RNG (Mulberry32)
+ * ══════════════════════════════════════════════ */
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function randNorm(rng) {
+  var u, v, s;
+  do { u = rng() * 2 - 1; v = rng() * 2 - 1; s = u * u + v * v; } while (s >= 1 || s === 0);
+  return u * Math.sqrt(-2 * Math.log(s) / s);
+}
+
+/* ══════════════════════════════════════════════
+ *  Simulation engine
+ * ══════════════════════════════════════════════ */
+function simulate(params) {
+  var k = params.k;         // clusters per group
+  var mAvg = params.m;      // avg cluster size
+  var icc = params.icc;     // ICC
+  var lift = params.lift;   // fractional lift
+  var het = params.het;     // 'low' | 'high'
+
+  var baseMean = 100;
+  var totalVar = 900; // total variance of individual outcome (SD=30)
+
+  // Decompose: sigma2_between = icc * totalVar, sigma2_within = (1 - icc) * totalVar
+  var s2b = icc * totalVar;
+  var s2w = (1 - icc) * totalVar;
+  var sB = Math.sqrt(s2b);
+  var sW = Math.sqrt(s2w);
+
+  var delta = baseMean * lift;
+
+  var seed = Math.round(k * 1000 + mAvg + icc * 10000 + lift * 1000 + (het === 'high' ? 7 : 0));
+  var rng = mulberry32(seed);
+
+  // Generate cluster sizes
+  function clusterSizes(count) {
+    var sizes = [];
+    for (var i = 0; i < count; i++) {
+      if (het === 'high') {
+        // Log-normal-ish: mean = mAvg, CV ~ 0.7
+        var raw = mAvg * Math.exp(0.6 * randNorm(rng));
+        sizes.push(Math.max(5, Math.round(raw)));
+      } else {
+        sizes.push(mAvg);
+      }
+    }
+    return sizes;
+  }
+
+  var ctrlSizes = clusterSizes(k);
+  var testSizes = clusterSizes(k);
+
+  // Generate data per cluster: cluster_mean = baseMean + cluster_effect + treatment_delta
+  // Individual: y_ij = cluster_mean_j + within_noise_ij
+  function genGroup(sizes, treatDelta) {
+    var clusterMeans = [];
+    var allValues = [];
+    for (var j = 0; j < sizes.length; j++) {
+      var cEffect = sB * randNorm(rng); // cluster random effect
+      var cMean = baseMean + treatDelta + cEffect;
+      var sum = 0;
+      for (var i = 0; i < sizes[j]; i++) {
+        var y = cMean + sW * randNorm(rng);
+        allValues.push(y);
+        sum += y;
+      }
+      clusterMeans.push(sum / sizes[j]);
+    }
+    return { clusterMeans: clusterMeans, allValues: allValues, sizes: sizes };
+  }
+
+  var ctrl = genGroup(ctrlSizes, 0);
+  var test = genGroup(testSizes, delta);
+
+  // Naive analysis: user-level t-test
+  var nC = ctrl.allValues.length, nT = test.allValues.length;
+  var naiveMeanC = arrMean(ctrl.allValues);
+  var naiveMeanT = arrMean(test.allValues);
+  var naiveDiff = naiveMeanT - naiveMeanC;
+  var naiveVarC = arrVar(ctrl.allValues);
+  var naiveVarT = arrVar(test.allValues);
+  var naiveSE = Math.sqrt(naiveVarC / nC + naiveVarT / nT);
+  var naiveZ = naiveSE > 0 ? naiveDiff / naiveSE : 0;
+  var naiveP = 2 * (1 - normalCDF(Math.abs(naiveZ)));
+
+  // Cluster-level analysis: t-test on cluster means
+  var clMeanC = ctrl.clusterMeans;
+  var clMeanT = test.clusterMeans;
+  var clDiff = arrMean(clMeanT) - arrMean(clMeanC);
+  var clVarC = arrVar(clMeanC);
+  var clVarT = arrVar(clMeanT);
+  var clSE = Math.sqrt(clVarC / k + clVarT / k);
+  var clZ = clSE > 0 ? clDiff / clSE : 0;
+  var clP = 2 * (1 - normalCDF(Math.abs(clZ)));
+
+  // Design effect
+  var mActualC = nC / k;
+  var mActualT = nT / k;
+  var mActual = (mActualC + mActualT) / 2;
+  var deff = 1 + (mActual - 1) * icc;
+  var nEff = (nC + nT) / deff;
+
+  // Inflation factor
+  var inflation = clSE > 0 && naiveSE > 0 ? clSE / naiveSE : 1;
+
+  // Type I error estimate: if we ran 1000 experiments with lift=0, what fraction would naive reject?
+  // Approximation: if DEFF = D, then naive z is inflated by sqrt(D).
+  // P(|Z * sqrt(D)| > 1.96) under H0
+  var typeInaive = 2 * (1 - normalCDF(1.96 / Math.sqrt(deff)));
+
+  return {
+    naiveDiff: naiveDiff, naiveSE: naiveSE, naiveP: naiveP,
+    clDiff: clDiff, clSE: clSE, clP: clP,
+    deff: deff, nEff: nEff, inflation: inflation,
+    typeInaive: typeInaive,
+    nTotal: nC + nT, k: k, mActual: mActual,
+    clMeanC: clMeanC, clMeanT: clMeanT,
+    delta: delta, baseMean: baseMean, icc: icc
+  };
+}
+
+function arrMean(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+function arrVar(a) { var m = arrMean(a), s = 0; for (var i = 0; i < a.length; i++) s += (a[i] - m) * (a[i] - m); return s / a.length; }
+function normalCDF(x) {
+  // Abramowitz & Stegun approximation
+  var t = 1 / (1 + 0.2316419 * Math.abs(x));
+  var d = 0.3989422804014327;
+  var p = d * Math.exp(-x * x / 2) * (0.3193815*t - 0.3565638*t*t + 1.781478*t*t*t - 1.8212560*t*t*t*t + 1.3302744*t*t*t*t*t);
+  return x > 0 ? 1 - p : p;
+}
+
+/* ══════════════════════════════════════════════
+ *  DOM helpers
+ * ══════════════════════════════════════════════ */
+var $ = function(id) { return document.getElementById(id); };
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function wireSlider(sid, did, fmt) {
+  var s = $(sid), d = $(did);
+  var up = function() { d.textContent = fmt(s.value); };
+  s.addEventListener('input', up); up();
+}
+wireSlider('sK', 'vK', function(v) { return v; });
+wireSlider('sM', 'vM', function(v) { return Number(v).toLocaleString(); });
+wireSlider('sICC', 'vICC', function(v) { return (v / 10000).toFixed(3); });
+wireSlider('sLift', 'vLift', function(v) { return v + '%'; });
+
+/* ══════════════════════════════════════════════
+ *  Drawing
+ * ══════════════════════════════════════════════ */
+function drawBars(cvId, naiveSE, clSE) {
+  var cv = $(cvId);
+  var dpr = window.devicePixelRatio || 1;
+  var w = cv.clientWidth;
+  var h = 200;
+  cv.width = w * dpr;
+  cv.height = h * dpr;
+  var ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  var maxVal = Math.max(naiveSE, clSE) * 1.3;
+  if (maxVal === 0) maxVal = 1;
+
+  var barW = 60;
+  var gap = 40;
+  var totalW = barW * 2 + gap;
+  var startX = (w - totalW) / 2;
+  var bottom = h - 30;
+  var maxH = bottom - 20;
+
+  // Naive bar
+  var hN = (naiveSE / maxVal) * maxH;
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillRect(startX, bottom - hN, barW, hN);
+  ctx.fillStyle = '#1e293b';
+  ctx.font = '600 12px system-ui';
+  ctx.textAlign = 'center';
+  ctx.fillText(naiveSE.toFixed(2), startX + barW / 2, bottom - hN - 6);
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px system-ui';
+  ctx.fillText('Naive SE', startX + barW / 2, bottom + 16);
+
+  // Cluster bar
+  var hC = (clSE / maxVal) * maxH;
+  ctx.fillStyle = '#3b82f6';
+  ctx.fillRect(startX + barW + gap, bottom - hC, barW, hC);
+  ctx.fillStyle = '#1e293b';
+  ctx.font = '600 12px system-ui';
+  ctx.fillText(clSE.toFixed(2), startX + barW + gap + barW / 2, bottom - hC - 6);
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px system-ui';
+  ctx.fillText('Cluster SE', startX + barW + gap + barW / 2, bottom + 16);
+
+  // Inflation arrow
+  if (clSE > naiveSE * 1.05) {
+    var arrowX = startX + barW + gap / 2;
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(arrowX, bottom - hN);
+    ctx.lineTo(arrowX, bottom - hC);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#dc2626';
+    ctx.font = '700 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('×' + (clSE / naiveSE).toFixed(1), arrowX, bottom - hC - 6);
+  }
+}
+
+function drawScatter(cvId, clMeanC, clMeanT) {
+  var cv = $(cvId);
+  var dpr = window.devicePixelRatio || 1;
+  var w = cv.clientWidth;
+  var h = 200;
+  cv.width = w * dpr;
+  cv.height = h * dpr;
+  var ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  var all = clMeanC.concat(clMeanT);
+  var lo = Math.min.apply(null, all);
+  var hi = Math.max.apply(null, all);
+  var range = hi - lo || 1;
+  lo -= range * 0.1;
+  hi += range * 0.1;
+  range = hi - lo;
+
+  var padL = 50, padR = 20, padT = 20, padB = 30;
+  var plotW = w - padL - padR;
+  var plotH = h - padT - padB;
+
+  // Y-axis: index (0 = control first, then test)
+  var totalK = clMeanC.length + clMeanT.length;
+  var rowH = plotH / (totalK + 1);
+
+  // Grid lines
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 0.5;
+  for (var g = 0; g < 5; g++) {
+    var gx = padL + (g / 4) * plotW;
+    ctx.beginPath(); ctx.moveTo(gx, padT); ctx.lineTo(gx, padT + plotH); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText((lo + (g / 4) * range).toFixed(1), gx, h - 8);
+  }
+
+  // Grand means
+  var gMeanC = arrMean(clMeanC);
+  var gMeanT = arrMean(clMeanT);
+
+  function xPos(val) { return padL + ((val - lo) / range) * plotW; }
+
+  // Control clusters
+  for (var i = 0; i < clMeanC.length; i++) {
+    var cx = xPos(clMeanC[i]);
+    var cy = padT + (i + 1) * rowH;
+    ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(148,163,184,0.6)'; ctx.fill();
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  // Test clusters
+  for (var i = 0; i < clMeanT.length; i++) {
+    var cx = xPos(clMeanT[i]);
+    var cy = padT + (clMeanC.length + i + 1) * rowH;
+    ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(59,130,246,0.6)'; ctx.fill();
+    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  // Grand mean lines
+  ctx.setLineDash([5, 3]);
+  ctx.lineWidth = 1.5;
+
+  ctx.strokeStyle = '#94a3b8';
+  ctx.beginPath();
+  ctx.moveTo(xPos(gMeanC), padT);
+  ctx.lineTo(xPos(gMeanC), padT + clMeanC.length * rowH + rowH / 2);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.moveTo(xPos(gMeanT), padT + clMeanC.length * rowH + rowH / 2);
+  ctx.lineTo(xPos(gMeanT), padT + plotH);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle = '#64748b';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'left';
+  ctx.fillText('Control', 4, padT + (clMeanC.length / 2) * rowH + 4);
+  ctx.fillText('Test', 4, padT + (clMeanC.length + clMeanT.length / 2) * rowH + 4);
+}
+
+/* ══════════════════════════════════════════════
+ *  Main event
+ * ══════════════════════════════════════════════ */
+$('btnCalc').addEventListener('click', function() {
+  var params = {
+    k: +$('sK').value,
+    m: +$('sM').value,
+    icc: +$('sICC').value / 10000,
+    lift: +$('sLift').value / 100,
+    het: $('selHet').value
+  };
+
+  var r = simulate(params);
+
+  $('emptyMsg').style.display = 'none';
+  $('output').style.display = '';
+
+  // Stats grid
+  var pFmt = function(p) { return p < 0.001 ? '<0.001' : p.toFixed(3); };
+  var stats = [
+    { label: 'Design Effect', val: r.deff.toFixed(1), sub: 'DEFF = 1 + (m−1)·ICC' },
+    { label: 'n total', val: r.nTotal.toLocaleString(), sub: '' },
+    { label: 'n effective', val: Math.round(r.nEff).toLocaleString(), sub: '÷' + r.deff.toFixed(0), hl: true },
+    { label: 'Naive p-value', val: pFmt(r.naiveP), sub: 'user-level t-test', danger: r.naiveP < 0.05 && r.clP > 0.05 },
+    { label: 'Cluster p-value', val: pFmt(r.clP), sub: 'cluster-level t-test', hl: r.clP < 0.05 },
+    { label: 'SE inflation', val: '×' + r.inflation.toFixed(1), sub: 'cluster / naive', danger: r.inflation > 2 },
+    { label: 'Type I (naive)', val: (r.typeInaive * 100).toFixed(0) + '%', sub: 'при H₀ (ожид. 5%)', danger: r.typeInaive > 0.1 },
+    { label: 'Avg cluster size', val: Math.round(r.mActual).toLocaleString(), sub: '' },
+  ];
+
+  $('statsGrid').innerHTML = stats.map(function(s) {
+    var cls = 'stat';
+    if (s.hl) cls += ' stat--highlight';
+    if (s.danger) cls += ' stat--danger';
+    return '<div class="' + cls + '"><div class="stat-label">' + s.label + '</div>' +
+      '<div class="stat-val">' + s.val + '</div>' +
+      (s.sub ? '<div class="stat-sub">' + s.sub + '</div>' : '') + '</div>';
+  }).join('');
+
+  // Charts
+  drawBars('cvBars', r.naiveSE, r.clSE);
+  drawScatter('cvScatter', r.clMeanC, r.clMeanT);
+
+  // Recommendation
+  var recHtml = '';
+  var warnings = [];
+  var assumptions = [];
+
+  if (r.naiveP < 0.05 && r.clP > 0.05) {
+    recHtml = '<div class="rec-box rec-box--danger"><h4>Naive тест обманывает</h4>' +
+      '<p>User-level p = ' + pFmt(r.naiveP) + ', cluster-level p = ' + pFmt(r.clP) +
+      '. Кластерная структура поглощает «значимость». Результат наивного теста невалиден.</p></div>';
+  } else if (r.clP < 0.05) {
+    recHtml = '<div class="rec-box rec-box--ok"><h4>Эффект значим с учётом кластеров</h4>' +
+      '<p>Cluster-level p = ' + pFmt(r.clP) + '. Даже при корректном учёте кластерной структуры эффект статистически значим.</p></div>';
+  } else {
+    recHtml = '<div class="rec-box"><h4>Эффект не обнаружен</h4>' +
+      '<p>Cluster-level p = ' + pFmt(r.clP) + '. При данном числе кластеров и ICC эффект ' +
+      (params.lift * 100).toFixed(0) + '% не детектируется. Нужно больше кластеров или больший эффект.</p></div>';
+  }
+
+  // Warnings
+  if (r.deff > 50) {
+    warnings.push({ text: 'Design Effect > 50. Эффективная выборка определяется числом кластеров. Добавление пользователей внутри кластеров не поможет.', danger: true });
+  } else if (r.deff > 10) {
+    warnings.push({ text: 'Design Effect = ' + r.deff.toFixed(1) + '. Значительная потеря power. Рассмотрите увеличение числа кластеров.', danger: false });
+  }
+
+  if (r.k < 10) {
+    warnings.push({ text: 'Мало кластеров (' + r.k + ' на группу). Cluster-robust SE нестабильны. Используйте пермутационный тест или wild cluster bootstrap.', danger: true });
+  } else if (r.k < 20) {
+    warnings.push({ text: 'Кластеров < 20. Асимптотика cluster-robust SE может быть неточной. Рассмотрите wild cluster bootstrap.', danger: false });
+  }
+
+  if (r.typeInaive > 0.15) {
+    warnings.push({ text: 'Type I error наивного теста = ' + (r.typeInaive * 100).toFixed(0) + '% (вместо 5%). Использование user-level t-test недопустимо.', danger: true });
+  }
+
+  // Assumptions
+  assumptions.push({ text: 'Рандомизация на уровне кластера', met: true });
+  assumptions.push({ text: 'Нет inter-cluster spillover', met: null });
+  assumptions.push({ text: 'Достаточно кластеров для асимптотики', met: r.k >= 20 ? true : r.k >= 10 ? null : false });
+  assumptions.push({ text: 'Кластеры примерно равного размера', met: params.het === 'low' ? true : false });
+
+  $('rRec').innerHTML = recHtml;
+
+  $('rAssump').innerHTML = assumptions.map(function(a) {
+    var cls = 'assumption';
+    if (a.met === true) cls += ' assumption--met';
+    else if (a.met === false) cls += ' assumption--broken';
+    var icon = a.met === true ? '✓ ' : a.met === false ? '✗ ' : '? ';
+    return '<span class="' + cls + '">' + icon + esc(a.text) + '</span>';
+  }).join('');
+
+  if (warnings.length) {
+    $('rWarnWrap').style.display = '';
+    $('rWarnList').innerHTML = warnings.map(function(w) {
+      var cls = w.danger ? 'warn-box warn-box--danger' : 'warn-box';
+      return '<div class="' + cls + '"><div class="warn-label">⚠ Предупреждение</div><p>' + esc(w.text) + '</p></div>';
+    }).join('');
+  } else {
+    $('rWarnWrap').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

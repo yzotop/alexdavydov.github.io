@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 4. Карта выбора статкритерия — Статистика A/B-тестирования</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> / Модуль 4
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 4. Карта выбора статкритерия</h1>
+
+        <!-- Section 1 -->
+        <section class="section">
+            <h2>1. Зачем нужна карта</h2>
+
+            <p>
+                Выбор теста — не вопрос вкуса. Он определяется тремя вещами:
+                <strong>тип метрики</strong>, <strong>свойства данных</strong>, <strong>дизайн эксперимента</strong>.
+                Неправильный выбор не просто снижает мощность — он может дать ложноположительный результат, на основе которого вы примете решение.
+            </p>
+            <p>
+                Эта карта — decision tree. Она не заменяет понимание, но позволяет быстро сузить выбор до 1–2 подходов
+                и сразу увидеть, какие допущения нужно проверить.
+            </p>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="section">
+            <h2>2. Четыре группы метрик</h2>
+
+            <h3>1. Доля (Proportion)</h3>
+            <p>
+                Каждая единица анализа — бинарный исход: 0 или 1. Числитель — подсчёт событий, знаменатель — количество экспозиций.
+            </p>
+            <p>
+                <strong>Примеры:</strong> CR (покупки / пользователи), CTR (клики / показы), retention Day 7, refund rate (возвраты / заказы).
+            </p>
+            <p>
+                <strong>Ключевое свойство:</strong> распределение биномиальное. CLT работает быстро при достаточном n.
+            </p>
+
+            <h3>2. Поюзерная метрика (Per-user)</h3>
+            <p>
+                Одно числовое значение на пользователя. Агрегируется как среднее.
+            </p>
+            <p>
+                <strong>Примеры:</strong> число заказов, число сессий, GMV per user, время в приложении.
+            </p>
+            <p>
+                <strong>Ключевое свойство:</strong> распределение может быть любым — от нормального до тяжёлых хвостов с zero inflation.
+            </p>
+
+            <h3>3. Ratio-метрика</h3>
+            <p>
+                Отношение двух величин <strong>разной природы</strong>. Числитель — не подсчёт бинарных событий знаменателя.
+            </p>
+            <p>
+                <strong>Примеры:</strong> AOV = GMV / заказы, RPM = выручка / показы, стоимость доставки на заказ.
+            </p>
+            <p>
+                <strong>Ключевое свойство:</strong> дисперсия зависит от ковариации числителя и знаменателя.
+                Наивный t-test на средних отношениях некорректен.
+            </p>
+
+            <h3>4. Условная метрика (Conditional)</h3>
+            <p>
+                Метрика считается по подмножеству, определённому post-treatment поведением.
+            </p>
+            <p>
+                <strong>Примеры:</strong> ARPPU (среди покупателей), средний рейтинг (среди оставивших отзыв),
+                конверсия среди увидевших фичу.
+            </p>
+            <p>
+                <strong>Ключевое свойство:</strong> treatment влияет на состав подвыборки → selection bias.
+            </p>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="section">
+            <h2>3. Decision tree: какой тест и почему</h2>
+
+            <h3>Proportion + большая выборка + нет кластеров</h3>
+            <p><strong>→ z-test для долей / chi-square</strong></p>
+            <p>
+                Стандартный случай. Биномиальная интуиция, CLT обеспечивает нормальность.
+                Пример: <em>CR (покупки/пользователи), 50K на группу → z-test.</em>
+            </p>
+
+            <h3>Proportion + малая выборка</h3>
+            <p><strong>→ Точный тест Фишера / permutation-bootstrap</strong></p>
+            <p>
+                Нормальная аппроксимация ненадёжна при малых n или доле, близкой к 0/1.
+                Пример: <em>CR среди B2B-клиентов, 200 на группу → точный тест.</em>
+            </p>
+
+            <h3>Per-user + нет heavy tail</h3>
+            <p><strong>→ t-test / Welch t-test</strong></p>
+            <p>
+                Welch — дефолт (не требует равенства дисперсий).
+                Пример: <em>число сессий, 30K на группу → Welch t-test.</em>
+            </p>
+
+            <h3>Per-user + heavy tail</h3>
+            <p><strong>→ Bootstrap / trimmed mean / winsorization</strong></p>
+            <p>
+                Одиночный выброс может перевернуть результат t-test.
+                Пример: <em>revenue per user, 100K на группу, 0.1% пользователей = 40% выручки → bootstrap.</em>
+            </p>
+
+            <h3>Ratio + большая выборка + нет heavy tail</h3>
+            <p><strong>→ Delta-method / линеаризация</strong></p>
+            <p>
+                Delta-method аппроксимирует дисперсию через Taylor-ряд. Корректно учитывает ковариацию числителя и знаменателя.
+                Пример: <em>AOV, 80K на группу, умеренные чеки → delta-method.</em>
+            </p>
+
+            <h3>Ratio + heavy tail или малая выборка</h3>
+            <p><strong>→ Bootstrap отношения</strong></p>
+            <p>
+                Delta-method чувствителен к выбросам.
+                Пример: <em>RPM, 5K на группу, heavy tail в рекламной выручке → bootstrap.</em>
+            </p>
+
+            <h3>Conditional</h3>
+            <p><strong>→ Двухэтапная процедура / регрессия с коррекцией</strong></p>
+            <p>
+                Наивное сравнение средних смещено. Нужна коррекция на то, что состав подвыборки зависит от treatment.
+                Пример: <em>ARPPU, treatment увеличил конверсию → состав «платящих» изменился → двухэтапная процедура.</em>
+            </p>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="section">
+            <h2>4. Чеклист допущений</h2>
+
+            <p>Перед применением любого теста проверьте:</p>
+            <ol>
+                <li>
+                    <strong>Независимость наблюдений.</strong>
+                    Рандомизация по пользователям? Или по кластерам (гео, команда)?
+                    <ul>
+                        <li>Если кластерная → обычный t-test/z-test занижает дисперсию → нужна поправка.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>SUTVA (Stable Unit Treatment Value Assumption).</strong>
+                    Нет interference между пользователями?
+                    <ul>
+                        <li>Network effects, marketplace (один продавец — много покупателей), shared resources могут нарушать SUTVA.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Стабильная экспозиция.</strong>
+                    Treatment не влияет на количество показов / визитов / заказов?
+                    <ul>
+                        <li>Если влияет → знаменатель метрики-доли зависит от treatment → treatment-affected exposure.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Распределение.</strong>
+                    Есть ли heavy tail, zero inflation, сильная асимметрия?
+                    <ul>
+                        <li>Heavy tail → t-test нестабилен.</li>
+                        <li>Zero inflation → среднее неинформативно, дисперсия завышена.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="section">
+            <h2>5. Heavy tail и zero inflation: что ломается</h2>
+
+            <h3>Heavy tail</h3>
+            <p>
+                Проблема: несколько выбросов определяют среднее всей группы. t-test формально работает (CLT), но при конечных выборках среднее нестабильно.
+            </p>
+            <div class="callout">
+                <p><strong>Что делать:</strong></p>
+                <ul>
+                    <li><strong>Bootstrap</strong> (percentile, ≥10K итераций) — не зависит от параметрических допущений</li>
+                    <li><strong>Trimmed mean</strong> — отсечение крайних 5–10% стабилизирует оценку</li>
+                    <li><strong>Winsorization</strong> — замена выбросов на пороговое значение (например, 99-й перцентиль)</li>
+                    <li><strong>Log-трансформация</strong> — при log-нормальном распределении; но интерпретация меняется</li>
+                </ul>
+            </div>
+            <p>
+                Пример: <em>Revenue per user. 0.1% пользователей с чеками в 100× среднего.
+                t-test показывает p = 0.03, повторный запуск — p = 0.45. → Bootstrap + winsorization.</em>
+            </p>
+
+            <h3>Zero inflation</h3>
+            <p>
+                Проблема: большинство пользователей = 0 (не купили, не кликнули). Среднее близко к нулю,
+                дисперсия завышена, мощность падает.
+            </p>
+            <div class="callout">
+                <p><strong>Что делать:</strong></p>
+                <ul>
+                    <li>Разделить метрику: <em>конверсия (0/1)</em> + <em>среднее среди конвертировавших</em></li>
+                    <li>Zero-inflated модель (если нужна одна метрика)</li>
+                    <li>CUPED с pre-period (снижает дисперсию на 30–50%)</li>
+                </ul>
+            </div>
+            <p>
+                Пример: <em>Purchases per user. 85% = 0, 14% = 1, 1% ≥ 2. Обычный t-test требует огромную выборку.
+                Разделение на CR (proportion, z-test) + AOV (ratio, delta-method) — проще и мощнее.</em>
+            </p>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="section">
+            <h2>6. Кластерные эксперименты</h2>
+
+            <h3>Что меняется</h3>
+            <p>
+                При рандомизации по кластерам (города, регионы, команды) наблюдения внутри кластера скоррелированы.
+                Эффективный размер выборки ≈ N кластеров, а не N пользователей.
+            </p>
+            <p>
+                <strong>ICC (Intra-Cluster Correlation):</strong> доля дисперсии, объяснённая кластером.
+                Чем выше ICC, тем сильнее inflation дисперсии.
+            </p>
+
+            <h3>Что делать</h3>
+            <ul>
+                <li><strong>Cluster-robust standard errors</strong> — корректируют дисперсию на внутрикластерную корреляцию</li>
+                <li>
+                    <strong>Design effect</strong> — поправочный множитель:
+                    DE = 1 + (m − 1) · ICC, где m = средний размер кластера
+                </li>
+                <li>При малом числе кластеров (&lt;30–50): <strong>wild cluster bootstrap</strong> или <strong>randomization inference</strong></li>
+            </ul>
+            <p>
+                Пример: <em>Гео-эксперимент, 20 городов, CTR. Обычный z-test показывает p = 0.001 (N = 2M пользователей).
+                Cluster-robust SE → p = 0.14 (N_eff ≈ 20 кластеров).</em>
+            </p>
+
+            <h3>Частая ошибка</h3>
+            <div class="callout callout-warn">
+                <p>
+                    Аналитик использует N пользователей как размер выборки при кластерной рандомизации.
+                    Получает p &lt; 0.01, уверенно запускает. Эффект не воспроизводится — потому что реальная мощность была ~15%, а не 80%.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="section">
+            <h2>7. CUPED: когда помогает, когда нет</h2>
+
+            <h3>Принцип</h3>
+            <p>
+                CUPED (Controlled-experiment Using Pre-Experiment Data) использует pre-period ковариату для снижения дисперсии:
+            </p>
+            <div class="formula">
+                Y<sub>adj</sub> = Y − θ · X<sub>pre</sub>, где θ = Cov(Y, X<sub>pre</sub>) / Var(X<sub>pre</sub>)
+            </div>
+            <p>Типичный выигрыш: снижение дисперсии на 30–50%.</p>
+
+            <h3>Когда помогает</h3>
+            <ul>
+                <li>Метрика стабильна во времени (пользователь, активный до теста, активен и во время)</li>
+                <li>Pre-period ≥ 1–2 недели</li>
+                <li>Корреляция pre-post &gt; 0.3</li>
+            </ul>
+            <p>
+                Пример: <em>Revenue per user. Pre-period revenue за 2 недели до эксперимента.
+                Корреляция 0.6. CUPED снижает дисперсию на 45%, что эквивалентно удвоению выборки.</em>
+            </p>
+
+            <h3>Когда не работает или опасен</h3>
+            <ul>
+                <li><strong>Conditional-метрика:</strong> состав подвыборки зависит от treatment → pre-period ковариата может быть невалидной</li>
+                <li><strong>Новые пользователи:</strong> нет pre-period данных → CUPED неприменим к этой когорте</li>
+                <li><strong>Дрейф метрики:</strong> если метрика нестационарна (тренд, сезонность) → ковариата шумит</li>
+                <li><strong>Кластерная рандомизация:</strong> CUPED работает, но ковариату нужно агрегировать на уровне кластера</li>
+            </ul>
+            <p>
+                Пример: <em>ARPPU + CUPED. Treatment увеличил конверсию → новые «платящие» не имели pre-period покупок →
+                ковариата = 0 для них → CUPED не снижает дисперсию для этой подгруппы.</em>
+            </p>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="section">
+            <h2>8. Шесть примеров: метрика + контекст → подход</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Метрика</th>
+                        <th>Контекст</th>
+                        <th>Подход</th>
+                        <th>Почему</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>CR (покупки/пользователи)</td>
+                        <td>80K на группу, user-level рандомизация</td>
+                        <td>z-test</td>
+                        <td>Доля, большая выборка, стандартный случай</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Revenue per user</td>
+                        <td>Heavy tail, zero inflation, 100K на группу</td>
+                        <td>Bootstrap + winsorization</td>
+                        <td>t-test нестабилен из-за выбросов</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>AOV (GMV/заказы)</td>
+                        <td>50K на группу, умеренные чеки</td>
+                        <td>Delta-method</td>
+                        <td>Ratio, знаменатель случаен, но хвосты умеренные</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>CTR (клики/показы)</td>
+                        <td>Гео-рандомизация, 15 городов</td>
+                        <td>z-test + cluster-robust SE</td>
+                        <td>Доля, но кластерная рандомизация</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>ARPPU</td>
+                        <td>200K на группу, pre-period есть</td>
+                        <td>Двухэтапная процедура</td>
+                        <td>Conditional: состав платящих зависит от treatment</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Число сессий + pre-period</td>
+                        <td>40K на группу, корреляция pre-post 0.55</td>
+                        <td>Welch t-test + CUPED</td>
+                        <td>Поюзерная, CUPED снижает дисперсию ~40%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Summary -->
+        <div class="learn-block">
+            <h3>Резюме</h3>
+            <p>
+                Карта выбора статкритерия связывает тип метрики, свойства распределения и дизайн эксперимента
+                с конкретным тестом и его допущениями.
+            </p>
+            <p>
+                Proportion, per-user, ratio и conditional-метрики требуют разных подходов:
+                где-то достаточно z-test, где-то нужен bootstrap, delta-method или двухэтапная процедура.
+            </p>
+            <p>
+                Перед запуском теста убедитесь, что допущения про независимость, SUTVA, экспозицию и распределение выполнены,
+                а при heavy tail, zero inflation и кластерной рандомизации используйте робастные методы и поправки.
+            </p>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>12 сценариев: от простого CR до сложных conditional-метрик с кластеризацией</li>
+                <li>Для каждого: выбор подхода, риски и проверки перед запуском</li>
+                <li>Отработаете карту «метрика + контекст → тест» на реальных кейсах</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>Интерактивная «Карта выбора статкритерия» с 8 пресетами</li>
+                <li>Входы: тип метрики, heavy tail, zero inflation, кластеры, pre-period, размер выборки</li>
+                <li>Выходы: рекомендованный тест, кластерная поправка, CUPED, допущения и предупреждения</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../03_distributions/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../05_variance_reduction/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

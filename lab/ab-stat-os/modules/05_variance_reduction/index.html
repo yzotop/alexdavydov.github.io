@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 5. Ускорение тестов — Статистика A/B-тестирования</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> / Модуль 5
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html" class="active">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Модуль 5. Ускорение тестов</h1>
+
+        <!-- Section 1 -->
+        <section class="section">
+            <h2>1. Почему тесты «долго считаются»</h2>
+
+            <h3>Что такое variance в A/B</h3>
+            <p>
+                Variance (дисперсия) — мера шума в данных. Чем выше дисперсия метрики, тем сложнее отличить реальный эффект от случайного колебания.
+            </p>
+            <p>
+                Revenue per user: среднее = 120₽, SD = 800₽. Эффект +5% = +6₽. Шум в 130× больше сигнала.
+                Чтобы t-test увидел этот эффект — нужны сотни тысяч пользователей.
+            </p>
+            <p>
+                Конверсия 5%: SD = √(0.05 × 0.95) ≈ 0.22. Эффект +1 п.п. = 0.01. Шум в 22× больше сигнала — но это уже лучше, чем revenue.
+                Поэтому тесты на конверсию быстрее.
+            </p>
+
+            <h3>Почему power = функция дисперсии</h3>
+            <p>
+                Power (мощность) — вероятность обнаружить реальный эффект. Формула упрощённо:
+            </p>
+            <div class="formula">
+                n ∝ σ² / δ²
+            </div>
+            <p>
+                где σ² — дисперсия метрики, δ — размер эффекта.
+                Удвоить выборку — дорого (время × трафик). Уменьшить дисперсию вдвое — эквивалент удвоения выборки, но бесплатно.
+            </p>
+
+            <h3>Как variance влияет на MDE и длительность</h3>
+            <p>
+                MDE (Minimal Detectable Effect) — минимальный эффект, который тест может обнаружить при заданных N и power.
+            </p>
+            <div class="formula">
+                MDE ∝ σ / √n
+            </div>
+            <p>
+                Если снизить дисперсию на 40%:
+            </p>
+            <ul>
+                <li>MDE падает на ~23% (√0.6 ≈ 0.77)</li>
+                <li>Или: тот же MDE достигается в 1.7× меньшей выборке</li>
+                <li>Или: тест заканчивается в 1.7× быстрее</li>
+            </ul>
+            <p>
+                Это не теория — это операционный рычаг. Команда, использующая CUPED, запускает в 1.5–2× больше экспериментов в год при том же трафике.
+            </p>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="section">
+            <h2>2. Основная идея ускорения</h2>
+
+            <h3>Не увеличивать трафик, а уменьшать шум</h3>
+            <p>Три стратегии ускорения:</p>
+            <ol>
+                <li><strong>Больше трафика</strong> — дорого, ограничено продуктом</li>
+                <li><strong>Больший эффект</strong> — не контролируемо (зависит от фичи)</li>
+                <li><strong>Меньше шума</strong> — бесплатно, контролируемо, масштабируемо</li>
+            </ol>
+            <p>
+                Variance reduction — это третья стратегия.
+                Мы не меняем данные, а убираем из них компоненту шума, которая не связана с treatment.
+            </p>
+
+            <h3>Разделить signal и noise</h3>
+            <p>
+                Метрика Y = treatment_effect + user_baseline + random_noise.
+            </p>
+            <p>
+                Treatment effect — то, что мы ищем. User baseline — то, что было бы без эксперимента (пользователь и так тратит 200₽ в месяц).
+                Random noise — случайные колебания.
+            </p>
+            <p>
+                Если мы знаем user_baseline (из pre-period данных), мы можем вычесть его:
+            </p>
+            <div class="formula">
+                Y<sub>adj</sub> = Y − θ · X<sub>pre</sub>
+            </div>
+            <p>
+                Остаётся: treatment_effect + остаточный_noise. Дисперсия Y<sub>adj</sub> &lt; дисперсия Y.
+            </p>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="section">
+            <h2>3. CUPED — интуиция</h2>
+
+            <h3>Pre-period как ковариата</h3>
+            <p>
+                CUPED (Controlled-experiment Using Pre-Experiment Data) использует данные <em>до</em> эксперимента как ковариату.
+                Если пользователь тратил 200₽/мес до эксперимента, вероятно, он потратит примерно столько же и во время — плюс-минус эффект treatment.
+            </p>
+            <p>
+                Ковариата X<sub>pre</sub> не зависит от treatment (собрана до начала). Поэтому её вычитание не вносит bias.
+            </p>
+
+            <h3>Корреляция до/после</h3>
+            <p>Ключевой параметр — корреляция ρ между X<sub>pre</sub> и Y:</p>
+            <div class="formula">
+                Variance reduction = ρ²
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ρ (корреляция)</th>
+                        <th>Снижение дисперсии</th>
+                        <th>Эквивалент в трафике</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0.3</td>
+                        <td>9%</td>
+                        <td>1.1×</td>
+                    </tr>
+                    <tr>
+                        <td>0.5</td>
+                        <td>25%</td>
+                        <td>1.3×</td>
+                    </tr>
+                    <tr>
+                        <td>0.7</td>
+                        <td>49%</td>
+                        <td>2×</td>
+                    </tr>
+                    <tr>
+                        <td>0.9</td>
+                        <td>81%</td>
+                        <td>5×</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                При ρ = 0.7 вы получаете эффект удвоения выборки — бесплатно.
+                При ρ = 0.9 — пятикратное увеличение.
+            </p>
+
+            <h3>Когда CUPED работает</h3>
+            <ul>
+                <li>Метрика стабильна во времени (revenue, число сессий, engagement)</li>
+                <li>Pre-period ≥ 1–2 недели (достаточно для стабильной оценки)</li>
+                <li>Нет тренда или сезонности в pre-period (или она одинакова в обеих группах)</li>
+                <li>Пользователь присутствует и в pre-, и в post-period</li>
+            </ul>
+
+            <h3>Когда CUPED не работает или опасен</h3>
+            <ul>
+                <li><strong>Новые пользователи:</strong> нет pre-period → CUPED неприменим</li>
+                <li><strong>Conditional-метрика:</strong> состав подвыборки зависит от treatment → ковариата невалидна (Модуль 01, 02)</li>
+                <li><strong>Ковариата зависит от treatment:</strong> если X<sub>pre</sub> измерена <em>после</em> start, но <em>до</em> exposure — это leakage</li>
+                <li><strong>Низкая корреляция (ρ &lt; 0.2):</strong> выигрыш &lt;4% — не стоит усложнения</li>
+                <li><strong>Дрейф метрики:</strong> если метрика нестационарна, pre-period ковариата шумит</li>
+            </ul>
+
+            <h3>Риск data leakage</h3>
+            <p>
+                Leakage — когда ковариата содержит информацию о treatment. Это происходит если:
+            </p>
+            <ul>
+                <li>Pre-period пересекается с периодом эксперимента</li>
+                <li>Ковариата включает данные «дня запуска» (ramp-up эффект)</li>
+                <li>Ковариата — агрегат, включающий post-treatment наблюдения</li>
+            </ul>
+            <div class="callout callout-warn">
+                <p><strong>Правило:</strong> X<sub>pre</sub> должен быть полностью собран <em>до</em> начала рандомизации. Ни одно наблюдение из X<sub>pre</sub> не должно включать данные после assignment.</p>
+            </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="section">
+            <h2>4. Стратификация и блокировка</h2>
+
+            <h3>Когда группы неоднородны</h3>
+            <p>
+                Если в эксперименте смешаны пользователи из разных сегментов (new vs returning, mobile vs desktop, город A vs город B) —
+                дисперсия внутри каждого сегмента ниже, чем общая.
+            </p>
+            <p>
+                Стратификация — разбиение выборки на страты (блоки) и балансировка treatment/control внутри каждой страты.
+            </p>
+
+            <h3>Пример: города, сегменты, device</h3>
+            <p>
+                Доставка еды. Средний чек: Москва = 1800₽, регионы = 700₽. Общая дисперсия высокая.
+                Если стратифицировать по городу — дисперсия внутри страт снижается на 15–30%.
+            </p>
+            <p>
+                Device: desktop users конвертируются в 3× чаще, чем mobile. Стратификация по device type убирает эту компоненту дисперсии.
+            </p>
+
+            <h3>Ошибки стратификации</h3>
+            <ul>
+                <li><strong>Post-treatment стратификация.</strong> Нельзя стратифицировать по переменной, зависящей от treatment (число визитов <em>во время</em> теста). Только по pre-treatment характеристикам.</li>
+                <li><strong>Слишком много страт.</strong> При 100+ стратах и малом N некоторые страты будут пустыми. Оптимально: 5–20 страт.</li>
+                <li><strong>Стратификация без учёта в анализе.</strong> Если стратифицировали при рандомизации — анализ должен это учитывать (страт-специфические оценки + взвешивание).</li>
+            </ul>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="section">
+            <h2>5. Тримминг и winsorization</h2>
+
+            <h3>Heavy tail — что делать с шумом от хвоста</h3>
+            <p>
+                Revenue per user. 0.1% пользователей генерируют 30–40% дисперсии. Один whale user может изменить среднее группы на 1–2%.
+                Это шум, не сигнал.
+            </p>
+
+            <h3>Что мы «режем»</h3>
+            <ul>
+                <li><strong>Winsorization:</strong> значения выше P99 заменяются на P99. Наблюдения сохраняются, но хвост «обрезается».</li>
+                <li><strong>Trimming:</strong> значения выше P99 удаляются. Теряем наблюдения, но среднее стабильнее.</li>
+                <li><strong>Log-transform:</strong> сжимает правый хвост. Но меняет интерпретацию (геометрическое среднее).</li>
+            </ul>
+
+            <h3>Когда это искажает эффект</h3>
+            <p>
+                Если treatment создаёт whale users (premium-фича, enterprise deal) — winsorization <em>скрывает</em> реальный эффект.
+                Вы «режете» именно то, что treatment создал.
+            </p>
+            <div class="callout">
+                <p>
+                    <strong>Правило:</strong> (1) Зафиксировать порог до эксперимента. (2) Показывать результат с и без winsorization — sensitivity analysis.
+                    (3) Если бизнес-ценность в хвосте (enterprise) — winsorization неуместна.
+                </p>
+            </div>
+            <p>
+                Типичная дилемма: winsorization снижает дисперсию на 40%, но занижает эффект на 15%. Стоит ли? Зависит от контекста — универсального ответа нет.
+            </p>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="section">
+            <h2>6. Регрессия и ковариаты</h2>
+
+            <h3>Регрессионная корректировка</h3>
+            <p>
+                CUPED — частный случай регрессионной корректировки с одной ковариатой. В общем случае:
+            </p>
+            <div class="formula">
+                Y<sub>adj</sub> = Y − Σ θ<sub>k</sub> · X<sub>k</sub>
+            </div>
+            <p>
+                где X<sub>k</sub> — ковариаты (pre-period метрика, сегмент, device, регион).
+            </p>
+            <p>
+                Множественные ковариаты могут дать больший выигрыш, чем одна.
+                Pre-period revenue + pre-period sessions + device type → совокупное снижение дисперсии 50–60%.
+            </p>
+
+            <h3>Множественные ковариаты</h3>
+            <p>
+                Каждая дополнительная ковариата добавляет incremental gain — но с убывающей отдачей.
+                Первая ковариата (pre-period метрика) даёт 80% выигрыша. Вторая — ещё 10%. Третья — ещё 3%.
+            </p>
+            <p><strong>Практика:</strong> 1–3 ковариаты — sweet spot. Больше — переобучение и diminishing returns.</p>
+
+            <h3>Переобучение и p-hacking</h3>
+            <p>
+                Если ковариаты выбирать <em>после</em> просмотра результатов — это p-hacking.
+                Аналитик может подобрать набор ковариат, при котором результат «значимый».
+            </p>
+            <div class="callout callout-warn">
+                <p>
+                    <strong>Правило:</strong> ковариаты фиксируются в analysis plan <em>до</em> начала эксперимента.
+                    Любое отклонение — sensitivity analysis, не primary result.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="section">
+            <h2>7. Практическая таблица решений</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ситуация</th>
+                        <th>Метод</th>
+                        <th>Ожидаемый выигрыш</th>
+                        <th>Риски</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Есть pre-period, ρ &gt; 0.5</td>
+                        <td><strong>CUPED</strong></td>
+                        <td>25–80% снижения дисперсии</td>
+                        <td>Leakage, нестационарность</td>
+                    </tr>
+                    <tr>
+                        <td>Есть pre-period, ρ &lt; 0.3</td>
+                        <td>CUPED даёт мало (&lt;9%)</td>
+                        <td>—</td>
+                        <td>Не стоит усложнения</td>
+                    </tr>
+                    <tr>
+                        <td>Heavy tail (revenue, LTV)</td>
+                        <td><strong>Winsorization + bootstrap</strong></td>
+                        <td>20–50% стабилизации</td>
+                        <td>Скрывает эффект в хвосте</td>
+                    </tr>
+                    <tr>
+                        <td>Гетерогенность (city, device)</td>
+                        <td><strong>Стратификация</strong></td>
+                        <td>10–30% снижения дисперсии</td>
+                        <td>Post-treatment стратификация</td>
+                    </tr>
+                    <tr>
+                        <td>Много нулей (zero inflation)</td>
+                        <td>Разделение метрики (CR + mean)</td>
+                        <td>Кратный рост power</td>
+                        <td>Две метрики вместо одной</td>
+                    </tr>
+                    <tr>
+                        <td>Conditional-метрика</td>
+                        <td>CUPED ограничен</td>
+                        <td>—</td>
+                        <td>Selection bias (Модуль 01)</td>
+                    </tr>
+                    <tr>
+                        <td>Новые пользователи</td>
+                        <td>Стратификация (device, source)</td>
+                        <td>5–15%</td>
+                        <td>CUPED неприменим</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Комбинирование методов</h3>
+            <p>Методы не исключают друг друга. Типичный стек:</p>
+            <ol>
+                <li><strong>Winsorization</strong> (P99) → убрать шум хвоста</li>
+                <li><strong>CUPED</strong> (pre-period) → вычесть baseline</li>
+                <li><strong>Стратификация</strong> (device) → убрать гетерогенность</li>
+            </ol>
+            <p>
+                Совокупный эффект: дисперсия снижается на 50–70%. Тест, который занимал 4 недели, занимает 10–14 дней.
+            </p>
+            <p>
+                <strong>Связь с другими модулями:</strong><br>
+                Форма распределения → <a href="../../simulators/distribution_playground/index.html">Distribution Playground</a> (Модуль 03)<br>
+                Выбор теста → <a href="../../simulators/test_selection_map/index.html">Test Selection Map</a> (Модуль 04)<br>
+                CUPED в действии → <a href="../../simulators/cuped_simulator/index.html">CUPED Simulator</a>
+            </p>
+        </section>
+
+        <!-- Summary -->
+        <div class="learn-block">
+            <h3>Резюме</h3>
+            <p>
+                Ускорение тестов — это не про «налить больше трафика», а про снижение дисперсии:
+                CUPED, стратификация, winsorization и регрессионная корректировка.
+            </p>
+            <p>
+                Корреляция pre/post, форма распределения и гетерогенность сегментов определяют, какой метод variance reduction даст наибольший выигрыш.
+            </p>
+            <p>
+                При аккуратном применении вы можете сократить длительность экспериментов в 1.5–2 раза без потери качества,
+                но нарушение допущений (leakage, post-treatment стратификация, p-hacking) приводит к смещённым оценкам.
+            </p>
+        </div>
+
+        <!-- Preview sections -->
+        <section class="preview-section">
+            <h2>Практика</h2>
+            <ul class="preview-list">
+                <li>13 задач на CUPED, стратификацию, winsorization и регрессионную корректировку</li>
+                <li>Реальные ситуации: heavy tail, низкая корреляция, новые пользователи, sequential testing</li>
+                <li>Для каждой задачи: метод ускорения, ожидаемый выигрыш и главный риск</li>
+            </ul>
+            <a href="./practice.html" class="nav-card">Открыть практику</a>
+        </section>
+
+        <section class="preview-section">
+            <h2>Симуляторы</h2>
+            <ul class="preview-list">
+                <li>CUPED Simulator: генерация синтетического A/B с pre-period ковариатой</li>
+                <li>Визуализация raw vs CUPED-adjusted SE, variance reduction и MDE</li>
+                <li>Наглядно покажет, как корреляция определяет выигрыш variance reduction</li>
+            </ul>
+            <a href="./simulators.html" class="nav-card">Открыть симуляторы</a>
+        </section>
+
+        <nav class="module-nav">
+            <a href="../04_stat_tests_map/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../06_cluster_tests/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

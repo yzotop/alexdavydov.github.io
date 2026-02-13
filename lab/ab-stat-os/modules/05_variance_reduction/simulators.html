@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 5. Ускорение тестов</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 5</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Интерактивный симулятор для исследования CUPED и методов снижения дисперсии.</p>
+
+        <!-- Simulator: CUPED Simulator -->
+        <div class="sim-card">
+            <div class="concept-badge">Variance Reduction</div>
+            <div class="sim-title">CUPED Simulator</div>
+            <div class="sim-description">
+                <p><strong>CUPED Simulator</strong> генерирует синтетические данные A/B-теста с pre-period ковариатой и показывает, как CUPED снижает дисперсию.</p>
+                <p>Вы задаёте параметры эксперимента — размер выборки, эффект, корреляцию pre-post, heavy tail — а симулятор рассчитывает raw и CUPED-adjusted оценки, визуализирует variance reduction и MDE и выдаёт рекомендацию.</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Показатель</th>
+                        <th>Что отражает</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Raw SE</strong></td>
+                        <td>Стандартная ошибка без коррекции</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CUPED SE</strong></td>
+                        <td>Стандартная ошибка после ковариатной коррекции</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Variance reduction</strong></td>
+                        <td>% снижения дисперсии (теоретически = ρ²)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MDE before/after</strong></td>
+                        <td>Минимальный детектируемый эффект до и после CUPED</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Рекомендация</strong></td>
+                        <td>Стоит ли применять CUPED в данной ситуации</td>
+                    </tr>
+                </tbody>
+            </table>
+            <ul class="preview-list">
+                <li>Настройте параметры: размер выборки, эффект, корреляцию pre-post, heavy tail</li>
+                <li>Нажмите <strong>«Рассчитать»</strong> и сравните raw и CUPED-adjusted результаты: SE, variance reduction, MDE</li>
+                <li>Меняйте корреляцию и включайте heavy tail, чтобы увидеть, когда CUPED даёт максимальный выигрыш и когда он почти бесполезен</li>
+            </ul>
+            <a href="../../simulators/cuped_simulator/index.html" class="nav-card">Открыть симулятор</a>
+        </div>
+
+        <section class="section">
+            <h2>Три миссии</h2>
+            <ul class="preview-list">
+                <li><strong>Миссия 1: Увидеть силу корреляции.</strong> При фиксированных N и эффекте варьируйте ρ от 0.1 до 0.9 и наблюдайте, как variance reduction = ρ² меняет MDE (при ρ = 0.9 MDE падает примерно вдвое).</li>
+                <li><strong>Миссия 2: Когда CUPED бесполезен.</strong> Задайте ρ = 0.1: variance reduction ≈1%, MDE почти не меняется, появляется предупреждение «Корреляция слишком низкая».</li>
+                <li><strong>Миссия 3: Heavy tail + CUPED.</strong> Включите heavy tail и сравните raw SE с и без хвоста: абсолютный шум растёт, CUPED всё ещё даёт тот же % сокращения, но итоговый MDE остаётся высоким — нужна комбинация winsorization + CUPED.</li>
+            </ul>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./practice.html">← Практика</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../06_cluster_tests/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CUPED Simulator — AB Stat OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1e293b;--muted:#64748b;--muted2:#94a3b8;--border:#e2e8f0;--accent:#3b82f6;--ok:#059669;--warn:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--bg);min-height:100%;line-height:1.5}
+header{padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border)}
+header h1{font-size:18px;font-weight:700}
+header p{font-size:12px;color:var(--muted);margin-top:2px}
+.nav{font-size:12px;color:var(--muted2);margin-bottom:4px}
+.nav a{color:var(--accent);text-decoration:none}
+.nav a:hover{text-decoration:underline}
+.main{padding:16px 24px;max-width:1200px;margin:0 auto}
+.cols{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;margin-top:14px}
+label:first-of-type{margin-top:0}
+.slider-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.slider-row input[type=range]{flex:1;accent-color:var(--accent)}
+.slider-val{font-size:12px;font-family:var(--mono);color:var(--text);min-width:42px;text-align:right}
+.cb-row{display:flex;align-items:center;gap:8px;margin-top:12px}
+.cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.cb-row span{font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;width:100%}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{filter:brightness(1.1)}
+.right{display:flex;flex-direction:column;gap:12px}
+.empty-msg{text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow)}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.stat-val{font-size:18px;font-weight:800;margin-top:2px}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.stat--highlight .stat-val{color:var(--ok)}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--shadow)}
+.chart-wrap canvas{width:100%;height:180px;display:block}
+.section{margin-bottom:12px}
+.section h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.rec-box{padding:12px 14px;border-radius:8px;border-left:4px solid var(--accent);background:rgba(59,130,246,.04);margin-bottom:8px}
+.rec-box h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.rec-box p{font-size:12px;color:var(--muted)}
+.rec-box--ok{border-left-color:var(--ok);background:rgba(5,150,105,.04)}
+.rec-box--warn{border-left-color:var(--warn);background:rgba(217,119,6,.04)}
+.warn-box{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:rgba(217,119,6,.04);margin-bottom:6px}
+.warn-box p{font-size:12px;color:var(--text)}
+.warn-box .warn-label{font-weight:700;color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.warn-box--danger{border-left-color:var(--danger);background:rgba(220,38,38,.04)}
+.warn-box--danger .warn-label{color:var(--danger)}
+.assumption{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin:2px 4px 2px 0;background:rgba(59,130,246,.06);color:var(--accent);border:1px solid rgba(59,130,246,.12)}
+.assumption--met{background:rgba(5,150,105,.06);color:var(--ok);border-color:rgba(5,150,105,.12)}
+.assumption--broken{background:rgba(220,38,38,.06);color:var(--danger);border-color:rgba(220,38,38,.12)}
+.bar-compare{display:flex;align-items:flex-end;gap:24px;justify-content:center;padding:16px 0}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-col .bar{width:60px;border-radius:4px 4px 0 0;transition:height .3s}
+.bar-col .bar-label{font-size:11px;color:var(--muted);font-weight:600}
+.bar-col .bar-val{font-size:12px;font-weight:700;font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav"><a href="../../index.html">← Курс</a> · Модуль 05 — Ускорение тестов</div>
+  <h1>CUPED Simulator</h1>
+  <p>Сравните raw и CUPED-adjusted оценки эффекта. Увидьте, как корреляция pre-post определяет выигрыш.</p>
+</header>
+
+<div class="main">
+<div class="cols">
+
+  <div class="panel">
+    <h2>Параметры эксперимента</h2>
+
+    <label>Размер группы (n)</label>
+    <div class="slider-row">
+      <input id="sN" type="range" min="500" max="100000" value="10000" step="500"/>
+      <span id="vN" class="slider-val">10 000</span>
+    </div>
+
+    <label>Истинный эффект (% lift)</label>
+    <div class="slider-row">
+      <input id="sLift" type="range" min="0" max="20" value="5" step="1"/>
+      <span id="vLift" class="slider-val">5%</span>
+    </div>
+
+    <label>Базовая дисперсия</label>
+    <div class="slider-row">
+      <input id="sVar" type="range" min="10" max="100" value="40" step="5"/>
+      <span id="vVar" class="slider-val">0.40</span>
+    </div>
+
+    <label>Корреляция pre-post (ρ)</label>
+    <div class="slider-row">
+      <input id="sRho" type="range" min="0" max="95" value="60" step="5"/>
+      <span id="vRho" class="slider-val">0.60</span>
+    </div>
+
+    <div class="cb-row">
+      <input id="fHeavy" type="checkbox"/>
+      <span>Heavy tail (тяжёлые хвосты)</span>
+    </div>
+
+    <div class="cb-row">
+      <input id="fLeakage" type="checkbox"/>
+      <span style="color:var(--danger)">⚠ Leakage (ковариата содержит treatment)</span>
+    </div>
+
+    <button class="btn btn--primary" id="btnCalc">Рассчитать</button>
+  </div>
+
+  <div class="right">
+    <div id="emptyMsg" class="empty-msg">Настройте параметры и нажмите «Рассчитать»</div>
+
+    <div id="output" style="display:none">
+
+      <div class="stats" id="statsGrid"></div>
+
+      <div class="chart-wrap">
+        <div class="section"><h3>Снижение дисперсии</h3></div>
+        <div id="barChart" class="bar-compare"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section">
+          <h3>Рекомендация</h3>
+          <div id="rRec"></div>
+        </div>
+        <div class="section">
+          <h3>Допущения</h3>
+          <div id="rAssumptions"></div>
+        </div>
+        <div id="rWarnWrap" class="section" style="display:none">
+          <h3>Предупреждения</h3>
+          <div id="rWarnList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+ *  Seeded RNG (Mulberry32)
+ * ══════════════════════════════════════════════════════ */
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function randNorm(rng) {
+  let u, v, s;
+  do { u = rng() * 2 - 1; v = rng() * 2 - 1; s = u * u + v * v; } while (s >= 1 || s === 0);
+  return u * Math.sqrt(-2 * Math.log(s) / s);
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Simulation engine
+ * ══════════════════════════════════════════════════════ */
+function simulate(params) {
+  const { n, lift, baseVar, rho, heavy, leakage } = params;
+  const baseMean = 100;
+  const sigma = baseMean * baseVar; // SD of outcome
+  const delta = baseMean * lift;    // true effect in absolute terms
+  const seed = Math.round(n + lift * 1000 + baseVar * 100 + rho * 100 + (heavy ? 7 : 0) + (leakage ? 13 : 0));
+  const rng = mulberry32(seed);
+
+  // Generate correlated (X_pre, Y) pairs
+  // X_pre = baseline + noise_pre
+  // Y     = baseline + treatment_effect + noise_post
+  // Cor(X_pre, Y) ≈ rho
+
+  const sigPre = sigma;
+  const sigPost = sigma;
+
+  // For correlated normals: Y = rho * X + sqrt(1-rho²) * Z
+  function genPair(treatmentDelta) {
+    let xRaw = randNorm(rng) * sigPre;
+    let zIndep = randNorm(rng) * sigPost;
+    let yRaw = rho * (xRaw / sigPre) * sigPost + Math.sqrt(1 - rho * rho) * zIndep + treatmentDelta;
+
+    // Heavy tail: occasionally inflate
+    if (heavy) {
+      if (rng() < 0.02) xRaw *= (3 + rng() * 10);
+      if (rng() < 0.02) yRaw *= (3 + rng() * 10);
+    }
+
+    // Leakage: X_pre partially contains treatment signal
+    if (leakage && treatmentDelta !== 0) {
+      xRaw += treatmentDelta * 0.4; // 40% leakage
+    }
+
+    return { x: baseMean + xRaw, y: baseMean + yRaw };
+  }
+
+  // Generate control and test
+  const ctrl = [], test = [];
+  for (let i = 0; i < n; i++) ctrl.push(genPair(0));
+  for (let i = 0; i < n; i++) test.push(genPair(delta));
+
+  // Raw statistics
+  const rawCtrl = ctrl.map(d => d.y);
+  const rawTest = test.map(d => d.y);
+  const rawMeanC = mean(rawCtrl);
+  const rawMeanT = mean(rawTest);
+  const rawDiff = rawMeanT - rawMeanC;
+  const rawVarC = variance(rawCtrl);
+  const rawVarT = variance(rawTest);
+  const rawSE = Math.sqrt(rawVarC / n + rawVarT / n);
+
+  // CUPED adjustment
+  // theta = Cov(Y, X) / Var(X) (pooled across both groups)
+  const allX = [...ctrl.map(d => d.x), ...test.map(d => d.x)];
+  const allY = [...ctrl.map(d => d.y), ...test.map(d => d.y)];
+  const meanX = mean(allX);
+  const varX = variance(allX);
+  const covXY = covariance(allX, allY);
+  const theta = varX > 0 ? covXY / varX : 0;
+
+  const adjCtrl = ctrl.map(d => d.y - theta * (d.x - meanX));
+  const adjTest = test.map(d => d.y - theta * (d.x - meanX));
+  const adjMeanC = mean(adjCtrl);
+  const adjMeanT = mean(adjTest);
+  const adjDiff = adjMeanT - adjMeanC;
+  const adjVarC = variance(adjCtrl);
+  const adjVarT = variance(adjTest);
+  const adjSE = Math.sqrt(adjVarC / n + adjVarT / n);
+
+  // Metrics
+  const varReduction = rawSE > 0 ? 1 - (adjSE * adjSE) / (rawSE * rawSE) : 0;
+  const rawMDE = 1.96 * rawSE * 2 / baseMean; // two-sided, relative
+  const adjMDE = 1.96 * adjSE * 2 / baseMean;
+
+  // Empirical correlation
+  const empRho = varX > 0 && variance(allY) > 0 ? covXY / Math.sqrt(varX * variance(allY)) : 0;
+
+  return {
+    rawDiff, rawSE, adjDiff, adjSE,
+    varReduction, rawMDE, adjMDE,
+    empRho, theta, delta, baseMean,
+    leakage, heavy
+  };
+}
+
+function mean(arr) { let s = 0; for (const v of arr) s += v; return s / arr.length; }
+function variance(arr) { const m = mean(arr); let s = 0; for (const v of arr) s += (v - m) ** 2; return s / arr.length; }
+function covariance(a, b) { const ma = mean(a), mb = mean(b); let s = 0; for (let i = 0; i < a.length; i++) s += (a[i] - ma) * (b[i] - mb); return s / a.length; }
+
+/* ══════════════════════════════════════════════════════
+ *  DOM
+ * ══════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+
+function wireSlider(sid, did, fmt) {
+  const s = $(sid), d = $(did);
+  const up = () => { d.textContent = fmt(s.value); };
+  s.addEventListener('input', up); up();
+}
+wireSlider('sN', 'vN', v => Number(v).toLocaleString());
+wireSlider('sLift', 'vLift', v => v + '%');
+wireSlider('sVar', 'vVar', v => (v / 100).toFixed(2));
+wireSlider('sRho', 'vRho', v => (v / 100).toFixed(2));
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+$('btnCalc').addEventListener('click', () => {
+  const params = {
+    n: +$('sN').value,
+    lift: +$('sLift').value / 100,
+    baseVar: +$('sVar').value / 100,
+    rho: +$('sRho').value / 100,
+    heavy: $('fHeavy').checked,
+    leakage: $('fLeakage').checked,
+  };
+
+  const r = simulate(params);
+
+  $('emptyMsg').style.display = 'none';
+  $('output').style.display = '';
+
+  // Stats grid
+  const pctVR = (r.varReduction * 100).toFixed(1);
+  const statsHtml = [
+    { label: 'Raw SE', val: r.rawSE.toFixed(2), sub: '' },
+    { label: 'CUPED SE', val: r.adjSE.toFixed(2), sub: '', hl: r.adjSE < r.rawSE },
+    { label: 'Variance reduction', val: pctVR + '%', sub: 'теоретич. ρ²=' + (params.rho ** 2 * 100).toFixed(0) + '%', hl: r.varReduction > 0.1 },
+    { label: 'Raw Δ', val: r.rawDiff.toFixed(2), sub: (r.rawDiff / r.baseMean * 100).toFixed(1) + '% отн.' },
+    { label: 'CUPED Δ', val: r.adjDiff.toFixed(2), sub: (r.adjDiff / r.baseMean * 100).toFixed(1) + '% отн.' },
+    { label: 'Эмпирич. ρ', val: r.empRho.toFixed(3), sub: '' },
+    { label: 'MDE (raw)', val: (r.rawMDE * 100).toFixed(1) + '%', sub: '' },
+    { label: 'MDE (CUPED)', val: (r.adjMDE * 100).toFixed(1) + '%', sub: '', hl: true },
+  ];
+  $('statsGrid').innerHTML = statsHtml.map(s =>
+    '<div class="stat' + (s.hl ? ' stat--highlight' : '') + '"><div class="stat-label">' + s.label + '</div><div class="stat-val">' + s.val + '</div>' +
+    (s.sub ? '<div class="stat-sub">' + s.sub + '</div>' : '') + '</div>'
+  ).join('');
+
+  // Bar chart — visual variance comparison
+  const maxH = 140;
+  const rawH = maxH;
+  const adjH = Math.max(8, maxH * (1 - r.varReduction));
+  $('barChart').innerHTML =
+    '<div class="bar-col">' +
+      '<div class="bar-val">' + r.rawSE.toFixed(2) + '</div>' +
+      '<div class="bar" style="height:' + rawH + 'px;background:var(--muted2)"></div>' +
+      '<div class="bar-label">Raw SE</div>' +
+    '</div>' +
+    '<div class="bar-col">' +
+      '<div class="bar-val">' + r.adjSE.toFixed(2) + '</div>' +
+      '<div class="bar" style="height:' + adjH + 'px;background:var(--ok)"></div>' +
+      '<div class="bar-label">CUPED SE</div>' +
+    '</div>' +
+    '<div class="bar-col">' +
+      '<div class="bar-val">−' + pctVR + '%</div>' +
+      '<div class="bar" style="height:' + (rawH - adjH) + 'px;background:var(--accent);opacity:0.3"></div>' +
+      '<div class="bar-label">Выигрыш</div>' +
+    '</div>';
+
+  // Recommendation
+  const warnings = [];
+  const assumptions = [];
+  let recHtml = '';
+
+  if (r.leakage) {
+    recHtml = '<div class="rec-box rec-box--warn"><h4>⚠ CUPED с leakage — bias!</h4>' +
+      '<p>Ковариата содержит информацию о treatment. CUPED вносит систематическую ошибку в оценку эффекта. ' +
+      'CUPED Δ = ' + r.adjDiff.toFixed(2) + ' (занижен), истинный δ = ' + r.delta.toFixed(2) + '.</p></div>';
+    warnings.push({ text: 'Data leakage: ковариата частично включает treatment signal. ATE занижен.', danger: true });
+    assumptions.push({ text: 'X_pre не зависит от treatment', met: false });
+  } else if (r.varReduction > 0.15) {
+    recHtml = '<div class="rec-box rec-box--ok"><h4>✓ CUPED рекомендован</h4>' +
+      '<p>Variance reduction = ' + pctVR + '%. MDE снижается с ' + (r.rawMDE * 100).toFixed(1) + '% до ' + (r.adjMDE * 100).toFixed(1) + '%. ' +
+      'Эквивалент увеличения выборки в ' + (1 / (1 - r.varReduction)).toFixed(1) + '× раз.</p></div>';
+    assumptions.push({ text: 'X_pre не зависит от treatment', met: true });
+  } else if (r.varReduction > 0.04) {
+    recHtml = '<div class="rec-box"><h4>CUPED даёт умеренный выигрыш</h4>' +
+      '<p>Variance reduction = ' + pctVR + '%. Выигрыш есть, но невелик. Рассмотрите дополнительные методы: стратификацию, winsorization.</p></div>';
+    assumptions.push({ text: 'X_pre не зависит от treatment', met: true });
+  } else {
+    recHtml = '<div class="rec-box rec-box--warn"><h4>CUPED не рекомендован</h4>' +
+      '<p>Корреляция слишком низкая (ρ = ' + params.rho.toFixed(2) + '). Variance reduction = ' + pctVR + '% — не оправдывает усложнения.</p></div>';
+    warnings.push({ text: 'Низкая корреляция (ρ < 0.2): выигрыш от CUPED минимален.', danger: false });
+    assumptions.push({ text: 'X_pre не зависит от treatment', met: true });
+  }
+
+  assumptions.push({ text: 'Pre-period стабилен (нет дрейфа)', met: null });
+  if (r.heavy) {
+    warnings.push({ text: 'Heavy tail: базовая дисперсия высокая. CUPED снижает на %, но абсолютный MDE может оставаться большим. Рассмотрите winsorization.', danger: false });
+    assumptions.push({ text: 'Нет экстремальных выбросов', met: false });
+  } else {
+    assumptions.push({ text: 'Нет экстремальных выбросов', met: true });
+  }
+
+  $('rRec').innerHTML = recHtml;
+
+  $('rAssumptions').innerHTML = assumptions.map(a => {
+    let cls = 'assumption';
+    if (a.met === true) cls += ' assumption--met';
+    else if (a.met === false) cls += ' assumption--broken';
+    const icon = a.met === true ? '✓ ' : a.met === false ? '✗ ' : '? ';
+    return '<span class="' + cls + '">' + icon + esc(a.text) + '</span>';
+  }).join('');
+
+  if (warnings.length) {
+    $('rWarnWrap').style.display = '';
+    $('rWarnList').innerHTML = warnings.map(w => {
+      const cls = w.danger ? 'warn-box warn-box--danger' : 'warn-box';
+      return '<div class="' + cls + '"><div class="warn-label">⚠ Предупреждение</div><p>' + esc(w.text) + '</p></div>';
+    }).join('');
+  } else {
+    $('rWarnWrap').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

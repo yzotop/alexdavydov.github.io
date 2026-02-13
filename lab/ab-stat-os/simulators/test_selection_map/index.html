@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Карта выбора статкритерия — AB Stat OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1e293b;--muted:#64748b;--muted2:#94a3b8;--border:#e2e8f0;--accent:#3b82f6;--ok:#059669;--warn:#d97706;--danger:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html{height:100%}
+body{font-family:var(--sans);font-size:14px;color:var(--text);background:var(--bg);min-height:100%;line-height:1.5}
+
+header{padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border)}
+header h1{font-size:18px;font-weight:700}
+header p{font-size:12px;color:var(--muted);margin-top:2px}
+
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px;max-width:1200px;margin:0 auto}
+@media(max-width:800px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;margin-top:14px}
+label:first-of-type{margin-top:0}
+select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--bg)}
+select:focus{outline:none;border-color:var(--accent)}
+
+.cb-row{display:flex;align-items:center;gap:8px;margin-top:12px}
+.cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.cb-row span{font-size:13px}
+.cb-group{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.cb-group-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;width:100%}
+.btn--primary{background:var(--accent);color:#fff}
+.btn--primary:hover{filter:brightness(1.1)}
+.btn--reset{background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:8px}
+.btn--reset:hover{border-color:var(--accent);color:var(--text)}
+
+.result{display:none}
+.result.show{display:block}
+.result-empty{text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px}
+
+.result-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.result-desc{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+.section{margin-bottom:16px}
+.section h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.section p,.section li{font-size:13px;line-height:1.6}
+.section ul{padding-left:18px}
+.section li{margin-bottom:4px}
+
+.rec-box{padding:12px 14px;border-radius:8px;border-left:4px solid var(--accent);background:rgba(59,130,246,.04);margin-bottom:10px}
+.rec-box h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.rec-box p{font-size:12px;color:var(--muted)}
+.rec-box--ok{border-left-color:var(--ok);background:rgba(5,150,105,.04)}
+.rec-box--warn{border-left-color:var(--warn);background:rgba(217,119,6,.04)}
+
+.warn-box{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:rgba(217,119,6,.04);margin-bottom:8px}
+.warn-box p{font-size:12px;color:var(--text)}
+.warn-box .warn-label{font-weight:700;color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.warn-box--danger{border-left-color:var(--danger);background:rgba(220,38,38,.04)}
+.warn-box--danger .warn-label{color:var(--danger)}
+
+.assumption{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;margin:2px 4px 2px 0;background:rgba(59,130,246,.06);color:var(--accent);border:1px solid rgba(59,130,246,.12)}
+.assumption--met{background:rgba(5,150,105,.06);color:var(--ok);border-color:rgba(5,150,105,.12)}
+.assumption--broken{background:rgba(220,38,38,.06);color:var(--danger);border-color:rgba(220,38,38,.12)}
+
+.explain{font-size:12px;color:var(--muted);line-height:1.7;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+
+.input-summary{font-size:12px;color:var(--muted2);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-family:var(--mono)}
+
+.preset-row{margin-bottom:10px}
+.preset-row select{width:100%}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Карта выбора статкритерия</h1>
+  <p>Определите подходящий тест, метод снижения дисперсии и поправки для вашего эксперимента</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: inputs -->
+  <div class="panel">
+    <h2>Параметры эксперимента</h2>
+
+    <div class="preset-row">
+      <label for="preset">Готовый сценарий</label>
+      <select id="preset">
+        <option value="">— выберите сценарий —</option>
+        <option value="simple_cr">CR (конверсия), большая выборка</option>
+        <option value="revenue_heavy">Revenue per user, heavy tail</option>
+        <option value="aov_ratio">AOV (ratio), стандартная выборка</option>
+        <option value="geo_cluster">Гео-кластерный эксперимент</option>
+        <option value="arppu_cond">ARPPU (conditional), с pre-period</option>
+        <option value="ctr_large">CTR (proportion), большая выборка</option>
+        <option value="cuped_revenue">Revenue + CUPED (pre-period)</option>
+        <option value="small_ratio">Ratio, малая выборка, heavy tail</option>
+      </select>
+    </div>
+
+    <label for="fMetric">Тип метрики</label>
+    <select id="fMetric">
+      <option value="proportion">Доля (proportion)</option>
+      <option value="per_user">Поюзерная (per-user)</option>
+      <option value="ratio">Ratio-метрика</option>
+      <option value="conditional">Условная (conditional)</option>
+    </select>
+
+    <div class="cb-group">
+      <div class="cb-group-title">Свойства данных</div>
+      <div class="cb-row">
+        <input id="fHeavy" type="checkbox"/>
+        <span>Heavy tail (тяжёлые хвосты в распределении)</span>
+      </div>
+      <div class="cb-row">
+        <input id="fZero" type="checkbox"/>
+        <span>Zero inflation (много нулей)</span>
+      </div>
+    </div>
+
+    <div class="cb-group">
+      <div class="cb-group-title">Дизайн эксперимента</div>
+      <div class="cb-row">
+        <input id="fCluster" type="checkbox"/>
+        <span>Кластерная рандомизация (гео / команда)</span>
+      </div>
+      <div class="cb-row">
+        <input id="fPre" type="checkbox"/>
+        <span>Есть pre-period данные</span>
+      </div>
+      <div class="cb-row">
+        <input id="fLarge" type="checkbox"/>
+        <span>Большая выборка (>10 000 на группу)</span>
+      </div>
+    </div>
+
+    <button class="btn btn--primary" id="btnSelect">Подобрать тест</button>
+    <button class="btn btn--reset" id="btnReset">Сбросить</button>
+  </div>
+
+  <!-- RIGHT: output -->
+  <div class="panel">
+    <h2>Рекомендация</h2>
+
+    <div id="empty" class="result-empty">
+      Задайте параметры слева и нажмите «Подобрать тест»
+    </div>
+
+    <div id="result" class="result">
+      <div id="rTitle" class="result-title"></div>
+      <div id="rDesc" class="result-desc"></div>
+
+      <div class="section">
+        <h3>Основной критерий</h3>
+        <div id="rPrimary" class="rec-box"></div>
+      </div>
+
+      <div id="rVarSection" class="section" style="display:none">
+        <h3>Снижение дисперсии</h3>
+        <div id="rVariance" class="rec-box rec-box--ok"></div>
+      </div>
+
+      <div id="rClusterSection" class="section" style="display:none">
+        <h3>Кластерная поправка</h3>
+        <div id="rCluster" class="rec-box rec-box--warn"></div>
+      </div>
+
+      <div class="section">
+        <h3>Допущения</h3>
+        <div id="rAssumptions"></div>
+      </div>
+
+      <div id="rWarnSection" class="section" style="display:none">
+        <h3>Предупреждения</h3>
+        <div id="rWarnList"></div>
+      </div>
+
+      <div id="rExplain" class="explain"></div>
+      <div id="rSummary" class="input-summary"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+ *  Presets
+ * ══════════════════════════════════════════════════════ */
+const PRESETS = {
+  simple_cr:     { metric:'proportion', heavy:false, zero:false, cluster:false, pre:false, large:true },
+  revenue_heavy: { metric:'per_user',   heavy:true,  zero:true,  cluster:false, pre:false, large:true },
+  aov_ratio:     { metric:'ratio',      heavy:false, zero:false, cluster:false, pre:false, large:false },
+  geo_cluster:   { metric:'per_user',   heavy:false, zero:false, cluster:true,  pre:false, large:false },
+  arppu_cond:    { metric:'conditional', heavy:true,  zero:false, cluster:false, pre:true,  large:true },
+  ctr_large:     { metric:'proportion', heavy:false, zero:false, cluster:false, pre:false, large:true },
+  cuped_revenue: { metric:'per_user',   heavy:true,  zero:true,  cluster:false, pre:true,  large:true },
+  small_ratio:   { metric:'ratio',      heavy:true,  zero:false, cluster:false, pre:false, large:false },
+};
+
+/* ══════════════════════════════════════════════════════
+ *  Rule engine
+ * ══════════════════════════════════════════════════════ */
+
+function selectTest(input) {
+  const { metric, heavy, zero, cluster, pre, large } = input;
+  const result = {
+    primary: null,       // { name, detail }
+    variance: null,      // { name, detail } or null
+    clusterAdj: null,    // { name, detail } or null
+    assumptions: [],     // [{ text, met: true/false/null }]
+    warnings: [],        // [{ label, text, danger:bool }]
+    explain: '',
+  };
+
+  /* ── Primary test selection ── */
+
+  if (metric === 'conditional') {
+    result.primary = {
+      name: 'Двухэтапная процедура / регрессия',
+      detail: 'Условная метрика создаёт selection bias. Нужна двухэтапная коррекция или регрессия с контролем на treatment-зависимое попадание в подвыборку.',
+    };
+    result.assumptions.push({ text: 'Подвыборка не зависит от treatment', met: false });
+    result.warnings.push({
+      label: 'Selection bias',
+      text: 'Состав подвыборки зависит от treatment. Наивное сравнение средних даёт смещённую оценку эффекта.',
+      danger: true,
+    });
+    result.explain = 'Условные метрики (ARPPU, среднее время среди купивших) считаются по подмножеству, определённому post-treatment поведением. Treatment может менять состав этого подмножества, что создаёт selection bias. Рекомендуется двухэтапная процедура: сначала моделируем вероятность попадания в подвыборку, затем оцениваем эффект с коррекцией.';
+
+  } else if (metric === 'proportion') {
+    if (large && !cluster) {
+      result.primary = {
+        name: 'z-test для долей / chi-square',
+        detail: 'Биномиальная метрика + большая выборка → CLT работает. Стандартный z-test для разности долей.',
+      };
+      result.explain = 'Для метрик-долей (CR, CTR, retention) при достаточной выборке (>10K на группу) z-test даёт корректные результаты. Каждая единица анализа — независимое испытание Бернулли, распределение выборочной доли быстро сходится к нормальному.';
+    } else if (!large && !cluster) {
+      result.primary = {
+        name: 'Точный тест Фишера / bootstrap',
+        detail: 'При малой выборке нормальная аппроксимация ненадёжна. Используйте точный тест или permutation-bootstrap.',
+      };
+      result.warnings.push({
+        label: 'Малая выборка',
+        text: 'При <10K на группу z-test для долей может давать неточные p-value. Точный тест Фишера или permutation test надёжнее.',
+        danger: false,
+      });
+      result.explain = 'При малых выборках нормальная аппроксимация биномиального распределения может быть неточной, особенно при доле близкой к 0 или 1. Точный тест Фишера вычисляет p-value без аппроксимаций. Permutation-bootstrap — универсальная альтернатива.';
+    } else {
+      result.primary = {
+        name: 'z-test + кластерная поправка',
+        detail: 'Метрика-доля при кластерной рандомизации. Стандартный z-test занижает дисперсию — нужна кластерная коррекция.',
+      };
+      result.explain = 'При кластерной рандомизации наблюдения внутри кластера скоррелированы. Обычный z-test использует N пользователей как размер выборки, но эффективный N значительно меньше из-за внутрикластерной корреляции (ICC). Cluster-robust SE корректируют дисперсию.';
+    }
+    result.assumptions.push({ text: 'Бинарный исход (0/1)', met: true });
+    result.assumptions.push({ text: 'Независимость наблюдений', met: !cluster });
+
+  } else if (metric === 'ratio') {
+    if (heavy) {
+      result.primary = {
+        name: 'Bootstrap отношения',
+        detail: 'Ratio-метрика с тяжёлыми хвостами. Delta-method чувствителен к выбросам — bootstrap надёжнее.',
+      };
+      result.explain = 'Delta-method линеаризует ratio и оценивает дисперсию через Taylor-ряд. При heavy tail (AOV с аномальными чеками, RPM с выбросами) линеаризация даёт нестабильные результаты. Bootstrap напрямую оценивает распределение ratio без параметрических допущений.';
+    } else if (large) {
+      result.primary = {
+        name: 'Delta-method / линеаризация',
+        detail: 'Ratio-метрика при достаточной выборке и отсутствии heavy tail. Линеаризация корректно учитывает ковариацию числителя и знаменателя.',
+      };
+      result.explain = 'Delta-method аппроксимирует дисперсию отношения X/Y через дисперсии и ковариацию X и Y. При достаточной выборке и умеренных хвостах это даёт точные результаты. Обычный t-test на средних отношениях по пользователям некорректен — он игнорирует вариацию знаменателя.';
+    } else {
+      result.primary = {
+        name: 'Bootstrap отношения',
+        detail: 'Ratio-метрика, малая выборка. Bootstrap не зависит от аппроксимаций и даёт надёжные доверительные интервалы.',
+      };
+      result.explain = 'При малой выборке delta-method может быть неточным — аппроксимация Taylor-ряда требует достаточного N. Bootstrap не имеет этого ограничения. Рекомендуется percentile-bootstrap с ≥10K итераций.';
+    }
+    result.assumptions.push({ text: 'Знаменатель > 0', met: null });
+    result.assumptions.push({ text: 'Числитель и знаменатель — разные величины', met: true });
+    result.warnings.push({
+      label: 'Гетерогенность знаменателя',
+      text: 'Вариация знаменателя между единицами искажает наивные средние. t-test на поюзерных средних отношения некорректен.',
+      danger: false,
+    });
+
+  } else {
+    /* per_user */
+    if (heavy) {
+      result.primary = {
+        name: 'Bootstrap / trimmed mean / winsorization',
+        detail: 'Поюзерная метрика с тяжёлыми хвостами. t-test чувствителен к выбросам, среднее нестабильно.',
+      };
+      result.explain = 'Revenue, GMV и другие денежные метрики часто имеют распределение с тяжёлым правым хвостом: несколько пользователей генерируют непропорционально большую долю. Один выброс может перевернуть результат t-test. Bootstrap, trimmed mean (отсечение крайних 5-10%) или winsorization стабилизируют оценку.';
+    } else {
+      result.primary = {
+        name: 't-test / Welch t-test',
+        detail: 'Стандартный подход для поюзерной метрики без heavy tail. Welch t-test не требует равенства дисперсий.',
+      };
+      result.explain = 'Для поюзерных метрик с умеренным распределением (число сессий, число заказов, время в приложении) CLT обеспечивает нормальность средних при достаточном N. Welch t-test корректирует degrees of freedom при неравных дисперсиях между группами.';
+    }
+    result.assumptions.push({ text: 'Одно значение на пользователя', met: true });
+    result.assumptions.push({ text: 'Нет heavy tail / выбросов', met: !heavy });
+  }
+
+  /* ── Variance reduction ── */
+  if (pre && metric !== 'conditional') {
+    result.variance = {
+      name: 'CUPED (Controlled-experiment Using Pre-Experiment Data)',
+      detail: 'Pre-period данные позволяют снизить дисперсию на 30-50% через ковариатную коррекцию. Эквивалентно регрессии: Y_adj = Y − θ·X_pre.',
+    };
+    result.assumptions.push({ text: 'Pre-period стабилен (нет дрейфа)', met: null });
+  } else if (pre && metric === 'conditional') {
+    result.variance = {
+      name: 'CUPED (ограниченно)',
+      detail: 'Pre-period данные доступны, но для conditional-метрик CUPED применяется с осторожностью: состав подвыборки может меняться.',
+    };
+    result.warnings.push({
+      label: 'CUPED + conditional',
+      text: 'CUPED использует pre-period ковариату, но при conditional-метрике состав подвыборки зависит от treatment. Ковариата может не быть валидной.',
+      danger: false,
+    });
+  }
+
+  /* ── Cluster adjustment ── */
+  if (cluster) {
+    result.clusterAdj = {
+      name: 'Cluster-robust standard errors',
+      detail: 'Рандомизация по кластерам (гео, команда) создаёт внутрикластерную корреляцию. Эффективный N = N_кластеров, не N_пользователей. Нужны cluster-robust SE или design-effect поправка (ICC).',
+    };
+    result.assumptions.push({ text: 'Независимость между кластерами', met: null });
+    result.warnings.push({
+      label: 'Малое число кластеров',
+      text: 'Cluster-robust SE требуют ≥30-50 кластеров. При меньшем числе используйте wild cluster bootstrap или randomization inference.',
+      danger: false,
+    });
+  }
+
+  /* ── Zero inflation warning ── */
+  if (zero && (metric === 'per_user' || metric === 'ratio')) {
+    result.warnings.push({
+      label: 'Zero inflation',
+      text: 'Метрика содержит много нулей (пользователи без событий). Это искажает среднее и увеличивает дисперсию. Рассмотрите: разделение на конверсию (0/1) + среднее среди конвертировавших, или zero-inflated модель.',
+      danger: false,
+    });
+  }
+
+  /* ── Trim warnings to max 3, sort by danger ── */
+  result.warnings.sort((a, b) => (b.danger ? 1 : 0) - (a.danger ? 1 : 0));
+  result.warnings = result.warnings.slice(0, 3);
+
+  return result;
+}
+
+/* ══════════════════════════════════════════════════════
+ *  Metric type labels
+ * ══════════════════════════════════════════════════════ */
+const METRIC_LABELS = {
+  proportion:  'Метрика долей',
+  per_user:    'Поюзерная метрика',
+  ratio:       'Ratio-метрика',
+  conditional: 'Условная метрика',
+};
+
+/* ══════════════════════════════════════════════════════
+ *  DOM
+ * ══════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const els = {
+  preset: $('preset'),
+  metric: $('fMetric'), heavy: $('fHeavy'), zero: $('fZero'),
+  cluster: $('fCluster'), pre: $('fPre'), large: $('fLarge'),
+  empty: $('empty'), result: $('result'),
+  title: $('rTitle'), desc: $('rDesc'),
+  primary: $('rPrimary'),
+  varSection: $('rVarSection'), variance: $('rVariance'),
+  clusterSection: $('rClusterSection'), clusterBox: $('rCluster'),
+  assumptions: $('rAssumptions'),
+  warnSection: $('rWarnSection'), warnList: $('rWarnList'),
+  explain: $('rExplain'), summary: $('rSummary'),
+};
+
+/* ── Preset fill ── */
+els.preset.addEventListener('change', () => {
+  const p = PRESETS[els.preset.value];
+  if (!p) return;
+  els.metric.value = p.metric;
+  els.heavy.checked = p.heavy;
+  els.zero.checked = p.zero;
+  els.cluster.checked = p.cluster;
+  els.pre.checked = p.pre;
+  els.large.checked = p.large;
+});
+
+/* ── Select test ── */
+$('btnSelect').addEventListener('click', () => {
+  const input = {
+    metric: els.metric.value,
+    heavy: els.heavy.checked,
+    zero: els.zero.checked,
+    cluster: els.cluster.checked,
+    pre: els.pre.checked,
+    large: els.large.checked,
+  };
+
+  const r = selectTest(input);
+
+  // Title
+  els.title.textContent = r.primary.name;
+  els.desc.textContent = METRIC_LABELS[input.metric] || input.metric;
+
+  // Primary
+  els.primary.innerHTML = '<h4>' + esc(r.primary.name) + '</h4><p>' + esc(r.primary.detail) + '</p>';
+
+  // Variance reduction
+  if (r.variance) {
+    els.varSection.style.display = '';
+    els.variance.innerHTML = '<h4>' + esc(r.variance.name) + '</h4><p>' + esc(r.variance.detail) + '</p>';
+  } else {
+    els.varSection.style.display = 'none';
+  }
+
+  // Cluster adjustment
+  if (r.clusterAdj) {
+    els.clusterSection.style.display = '';
+    els.clusterBox.innerHTML = '<h4>' + esc(r.clusterAdj.name) + '</h4><p>' + esc(r.clusterAdj.detail) + '</p>';
+  } else {
+    els.clusterSection.style.display = 'none';
+  }
+
+  // Assumptions
+  els.assumptions.innerHTML = r.assumptions.map(a => {
+    let cls = 'assumption';
+    if (a.met === true) cls += ' assumption--met';
+    else if (a.met === false) cls += ' assumption--broken';
+    const icon = a.met === true ? '✓ ' : a.met === false ? '✗ ' : '? ';
+    return '<span class="' + cls + '">' + icon + esc(a.text) + '</span>';
+  }).join('');
+
+  // Warnings
+  if (r.warnings.length) {
+    els.warnSection.style.display = '';
+    els.warnList.innerHTML = r.warnings.map(w => {
+      const cls = w.danger ? 'warn-box warn-box--danger' : 'warn-box';
+      return '<div class="' + cls + '"><div class="warn-label">⚠ ' + esc(w.label) + '</div><p>' + esc(w.text) + '</p></div>';
+    }).join('');
+  } else {
+    els.warnSection.style.display = 'none';
+  }
+
+  // Explanation
+  els.explain.textContent = r.explain;
+
+  // Summary
+  const flags = [];
+  if (input.heavy) flags.push('heavy_tail');
+  if (input.zero) flags.push('zero_inflation');
+  if (input.cluster) flags.push('cluster');
+  if (input.pre) flags.push('pre_period');
+  if (input.large) flags.push('large_n');
+  els.summary.textContent = input.metric + (flags.length ? ' + ' + flags.join(', ') : '') + ' → ' + r.primary.name;
+
+  // Show
+  els.empty.style.display = 'none';
+  els.result.classList.add('show');
+});
+
+/* ── Reset ── */
+$('btnReset').addEventListener('click', () => {
+  els.preset.value = '';
+  els.metric.value = 'proportion';
+  els.heavy.checked = false;
+  els.zero.checked = false;
+  els.cluster.checked = false;
+  els.pre.checked = false;
+  els.large.checked = false;
+  els.empty.style.display = '';
+  els.result.classList.remove('show');
+});
+
+/* ── Util ── */
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
