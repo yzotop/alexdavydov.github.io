@@ -4,130 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Обо мне — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background-color: #ffffff;
-            padding: 3rem 1rem;
+            line-height: 1.65;
+            color: #111;
+            background-color: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 0.5rem; }
+        .page-header .subtitle { font-size: 1.05rem; color: rgba(17,17,17,.68); line-height: 1.65; font-style: italic; }
+
+        .content { max-width: 700px; margin-bottom: 2.5rem; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
+        .courses-list { list-style: none; padding-left: 0; margin-bottom: 2.5rem; }
+        .courses-list li { margin-bottom: 0.6rem; }
+        .courses-list a {
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 180ms ease;
+        }
+        .courses-list a:hover { color: #0062c4; text-decoration: underline; }
+
+        .contact-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.55rem 1.2rem;
+            font-size: 0.88rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 180ms ease;
+            border: 1px solid rgba(17,17,17,.12);
+            color: #111;
+            background: #fff;
+        }
+        .contact-btn:hover {
+            border-color: rgba(17,17,17,.24);
+            background: rgba(17,17,17,.04);
+            text-decoration: none;
+        }
+        .contact-btn.primary {
+            background: #0071e3;
+            color: #fff;
+            border-color: #0071e3;
+        }
+        .contact-btn.primary:hover {
+            background: #0062c4;
+            border-color: #0062c4;
         }
 
         .back-link {
             display: inline-block;
-            margin-bottom: 1rem;
-            color: #666;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
+            transition: color 180ms ease;
         }
-
-        .back-link:hover {
-            color: #1a1a1a;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #666;
-            margin-bottom: 3rem;
-            font-style: italic;
-        }
-
-        .content {
-            max-width: 700px;
-            margin-bottom: 3rem;
-        }
-
-        .content p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
-        }
-
-        h2 {
-            font-size: 1.3rem;
-            font-weight: 400;
-            margin-top: 3rem;
-            margin-bottom: 1.5rem;
-            color: #1a1a1a;
-        }
-
-        h2:first-of-type {
-            margin-top: 0;
-        }
-
-        .courses-list {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 3rem;
-        }
-
-        .courses-list li {
-            margin-bottom: 0.75rem;
-        }
-
-        .courses-list a {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s ease;
-        }
-
-        .courses-list a:hover {
-            color: #1a1a1a;
-        }
-
-        .contacts-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        @media (min-width: 768px) {
-            .contacts-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .contacts-grid a {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s ease;
-        }
-
-        .contacts-grid a:hover {
-            color: #1a1a1a;
-        }
+        .back-link:hover { color: #111; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← На главную</a>
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/" class="active">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
 
-        <h1>Обо мне</h1>
-        <p class="subtitle">Аналитика как инструмент решений в реальных системах.</p>
+        <header class="page-header">
+            <h1>Обо мне</h1>
+            <p class="subtitle">Аналитика как инструмент решений в реальных системах.</p>
+        </header>
 
         <div class="content">
             <p>
@@ -156,14 +137,22 @@
         </ul>
 
         <h2>Контакты</h2>
-        <div class="contacts-grid">
-            <a href="https://t.me/Datalake" target="_blank" rel="noopener noreferrer">Telegram: @Datalake</a>
-            <a href="https://solvery.io/ru/mentor/1882" target="_blank" rel="noopener noreferrer">Solvery</a>
-            <a href="https://getmentor.dev/mentor/sasha-davydov-3357" target="_blank" rel="noopener noreferrer">GetMentor</a>
-            <a href="https://www.linkedin.com/in/alexanderdavydow/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <div class="contact-buttons">
+            <a href="https://t.me/Datalake" target="_blank" rel="noopener noreferrer" class="contact-btn primary">Telegram</a>
+            <a href="https://solvery.io/ru/mentor/1882" target="_blank" rel="noopener noreferrer" class="contact-btn">Solvery</a>
+            <a href="https://getmentor.dev/mentor/sasha-davydov-3357" target="_blank" rel="noopener noreferrer" class="contact-btn">GetMentor</a>
+            <a href="https://www.linkedin.com/in/alexanderdavydow/" target="_blank" rel="noopener noreferrer" class="contact-btn">LinkedIn</a>
         </div>
 
-        <a href="/" class="back-link">← На главную</a>
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
     </div>
 </body>
 </html>
