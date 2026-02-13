@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .search-box { margin-bottom: 1.5rem; }
+
+        .filters {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .results-count {
+            font-size: 0.8rem;
+            color: rgba(17,17,17,.38);
+            margin-bottom: 1rem;
+        }
+
+        .result-group-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(17,17,17,.38);
+            margin-top: 1.5rem;
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.06);
+        }
+        .result-group-label:first-child { margin-top: 0; }
+
+        .result-card {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 12px;
+            padding: 0.85rem 1.15rem;
+            margin-bottom: 0.5rem;
+            background: #fff;
+            transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+        }
+        .result-card:hover {
+            border-color: rgba(17,17,17,.16);
+            box-shadow: 0 4px 16px rgba(0,0,0,.06);
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+        .result-info { flex: 1; min-width: 0; }
+        .result-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 0.15rem;
+        }
+        .result-meta {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.48);
+        }
+        .result-tags {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-top: 0.35rem;
+        }
+        .result-open {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #0071e3;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(17,17,17,.38);
+            font-size: 0.95rem;
+        }
+        .empty-state .hint {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/" class="active">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header" style="margin-bottom:1.5rem">
+            <h1 style="font-size:2rem">Поиск по сайту</h1>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input"
+                   placeholder="CUPED, монетизация, кластер, графики..."
+                   autofocus autocomplete="off">
+        </div>
+
+        <div class="filters" id="filters"></div>
+
+        <div id="resultsCount" class="results-count"></div>
+        <div id="results"></div>
+    </div>
+
+    <footer class="site-footer" style="max-width:900px;margin-left:auto;margin-right:auto;padding-left:1.5rem;padding-right:1.5rem;">
+        <span>&copy; 2026 davydov.my</span>
+        <nav class="site-footer-links">
+            <a href="https://t.me/Datalake">Telegram</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/search/">Поиск</a>
+        </nav>
+    </footer>
+
+<script>
+(function () {
+    'use strict';
+
+    var INDEX_URL = '/assets/search-index.json';
+    var allItems = [];
+    var activeFilter = 'all';
+
+    var FILTER_MAP = {
+        all:        'Все',
+        course:     'Курсы',
+        module:     'Модули',
+        simulator:  'Симуляторы',
+        knowledge:  'Knowledge',
+        page:       'Страницы',
+        lesson:     'Уроки',
+        tool:       'Инструменты'
+    };
+
+    var TYPE_GROUP_ORDER = ['course','module','simulator','lesson','knowledge','practice','mini-course','exhibits','tool','page'];
+
+    var TYPE_LABELS = {
+        course:       'Курсы',
+        module:       'Модули',
+        simulator:    'Симуляторы',
+        lesson:       'Уроки',
+        knowledge:    'База знаний',
+        practice:     'Практика',
+        'mini-course':'Мини-курсы',
+        exhibits:     'Экспонаты',
+        tool:         'Инструменты',
+        page:         'Страницы'
+    };
+
+    // --- DOM ---
+    var input      = document.getElementById('searchInput');
+    var filtersEl  = document.getElementById('filters');
+    var resultsEl  = document.getElementById('results');
+    var countEl    = document.getElementById('resultsCount');
+
+    // --- Load index ---
+    fetch(INDEX_URL)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            allItems = data;
+            buildFilters();
+            render();
+        })
+        .catch(function () {
+            resultsEl.innerHTML = '<div class="empty-state">Не удалось загрузить индекс поиска.</div>';
+        });
+
+    // --- Events ---
+    input.addEventListener('input', render);
+
+    // --- Filters ---
+    function buildFilters() {
+        var types = {};
+        allItems.forEach(function (it) { types[it.type] = true; });
+
+        var html = '<span class="chip active" data-filter="all">' + FILTER_MAP.all + '</span>';
+        TYPE_GROUP_ORDER.forEach(function (t) {
+            if (types[t] && FILTER_MAP[t]) {
+                html += '<span class="chip" data-filter="' + t + '">' + FILTER_MAP[t] + '</span>';
+            }
+        });
+        filtersEl.innerHTML = html;
+
+        filtersEl.addEventListener('click', function (e) {
+            var chip = e.target.closest('.chip');
+            if (!chip) return;
+            activeFilter = chip.getAttribute('data-filter');
+            filtersEl.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active'); });
+            chip.classList.add('active');
+            render();
+        });
+    }
+
+    // --- Search & Rank ---
+    function search(query) {
+        var q = query.toLowerCase().trim();
+        if (!q) {
+            return activeFilter === 'all'
+                ? allItems.slice()
+                : allItems.filter(function (it) { return it.type === activeFilter; });
+        }
+
+        var scored = [];
+        allItems.forEach(function (item) {
+            if (activeFilter !== 'all' && item.type !== activeFilter) return;
+
+            var titleLower = item.title.toLowerCase();
+            var score = 0;
+
+            // exact title match (highest)
+            if (titleLower === q) { score = 100; }
+            // title starts with query
+            else if (titleLower.indexOf(q) === 0) { score = 80; }
+            // title contains query
+            else if (titleLower.indexOf(q) !== -1) { score = 60; }
+            else {
+                // check tags
+                var tagMatch = item.tags.some(function (tag) {
+                    return tag.toLowerCase().indexOf(q) !== -1;
+                });
+                if (tagMatch) { score = 30; }
+
+                // check section
+                if (!score && item.section.toLowerCase().indexOf(q) !== -1) {
+                    score = 20;
+                }
+            }
+
+            // bonus for word-boundary match in title
+            if (score >= 60) {
+                var words = titleLower.split(/[\s\-:,.()]+/);
+                if (words.some(function (w) { return w.indexOf(q) === 0; })) {
+                    score += 5;
+                }
+            }
+
+            if (score > 0) {
+                scored.push({ item: item, score: score });
+            }
+        });
+
+        scored.sort(function (a, b) { return b.score - a.score; });
+        return scored.map(function (s) { return s.item; });
+    }
+
+    // --- Highlight ---
+    function highlight(text, query) {
+        if (!query) return escapeHtml(text);
+        var q = query.trim();
+        if (!q) return escapeHtml(text);
+        var regex = new RegExp('(' + escapeRegex(q) + ')', 'gi');
+        return escapeHtml(text).replace(regex, '<mark>$1</mark>');
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function escapeRegex(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // --- Render ---
+    function render() {
+        var query = input.value;
+        var items = search(query);
+
+        countEl.textContent = query.trim()
+            ? items.length + ' ' + pluralize(items.length)
+            : items.length + ' записей в индексе';
+
+        if (items.length === 0) {
+            resultsEl.innerHTML = '<div class="empty-state">Ничего не найдено<div class="hint">Попробуйте: cuped, монетизация, кластер, графики</div></div>';
+            return;
+        }
+
+        // Group by type
+        var groups = {};
+        items.forEach(function (it) {
+            if (!groups[it.type]) groups[it.type] = [];
+            groups[it.type].push(it);
+        });
+
+        var html = '';
+        TYPE_GROUP_ORDER.forEach(function (type) {
+            if (!groups[type]) return;
+            html += '<div class="result-group-label">' + (TYPE_LABELS[type] || type) + '</div>';
+            groups[type].forEach(function (item) {
+                html += renderCard(item, query);
+            });
+        });
+
+        // any remaining types not in order
+        Object.keys(groups).forEach(function (type) {
+            if (TYPE_GROUP_ORDER.indexOf(type) !== -1) return;
+            html += '<div class="result-group-label">' + (TYPE_LABELS[type] || type) + '</div>';
+            groups[type].forEach(function (item) {
+                html += renderCard(item, query);
+            });
+        });
+
+        resultsEl.innerHTML = html;
+    }
+
+    function renderCard(item, query) {
+        var tagsHtml = item.tags.slice(0, 4).map(function (t) {
+            return '<span class="chip">' + escapeHtml(t) + '</span>';
+        }).join('');
+
+        return '<a class="result-card" href="' + escapeHtml(item.url) + '">'
+            + '<div class="result-info">'
+            + '<div class="result-title">' + highlight(item.title, query) + '</div>'
+            + '<div class="result-meta">' + escapeHtml(item.type) + ' &middot; ' + escapeHtml(item.section) + '</div>'
+            + '<div class="result-tags">' + tagsHtml + '</div>'
+            + '</div>'
+            + '<span class="result-open">Открыть &rarr;</span>'
+            + '</a>';
+    }
+
+    function pluralize(n) {
+        var mod10 = n % 10;
+        var mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return 'результат';
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'результата';
+        return 'результатов';
+    }
+})();
+</script>
+</body>
+</html>
