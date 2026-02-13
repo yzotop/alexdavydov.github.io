@@ -1,0 +1,699 @@
+{
+  "meta": {
+    "schema_version": "2.2",
+    "generated_at": "2026-02-10T09:26:28Z",
+    "generated_by": "system-map",
+    "description": "Canonical system map — projects, data, agents, jobs, data flows",
+    "canonical_sources": [
+      "projects/cursor/registry/paths.yaml",
+      "projects/cursor/registry/architecture.md",
+      "projects/cursor/registry/agents.md",
+      "projects/cursor/registry/glossary.md",
+      "projects/core/personal-os/config/agents.yaml"
+    ],
+    "id_contract": {
+      "rule": "All IDs are deterministic slugs derived from entity path and type prefix.",
+      "entity_format": "{type_prefix}.{name_or_path_slug}",
+      "virtual_format": "group.{context}-{name} | root.{name} | virtual.{name}",
+      "symlink_format": "sym.{slugified_from_path}",
+      "examples": {
+        "domain.core": "domain + name",
+        "repo.personal-os": "repo + dir name",
+        "agent.lab_curator": "agent + definition filename stem",
+        "job.weekly_health": "job + dag/script name",
+        "util.overview_console": "util + utility script name",
+        "data.personal-os-health-garmin-raw": "data + path slug",
+        "sym.core-personal-os-data-health": "sym + slugified from-path"
+      },
+      "virtual_examples": {
+        "root.projects": "synthetic root for projects/ tree",
+        "root.data": "synthetic root for data/ tree",
+        "group.cursor-agents": "virtual grouping for cursor/agents subdir",
+        "group.dags": "virtual grouping for DAG scripts",
+        "group.data-personal-os": "virtual grouping for personal-os data areas",
+        "virtual.all_agents": "UI-only aggregation of all prompt agents",
+        "virtual.all_jobs": "UI-only aggregation of all jobs/DAGs"
+      },
+      "uniqueness": "All IDs are globally unique across all entity types and virtual nodes."
+    }
+  },
+  "roots": {
+    "PROJECTS_ROOT": "/Users/involute/projects",
+    "DATA_ROOT": "/Users/involute/data"
+  },
+  "domains": [
+    {
+      "id": "domain.core",
+      "name": "core",
+      "path": "projects/core",
+      "role": "canonical",
+      "description": "Personal automation, health data, scheduling",
+      "repos": [
+        {
+          "id": "repo.personal-os",
+          "name": "personal-os",
+          "path": "projects/core/personal-os",
+          "role": "canonical",
+          "description": "personal-os",
+          "symlinks": [
+            {
+              "from": "data/health",
+              "to": "/Users/involute/data/personal-os/health"
+            },
+            {
+              "from": "data/knowledge",
+              "to": "/Users/involute/data/personal-os/knowledge"
+            },
+            {
+              "from": "runtime/logs",
+              "to": "/Users/involute/data/personal-os/runtime/logs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "domain.cursor",
+      "name": "cursor",
+      "path": "projects/cursor",
+      "role": "canonical",
+      "description": "Cursor IDE context: prompt agents, playbooks, registry",
+      "repos": [],
+      "subdirs": [
+        "agents",
+        "memory",
+        "playbooks",
+        "registry",
+        "rules"
+      ]
+    },
+    {
+      "id": "domain.lab",
+      "name": "lab",
+      "path": "projects/lab",
+      "role": "canonical",
+      "description": "Research and experiments",
+      "repos": [
+        {
+          "id": "repo.art-dm",
+          "name": "art-dm",
+          "path": "projects/lab/art-dm",
+          "role": "canonical",
+          "description": "Delta Machine"
+        },
+        {
+          "id": "repo.deltamachine",
+          "name": "deltamachine",
+          "path": "projects/lab/deltamachine",
+          "role": "canonical",
+          "description": "Delta Machine",
+          "symlinks": [
+            {
+              "from": "diversification/data",
+              "to": "/Users/involute/data/lab/deltamachine/diversification"
+            },
+            {
+              "from": "silent-risk/data",
+              "to": "/Users/involute/data/lab/deltamachine/silent-risk"
+            }
+          ]
+        },
+        {
+          "id": "repo.eacc_rag",
+          "name": "eacc_rag",
+          "path": "projects/lab/eacc_rag",
+          "role": "canonical",
+          "description": "e/acc RAG",
+          "symlinks": [
+            {
+              "from": "data",
+              "to": "/Users/involute/data/lab/eacc_rag/data"
+            }
+          ]
+        },
+        {
+          "id": "repo.tolk_rag1",
+          "name": "tolk_rag1",
+          "path": "projects/lab/tolk_rag1",
+          "role": "canonical",
+          "description": "Tolk RAG1 - Book Extraction from Telegram Channel",
+          "symlinks": [
+            {
+              "from": "data",
+              "to": "/Users/involute/data/lab/tolk_rag1/data"
+            }
+          ]
+        },
+        {
+          "id": "repo.unecha",
+          "name": "unecha",
+          "path": "projects/lab/unecha",
+          "role": "canonical",
+          "description": "Лаборатория школьных экспериментов"
+        }
+      ]
+    },
+    {
+      "id": "domain.knowledge",
+      "name": "knowledge",
+      "path": "projects/knowledge",
+      "role": "canonical",
+      "description": "Obsidian vault (markdown knowledge base)",
+      "repos": [
+        {
+          "id": "repo.involutevault",
+          "name": "involutevault",
+          "path": "projects/knowledge/involutevault",
+          "role": "canonical",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "domain.public",
+      "name": "public",
+      "path": "projects/public",
+      "role": "canonical",
+      "description": "Personal brand static site",
+      "repos": [
+        {
+          "id": "repo.alexdavydov.github.io",
+          "name": "alexdavydov.github.io",
+          "path": "projects/public/alexdavydov.github.io",
+          "role": "canonical",
+          "description": "Alex Davydov — Systems Gallery"
+        }
+      ]
+    },
+    {
+      "id": "domain.work",
+      "name": "work",
+      "path": "projects/work",
+      "role": "canonical",
+      "description": "Employer-specific projects and artifacts",
+      "repos": [
+        {
+          "id": "repo.work-vk",
+          "name": "work-vk",
+          "path": "projects/work/work-vk",
+          "role": "canonical",
+          "description": "work-vk"
+        }
+      ]
+    },
+    {
+      "id": "domain.business",
+      "name": "business",
+      "path": "projects/business",
+      "role": "canonical",
+      "description": "Commercial side projects",
+      "repos": [
+        {
+          "id": "repo.telegain",
+          "name": "telegain",
+          "path": "projects/business/telegain",
+          "role": "canonical",
+          "description": "telegain"
+        }
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent.lab_curator",
+      "name": "Lab Curator",
+      "type": "prompt_agent",
+      "definition": "cursor/agents/lab_curator.md",
+      "role": "canonical",
+      "purpose": "Agent: Lab Curator",
+      "scope": [],
+      "authority": "TBD"
+    },
+    {
+      "id": "agent.ops_monitor",
+      "name": "Ops Monitor",
+      "type": "prompt_agent",
+      "definition": "cursor/agents/ops_monitor.md",
+      "role": "canonical",
+      "purpose": "Agent: Ops Monitor",
+      "scope": [],
+      "authority": "TBD"
+    },
+    {
+      "id": "agent.ops_orchestrator",
+      "name": "Ops Orchestrator",
+      "type": "prompt_agent",
+      "definition": "cursor/agents/ops_orchestrator.md",
+      "role": "canonical",
+      "purpose": "Playbook: Work Case Package (NDA)",
+      "scope": [],
+      "authority": "TBD"
+    },
+    {
+      "id": "agent.public_builder",
+      "name": "Public Builder",
+      "type": "prompt_agent",
+      "definition": "cursor/agents/public_builder.md",
+      "role": "canonical",
+      "purpose": "Agent: Public Builder",
+      "scope": [],
+      "authority": "TBD"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job.weekly_health",
+      "name": "weekly_health",
+      "type": "dag",
+      "code_path": "core/personal-os/runtime/dags/weekly_health.py",
+      "schedule": "daily",
+      "sensitivity": "health",
+      "config_source": "core/personal-os/config/agents.yaml",
+      "calls": [
+        {
+          "target": "job.garmin_fetch",
+          "resolved": true
+        },
+        {
+          "target": "job.garmin_normalize",
+          "resolved": true
+        },
+        {
+          "target": "job.health_prepare",
+          "resolved": true
+        },
+        {
+          "target": "util.ops_console",
+          "resolved": true
+        },
+        {
+          "target": "util.overview_console",
+          "resolved": true
+        },
+        {
+          "target": "util.weekly",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "id": "job.weekly_training_sheet",
+      "name": "weekly_training_sheet",
+      "type": "dag",
+      "code_path": "core/personal-os/runtime/dags/weekly_training_sheet.py",
+      "schedule": "weekly",
+      "sensitivity": "health",
+      "config_source": "core/personal-os/config/agents.yaml",
+      "calls": [
+        {
+          "target": "util.run_agent",
+          "resolved": true
+        },
+        {
+          "target": "job.training_sheet_fetch",
+          "resolved": true
+        },
+        {
+          "target": "job.training_sheet_normalize",
+          "resolved": true
+        },
+        {
+          "target": "job.training_sheet_prepare",
+          "resolved": true
+        },
+        {
+          "target": "util.weekly",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "id": "util.agent_prepare",
+      "name": "agent_prepare",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/agent_prepare.py"
+    },
+    {
+      "id": "util.apply_patch",
+      "name": "apply_patch",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/apply_patch.py",
+      "purpose": "Returns mapping: target_rel_path -> list of patch lines for that file (including headers)."
+    },
+    {
+      "id": "util.ask",
+      "name": "ask",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/ask.py"
+    },
+    {
+      "id": "util.changed",
+      "name": "changed",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/changed.py"
+    },
+    {
+      "id": "util.changed_json",
+      "name": "changed_json",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/changed_json.py",
+      "purpose": "SELECT rel_path, mtime, title, sensitivity"
+    },
+    {
+      "id": "job.garmin_fetch",
+      "name": "garmin_fetch",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/garmin_fetch.py",
+      "purpose": "Simple YAML loader for paths.yaml.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "job.garmin_normalize",
+      "name": "garmin_normalize",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/garmin_normalize.py",
+      "purpose": "Garmin data normalizer: converts raw Garmin JSON to compact normalized format.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.graph",
+      "name": "graph",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/graph.py",
+      "purpose": "SELECT"
+    },
+    {
+      "id": "job.health_prepare",
+      "name": "health_prepare",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/health_prepare.py",
+      "purpose": "Prepare Health weekly agent context and prompt from normalized Garmin data.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.index",
+      "name": "index",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/index.py"
+    },
+    {
+      "id": "util.launchd_generate",
+      "name": "launchd_generate",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/launchd_generate.py",
+      "purpose": "LaunchAgent Generator: generates macOS LaunchAgent plist files from agent registry."
+    },
+    {
+      "id": "util.launchd_install",
+      "name": "launchd_install",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/launchd_install.py",
+      "purpose": "LaunchAgent Installer: installs generated plist files into ~/Library/LaunchAgents."
+    },
+    {
+      "id": "util.launchd_status",
+      "name": "launchd_status",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/launchd_status.py",
+      "purpose": "LaunchAgent Status v2: shows operational status of LaunchAgent plists."
+    },
+    {
+      "id": "util.launchd_uninstall",
+      "name": "launchd_uninstall",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/launchd_uninstall.py",
+      "purpose": "LaunchAgent Uninstaller: unloads and removes plist files from ~/Library/LaunchAgents."
+    },
+    {
+      "id": "util.ops_console",
+      "name": "ops_console",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/ops_console.py",
+      "purpose": "Agent Console v1: generates HTML dashboard and JSON status for all agents.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.overview_console",
+      "name": "overview_console",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/overview_console.py",
+      "purpose": "Overview Console: generates multi-variant HTML dashboards for Garmin, Training, and Ops.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.pack",
+      "name": "pack",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/pack.py"
+    },
+    {
+      "id": "util.run_agent",
+      "name": "run_agent",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/run_agent.py",
+      "purpose": "Agent Runner: executes agents by ID using the registry.",
+      "called_by": {
+        "target": "job.weekly_training_sheet",
+        "resolved": true
+      }
+    },
+    {
+      "id": "job.training_sheet_fetch",
+      "name": "training_sheet_fetch",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/training_sheet_fetch.py",
+      "purpose": "Training Sheet Fetcher: downloads Google Sheet as CSV.",
+      "called_by": {
+        "target": "job.weekly_training_sheet",
+        "resolved": true
+      }
+    },
+    {
+      "id": "job.training_sheet_normalize",
+      "name": "training_sheet_normalize",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/training_sheet_normalize.py",
+      "purpose": "Training Sheet Normalizer: parses tidy CSV and groups into per-day events.",
+      "called_by": {
+        "target": "job.weekly_training_sheet",
+        "resolved": true
+      }
+    },
+    {
+      "id": "job.training_sheet_prepare",
+      "name": "training_sheet_prepare",
+      "type": "job",
+      "code_path": "core/personal-os/runtime/bin/training_sheet_prepare.py",
+      "purpose": "Training Sheet Prepare: generates context and weekly report from normalized data.",
+      "called_by": {
+        "target": "job.weekly_training_sheet",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.training_sheet_to_tidy",
+      "name": "training_sheet_to_tidy",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/training_sheet_to_tidy.py",
+      "purpose": "Training Sheet to Tidy CSV: converts Google Sheet CSV to canonical tidy (long-form) CSV."
+    },
+    {
+      "id": "util.validate_agent",
+      "name": "validate_agent",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/validate_agent.py",
+      "purpose": "Agent Validator v1: validates consistency between registry, contract, and filesystem."
+    },
+    {
+      "id": "util.weekly",
+      "name": "weekly",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/weekly.py",
+      "purpose": "Run command with title header and check for errors.",
+      "called_by": {
+        "target": "job.weekly_health",
+        "resolved": true
+      }
+    },
+    {
+      "id": "util.weekly_health_report",
+      "name": "weekly_health_report",
+      "type": "utility",
+      "code_path": "core/personal-os/runtime/bin/weekly_health_report.py",
+      "schedule": "weekly",
+      "sensitivity": "health",
+      "purpose": "Weekly Health Report Entrypoint: runs report pipeline (no fetch/overview/ops)."
+    }
+  ],
+  "data_areas": [
+    {
+      "id": "data.secrets",
+      "domain": "_system",
+      "path": "data/_secrets",
+      "type": "secrets",
+      "role": "runtime",
+      "description": "Telegram sessions, API credentials"
+    },
+    {
+      "id": "data.tmp-backups",
+      "domain": "_system",
+      "path": "data/_tmp",
+      "type": "cache",
+      "role": "runtime",
+      "description": "Migration backups (timestamped)"
+    },
+    {
+      "id": "data.personal-os-health-garmin-raw",
+      "domain": "personal-os",
+      "path": "data/personal-os/health/garmin/raw",
+      "type": "raw",
+      "role": "runtime",
+      "description": "Garmin API daily fetch results"
+    },
+    {
+      "id": "data.personal-os-health-garmin-normalized",
+      "domain": "personal-os",
+      "path": "data/personal-os/health/garmin/normalized",
+      "type": "derived",
+      "role": "runtime",
+      "description": "Garmin data normalized daily/weekly"
+    },
+    {
+      "id": "data.personal-os-health-garmin-dashboards",
+      "domain": "personal-os",
+      "path": "data/personal-os/health/garmin/dashboards",
+      "type": "artifact",
+      "role": "runtime",
+      "description": "Dashboard artifacts and build scripts"
+    },
+    {
+      "id": "data.personal-os-health-training-sheet-raw",
+      "domain": "personal-os",
+      "path": "data/personal-os/health/training_sheet/raw",
+      "type": "raw",
+      "role": "runtime",
+      "description": "Training data CSV download"
+    },
+    {
+      "id": "data.personal-os-health-training-sheet-normalized",
+      "domain": "personal-os",
+      "path": "data/personal-os/health/training_sheet/normalized",
+      "type": "derived",
+      "role": "runtime",
+      "description": "Training sheet normalized"
+    },
+    {
+      "id": "data.personal-os-knowledge",
+      "domain": "personal-os",
+      "path": "data/personal-os/knowledge",
+      "type": "derived",
+      "role": "runtime",
+      "description": "FTS DB, context JSON, prompts, graph"
+    },
+    {
+      "id": "data.personal-os-runtime-logs",
+      "domain": "personal-os",
+      "path": "data/personal-os/runtime/logs",
+      "type": "logs",
+      "role": "runtime",
+      "description": "DAG execution logs"
+    },
+    {
+      "id": "data.lab-deltamachine-diversification",
+      "domain": "lab",
+      "path": "data/lab/deltamachine/diversification",
+      "type": "raw",
+      "role": "runtime",
+      "description": "deltamachine/diversification data"
+    },
+    {
+      "id": "data.lab-deltamachine-silent-risk",
+      "domain": "lab",
+      "path": "data/lab/deltamachine/silent-risk",
+      "type": "raw",
+      "role": "runtime",
+      "description": "deltamachine/silent-risk data"
+    },
+    {
+      "id": "data.lab-eacc-rag-data",
+      "domain": "lab",
+      "path": "data/lab/eacc_rag/data",
+      "type": "raw",
+      "role": "runtime",
+      "description": "eacc_rag project data"
+    },
+    {
+      "id": "data.lab-tolk-rag1-data",
+      "domain": "lab",
+      "path": "data/lab/tolk_rag1/data",
+      "type": "raw",
+      "role": "runtime",
+      "description": "tolk_rag1 project data"
+    },
+    {
+      "id": "data.work-vk-dzen",
+      "domain": "work",
+      "path": "data/work/vk-dzen",
+      "type": "raw",
+      "role": "runtime",
+      "description": "vk-dzen work data"
+    }
+  ],
+  "symlinks": [
+    {
+      "from": "projects/personal-os",
+      "to": "projects/core/personal-os",
+      "id": "sym.personal-os"
+    },
+    {
+      "from": "projects/core/personal-os/runtime/logs",
+      "to": "data/personal-os/runtime/logs",
+      "id": "sym.core-personal-os-runtime-logs"
+    },
+    {
+      "from": "projects/core/personal-os/data/health",
+      "to": "data/personal-os/health",
+      "id": "sym.core-personal-os-data-health"
+    },
+    {
+      "from": "projects/core/personal-os/data/knowledge",
+      "to": "data/personal-os/knowledge",
+      "id": "sym.core-personal-os-data-knowledge"
+    },
+    {
+      "from": "projects/lab/eacc_rag/data",
+      "to": "data/lab/eacc_rag/data",
+      "id": "sym.lab-eacc_rag-data"
+    },
+    {
+      "from": "projects/lab/deltamachine/diversification/data",
+      "to": "data/lab/deltamachine/diversification",
+      "id": "sym.lab-deltamachine-diversification-data"
+    },
+    {
+      "from": "projects/lab/deltamachine/silent-risk/data",
+      "to": "data/lab/deltamachine/silent-risk",
+      "id": "sym.lab-deltamachine-silent-risk-data"
+    },
+    {
+      "from": "projects/lab/tolk_rag1/data",
+      "to": "data/lab/tolk_rag1/data",
+      "id": "sym.lab-tolk_rag1-data"
+    }
+  ]
+}

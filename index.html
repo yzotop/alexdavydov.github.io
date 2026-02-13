@@ -4,308 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alex Davydov — Прикладная аналитика</title>
+    <link rel="stylesheet" href="/assets/base.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background-color: #ffffff;
-            padding: 3rem 1rem;
+            line-height: 1.65;
+            color: #111;
+            background-color: #fff;
+            padding: 3.5rem 1.5rem;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
-        .hero {
-            max-width: 700px;
-            margin-bottom: 4rem;
-        }
+        /* ---- Hero ---- */
+        .hero { max-width: 700px; margin-bottom: 3.5rem; }
 
         h1 {
             font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-            letter-spacing: -0.02em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #111;
+            letter-spacing: -0.03em;
+            line-height: 1.12;
         }
 
         .subtitle {
-            font-size: 1rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0.4rem;
         }
 
-        .muted {
-            font-size: 0.9rem;
-            color: #666;
-        }
+        .muted { font-size: 0.9rem; color: rgba(17,17,17,.48); }
 
+        /* ---- Section headings ---- */
         h2 {
-            font-size: 1.5rem;
-            font-weight: 400;
-            margin-top: 4rem;
-            margin-bottom: 1.5rem;
-            color: #1a1a1a;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 3.5rem;
+            margin-bottom: 0.5rem;
+            color: #111;
+            letter-spacing: -0.01em;
         }
+        h2:first-of-type { margin-top: 0; }
 
-        h2:first-of-type {
-            margin-top: 3rem;
+        /* ---- Card grids ---- */
+        .cards-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 0; }
+        @media (min-width: 768px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .courses-grid { grid-template-columns: 1fr; }
+        @media (min-width: 768px) { .courses-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .courses-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .tools-grid { grid-template-columns: 1fr; }
+        @media (min-width: 768px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .career-grid { grid-template-columns: 1fr; }
+        @media (min-width: 600px) { .career-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 900px) { .career-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        /* ---- Cards ---- */
+        .card {
+            border: 1px solid rgba(17,17,17,.10);
+            border-radius: 16px;
+            padding: 1.5rem;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,.04);
+            transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+            display: flex;
+            flex-direction: column;
         }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        @media (min-width: 768px) {
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .courses-grid {
-            grid-template-columns: 1fr;
-        }
-
-        @media (min-width: 768px) {
-            .courses-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .courses-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .tools-grid {
-            grid-template-columns: 1fr;
-        }
-
-        @media (min-width: 768px) {
-            .tools-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .career-grid {
-            grid-template-columns: 1fr;
-        }
-
-        @media (min-width: 600px) {
-            .career-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 900px) {
-            .career-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .card:hover {
+            border-color: rgba(17,17,17,.16);
+            box-shadow: 0 8px 24px rgba(0,0,0,.07);
+            transform: translateY(-2px);
         }
 
         .card-badge {
             display: inline-block;
-            padding: 0.15rem 0.45rem;
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+            padding: 0.15rem 0.5rem;
+            background: rgba(17,17,17,.04);
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 6px;
             font-size: 0.65rem;
             font-weight: 600;
-            color: #777;
+            color: rgba(17,17,17,.48);
             text-transform: uppercase;
             letter-spacing: 0.04em;
             margin-bottom: 0.6rem;
         }
-
         .card-badge.badge-proof {
-            background: #f0f5f0;
-            border-color: #d0e0d0;
-            color: #5a7a5a;
+            background: rgba(4,120,87,.06);
+            border-color: rgba(4,120,87,.15);
+            color: #047857;
         }
 
-        .card-list {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 1rem;
-        }
-
-        .card-list li {
-            font-size: 0.88rem;
-            line-height: 1.55;
-            color: #1a1a1a;
-            margin-bottom: 0.3rem;
-            padding-left: 1rem;
-            position: relative;
-        }
-
-        .card-list li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #999;
-        }
-
-        .career-card--results {
-            transition: transform 0.18s ease-out,
-                        box-shadow 0.18s ease-out,
-                        border-color 0.18s ease-out;
-        }
-
-        .career-card--results:hover {
-            border-color: #9fd3b8;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            transform: scale(1.015);
-        }
-
-        .card {
-            border: 1px solid #e8e8e8;
-            border-radius: 6px;
-            padding: 1.25rem;
-            background: #ffffff;
-            transition: border-color 0.2s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card:hover {
-            border-color: #999;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            color: #1a1a1a;
-        }
-
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #111; }
         .card-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
+            font-size: 0.93rem;
+            line-height: 1.6;
+            color: rgba(17,17,17,.68);
             margin-bottom: 1rem;
             flex-grow: 1;
         }
 
+        .card-list { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .card-list li {
+            font-size: 0.88rem; line-height: 1.55;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0.3rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .card-list li:before { content: "•"; position: absolute; left: 0; color: rgba(17,17,17,.28); }
+
+        .career-card--results {
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+        }
+        .career-card--results:hover {
+            border-color: rgba(4,120,87,.3);
+            box-shadow: 0 10px 30px rgba(4,120,87,.08);
+            transform: translateY(-2px);
+        }
+
+        /* ---- Buttons ---- */
         .card-button {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
-            color: #1a1a1a;
+            padding: 0.55rem 1.2rem;
+            color: #0071e3;
             text-decoration: none;
-            font-size: 0.9rem;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
+            font-size: 0.88rem;
+            font-weight: 500;
+            border: 1px solid rgba(17,17,17,.12);
+            border-radius: 12px;
+            transition: all 180ms ease;
             align-self: flex-start;
         }
-
         .card-button:hover {
-            background-color: #f0f0f0;
-            border-color: #666;
+            background: #0071e3;
+            color: #fff;
+            border-color: #0071e3;
+            text-decoration: none;
         }
 
-        .companies-section {
-            max-width: 700px;
-            margin-bottom: 3rem;
-        }
-
+        /* ---- Companies ---- */
+        .companies-section { max-width: 700px; margin-bottom: 0; }
         .companies-section p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 1rem;
+            font-size: 0.95rem; line-height: 1.65;
+            color: rgba(17,17,17,.68); margin-bottom: 1rem;
         }
-
         .companies-button {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
-            color: #1a1a1a;
+            padding: 0.65rem 1.4rem;
+            background: #0071e3;
+            color: #fff;
             text-decoration: none;
             font-size: 0.9rem;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            margin-top: 0.5rem;
+            font-weight: 500;
+            border: 1px solid #0071e3;
+            border-radius: 12px;
+            transition: all 180ms ease;
+            margin-top: 0.25rem;
         }
-
         .companies-button:hover {
-            background-color: #f0f0f0;
-            border-color: #666;
+            background: #0062c4;
+            border-color: #0062c4;
+            text-decoration: none;
         }
 
-        .about-section {
-            max-width: 700px;
-            margin-bottom: 3rem;
-        }
-
+        /* ---- About ---- */
+        .about-section { max-width: 700px; margin-bottom: 0; }
         .about-section p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #1a1a1a;
-            margin-bottom: 0.75rem;
+            font-size: 0.95rem; line-height: 1.65;
+            color: rgba(17,17,17,.68); margin-bottom: 0.75rem;
         }
+        .about-section a { color: rgba(17,17,17,.48); text-decoration: none; transition: color 180ms ease; }
+        .about-section a:hover { color: #111; }
 
-        .footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e8e8e8;
-        }
-
-        .footer-nav {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-
+        /* ---- Footer ---- */
+        .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(17,17,17,.08); }
+        .footer-nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
         .footer-link {
-            color: #666;
+            color: rgba(17,17,17,.38);
             text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 180ms ease;
+        }
+        .footer-link:hover { color: #111; text-decoration: none; }
+
+        /* --- spacing between sections (homepage) --- */
+        .courses-grid,
+        .tools-grid,
+        .knowledge-grid,
+        .cards-grid,
+        .grid {
+            margin-bottom: 28px;
+        }
+
+        .section-title,
+        h2 {
+            margin-top: 36px;
+        }
+
+        .hero + .section-title,
+        .hero + h2 {
+            margin-top: 24px;
+        }
+
+        .hero-title {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hero-chip {
             font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-
-        .footer-link:hover {
-            color: #1a1a1a;
-        }
-
-        .about-section a {
-            color: #666;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .about-section a:hover {
-            color: #1a1a1a;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            background: var(--color-bg-subtle);
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            padding: 6px 10px;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <nav class="top-nav">
+            <a href="/" class="active">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
         <div class="hero">
-            <h1>Alex Davydov</h1>
-            <p class="subtitle">Прикладная аналитика для монетизации, экспериментов и принятия решений.</p>
-            <p class="muted">Курсы, лаборатория и экспертная работа.</p>
+            <h1 class="hero-title">Workplace аналитика <span class="hero-chip">by Alex Davydov</span></h1>
+            <p class="subtitle">Операционная система аналитика: курсы, инструменты и практика для принятия решений на данных.</p>
+            <p class="muted">Монетизация, эксперименты, метрики, графики — от механизма к решению.</p>
         </div>
 
         <section>
             <h2>Курсы</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Практические мини-курсы про монетизацию и эксперименты: механизм → метрики → решение.</p>
+            <p class="muted" style="margin-bottom: 1.5rem;">Структурированные программы по аналитике, экспериментам и системному мышлению.</p>
             
             <div class="cards-grid courses-grid">
                 <div class="card">
+                    <div class="micro">Курс</div>
                     <div class="card-title">Аналитика продукта: как читать систему, а не цифры</div>
                     <div class="card-text">
                         Как понимать механизмы продукта прежде, чем смотреть на метрики. Система, сигналы, сегменты, эксперименты и решения.
@@ -314,6 +265,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Курс</div>
                     <div class="card-title">Математика монетизации рекламы</div>
                     <div class="card-text">
                         Монетизация под давлением: как давление и насыщение искажают метрики. Диагностика до падения выручки через механизмы, а не цифры.
@@ -322,6 +274,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Курс</div>
                     <div class="card-title">Математика экспериментов в монетизации</div>
                     <div class="card-text">
                         Эксперименты, когда метрики врут: давление, время, лаги, guardrails. Траектории системы вместо дельт.
@@ -330,6 +283,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Курс</div>
                     <div class="card-title">A/B-тестирование: принятие решений на практике</div>
                     <div class="card-text">
                         Практический курс про решения в A/B: графики → механизм → решение. Конфликты метрик, сегменты, окна и лаги.
@@ -338,6 +292,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Курс</div>
                     <div class="card-title">Статистика A/B-тестирования: операционная система аналитика</div>
                     <div class="card-text">
                         Прикладной курс по статистике экспериментов: классификация метрик, выбор статкритерия, CUPED, кластеры и типовые ошибки. Упор на решения, а не формулы.
@@ -347,12 +302,15 @@
             </div>
         </section>
 
+        <hr class="divider">
+
         <section>
             <h2>Инструменты</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Калькуляторы и определения — чтобы быстро сверять смысл метрик и расчётов.</p>
+            <p class="muted" style="margin-bottom: 1.5rem;">Симуляторы, калькуляторы и чек-листы для принятия решений.</p>
             
             <div class="cards-grid courses-grid">
                 <div class="card">
+                    <div class="micro">Инструмент</div>
                     <div class="card-title">Симуляторы</div>
                     <div class="card-text">
                         Интерактивные модели монетизации и экспериментов: покрутить рычаги, увидеть нелинейности и trade-offs.
@@ -361,6 +319,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Инструмент</div>
                     <div class="card-title">Калькуляторы</div>
                     <div class="card-text">
                         Интерактивные модели: покрутить рычаги, увидеть нелинейности и trade-offs.
@@ -369,21 +328,25 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Инструмент</div>
                     <div class="card-title">Глоссарий</div>
                     <div class="card-text">
-                        Термины и метрики проекта: что именно считаем и как читаем.
+                        Термины и определения проекта: что именно считаем и как читаем.
                     </div>
                     <a href="/lab/glossary/" class="card-button">Открыть →</a>
                 </div>
             </div>
         </section>
 
+        <hr class="divider">
+
         <section>
             <h2>База знаний</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Статьи, материалы и заметки по аналитике, экспериментам и управлению.</p>
+            <p class="muted" style="margin-bottom: 1.5rem;">Отобранные материалы по аналитике и управлению.</p>
             
             <div class="cards-grid courses-grid">
                 <div class="card">
+                    <div class="micro">База знаний</div>
                     <div class="card-title">Аналитика и эксперименты</div>
                     <div class="card-text">
                         Статьи и материалы про A/B-тесты, статистику, метрики и аналитическую практику.
@@ -392,6 +355,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">База знаний</div>
                     <div class="card-title">Управление аналитикой</div>
                     <div class="card-text">
                         Практические заметки о роли лидера аналитики: грейды, команда, ответственность, процессы и рост.
@@ -400,6 +364,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">База знаний</div>
                     <div class="card-title">Карта компетенций</div>
                     <div class="card-text">
                         От Junior до Lead: уровни, ответственность, сигналы роста и управление аналитикой.
@@ -408,6 +373,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">База знаний</div>
                     <div class="card-title">Тестовые задания</div>
                     <div class="card-text">
                         Реальные тестовые из компаний: SQL, Python, A/B, кейсы.
@@ -417,6 +383,8 @@
 
             </div>
         </section>
+
+        <hr class="divider">
 
         <section class="about-section">
             <h2>Про меня</h2>
@@ -440,12 +408,15 @@
             </p>
         </section>
 
+        <hr class="divider">
+
         <section>
             <h2>Карьера</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Разбор опыта и решений: резюме, кейсы, интервью. Упор на структуру аргументов, ответственность и trade-offs.</p>
+            <p class="muted" style="margin-bottom: 1.5rem;">Развитие аналитика: от IC до Executive.</p>
             
             <div class="cards-grid career-grid">
                 <div class="card">
+                    <div class="micro">Карьера</div>
                     <div class="card-title">Карьерный разбор (аналитики)</div>
                     <div class="card-text">
                         Упаковываем опыт в чёткие аргументы: что вы сделали, почему это сработало, какие были ограничения и как вы принимали решения.
@@ -454,6 +425,7 @@
                 </div>
 
                 <div class="card">
+                    <div class="micro">Карьера</div>
                     <div class="card-title">Executive review (Lead / Head)</div>
                     <div class="card-text">
                         Позиционирование уровня системы: зона влияния, границы ответственности, решения про деньги, риски и эксперименты.
@@ -478,8 +450,11 @@
             </div>
         </section>
 
+        <hr class="divider">
+
         <section class="companies-section">
             <h2>Для компаний</h2>
+            <p class="muted" style="margin-bottom: 1rem;">Решение продуктовых и аналитических задач.</p>
             <p>
                 Диагностика конфликтов продуктовых и монетизационных метрик.
                 Механизмы принятия решений вместо косметики KPI.
@@ -487,13 +462,13 @@
             <a href="/companies/" class="companies-button">Обсудить задачу →</a>
         </section>
 
-        <footer class="footer">
-            <nav class="footer-nav">
-                <a href="/lab/monetization/" class="footer-link">Монетизация</a>
-                <a href="/lab/experiments/" class="footer-link">Эксперименты</a>
-                <a href="/simulators/" class="footer-link">Симуляторы</a>
-                <a href="/career/" class="footer-link">Карьера</a>
-                <a href="/companies/" class="footer-link">Для компаний</a>
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
             </nav>
         </footer>
     </div>

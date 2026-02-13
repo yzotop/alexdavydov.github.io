@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для компаний — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background-color: #fff;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 1rem; }
+
+        /* breadcrumbs */
+        .breadcrumbs { margin-bottom: 2rem; font-size: 0.88rem; color: rgba(17,17,17,.48); }
+        .breadcrumbs a { color: rgba(17,17,17,.48); text-decoration: none; transition: color 180ms ease; }
+        .breadcrumbs a:hover { color: #111; }
+        .breadcrumbs .sep { margin: 0 0.35rem; }
+
+        /* header */
+        h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; color: #111; }
+        .subtitle { font-size: 1.05rem; color: rgba(17,17,17,.68); line-height: 1.65; margin-bottom: 2.5rem; max-width: 640px; }
+
+        /* grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+        @media (max-width: 640px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* cards */
+        .card {
+            background: #fff;
+            border: 1px solid rgba(17,17,17,.10);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: box-shadow 180ms ease, transform 180ms ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            transform: translateY(-1px);
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #111;
+        }
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .card li {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: 0.6rem;
+            font-size: 0.93rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.55;
+        }
+        .card li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.28);
+        }
+
+        /* CTA section */
+        .cta-section {
+            text-align: center;
+            padding: 2.5rem 0;
+            margin-bottom: 2.5rem;
+        }
+        .cta-section p {
+            font-size: 0.95rem;
+            color: rgba(17,17,17,.48);
+            margin-bottom: 1.25rem;
+        }
+        .cta-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.65rem 1.4rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 180ms ease;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background: #0071e3;
+            color: #fff;
+            border-color: #0071e3;
+        }
+        .btn-primary:hover { background: #0062c4; border-color: #0062c4; }
+        .btn-secondary {
+            background: transparent;
+            color: #111;
+            border-color: rgba(17,17,17,.16);
+        }
+        .btn-secondary:hover { background: rgba(17,17,17,.04); border-color: rgba(17,17,17,.24); }
+
+        /* FAQ */
+        .faq { margin-bottom: 2.5rem; }
+        .faq h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #111;
+        }
+        .faq details {
+            border-bottom: 1px solid rgba(17,17,17,.08);
+        }
+        .faq details:first-of-type {
+            border-top: 1px solid rgba(17,17,17,.08);
+        }
+        .faq summary {
+            padding: 1rem 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #111;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary::after {
+            content: "+";
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: rgba(17,17,17,.38);
+            transition: transform 180ms ease;
+        }
+        .faq details[open] summary::after {
+            content: "\2212";
+        }
+        .faq .answer {
+            padding: 0 0 1rem;
+            font-size: 0.93rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.65;
+        }
+
+        /* back */
+        .back {
+            display: inline-block;
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.48);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back:hover { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/" class="active">Для компаний</a>
+        </nav>
+
+        <h1>Для компаний</h1>
+        <p class="subtitle">
+            Помогаю выстроить аналитику продукта, эксперименты и монетизацию так,
+            чтобы решения принимались на данных, а не на ощущениях.
+        </p>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>Чем могу помочь</h2>
+                <ul>
+                    <li>Аудит системы A/B-тестирования и принятия решений</li>
+                    <li>Построение метрик продукта и guardrails</li>
+                    <li>Стратегия монетизации рекламного инвентаря</li>
+                    <li>Обучение команды: воркшопы, разборы, кейсы</li>
+                    <li>Менторство аналитиков и руководителей аналитики</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h2>Форматы</h2>
+                <ul>
+                    <li>Разовая консультация или аудит (2-4 часа)</li>
+                    <li>Серия рабочих сессий (2-4 недели)</li>
+                    <li>Корпоративное обучение (адаптация курсов под контекст)</li>
+                    <li>Долгосрочное менторство (от 1 месяца)</li>
+                </ul>
+            </div>
+        </div>
+
+        <section class="cta-section">
+            <p>Напишите — обсудим задачу и подберём формат</p>
+            <div class="cta-buttons">
+                <a href="mailto:alex@davydov.my?subject=%D0%97%D0%B0%D0%BF%D1%80%D0%BE%D1%81%20%D0%BE%D1%82%20%D0%BA%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D0%B8&body=%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F%3A%0A%D0%A0%D0%BE%D0%BB%D1%8C%20%D0%B8%20%D0%BA%D0%BE%D0%BD%D1%82%D0%B5%D0%BA%D1%81%D1%82%3A%0A%D0%A7%D1%82%D0%BE%20%D1%85%D0%BE%D1%82%D0%B8%D0%BC%20%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C%3A%0A%D0%A1%D1%80%D0%BE%D0%BA%D0%B8%3A%0A%D0%9A%D0%BE%D0%BD%D1%82%D0%B0%D0%BA%D1%82%3A" class="btn btn-primary">Написать на почту</a>
+                <a href="/career/" class="btn btn-secondary">Менторство для аналитиков</a>
+                <a href="/courses/" class="btn btn-secondary">Курсы</a>
+            </div>
+        </section>
+
+        <section class="faq">
+            <h2>Частые вопросы</h2>
+            <details>
+                <summary>Работаете ли вы с командами вне России?</summary>
+                <div class="answer">
+                    Да. Работаю удалённо на русском и английском языках.
+                    Формат не зависит от локации — встречи, документы, разборы проходят онлайн.
+                </div>
+            </details>
+            <details>
+                <summary>Какой минимальный объём сотрудничества?</summary>
+                <div class="answer">
+                    Минимум — разовая консультация на 2 часа.
+                    Для аудита или обучения обычно нужно от 2 до 4 недель, в зависимости от масштаба задачи.
+                </div>
+            </details>
+            <details>
+                <summary>Можно ли адаптировать курсы под нашу компанию?</summary>
+                <div class="answer">
+                    Да. Любой из открытых курсов (A/B-тестирование, аналитика продукта, монетизация)
+                    можно адаптировать под внутренний контекст: ваши метрики, инструменты, кейсы.
+                </div>
+            </details>
+        </section>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Lab</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+
+    </div>
+</body>
+</html>

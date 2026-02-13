@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструменты — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .top-nav { margin-bottom: 2.5rem; }
+
+        .page-header { margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 0.5rem; }
+        .page-header .subtitle { font-size: 1.05rem; color: rgba(17,17,17,.68); line-height: 1.65; }
+
+        .section-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(17,17,17,.38);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(17,17,17,.08);
+        }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+        @media (min-width: 640px) { .hub-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .hub-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(17,17,17,.10);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,.04);
+            transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+        }
+        .hub-card:hover {
+            border-color: rgba(17,17,17,.16);
+            box-shadow: 0 8px 24px rgba(0,0,0,.07);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        .hub-card .card-kicker {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.02em;
+        }
+        .hub-card .card-title { font-size: 1.05rem; font-weight: 600; color: #111; margin-bottom: 0.25rem; }
+        .hub-card .card-desc { font-size: 0.88rem; color: rgba(17,17,17,.58); line-height: 1.55; }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/" class="active">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Инструменты</h1>
+            <p class="subtitle">Моделировать, считать, проверять решения и сверять понятия.</p>
+        </header>
+
+        <div class="section-label">Практика</div>
+        <div class="hub-grid">
+            <a class="hub-card" href="/lab/ab-decisions/practice/">
+                <div class="micro">Разобрать кейсы</div>
+                <div class="card-title">Практика A/B-решений</div>
+                <div class="card-desc">12 сценариев: конфликты метрик, давление, сегменты, окна. Разбор на графиках.</div>
+            </a>
+            <a class="hub-card" href="/lab/ab-decisions/checklist.html">
+                <div class="micro">Проверить решение</div>
+                <div class="card-title">Чек-лист A/B-решений</div>
+                <div class="card-desc">Пошаговая проверка: метрики, guardrails, сегменты, окно, trade-offs.</div>
+            </a>
+        </div>
+
+        <div class="section-label">Инструменты</div>
+        <div class="hub-grid">
+            <a class="hub-card" href="/simulators/">
+                <div class="micro">Моделировать</div>
+                <div class="card-title">Симуляторы</div>
+                <div class="card-desc">Живые симуляции: агенты, взаимодействия, динамика системы.</div>
+            </a>
+            <a class="hub-card" href="/calculators/">
+                <div class="micro">Считать</div>
+                <div class="card-title">Калькуляторы</div>
+                <div class="card-desc">Параметрические модели: покрутить рычаги, увидеть нелинейности.</div>
+            </a>
+            <a class="hub-card" href="/lab/glossary/">
+                <div class="micro">Сверить понятия</div>
+                <div class="card-title">Глоссарий</div>
+                <div class="card-desc">Термины и определения проекта: что именно считаем и как читаем.</div>
+            </a>
+        </div>
+
+        <p style="margin-top: 0.5rem; font-size: 0.88rem; color: rgba(17,17,17,.38);">Изучить глубже → <a href="/courses/" style="color: rgba(17,17,17,.48); text-decoration: none; border-bottom: 1px solid rgba(17,17,17,.12);">Курсы</a></p>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+</body>
+</html>

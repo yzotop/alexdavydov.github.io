@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Map</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39d353;
+    --pink: #f778ba;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  header .meta {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filters label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    height: calc(100vh - 60px);
+  }
+  .panel {
+    overflow-y: auto;
+    padding: 12px 16px;
+    border-right: 1px solid var(--border);
+  }
+  .panel:last-child { border-right: none; }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-title .count {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Tree nodes */
+  .tree-node {
+    margin-left: 0;
+    user-select: none;
+  }
+  .tree-node .children {
+    margin-left: 20px;
+    border-left: 1px solid var(--border);
+    padding-left: 8px;
+  }
+  .tree-node .children.collapsed { display: none; }
+  .node-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+    min-height: 26px;
+  }
+  .node-row:hover { background: var(--surface); }
+  .node-row.selected { background: rgba(88, 166, 255, 0.15); }
+  .node-row.dimmed { opacity: 0.3; }
+  .toggle {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .toggle.expandable { cursor: pointer; }
+  .icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .node-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+  .node-badge {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-canonical { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-runtime { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .badge-narrative { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .badge-artifact { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-symlink { background: rgba(57,211,83,0.15); color: var(--cyan); }
+
+  .type-domain .icon { color: var(--accent); }
+  .type-repo .icon { color: var(--green); }
+  .type-agent .icon { color: var(--purple); }
+  .type-job .icon { color: var(--orange); }
+  .type-dag .icon { color: var(--orange); }
+  .type-utility .icon { color: var(--text-muted); }
+  .type-data .icon { color: var(--cyan); }
+  .type-secrets .icon { color: var(--red); }
+  .type-raw .icon { color: var(--cyan); }
+  .type-derived .icon { color: #58a6ff; }
+  .type-logs .icon { color: var(--text-muted); }
+  .type-cache .icon { color: var(--text-muted); }
+  .type-dir .icon { color: var(--text-muted); }
+  .type-symlink .icon { color: var(--cyan); }
+  .type-root .icon { color: var(--accent); }
+  .type-virtual_group .icon { color: var(--pink); }
+
+  /* Detail panel */
+  .detail {
+    padding: 16px;
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+  }
+  .detail-empty {
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 40px;
+    text-align: center;
+  }
+  .detail h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .detail-section {
+    margin-bottom: 16px;
+  }
+  .detail-section h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .detail-field {
+    display: flex;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 12px;
+  }
+  .detail-field .label {
+    color: var(--text-muted);
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  .detail-field .value {
+    color: var(--text);
+    word-break: break-all;
+  }
+  .detail-field .value.path {
+    color: var(--accent);
+    font-size: 11px;
+  }
+  .detail-list {
+    margin: 4px 0;
+    padding-left: 16px;
+    list-style: none;
+  }
+  .detail-list li { padding: 2px 0; font-size: 12px; }
+  .detail-list li::before {
+    content: '\2192 ';
+    color: var(--text-muted);
+  }
+  .symlink-indicator {
+    font-size: 10px;
+    color: var(--cyan);
+    margin-left: 4px;
+  }
+  .search-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    width: 180px;
+  }
+  .search-box:focus { outline: none; border-color: var(--accent); }
+  .search-box::placeholder { color: var(--text-muted); }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    padding: 6px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; gap: 4px; }
+  .stat .num { color: var(--text); font-weight: 600; }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 11px;
+    min-height: 20px;
+  }
+  .breadcrumb {
+    color: var(--accent);
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 3px;
+    transition: background 0.1s;
+  }
+  .breadcrumb:hover { background: var(--surface); }
+  .breadcrumb.current {
+    color: var(--text);
+    cursor: default;
+    background: none;
+  }
+  .breadcrumb-sep {
+    color: var(--text-muted);
+    font-size: 10px;
+  }
+
+  /* Detail toolbar */
+  .detail-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .detail-toolbar .node-id-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: inherit;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .copy-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Relation links */
+  .rel-link {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .rel-link:hover { text-decoration: underline; }
+  .rel-unresolved { color: var(--text-muted); font-style: italic; }
+  .rel-badge-unresolved {
+    font-size: 9px;
+    color: var(--orange);
+    margin-left: 4px;
+  }
+
+  /* Legend */
+  .legend-bar {
+    display: none;
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 11px;
+    color: var(--text-muted);
+    gap: 24px;
+  }
+  .legend-bar.open { display: flex; flex-wrap: wrap; }
+  .legend-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .legend-group-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .legend-icon {
+    font-size: 12px;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .legend-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .legend-btn:hover { border-color: var(--accent); color: var(--text); }
+  .legend-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: inherit;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel { border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; }
+    .detail { max-height: 50vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>System Map</h1>
+  <span class="meta">v2.2 &middot; generated 2026-02-10 &middot; read-only &middot; /Users/involute</span>
+  <div class="filters">
+    <label>Filter:</label>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="domain">Domains</button>
+    <button class="filter-btn" data-filter="agent">Agents</button>
+    <button class="filter-btn" data-filter="job">Jobs</button>
+    <button class="filter-btn" data-filter="data">Data</button>
+    <button class="filter-btn" data-filter="canonical">Canonical</button>
+    <button class="filter-btn" data-filter="runtime">Runtime</button>
+    <input type="text" class="search-box" id="search" placeholder="Search..." />
+    <button class="legend-btn" id="legend-toggle" title="Toggle legend">?</button>
+  </div>
+</header>
+
+<div class="legend-bar" id="legend-bar">
+  <div class="legend-group">
+    <span class="legend-group-title">Roles</span>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(88,166,255,0.4);"></span> canonical &mdash; source of truth (code, config, registry)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(210,153,34,0.4);"></span> runtime &mdash; generated at runtime (data, logs, indexes)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(188,140,255,0.4);"></span> narrative &mdash; human-written context (memory, notes)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(248,81,73,0.4);"></span> artifact &mdash; build output (dashboards, reports)</div>
+  </div>
+  <div class="legend-group">
+    <span class="legend-group-title">Indicators</span>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&rarr;</span> symlink &mdash; real data lives in DATA_ROOT; target shown in details</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--red);">&varr;</span> secrets &mdash; sensitive files (API keys, sessions) in data/_secrets</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x25B8;</span> virtual group &mdash; UI-only grouping node, not a real filesystem path</div>
+  </div>
+  <div class="legend-group">
+    <span class="legend-group-title">Node types</span>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--accent);">&#x25A0;</span> domain &mdash; top-level project area</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--green);">&#x25CB;</span> repo &mdash; git repository</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--purple);">&#x2605;</span> agent &mdash; Cursor prompt agent</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--orange);">&#x25B6;</span> dag / job &mdash; scheduled pipeline or script</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x2699;</span> utility &mdash; infrastructure or knowledge tool</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&#x25A3;</span> raw / derived &mdash; data area in DATA_ROOT</div>
+  </div>
+</div>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="layout">
+  <div class="panel" id="tree-panel">
+    <div class="panel-title">
+      <span>Structure</span>
+      <span class="count" id="node-count"></span>
+    </div>
+    <div id="projects-tree"></div>
+    <div id="data-tree" style="margin-top: 16px;"></div>
+  </div>
+  <div class="detail" id="detail-panel">
+    <div class="detail-empty">Select a node to inspect</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── State ── */
+let DATA = null;
+let selectedId = null;
+let activeFilter = 'all';
+let searchTerm = '';
+
+/* Node registry: id → tree node object */
+const nodeRegistry = new Map();
+/* Parent map: id → parent id (for breadcrumbs / ancestor expansion) */
+const parentMap = new Map();
+/* DOM map: id → DOM .node-row element (for scrolling / selection) */
+const domMap = new Map();
+
+/* ── Icons ── */
+const ICONS = {
+  root: '\u25C6', domain: '\u25A0', repo: '\u25CB', agent: '\u2605',
+  dag: '\u25B6', job: '\u25B7', utility: '\u2699', data: '\u25A3',
+  raw: '\u25A3', derived: '\u25A2', logs: '\u25A1', cache: '\u25A1',
+  secrets: '\u26A0', artifact: '\u25A2', dir: '\u25B8', symlink: '\u2192',
+  registry: '\u25C7', memory: '\u25C7', virtual_group: '\u229E',
+};
+function getIcon(type) { return ICONS[type] || ICONS.dir; }
+
+/* ── Helpers ── */
+function roleBadge(role) {
+  if (!role) return '';
+  const cls = { canonical:'badge-canonical', runtime:'badge-runtime',
+    narrative:'badge-narrative', artifact:'badge-artifact' }[role] || 'badge-runtime';
+  return `<span class="node-badge ${cls}">${role}</span>`;
+}
+
+function matchesFilter(nodeType, nodeRole) {
+  if (activeFilter === 'all') return true;
+  if (activeFilter === 'domain') return nodeType === 'domain';
+  if (activeFilter === 'agent') return nodeType === 'agent';
+  if (activeFilter === 'job') return nodeType === 'job' || nodeType === 'dag' || nodeType === 'utility';
+  if (activeFilter === 'data') return ['data','raw','derived','logs','cache','secrets','artifact'].includes(nodeType);
+  if (activeFilter === 'canonical') return nodeRole === 'canonical';
+  if (activeFilter === 'runtime') return nodeRole === 'runtime';
+  return true;
+}
+function matchesSearch(name) {
+  if (!searchTerm) return true;
+  return name.toLowerCase().includes(searchTerm.toLowerCase());
+}
+function shouldShow(nodeType, nodeRole, name) {
+  return matchesFilter(nodeType, nodeRole) && matchesSearch(name);
+}
+
+/* ── Register a tree node + parent ── */
+function reg(node, parentId) {
+  nodeRegistry.set(node.id, node);
+  if (parentId) parentMap.set(node.id, parentId);
+}
+
+/* ── Build project tree ── */
+function buildProjectsTree() {
+  const rootId = 'root.projects';
+  const nodes = [];
+  DATA.domains.forEach(domain => {
+    const domainNode = {
+      id: domain.id, name: domain.name, type: 'domain',
+      role: domain.role, path: domain.path,
+      description: domain.description, children: [], data: domain,
+    };
+    reg(domainNode, rootId);
+
+    (domain.repos || []).forEach(repo => {
+      const repoNode = {
+        id: repo.id, name: repo.name, type: 'repo',
+        role: repo.role || 'canonical', path: repo.path,
+        description: repo.description, children: [], data: repo,
+      };
+      reg(repoNode, domainNode.id);
+
+      (repo.symlinks || []).forEach(sl => {
+        const slNode = {
+          id: `sym-in.${repo.id}.${sl.from.replace(/\//g,'-')}`,
+          name: `${sl.from} \u2192 \u2026`, type: 'symlink',
+          role: 'runtime', path: sl.from,
+          description: `Symlink: ${sl.from} \u2192 ${sl.to}`,
+          children: [], data: sl,
+        };
+        reg(slNode, repoNode.id);
+        repoNode.children.push(slNode);
+      });
+      domainNode.children.push(repoNode);
+    });
+
+    /* Cursor special subdirs */
+    if (domain.name === 'cursor' && domain.subdirs) {
+      domain.subdirs.forEach(sd => {
+        const sdType = (sd === 'registry') ? 'registry' : (sd === 'memory') ? 'memory' : 'dir';
+        const sdId = `group.cursor-${sd}`;
+        const sdNode = {
+          id: sdId, name: sd, type: sdType,
+          role: sd === 'registry' ? 'canonical' : sd === 'memory' ? 'narrative' : 'canonical',
+          path: `${domain.path}/${sd}`, description: '', children: [], data: {},
+        };
+        reg(sdNode, domainNode.id);
+        if (sd === 'agents') {
+          DATA.agents.forEach(agent => {
+            const aNode = {
+              id: agent.id, name: agent.name, type: 'agent',
+              role: agent.role, path: agent.definition,
+              description: agent.purpose, children: [], data: agent,
+            };
+            reg(aNode, sdId);
+            sdNode.children.push(aNode);
+          });
+        }
+        domainNode.children.push(sdNode);
+      });
+    }
+
+    /* Jobs in personal-os */
+    if (domain.name === 'core') {
+      const posRepo = domainNode.children.find(c => c.name === 'personal-os');
+      if (posRepo) {
+        const jobsId = 'group.personal-os-runtime';
+        const jobsNode = {
+          id: jobsId, name: 'runtime (jobs & DAGs)', type: 'dir',
+          role: 'canonical', path: 'core/personal-os/runtime',
+          description: 'Automation pipeline scripts and DAGs',
+          children: [], data: {},
+        };
+        reg(jobsNode, posRepo.id);
+
+        const addGroup = (gid, gname, desc, filterFn) => {
+          const group = {
+            id: gid, name: gname, type: 'dir', role: 'canonical',
+            path: '', description: desc, children: [], data: {},
+          };
+          reg(group, jobsId);
+          DATA.jobs.filter(filterFn).forEach(j => {
+            const jNode = {
+              id: j.id, name: j.name, type: j.type,
+              role: 'canonical', path: j.code_path,
+              description: j.schedule ? `schedule: ${j.schedule}` :
+                (j.called_by && j.called_by.target ? `called by: ${j.called_by.target.split('.').pop()}` :
+                (j.purpose || '')),
+              children: [], data: j,
+            };
+            reg(jNode, gid);
+            group.children.push(jNode);
+          });
+          jobsNode.children.push(group);
+        };
+        addGroup('group.dags', 'dags', 'Directed Acyclic Graphs', j => j.type === 'dag');
+        addGroup('group.pipeline', 'pipeline scripts', 'Pipeline scripts called by DAGs', j => j.type === 'job');
+        addGroup('group.util', 'utilities', 'Infrastructure and knowledge utilities', j => j.type === 'utility');
+        posRepo.children.push(jobsNode);
+      }
+    }
+    nodes.push(domainNode);
+  });
+
+  /* ── Virtual: All Agents ── */
+  const vaId = 'virtual.all_agents';
+  const vaNode = {
+    id: vaId, name: 'All Agents', type: 'virtual_group',
+    role: 'canonical', path: '',
+    description: 'UI-only aggregation node; not a real filesystem path',
+    children: [], data: {},
+  };
+  reg(vaNode, rootId);
+  DATA.agents.forEach(agent => {
+    const refNode = {
+      id: `vref.all_agents.${agent.id}`,
+      name: agent.name, type: 'agent',
+      role: agent.role, path: agent.definition,
+      description: agent.purpose,
+      children: [], data: agent,
+      _navigateTo: agent.id,
+    };
+    reg(refNode, vaId);
+    vaNode.children.push(refNode);
+  });
+  nodes.push(vaNode);
+
+  /* ── Virtual: All Jobs ── */
+  const vjId = 'virtual.all_jobs';
+  const vjNode = {
+    id: vjId, name: 'All Jobs', type: 'virtual_group',
+    role: 'canonical', path: '',
+    description: 'UI-only aggregation node; not a real filesystem path',
+    children: [], data: {},
+  };
+  reg(vjNode, rootId);
+  DATA.jobs.filter(j => j.type === 'job' || j.type === 'dag').forEach(j => {
+    const refNode = {
+      id: `vref.all_jobs.${j.id}`,
+      name: j.name, type: j.type,
+      role: 'canonical', path: j.code_path,
+      description: j.schedule ? `schedule: ${j.schedule}` :
+        (j.called_by && j.called_by.target ? `called by: ${j.called_by.target.split('.').pop()}` :
+        (j.purpose || '')),
+      children: [], data: j,
+      _navigateTo: j.id,
+    };
+    reg(refNode, vjId);
+    vjNode.children.push(refNode);
+  });
+  nodes.push(vjNode);
+
+  return nodes;
+}
+
+/* ── Build data tree ── */
+function buildDataTree() {
+  const rootId = 'root.data';
+  const groups = {};
+  DATA.data_areas.forEach(da => {
+    const d = da.domain || '_system';
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(da);
+  });
+  const nodes = [];
+  Object.keys(groups).sort().forEach(domain => {
+    const dgId = `group.data-${domain}`;
+    const domainNode = {
+      id: dgId, name: domain, type: 'domain', role: 'runtime',
+      path: `data/${domain === '_system' ? '' : domain}`,
+      description: '', children: [], data: {},
+    };
+    reg(domainNode, rootId);
+    groups[domain].forEach(da => {
+      const daNode = {
+        id: da.id, name: da.path.split('/').pop(), type: da.type,
+        role: da.role, path: da.path, description: da.description,
+        size: da.size, children: [], data: da,
+      };
+      reg(daNode, dgId);
+      domainNode.children.push(daNode);
+    });
+    nodes.push(domainNode);
+  });
+
+  /* Symlinks section */
+  const slGroupId = 'group.data-symlinks';
+  const slNode = {
+    id: slGroupId, name: 'symlinks (project \u2192 data)', type: 'dir',
+    role: 'runtime', path: '',
+    description: 'All active symlinks from PROJECTS_ROOT into DATA_ROOT',
+    children: [], data: {},
+  };
+  reg(slNode, rootId);
+  DATA.symlinks.forEach(sl => {
+    const sNode = {
+      id: sl.id,
+      name: `${sl.from.split('/').slice(-2).join('/')} \u2192 ${sl.to.split('/').slice(-2).join('/')}`,
+      type: 'symlink', role: 'runtime', path: sl.from,
+      description: `${sl.from} \u2192 ${sl.to}`,
+      children: [], data: sl,
+    };
+    reg(sNode, slGroupId);
+    slNode.children.push(sNode);
+  });
+  nodes.push(slNode);
+  return nodes;
+}
+
+/* ── Render tree node to DOM ── */
+function renderTreeNode(node, container, depth) {
+  const el = document.createElement('div');
+  el.classList.add('tree-node');
+  const hasChildren = node.children && node.children.length > 0;
+  const show = shouldShow(node.type, node.role, node.name);
+
+  const row = document.createElement('div');
+  row.classList.add('node-row', `type-${node.type}`);
+  row.dataset.id = node.id;
+  if (!show && activeFilter !== 'all') row.classList.add('dimmed');
+
+  /* Store DOM reference */
+  domMap.set(node.id, row);
+
+  const toggleEl = document.createElement('span');
+  toggleEl.classList.add('toggle');
+  if (hasChildren) {
+    toggleEl.classList.add('expandable');
+    toggleEl.textContent = depth < 1 ? '\u25BC' : '\u25B6';
+  }
+  row.appendChild(toggleEl);
+
+  const iconEl = document.createElement('span');
+  iconEl.classList.add('icon');
+  iconEl.textContent = getIcon(node.type);
+  row.appendChild(iconEl);
+
+  const labelEl = document.createElement('span');
+  labelEl.classList.add('node-label');
+  labelEl.textContent = node.name;
+  row.appendChild(labelEl);
+
+  if (node.size) {
+    const sizeEl = document.createElement('span');
+    sizeEl.classList.add('node-badge', 'badge-runtime');
+    sizeEl.textContent = node.size;
+    row.appendChild(sizeEl);
+  }
+  const badge = roleBadge(node.role);
+  if (badge) {
+    const tmp = document.createElement('span');
+    tmp.innerHTML = badge;
+    row.appendChild(tmp.firstChild);
+  }
+  el.appendChild(row);
+
+  if (hasChildren) {
+    const childContainer = document.createElement('div');
+    childContainer.classList.add('children');
+    if (depth >= 1) childContainer.classList.add('collapsed');
+    node.children.forEach(child => renderTreeNode(child, childContainer, depth + 1));
+    el.appendChild(childContainer);
+    toggleEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const collapsed = childContainer.classList.toggle('collapsed');
+      toggleEl.textContent = collapsed ? '\u25B6' : '\u25BC';
+    });
+  }
+
+  row.addEventListener('click', () => selectNodeById(node.id));
+  container.appendChild(el);
+}
+
+/* ── Render both trees ── */
+function renderTrees() {
+  const projContainer = document.getElementById('projects-tree');
+  const dataContainer = document.getElementById('data-tree');
+  projContainer.innerHTML = '';
+  dataContainer.innerHTML = '';
+
+  /* Register synthetic roots */
+  const projRoot = { id: 'root.projects', name: 'projects/', type: 'root', role: 'canonical', path: 'projects/', children: [], data: {} };
+  const dataRoot = { id: 'root.data', name: 'data/', type: 'root', role: 'runtime', path: 'data/', children: [], data: {} };
+  nodeRegistry.set(projRoot.id, projRoot);
+  nodeRegistry.set(dataRoot.id, dataRoot);
+
+  /* Projects root label */
+  const projLabel = document.createElement('div');
+  projLabel.classList.add('tree-node');
+  const projRow = document.createElement('div');
+  projRow.classList.add('node-row', 'type-root');
+  projRow.dataset.id = projRoot.id;
+  projRow.style.marginBottom = '4px';
+  projRow.innerHTML = `<span class="icon" style="color:var(--accent);">\u25C6</span>
+    <span class="node-label" style="font-weight:600;">projects/</span>
+    <span class="node-badge badge-canonical">PROJECTS_ROOT</span>`;
+  projRow.addEventListener('click', () => selectNodeById(projRoot.id));
+  domMap.set(projRoot.id, projRow);
+  projLabel.appendChild(projRow);
+  projContainer.appendChild(projLabel);
+
+  const projNodes = buildProjectsTree();
+  projRoot.children = projNodes;
+  projNodes.forEach(n => renderTreeNode(n, projContainer, 0));
+
+  /* Data root label */
+  const dataLabel = document.createElement('div');
+  dataLabel.classList.add('tree-node');
+  const dataRow = document.createElement('div');
+  dataRow.classList.add('node-row', 'type-root');
+  dataRow.dataset.id = dataRoot.id;
+  dataRow.style.marginBottom = '4px';
+  dataRow.innerHTML = `<span class="icon" style="color:var(--orange);">\u25C6</span>
+    <span class="node-label" style="font-weight:600;">data/</span>
+    <span class="node-badge badge-runtime">DATA_ROOT</span>`;
+  dataRow.addEventListener('click', () => selectNodeById(dataRoot.id));
+  domMap.set(dataRoot.id, dataRow);
+  dataLabel.appendChild(dataRow);
+  dataContainer.appendChild(dataLabel);
+
+  const dataNodes = buildDataTree();
+  dataRoot.children = dataNodes;
+  dataNodes.forEach(n => renderTreeNode(n, dataContainer, 0));
+
+  /* Node count */
+  let total = nodeRegistry.size;
+  document.getElementById('node-count').textContent = `${total} nodes`;
+}
+
+/* ── Stats bar ── */
+function renderStats() {
+  const stats = document.getElementById('stats-bar');
+  const domainCount = DATA.domains.length;
+  let repoCount = 0;
+  DATA.domains.forEach(d => { repoCount += (d.repos || []).length; });
+  const agentCount = DATA.agents.length;
+  const jobCount = DATA.jobs.filter(j => j.type === 'job' || j.type === 'dag').length;
+  const utilityCount = DATA.jobs.filter(j => j.type === 'utility').length;
+  const dataCount = DATA.data_areas.length;
+  const symlinkCount = DATA.symlinks.length;
+  stats.innerHTML = `
+    <span class="stat"><span class="num">${domainCount}</span> domains</span>
+    <span class="stat"><span class="num">${repoCount}</span> repos</span>
+    <span class="stat"><span class="num">${agentCount}</span> agents</span>
+    <span class="stat"><span class="num">${jobCount}</span> jobs/DAGs</span>
+    <span class="stat"><span class="num">${utilityCount}</span> utilities</span>
+    <span class="stat"><span class="num">${dataCount}</span> data areas</span>
+    <span class="stat"><span class="num">${symlinkCount}</span> symlinks</span>
+  `;
+}
+
+/* ── Ancestor expansion ── */
+function expandAncestors(id) {
+  let currentId = parentMap.get(id);
+  while (currentId) {
+    const row = domMap.get(currentId);
+    if (row) {
+      const treeNode = row.closest('.tree-node');
+      if (treeNode) {
+        const childrenEl = treeNode.querySelector(':scope > .children');
+        if (childrenEl && childrenEl.classList.contains('collapsed')) {
+          childrenEl.classList.remove('collapsed');
+          const toggle = row.querySelector('.toggle');
+          if (toggle) toggle.textContent = '\u25BC';
+        }
+      }
+    }
+    currentId = parentMap.get(currentId);
+  }
+}
+
+/* ── Breadcrumbs ── */
+function getBreadcrumbs(id) {
+  const crumbs = [];
+  let cur = id;
+  while (cur) {
+    const node = nodeRegistry.get(cur);
+    if (node) crumbs.unshift({ id: cur, name: node.name });
+    cur = parentMap.get(cur);
+  }
+  return crumbs;
+}
+
+/* ── Select node by ID ── */
+function selectNodeById(id) {
+  const node = nodeRegistry.get(id);
+  if (!node) return;
+  /* Follow virtual reference to real node */
+  if (node._navigateTo) { selectNodeById(node._navigateTo); return; }
+  const rowEl = domMap.get(id);
+
+  expandAncestors(id);
+
+  document.querySelectorAll('.node-row.selected').forEach(el => el.classList.remove('selected'));
+  if (rowEl) {
+    rowEl.classList.add('selected');
+    rowEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  selectedId = id;
+  history.replaceState(null, '', '#node=' + encodeURIComponent(id));
+  renderDetail(node);
+}
+
+/* ── Navigate from URL hash ── */
+function navigateToHash() {
+  const hash = location.hash;
+  const m = hash.match(/^#node=(.+)$/);
+  if (m) {
+    const id = decodeURIComponent(m[1]);
+    if (nodeRegistry.has(id)) {
+      selectNodeById(id);
+    }
+  }
+}
+
+/* ── Render relation reference ── */
+function renderRelRef(rel) {
+  if (typeof rel === 'object' && rel.target) {
+    if (rel.resolved && nodeRegistry.has(rel.target)) {
+      const displayName = rel.target.split('.').pop();
+      let s = `<span class="rel-link" data-navigate="${rel.target}">${displayName}</span>`;
+      if (rel.note) s += ` <span style="color:var(--text-muted);">(${rel.note})</span>`;
+      return s;
+    }
+    let s = `<span class="rel-unresolved">${rel.target}</span>`;
+    if (!rel.resolved) s += `<span class="rel-badge-unresolved">unresolved</span>`;
+    return s;
+  }
+  return `<span class="rel-unresolved">${rel}</span>`;
+}
+
+/* ── Build Markdown summary ── */
+function buildMarkdown(node) {
+  const lines = [];
+  lines.push(`## ${node.name}`);
+  lines.push('');
+  lines.push(`- **Type:** ${node.type}`);
+  lines.push(`- **Role:** ${node.role || '\u2014'}`);
+  if (node.path) lines.push(`- **Path:** \`${node.path}\``);
+  if (node.description) lines.push(`- **Description:** ${node.description}`);
+  if (node.size) lines.push(`- **Size:** ${node.size}`);
+  lines.push(`- **Node ID:** \`${node.id}\``);
+
+  const d = node.data;
+  if (d) {
+    /* Agent */
+    if (node.type === 'agent') {
+      if (d.scope) lines.push(`- **Scope:** ${Array.isArray(d.scope) ? d.scope.join(', ') : d.scope}`);
+      if (d.authority) lines.push(`- **Authority:** ${d.authority}`);
+      if (d.definition) lines.push(`- **Definition:** \`${d.definition}\``);
+    }
+    /* Job/DAG/Utility */
+    if (['dag','job','utility'].includes(node.type)) {
+      if (d.schedule) lines.push(`- **Schedule:** ${d.schedule}`);
+      if (d.called_by) {
+        const cb = d.called_by;
+        const name = (typeof cb === 'object' && cb.target) ? cb.target.split('.').pop() : cb;
+        lines.push(`- **Called by:** ${name}${cb.note ? ' (' + cb.note + ')' : ''}`);
+      }
+      if (d.purpose) lines.push(`- **Purpose:** ${d.purpose}`);
+
+      const fmtRels = (label, arr) => {
+        if (!arr || !arr.length) return;
+        lines.push('');
+        lines.push(`### ${label}`);
+        arr.forEach(r => {
+          const t = (typeof r === 'object' && r.target) ? r.target : r;
+          const res = (typeof r === 'object') ? r.resolved : false;
+          lines.push(`- \`${t}\`${res ? '' : ' (unresolved)'}`);
+        });
+      };
+      fmtRels('Reads', d.reads);
+      fmtRels('Produces', d.produces);
+      fmtRels('Calls', d.calls);
+    }
+    /* Symlink */
+    if (node.type === 'symlink' && d.from) {
+      lines.push(`- **From:** \`${d.from}\``);
+      lines.push(`- **To:** \`${d.to}\``);
+    }
+  }
+
+  if (node.children && node.children.length) {
+    lines.push('');
+    lines.push(`### Contains (${node.children.length})`);
+    node.children.forEach(c => lines.push(`- ${c.name} (${c.type})`));
+  }
+  return lines.join('\n');
+}
+
+/* ── Toast notification ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ── Render detail panel ── */
+function renderDetail(node) {
+  const panel = document.getElementById('detail-panel');
+  let html = '';
+
+  /* Breadcrumbs */
+  const crumbs = getBreadcrumbs(node.id);
+  html += '<div class="breadcrumbs">';
+  crumbs.forEach((c, i) => {
+    const isLast = i === crumbs.length - 1;
+    if (isLast) {
+      html += `<span class="breadcrumb current">${c.name}</span>`;
+    } else {
+      html += `<span class="breadcrumb" data-navigate="${c.id}">${c.name}</span>`;
+      html += `<span class="breadcrumb-sep">/</span>`;
+    }
+  });
+  html += '</div>';
+
+  /* Title + toolbar */
+  html += `<h2>${node.name}</h2>`;
+  html += `<div class="detail-toolbar">`;
+  html += `<span class="node-id-label">${node.id}</span>`;
+  html += `<button class="copy-btn" id="copy-link-btn" title="Copy deep link">Link</button>`;
+  html += `<button class="copy-btn" id="copy-md-btn" title="Copy Markdown summary">Copy MD</button>`;
+  html += `</div>`;
+
+  /* Core fields */
+  html += `<div class="detail-section">`;
+  html += `<div class="detail-field"><span class="label">Type</span><span class="value">${node.type}</span></div>`;
+  html += `<div class="detail-field"><span class="label">Role</span><span class="value">${node.role || '\u2014'}</span></div>`;
+  if (node.path) {
+    html += `<div class="detail-field"><span class="label">Path</span><span class="value path">${node.path}</span></div>`;
+  }
+  if (node.description) {
+    html += `<div class="detail-field"><span class="label">Description</span><span class="value">${node.description}</span></div>`;
+  }
+  if (node.size) {
+    html += `<div class="detail-field"><span class="label">Size</span><span class="value">${node.size}</span></div>`;
+  }
+  html += `</div>`;
+
+  const d = node.data;
+
+  /* Agent-specific */
+  if (node.type === 'agent' && d) {
+    html += `<div class="detail-section"><h3>Agent Details</h3>`;
+    if (d.scope) {
+      html += `<div class="detail-field"><span class="label">Scope</span><span class="value">${Array.isArray(d.scope) ? d.scope.join(', ') : d.scope}</span></div>`;
+    }
+    if (d.authority) {
+      html += `<div class="detail-field"><span class="label">Authority</span><span class="value">${d.authority}</span></div>`;
+    }
+    if (d.definition) {
+      html += `<div class="detail-field"><span class="label">Definition</span><span class="value path">${d.definition}</span></div>`;
+    }
+    html += `</div>`;
+  }
+
+  /* Job/DAG/Utility-specific */
+  if (['dag','job','utility'].includes(node.type) && d) {
+    html += `<div class="detail-section"><h3>Job Details</h3>`;
+    if (d.schedule) {
+      html += `<div class="detail-field"><span class="label">Schedule</span><span class="value">${d.schedule}</span></div>`;
+    }
+    if (d.called_by) {
+      html += `<div class="detail-field"><span class="label">Called by</span><span class="value">${renderRelRef(d.called_by)}</span></div>`;
+    }
+    if (d.sensitivity) {
+      html += `<div class="detail-field"><span class="label">Sensitivity</span><span class="value">${d.sensitivity}</span></div>`;
+    }
+    if (d.config_source) {
+      html += `<div class="detail-field"><span class="label">Config</span><span class="value path">${d.config_source}</span></div>`;
+    }
+    if (d.purpose) {
+      html += `<div class="detail-field"><span class="label">Purpose</span><span class="value">${d.purpose}</span></div>`;
+    }
+
+    const renderRelList = (label, arr) => {
+      if (!arr || !arr.length) return;
+      html += `<div class="detail-field"><span class="label">${label}</span></div>`;
+      html += `<ul class="detail-list">`;
+      arr.forEach(r => { html += `<li>${renderRelRef(r)}</li>`; });
+      html += `</ul>`;
+    };
+    renderRelList('Calls', d.calls);
+    renderRelList('Reads', d.reads);
+    renderRelList('Produces', d.produces);
+    html += `</div>`;
+  }
+
+  /* Symlink */
+  if (node.type === 'symlink' && d) {
+    html += `<div class="detail-section"><h3>Symlink</h3>`;
+    if (d.from) html += `<div class="detail-field"><span class="label">From</span><span class="value path">${d.from}</span></div>`;
+    if (d.to) html += `<div class="detail-field"><span class="label">To</span><span class="value path">${d.to}</span></div>`;
+    html += `</div>`;
+  }
+
+  /* Data area */
+  if (['raw','derived','logs','cache','secrets','artifact'].includes(node.type) && d) {
+    html += `<div class="detail-section"><h3>Data Area</h3>`;
+    if (d.domain) html += `<div class="detail-field"><span class="label">Domain</span><span class="value">${d.domain}</span></div>`;
+    html += `</div>`;
+  }
+
+  /* Repo symlinks */
+  if (node.type === 'repo' && d && d.symlinks && d.symlinks.length) {
+    html += `<div class="detail-section"><h3>Data Symlinks</h3>`;
+    html += `<ul class="detail-list">`;
+    d.symlinks.forEach(sl => {
+      html += `<li><span style="color:var(--text)">${sl.from}</span> <span style="color:var(--cyan)">\u2192</span> <span style="color:var(--accent)">${sl.to}</span></li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  /* Children */
+  if (node.children && node.children.length) {
+    html += `<div class="detail-section"><h3>Contains (${node.children.length})</h3>`;
+    html += `<ul class="detail-list">`;
+    node.children.forEach(c => {
+      html += `<li><span class="rel-link" data-navigate="${c.id}">${c.name}</span> <span style="color:var(--text-muted);font-size:10px;">(${c.type})</span></li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  panel.innerHTML = html;
+
+  /* Bind copy buttons */
+  const copyLinkBtn = document.getElementById('copy-link-btn');
+  if (copyLinkBtn) {
+    copyLinkBtn.addEventListener('click', () => {
+      const url = location.origin + location.pathname + '#node=' + encodeURIComponent(node.id);
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied'));
+    });
+  }
+  const copyMdBtn = document.getElementById('copy-md-btn');
+  if (copyMdBtn) {
+    copyMdBtn.addEventListener('click', () => {
+      const md = buildMarkdown(node);
+      navigator.clipboard.writeText(md).then(() => showToast('Markdown copied'));
+    });
+  }
+}
+
+/* ── Event delegation for relation links ── */
+document.getElementById('detail-panel').addEventListener('click', (e) => {
+  const navTarget = e.target.closest('[data-navigate]');
+  if (navTarget && !navTarget.classList.contains('copy-btn')) {
+    selectNodeById(navTarget.dataset.navigate);
+  }
+});
+
+/* ── Filters ── */
+function bindFilters() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyVisibility();
+    });
+  });
+}
+
+/* ── Search ── */
+function bindSearch() {
+  document.getElementById('search').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    applyVisibility();
+  });
+}
+
+/* ── Visibility ── */
+function applyVisibility() {
+  document.querySelectorAll('.node-row').forEach(row => {
+    const name = row.querySelector('.node-label')?.textContent || '';
+    const typeCls = [...row.classList].find(c => c.startsWith('type-'));
+    const type = typeCls ? typeCls.replace('type-', '') : '';
+    const badge = row.querySelector('.node-badge');
+    let role = '';
+    if (badge) {
+      if (badge.classList.contains('badge-canonical')) role = 'canonical';
+      else if (badge.classList.contains('badge-runtime')) role = 'runtime';
+      else if (badge.classList.contains('badge-narrative')) role = 'narrative';
+    }
+    const show = shouldShow(type, role, name);
+    row.classList.toggle('dimmed', !show && activeFilter !== 'all');
+    if (searchTerm && name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      let parent = row.parentElement;
+      while (parent) {
+        if (parent.classList && parent.classList.contains('children') && parent.classList.contains('collapsed')) {
+          parent.classList.remove('collapsed');
+          const toggle = parent.previousElementSibling?.querySelector('.toggle');
+          if (toggle) toggle.textContent = '\u25BC';
+        }
+        parent = parent.parentElement;
+      }
+    }
+  });
+}
+
+/* ── Legend toggle ── */
+function bindLegend() {
+  const btn = document.getElementById('legend-toggle');
+  const bar = document.getElementById('legend-bar');
+  btn.addEventListener('click', () => {
+    const open = bar.classList.toggle('open');
+    btn.classList.toggle('active', open);
+  });
+}
+
+/* ── Hash change listener ── */
+window.addEventListener('hashchange', navigateToHash);
+
+/* ── Init ── */
+async function loadData() {
+  const resp = await fetch('system.json');
+  DATA = await resp.json();
+  renderStats();
+  renderTrees();
+  bindFilters();
+  bindSearch();
+  bindLegend();
+  /* Navigate to hash if present */
+  if (location.hash) {
+    navigateToHash();
+  }
+}
+loadData();
+</script>
+</body>
+</html>
