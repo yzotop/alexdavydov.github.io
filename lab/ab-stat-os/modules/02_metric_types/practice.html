@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 2. Типы метрик</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 2</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">
+            Для каждой метрики определите тип, подход к тестированию и главный риск.
+        </p>
+
+        <!-- Task 1 -->
+        <div class="task-card">
+            <div class="task-title">Задача 1. CTR — Клики / Показы</div>
+            <div class="task-body">
+                <p>CTR - Клики / Показы. Каждый показ — либо клик, либо нет.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Долей (Proportion)</p>
+                    <p><strong>Подход:</strong> z-test / chi-square / bootstrap</p>
+                    <p><strong>Риск:</strong> Treatment-affected exposure</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-card">
+            <div class="task-title">Задача 2. CR — Доля пользователей, совершивших покупку</div>
+            <div class="task-body">
+                <p>CR - Доля пользователей, совершивших покупку.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Proportion</p>
+                    <p><strong>Подход:</strong> z-test для долей</p>
+                    <p><strong>Риск:</strong> Минимальный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-card">
+            <div class="task-title">Задача 3. ARPU</div>
+            <div class="task-body">
+                <p>ARPU - Средняя выручка на пользователя (включая нулевые).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Per-user</p>
+                    <p><strong>Подход:</strong> t-test / Welch (bootstrap при heavy tail)</p>
+                    <p><strong>Риск:</strong> Heavy tail</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-card">
+            <div class="task-title">Задача 4. ARPPU</div>
+            <div class="task-body">
+                <p>ARPPU - Средняя выручка среди покупателей.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Conditional</p>
+                    <p><strong>Подход:</strong> Двухэтапная процедура / bootstrap</p>
+                    <p><strong>Риск:</strong> Selection bias</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task-card">
+            <div class="task-title">Задача 5. AOV</div>
+            <div class="task-body">
+                <p>AOV - GMV / Количество заказов.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Ratio</p>
+                    <p><strong>Подход:</strong> Delta-method / bootstrap отношения</p>
+                    <p><strong>Риск:</strong> Нестабильный знаменатель</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task-card">
+            <div class="task-title">Задача 6. Число заказов на пользователя</div>
+            <div class="task-body">
+                <p>Число заказов на пользователя.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Per-user</p>
+                    <p><strong>Подход:</strong> t-test / Welch</p>
+                    <p><strong>Риск:</strong> Умеренный heavy tail</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task-card">
+            <div class="task-title">Задача 7. Доля с ошибкой оплаты</div>
+            <div class="task-body">
+                <p>Доля с ошибкой оплаты.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Proportion</p>
+                    <p><strong>Подход:</strong> z-test для долей</p>
+                    <p><strong>Риск:</strong> Минимальный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task-card">
+            <div class="task-title">Задача 8. Время до первой покупки (среди купивших)</div>
+            <div class="task-body">
+                <p>Время до первой покупки (среди купивших).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Conditional</p>
+                    <p><strong>Подход:</strong> Bootstrap с коррекцией</p>
+                    <p><strong>Риск:</strong> Selection bias</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task-card">
+            <div class="task-title">Задача 9. Refund Rate</div>
+            <div class="task-body">
+                <p>Refund Rate - Возвраты / Заказы. Каждый заказ — возвращён или нет.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Долей (Proportion)</p>
+                    <p><strong>Подход:</strong> z-test / chi-square / bootstrap</p>
+                    <p><strong>Риск:</strong> Минимальный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task-card">
+            <div class="task-title">Задача 10. RPM</div>
+            <div class="task-body">
+                <p>RPM - Рекламная выручка / Показы × 1000.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Ratio</p>
+                    <p><strong>Подход:</strong> Delta-method / bootstrap отношения</p>
+                    <p><strong>Риск:</strong> Нестабильный знаменатель + heavy tail</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task-card">
+            <div class="task-title">Задача 11. DAU/MAU</div>
+            <div class="task-body">
+                <p>DAU/MAU - Доля активных.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Proportion</p>
+                    <p><strong>Подход:</strong> z-test для долей</p>
+                    <p><strong>Риск:</strong> Минимальный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task-card">
+            <div class="task-title">Задача 12. GMV per user</div>
+            <div class="task-body">
+                <p>GMV per user.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Per-user</p>
+                    <p><strong>Подход:</strong> t-test / Welch (bootstrap при heavy tail)</p>
+                    <p><strong>Риск:</strong> Heavy tail</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 13 -->
+        <div class="task-card">
+            <div class="task-title">Задача 13. Средний рейтинг (среди оставивших отзыв)</div>
+            <div class="task-body">
+                <p>Средний рейтинг (среди оставивших отзыв).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Conditional</p>
+                    <p><strong>Подход:</strong> Bootstrap с коррекцией</p>
+                    <p><strong>Риск:</strong> Selection bias</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 14 -->
+        <div class="task-card">
+            <div class="task-title">Задача 14. Число сессий на пользователя</div>
+            <div class="task-body">
+                <p>Число сессий на пользователя.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Per-user</p>
+                    <p><strong>Подход:</strong> t-test / Welch</p>
+                    <p><strong>Риск:</strong> Умеренный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 15 -->
+        <div class="task-card">
+            <div class="task-title">Задача 15. Стоимость доставки на заказ</div>
+            <div class="task-body">
+                <p>Стоимость доставки на заказ.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Ratio</p>
+                    <p><strong>Подход:</strong> Delta-method / bootstrap отношения</p>
+                    <p><strong>Риск:</strong> Нестабильный знаменатель</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 16 -->
+        <div class="task-card">
+            <div class="task-title">Задача 16. Конверсия в подписку среди увидевших paywall</div>
+            <div class="task-body">
+                <p>Конверсия в подписку среди увидевших paywall.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Conditional</p>
+                    <p><strong>Подход:</strong> Двухэтапная процедура</p>
+                    <p><strong>Риск:</strong> Selection bias</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 17 -->
+        <div class="task-card">
+            <div class="task-title">Задача 17. Retention Day 7</div>
+            <div class="task-body">
+                <p>Retention Day 7.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Proportion</p>
+                    <p><strong>Подход:</strong> z-test для долей</p>
+                    <p><strong>Риск:</strong> Минимальный</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 18 -->
+        <div class="task-card">
+            <div class="task-title">Задача 18. LTV per user</div>
+            <div class="task-body">
+                <p>LTV per user.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Тип:</strong> Per-user</p>
+                    <p><strong>Подход:</strong> Bootstrap (рекомендуется)</p>
+                    <p><strong>Риск:</strong> Heavy tail + правый скос</p>
+                </div>
+            </details>
+        </div>
+
+        <nav class="module-nav">
+            <a href="../01_causality/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../03_distributions/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

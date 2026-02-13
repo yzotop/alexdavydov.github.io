@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 7. Типичные ошибки</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 7</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Инструменты, которые помогают заранее поймать типичные ошибки — неверную классификацию метрики, игнорирование кластеров и некорректный выбор статистического теста.</p>
+
+        <!-- Simulator: test_selection_map -->
+        <div class="sim-card">
+            <div class="concept-badge">Выбор теста</div>
+            <div class="sim-title">Карта выбора статкритерия</div>
+            <div class="sim-description">
+                <p>Интерактивная карта, которая задаёт вам вопросы о метрике и дизайне эксперимента и на основе ответов рекомендует корректный статистический тест.</p>
+                <ul class="preview-list">
+                    <li>Помогает проверить, не применяете ли вы t-test к ratio-метрике с treatment-affected знаменателем.</li>
+                    <li>Напоминает учесть кластерную структуру (гео-эксперименты, marketplace, соцсети).</li>
+                    <li>Показывает различие между per-user, пропорциями, ratio и conditional-метриками.</li>
+                </ul>
+                <p>Встроенные пресеты демонстрируют как типично ошибочные конфигурации («user-level t-test на RPM при кластерной рандомизации»), так и корректные варианты анализа.</p>
+            </div>
+            <div class="sim-insight">Используйте перед запуском теста, чтобы не выбирать тест «по привычке», а осознанно сопоставить метрику, дизайн и критерий.</div>
+            <a href="../../simulators/test_selection_map/index.html" class="nav-card">Открыть симулятор</a>
+        </div>
+
+        <!-- Simulator: metric_classifier -->
+        <div class="sim-card">
+            <div class="concept-badge">Классификация метрик</div>
+            <div class="sim-title">Классификатор метрик</div>
+            <div class="sim-description">
+                <p>Симулятор помогает правильно классифицировать метрику: per-user, пропорцию, ratio, conditional и т.д., а также показывает характерные риски для каждого типа.</p>
+                <ul class="preview-list">
+                    <li>Отлавливает ситуации, когда вы по ошибке считаете per-user метрику на event-level (fan-out).</li>
+                    <li>Подсвечивает ratio-метрики, требующие delta-method или bootstrap, а не наивного t-test по пользователям.</li>
+                    <li>Отдельно помечает conditional-метрики (ARPPU, CR среди активированных) и объясняет риски композиционных сдвигов.</li>
+                </ul>
+                <p>Главная ошибка этого модуля — неверная классификация метрики до запуска теста. Пропустите вашу формулу через классификатор и сравните свой выбор метода анализа с рекомендацией симулятора.</p>
+            </div>
+            <div class="sim-insight">Помогает сформулировать метрику «как в формуле», а не «как в отчёте», и тем самым избежать множества тонких логических ошибок.</div>
+            <a href="../../simulators/metric_classifier/index.html" class="nav-card">Открыть симулятор</a>
+        </div>
+
+        <!-- Simulator: cluster_simulator -->
+        <div class="sim-card">
+            <div class="concept-badge">Кластеры</div>
+            <div class="sim-title">Cluster Simulator</div>
+            <div class="sim-description">
+                <p>Симулятор визуализирует, как кластерная структура и intraclass correlation (ICC) искажают результаты наивного анализа и увеличивают вероятность ложноположительных выводов.</p>
+                <ul class="preview-list">
+                    <li>Генерирует кластерный эксперимент с заданным числом кластеров, размером кластера и ICC.</li>
+                    <li>Сравнивает наивный user-level t-test с кластерно-корректным анализом (агрегация по кластерам или cluster-robust SE).</li>
+                    <li>Показывает, как эффективный размер выборки (n<sub>eff</sub>) сжимается при росте ICC и размере кластеров.</li>
+                </ul>
+                <p>При ICC &gt; 0 вы увидите, как наивный p-value становится «слишком красивым», а кластерно-корректный тест честно отражает высокую неопределённость.</p>
+            </div>
+            <div class="sim-insight">Наглядно показывает, как ошибка единицы анализа и игнорирование кластеров приводят к завышенной мощности и лишним раскаткам фич.</div>
+            <a href="../../simulators/cluster_simulator/index.html" class="nav-card">Открыть симулятор</a>
+        </div>
+
+        <section class="section">
+            <h2>Что попробовать</h2>
+            <ul class="preview-list">
+                <li><strong>Проверьте свои текущие метрики в классификаторе.</strong> Введите формулы CR, AOV, RPM, ARPPU и убедитесь, что тип метрики и рекомендуемый тест совпадают с тем, как вы сейчас анализируете эксперименты.</li>
+                <li><strong>Смоделируйте поломанный знаменатель.</strong> В <em>test_selection_map</em> задайте метрику CTR с treatment-affected impressions и посмотрите, какие тесты становятся недопустимыми и как меняются рекомендации.</li>
+                <li><strong>Переиграйте ошибку единицы анализа.</strong> В <em>cluster_simulator</em> установите ненулевой ICC и большое число событий на кластер, сравните naive p-value и cluster-adjusted — это ровно та ошибка, которую мы разбирали в секции про fan-out.</li>
+                <li><strong>Сделайте pre-flight check для нового эксперимента.</strong> Перед запуском очередного A/B-теста пройдите связку: сначала <em>metric_classifier</em>, затем <em>test_selection_map</em>, а для гео-дизайнов — ещё и <em>cluster_simulator</em>. Это простой способ уменьшить число типичных ошибок ещё до сбора данных.</li>
+            </ul>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./practice.html">← Практика</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../08_quasi_experiments/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+
