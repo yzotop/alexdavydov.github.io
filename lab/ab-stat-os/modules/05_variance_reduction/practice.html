@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 5. Ускорение тестов</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 5</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">
+            Для каждой задачи: <strong>(a)</strong> выберите метод ускорения (или объясните, почему ускорение невозможно),
+            <strong>(b)</strong> оцените ожидаемый выигрыш, <strong>(c)</strong> назовите главный риск.
+        </p>
+
+        <!-- Task 1 -->
+        <div class="task-card">
+            <div class="task-title">Задача 1. Revenue per user, корреляция 0.7</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> A/B-тест на 80K пользователей. Метрика: revenue per user (heavy tail). Pre-period 2 недели. Корреляция pre-post ρ = 0.7. Текущий MDE = +8%. Команда хочет MDE = +5%.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Метод:</strong> CUPED + winsorization.</p>
+                    <p><strong>Выигрыш:</strong> ρ = 0.7 → variance reduction = 49%. MDE ∝ σ/√n → MDE снижается на ~29% (√0.51 ≈ 0.71). Текущий MDE 8% × 0.71 ≈ 5.7%. Близко к цели. Добавить winsorization на P99 → ещё 10–20% снижения дисперсии. Итоговый MDE ≈ 4.5–5%.</p>
+                    <p><strong>Риск:</strong> winsorization может скрыть эффект, если treatment создаёт whale users. Показать результат с winsorization и без.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-card">
+            <div class="task-title">Задача 2. Новые пользователи, нет pre-period</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> Тест нового онбординга. Только новые пользователи (зарегистрировались после start). Метрика: число сессий за 7 дней. Нет pre-period данных.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Метод:</strong> стратификация по доступным pre-treatment характеристикам: registration source (organic / paid), device (iOS / Android / web), region.</p>
+                    <p><strong>Выигрыш:</strong> 10–20% снижения дисперсии (зависит от гетерогенности между стратами).</p>
+                    <p><strong>Почему не CUPED:</strong> у новых пользователей нет pre-period метрик. CUPED неприменим.</p>
+                    <p><strong>Риск:</strong> если число страт &gt; 20 при N &lt; 10K — некоторые страты будут пустыми или с 1–2 пользователями.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-card">
+            <div class="task-title">Задача 3. Корреляция 0.1 — стоит ли CUPED?</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> A/B-тест. Pre-period есть, но корреляция ρ = 0.1 (метрика нестабильна — число просмотренных товаров сильно варьируется неделя к неделе).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Метод:</strong> CUPED даёт variance reduction = 0.1² = 1%. Это эквивалентно увеличению выборки на 1% — незначимо.</p>
+                    <p><strong>Рекомендация:</strong> не применять CUPED. Усложнение analysis pipeline не оправдано. Лучше: (1) увеличить pre-period (2–4 недели → ρ может вырасти). (2) Использовать другую ковариату с более высокой корреляцией (revenue вместо просмотров). (3) Стратификация.</p>
+                    <p><strong>Риск:</strong> нет — CUPED при низкой корреляции не вредит, но и не помогает.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-card">
+            <div class="task-title">Задача 4. CUPED + conditional-метрика (ARPPU) ⚠</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> Тест нового pricing. Метрика: ARPPU. Pre-period ARPPU за 2 недели. Корреляция ρ = 0.6. Аналитик хочет применить CUPED.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> ARPPU — conditional-метрика (считается только среди покупателей). Treatment может изменить конверсию → состав «покупателей» изменится → новые покупатели не имели pre-period покупок → для них ковариата = 0.</p>
+                    <p><strong>Следствие:</strong> CUPED работает только для «старых» покупателей. Для новых — ковариата неинформативна. Общий выигрыш значительно ниже ожидаемого по ρ = 0.6.</p>
+                    <p><strong>Рекомендация:</strong> (1) Использовать ITT-метрику (revenue per user, включая нули) + CUPED — здесь ковариата валидна. (2) ARPPU — вспомогательная метрика, не primary.</p>
+                    <p><strong>Риск:</strong> если применить CUPED к ARPPU «в лоб» — bias: ковариата коррелирует с composition change.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task-card">
+            <div class="task-title">Задача 5. Data leakage в pre-period ⚠</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> Эксперимент стартовал 1 марта. Аналитик берёт pre-period с 15 по 28 февраля. Но: рандомизация произошла 25 февраля (пользователи были «помечены» заранее). С 25 по 28 февраля некоторые пользователи тест-группы уже видели preview новой фичи.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> data leakage. Pre-period (15–28 фев) пересекается с treatment exposure (25–28 фев). Ковариата X<sub>pre</sub> содержит информацию о treatment → вычитание X<sub>pre</sub> вносит bias.</p>
+                    <p><strong>Следствие:</strong> CUPED занижает эффект (вычитает часть treatment effect вместе с baseline).</p>
+                    <p><strong>Рекомендация:</strong> обрезать pre-period до 15–24 февраля (строго до начала ramp-up). Правило: X<sub>pre</sub> ← данные до min(assignment_date, exposure_date).</p>
+                    <p><strong>Риск:</strong> если не обрезать — bias в оценке ATE. Направление: занижение (ATE ↓).</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task-card">
+            <div class="task-title">Задача 6. Winsorization на P95 vs P99</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> Revenue per user. Результаты:</p>
+                <ul>
+                    <li>Без winsorization: Δ = +12%, p = 0.28</li>
+                    <li>P99: Δ = +7%, p = 0.04</li>
+                    <li>P95: Δ = +4%, p = 0.01</li>
+                    <li>P90: Δ = +2%, p = 0.003</li>
+                </ul>
+                <p>Какой порог выбрать?</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> каждый порог даёт разный результат. Выбирать порог <em>после</em> просмотра результатов — p-hacking.</p>
+                    <p><strong>Правило:</strong> порог фиксируется в analysis plan до эксперимента. Стандарт: P99 (компромисс между стабильностью и сохранением эффекта).</p>
+                    <p><strong>Интерпретация:</strong> эффект концентрируется в хвосте (Δ падает от 12% до 2% при aggressive trimming). Это значит: treatment создаёт high-value пользователей. Winsorization скрывает реальный эффект.</p>
+                    <p><strong>Рекомендация:</strong> (1) Primary — P99 (зафиксирован заранее). (2) Sensitivity: показать все варианты. (3) Если бизнес-ценность в хвосте — обсудить с product owner.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task-card">
+            <div class="task-title">Задача 7. Стратификация по post-treatment переменной ⚠</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> аналитик стратифицирует анализ по «числу сессий во время теста» (high activity / low activity). Аргумент: «так мы видим эффект отдельно для активных и неактивных пользователей».</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> число сессий во время теста — post-treatment переменная. Treatment может влиять на активность → состав «активных» зависит от treatment → это conditioning on post-treatment variable (Модуль 01).</p>
+                    <p><strong>Следствие:</strong> оценка эффекта в каждой страте смещена. Selection bias внутри страт.</p>
+                    <p><strong>Рекомендация:</strong> стратифицировать по <em>pre-treatment</em> активности (число сессий за 2 недели до теста). Тогда страты не зависят от treatment.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task-card">
+            <div class="task-title">Задача 8. CUPED для разных когорт</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> A/B-тест, 100K пользователей. 60% — returning users (имеют pre-period). 40% — новые (нет pre-period). Корреляция pre-post для returning = 0.65. Как применить CUPED?</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Метод:</strong> два подхода.</p>
+                    <p><strong>Подход A:</strong> применить CUPED только к returning users. Для новых — стандартный t-test. Объединить оценки (inverse-variance weighting).</p>
+                    <p><strong>Подход B:</strong> для новых использовать стратификацию (device, source) вместо CUPED. Combining: CUPED для returning + стратификация для new → общая variance reduction.</p>
+                    <p><strong>Выигрыш:</strong> returning (60%): variance reduction 42% (0.65²). Новые (40%): стратификация 10%. Общий ≈ 60% × 42% + 40% × 10% = 29%.</p>
+                    <p><strong>Риск:</strong> если когорты сильно различаются по behavior — считать ATE отдельно и проверять гетерогенность.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task-card">
+            <div class="task-title">Задача 9. Heavy tail + CUPED — что первее?</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> Revenue per user. Heavy tail. Pre-period ρ = 0.6. Аналитик хочет применить winsorization + CUPED. Вопрос: в каком порядке?</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Правильный порядок:</strong> (1) Winsorization → (2) CUPED.</p>
+                    <p><strong>Почему:</strong> CUPED оценивает θ = Cov(Y, X<sub>pre</sub>) / Var(X<sub>pre</sub>). Если Y и X<sub>pre</sub> содержат экстремальные выбросы — оценка θ нестабильна. Winsorization <em>до</em> CUPED стабилизирует θ.</p>
+                    <p><strong>Альтернатива:</strong> winsorization обоих: Y и X<sub>pre</sub>, на том же пороге (P99). Затем CUPED на winsorized данных.</p>
+                    <p><strong>Риск:</strong> если winsorization порог разный для Y и X<sub>pre</sub> — искажение корреляции.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task-card">
+            <div class="task-title">Задача 10. Sequential testing: остановили рано</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> тест на 50K пользователей. На день 7 (из запланированных 21) p = 0.02. Менеджер требует остановить тест и запустить фичу.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> ранняя остановка при фиксированном α = 0.05 даёт inflated false positive rate. Если проверять p-value каждый день в течение 21 дня — реальный α ≈ 0.15–0.20 (не 0.05).</p>
+                    <p><strong>Что делать:</strong> (1) Если заранее запланирован sequential testing (O'Brien-Fleming, always-valid p-values) — можно остановить, если p &lt; adjusted threshold. (2) Если это post-hoc «подсмотрели» — нельзя, FPR инфлирован.</p>
+                    <p><strong>Рекомендация:</strong> (1) Зафиксировать sequential design до запуска. (2) Объяснить менеджеру: «p = 0.02 на день 7 при 21-дневном горизонте — реальный p ≈ 0.08–0.10». (3) CUPED может помочь: снижая дисперсию, позволяет достичь значимости быстрее <em>без</em> early stopping.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task-card">
+            <div class="task-title">Задача 11. Regression adjustment с 10 ковариатами</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> аналитик добавляет 10 ковариат в регрессию для variance reduction: pre-period revenue, sessions, device, OS, region, age, signup source, email_verified, app_version, language.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> (1) Diminishing returns: первые 2–3 ковариаты дают 80% выигрыша. Остальные 7 — шум. (2) Переобучение: при 10 ковариатах θ-коэффициенты нестабильны. (3) Если ковариаты выбраны <em>после</em> просмотра данных — p-hacking.</p>
+                    <p><strong>Рекомендация:</strong> (1) 1–3 ковариаты: pre-period метрика + device + крупнейший сегмент. (2) Зафиксировать в analysis plan. (3) Cross-validation: оценить θ на train split, применить на test split (или использовать held-out pre-experiment data).</p>
+                    <p><strong>Риск:</strong> при 10 ковариатах и N = 10K — R² overfit, и variance reduction на train &gt; на test. Реальный выигрыш ниже.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task-card">
+            <div class="task-title">Задача 12. Метрика дрейфует — CUPED ненадёжен ⚠</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> число дневных активных пользователей (DAU) растёт на 3% в неделю (organic growth). Pre-period DAU = 500K, за время теста = 530K. Корреляция week-to-week = 0.8.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Проблема:</strong> метрика нестационарна (тренд +3%/неделю). CUPED вычитает pre-period уровень, но тренд продолжается и в post-period. Если тренд одинаков в тесте и контроле — CUPED работает (тренд вычитается одинаково из обеих групп). Если тренд асимметричен — bias.</p>
+                    <p><strong>Рекомендация:</strong> (1) Проверить: тренд одинаков в обеих группах? (AA-test или pre-period по группам). (2) Использовать de-trended ковариату: X<sub>pre</sub> − linear_trend. (3) Если тренд сильный и асимметричный — CUPED ненадёжен; стратификация предпочтительнее.</p>
+                    <p><strong>Риск:</strong> если тренд в одной группе сильнее (например, treatment привлекает больше новых пользователей) — CUPED вносит bias.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 13 -->
+        <div class="task-card">
+            <div class="task-title">Задача 13. Комбинация: winsorization + CUPED + стратификация</div>
+            <div class="task-body">
+                <p><strong>Ситуация:</strong> E-commerce. Revenue per user. Heavy tail. Pre-period 2 недели, ρ = 0.55. Два сегмента: mobile (70%) и desktop (30%), desktop тратит в 3× больше. Цель: снизить MDE с 10% до 5%.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Стратегия:</strong></p>
+                    <ol>
+                        <li><strong>Winsorization</strong> (P99): снижение дисперсии ~25% (убираем шум хвоста)</li>
+                        <li><strong>Стратификация</strong> (mobile/desktop): ещё ~15% (убираем межсегментную гетерогенность)</li>
+                        <li><strong>CUPED</strong> (ρ = 0.55 после winsorization): ещё ~30% (0.55² ≈ 0.30)</li>
+                    </ol>
+                    <p>Совокупно: 1 − (1 − 0.25)(1 − 0.15)(1 − 0.30) ≈ 55% снижения дисперсии.</p>
+                    <p>MDE: 10% × √(1 − 0.55) ≈ 10% × 0.67 = 6.7%.</p>
+                    <p>Не достигает 5%, но существенно ближе. Для 5% нужно ещё увеличить выборку в ~1.8×.</p>
+                    <p><strong>Риск:</strong> если winsorization скрывает эффект в хвосте — sensitivity analysis с P99.5 и без winsorization.</p>
+                </div>
+            </details>
+        </div>
+
+        <nav class="module-nav">
+            <a href="../04_stat_tests_map/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../06_cluster_tests/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

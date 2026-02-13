@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практика — Модуль 4. Карта выбора статкритерия</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 4</a> / Практика
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html" class="active">Практика</a>
+            <a href="./simulators.html">Симуляторы</a>
+        </div>
+
+        <h1>Практика</h1>
+        <p class="subtitle">
+            Для каждого сценария: <strong>(a)</strong> выберите подход к тестированию,
+            <strong>(b)</strong> назовите 2 ключевых риска, <strong>(c)</strong> назовите 2 проверки, которые нужно сделать перед запуском.
+        </p>
+
+        <!-- Task 1 -->
+        <div class="task-card">
+            <div class="task-title">Задача 1. CR в мобильном приложении</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Доля пользователей, совершивших покупку (покупатели / все пользователи).</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 60K на группу. Нет pre-period. Нет кластеров.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> z-test для долей.</p>
+                    <p><strong>Риски:</strong> (1) Минимальные — стандартный случай. (2) При очень низкой конверсии (&lt;0.5%) нормальная аппроксимация может быть неточной.</p>
+                    <p><strong>Проверки:</strong> (1) Единица рандомизации = единица анализа (пользователь). (2) Выборка достаточна для целевого MDE.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="task-card">
+            <div class="task-title">Задача 2. Revenue per user (e-commerce) ⚠</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Суммарная выручка за 14 дней на пользователя (включая нули).</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 120K на группу. 78% пользователей = 0. Топ-0.1% = 35% выручки. Pre-period есть (14 дней до теста).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Bootstrap + winsorization + CUPED.</p>
+                    <p><strong>Риски:</strong> (1) Heavy tail: 0.1% пользователей определяют 35% метрики → t-test нестабилен. (2) Zero inflation: 78% нулей завышают дисперсию.</p>
+                    <p><strong>Проверки:</strong> (1) Winsorization на 99-м перцентиле стабилизирует? (2) CUPED: корреляция pre-post достаточна (&gt;0.3)?</p>
+                    <p><strong>Ловушка:</strong> t-test без обработки хвостов даст нестабильный p-value, который не воспроизводится при повторном запуске.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 3 -->
+        <div class="task-card">
+            <div class="task-title">Задача 3. AOV (средний чек)</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> GMV / количество заказов. Считается глобально.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 40K на группу. Распределение чеков умеренное (нет экстремальных выбросов). Нет pre-period.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Delta-method / линеаризация.</p>
+                    <p><strong>Риски:</strong> (1) Знаменатель (число заказов) — случайная величина; наивный t-test на средних AOV по пользователям некорректен. (2) Если treatment влияет на число заказов — знаменатель зависит от treatment.</p>
+                    <p><strong>Проверки:</strong> (1) Проверить, что хвосты распределения чеков действительно умеренные (Q-Q plot). (2) Проверить стабильность знаменателя между группами.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="task-card">
+            <div class="task-title">Задача 4. CTR рекламного баннера ⚠</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Клики / показы. Считается глобально по всем показам.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 200K на группу. Treatment меняет количество показов на пользователя (новый алгоритм таргетинга). Pre-period недоступен.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> z-test для долей (CTR — это доля: каждый показ → клик/не клик).</p>
+                    <p><strong>Риски:</strong> (1) Treatment-affected exposure: алгоритм таргетинга меняет число показов на пользователя → знаменатель зависит от treatment. (2) Нарушение независимости: несколько показов одному пользователю скоррелированы.</p>
+                    <p><strong>Проверки:</strong> (1) Сравнить среднее число показов на пользователя между группами. (2) Рассмотреть кластеризацию по пользователям (или агрегацию до per-user CTR).</p>
+                    <p><strong>Ловушка:</strong> если treatment увеличивает число показов, CTR может снижаться даже при росте кликов — эффект разбавления.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 5 -->
+        <div class="task-card">
+            <div class="task-title">Задача 5. ARPPU (среди покупателей) ⚠</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Средняя выручка на покупателя. Считается только среди пользователей с ≥1 покупкой.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 80K на группу. Treatment — изменение онбординга. Ожидается рост конверсии (→ больше покупателей). Pre-period есть.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Двухэтапная процедура / регрессия с коррекцией.</p>
+                    <p><strong>Риски:</strong> (1) Selection bias: treatment увеличивает конверсию → новые покупатели менее платёжеспособны → ARPPU падает даже если выручка растёт. (2) CUPED ограниченно применим: новые покупатели не имели pre-period покупок.</p>
+                    <p><strong>Проверки:</strong> (1) Сравнить конверсию между группами (изменился ли состав подвыборки?). (2) Посмотреть на total revenue (неусловная метрика) как sanity check.</p>
+                    <p><strong>Ловушка:</strong> ARPPU упал → аналитик решает, что treatment вреден. На самом деле выручка выросла, просто состав покупателей сместился.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="task-card">
+            <div class="task-title">Задача 6. Число сессий на пользователя</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Среднее количество сессий за 7 дней на пользователя.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 50K на группу. Распределение умеренно-скошенное (медиана = 3, среднее = 5). Pre-period есть (корреляция pre-post ≈ 0.5).</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Welch t-test + CUPED.</p>
+                    <p><strong>Риски:</strong> (1) Умеренная скошенность (медиана ≠ среднее). (2) Pre-period дрейф: если активность менялась перед экспериментом, ковариата шумит.</p>
+                    <p><strong>Проверки:</strong> (1) Гистограмма распределения — нужен ли bootstrap? (2) CUPED: проверить корреляцию pre-post ≈ 0.5 → ожидаемое снижение дисперсии ~25%.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 7 -->
+        <div class="task-card">
+            <div class="task-title">Задача 7. Конверсия в гео-эксперименте ⚠</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Доля пользователей с покупкой (покупатели / все пользователи).</p>
+                <p><strong>Контекст:</strong> Рандомизация по городам. 18 городов (9 тест, 9 контроль). 500K пользователей суммарно. Нет pre-period.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> z-test + cluster-robust SE (или randomization inference).</p>
+                    <p><strong>Риски:</strong> (1) 18 кластеров — мало для cluster-robust SE (нужно ≥30–50). (2) Эффективный N ≈ 18, не 500K → реальная мощность критически низкая.</p>
+                    <p><strong>Проверки:</strong> (1) Оценить ICC и design effect. (2) Рассмотреть wild cluster bootstrap или randomization inference вместо асимптотических SE.</p>
+                    <p><strong>Ловушка:</strong> z-test с N = 500K показывает p = 0.0001. Аналитик уверенно запускает. Cluster-robust p = 0.22. Мощность была ~15%.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 8 -->
+        <div class="task-card">
+            <div class="task-title">Задача 8. Refund rate</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Количество возвратов / количество заказов. Каждый заказ — либо возвращён, либо нет.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 30K на группу. Доля возвратов ~4%. Нет кластеров. Нет pre-period.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> z-test для долей.</p>
+                    <p><strong>Риски:</strong> (1) Минимальные — каждый заказ либо возвращён, либо нет (proportion). (2) При доле 4% и 30K нужно проверить, что MDE реалистичен.</p>
+                    <p><strong>Проверки:</strong> (1) Power analysis: при доле 4% и 30K на группу — какой минимальный эффект детектируется? (2) Единица анализа (заказ) ≠ единица рандомизации (пользователь) — нет ли корреляции между заказами одного пользователя?</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 9 -->
+        <div class="task-card">
+            <div class="task-title">Задача 9. RPM (Revenue Per Mille)</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Рекламная выручка / количество показов × 1000. Ratio-метрика.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 15K на группу. Heavy tail в рекламной выручке (programmatic). Нет pre-period.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Bootstrap отношения.</p>
+                    <p><strong>Риски:</strong> (1) Heavy tail в рекламной выручке → delta-method нестабилен. (2) Малая выборка (15K) усиливает чувствительность к выбросам.</p>
+                    <p><strong>Проверки:</strong> (1) Гистограмма распределения выручки — какой процент в хвосте? (2) Рассмотреть winsorization числителя перед bootstrap.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 10 -->
+        <div class="task-card">
+            <div class="task-title">Задача 10. Retention Day 7</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Доля пользователей, вернувшихся на 7-й день после регистрации.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 25K на группу. Только новые пользователи (pre-period невозможен). Нет кластеров.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> z-test для долей.</p>
+                    <p><strong>Риски:</strong> (1) Минимальные — бинарная метрика (вернулся / не вернулся). (2) Если treatment влияет на регистрацию (change in signup flow) → состав когорты зависит от treatment.</p>
+                    <p><strong>Проверки:</strong> (1) Проверить, что treatment не влияет на сам процесс регистрации. (2) Power analysis: retention ~20–40%, 25K на группу — достаточно для MDE ≥ 1–2 п.п.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 11 -->
+        <div class="task-card">
+            <div class="task-title">Задача 11. Стоимость доставки на заказ</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Общая стоимость доставки / количество заказов. Ratio-метрика.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 70K на группу. Без heavy tail (стоимость доставки ограничена сверху). Pre-period 2 недели. Нет кластеров.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Delta-method + CUPED.</p>
+                    <p><strong>Риски:</strong> (1) Ratio-метрика: знаменатель (число заказов) — случайная величина. (2) Если treatment влияет на число заказов — знаменатель treatment-affected.</p>
+                    <p><strong>Проверки:</strong> (1) Проверить, что число заказов стабильно между группами. (2) CUPED: pre-period стоимость доставки коррелирует с post-period? Если корреляция &gt;0.3 → применяем.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Task 12 -->
+        <div class="task-card">
+            <div class="task-title">Задача 12. Конверсия среди увидевших paywall ⚠</div>
+            <div class="task-body">
+                <p><strong>Метрика:</strong> Доля пользователей, оформивших подписку, среди тех, кто увидел paywall.</p>
+                <p><strong>Контекст:</strong> Рандомизация по пользователям. 90K на группу. Treatment меняет, когда показывается paywall (→ разный состав «увидевших»). Pre-period недоступен.</p>
+            </div>
+            <details>
+                <summary>Ответ</summary>
+                <div class="task-answer">
+                    <p><strong>Подход:</strong> Двухэтапная процедура / ITT-метрика.</p>
+                    <p><strong>Риски:</strong> (1) Selection bias: treatment меняет, кто увидит paywall → разный состав «увидевших». (2) Наивное сравнение долей среди увидевших даёт смещённую оценку.</p>
+                    <p><strong>Проверки:</strong> (1) Сравнить долю пользователей, увидевших paywall, между группами (изменилась ли экспозиция?). (2) Рассмотреть ITT-метрику (конверсия среди ВСЕХ пользователей) как основную.</p>
+                    <p><strong>Ловушка:</strong> конверсия среди увидевших paywall выросла. Но treatment показал paywall менее активным пользователям → те, кто увидел, уже мотивированы → это не каузальный эффект, а selection.</p>
+                </div>
+            </details>
+        </div>
+
+        <nav class="module-nav">
+            <a href="../03_distributions/index.html">← Предыдущий модуль</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../05_variance_reduction/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
+

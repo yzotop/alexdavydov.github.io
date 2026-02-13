@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симуляторы — Модуль 6. Кластерные эксперименты</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../../../courses/index.html">Все курсы</a> /
+            <a href="../../index.html">Статистика A/B-тестирования</a> /
+            <a href="./index.html">Модуль 6</a> / Симуляторы
+        </div>
+
+        <div class="nav-links">
+            <a href="./index.html">Модуль</a>
+            <a href="./practice.html">Практика</a>
+            <a href="./simulators.html" class="active">Симуляторы</a>
+        </div>
+
+        <h1>Симуляторы</h1>
+        <p class="subtitle">Интерактивный инструмент для понимания того, как ICC и размер кластера искажают наивный t-test и уменьшают эффективный размер выборки.</p>
+
+        <!-- Simulator: Cluster Simulator -->
+        <div class="sim-card">
+            <div class="concept-badge">Кластерные эксперименты</div>
+            <div class="sim-title">Cluster Simulator</div>
+            <div class="sim-description">
+                <p>Симулятор генерирует кластерный эксперимент с заданным числом кластеров, размером кластера и ICC и сравнивает два подхода к анализу:</p>
+                <ul class="preview-list">
+                    <li>наивный user-level t-test, который предполагает независимость всех пользователей;</li>
+                    <li>кластерно-устойчивый анализ (агрегация по кластерам или cluster-robust SE) с расчётом design effect и n<sub>eff</sub>.</li>
+                </ul>
+                <p>Вы видите обе p-value бок о бок, а также оценку design effect — насколько дисперсия раздута из-за кластерной структуры.</p>
+            </div>
+            <div class="sim-insight">Почему миллион пользователей в 20 городах по факту превращается в несколько сотен независимых наблюдений.</div>
+            <a href="../../simulators/cluster_simulator/index.html" class="nav-card">Открыть симулятор</a>
+        </div>
+
+        <section class="section">
+            <h2>Что попробовать в симуляторе</h2>
+            <ul class="preview-list">
+                <li><strong>Установите lift = 0.</strong> Посмотрите, как часто наивный t-test даёт значимый результат при нулевом эффекте (Type I error inflation), особенно при большом m и ненулевом ICC.</li>
+                <li><strong>Увеличивайте ICC.</strong> При фиксированном числе пользователей рост ICC повышает design effect и резко снижает мощность коррекного кластерного теста — оцените, насколько сильно.</li>
+                <li><strong>Играйте с числом кластеров.</strong> Сравните сценарии «много маленьких кластеров» и «мало больших кластеров» при одинаковом общем N — убедитесь, что главное ограничение мощности — именно число кластеров.</li>
+                <li><strong>Сравните naive vs cluster-adjusted p-value.</strong> Найдите режимы, где naive p-value почти всегда «красивая» (0.01–0.03), а кластерная версия честно показывает отсутствие значимости.</li>
+            </ul>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./practice.html">← Практика</a>
+            <a href="../../index.html">К курсу</a>
+            <a href="../07_common_mistakes/index.html">Следующий модуль →</a>
+        </nav>
+    </div>
+</body>
+</html>
