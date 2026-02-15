@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кейсы — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 0.5rem; }
+        .page-header .subtitle { font-size: 1.05rem; color: rgba(17,17,17,.68); line-height: 1.65; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid rgba(17,17,17,.10);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 2px rgba(0,0,0,.04);
+            transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+        }
+        .card:hover {
+            border-color: rgba(17,17,17,.16);
+            box-shadow: 0 8px 24px rgba(0,0,0,.07);
+            transform: translateY(-2px);
+        }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #111; }
+        .card-text { color: rgba(17,17,17,.68); font-size: 0.93rem; margin-bottom: 1rem; line-height: 1.6; flex-grow: 1; }
+        .card-meta {
+            font-size: 0.75rem;
+            color: rgba(17,17,17,.38);
+            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+            letter-spacing: 0.01em;
+            margin-bottom: 1rem;
+        }
+        .card-button {
+            display: inline-block;
+            padding: 0.55rem 1.2rem;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            border: 1px solid rgba(17,17,17,.12);
+            border-radius: 12px;
+            transition: all 180ms ease;
+            align-self: flex-start;
+        }
+        .card-button:hover {
+            background: #0071e3;
+            color: #fff;
+            border-color: #0071e3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/cases/" class="active">Кейсы</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>Кейсы</h1>
+            <p class="subtitle">Разборы реальных аналитических проектов: данные → механизмы → решения.</p>
+        </header>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="micro">Кейс</div>
+                <div class="card-title">Solvery Mentors Marketplace</div>
+                <div class="card-text">Маркетплейс-диагностика: спрос/предложение, концентрация, cold start.</div>
+                <div class="card-meta">726 профилей · Gini 0.736 · Core 5% → 42% сессий</div>
+                <a href="/cases/solvery-mentors/" class="card-button">Открыть кейс →</a>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+</body>
+</html>

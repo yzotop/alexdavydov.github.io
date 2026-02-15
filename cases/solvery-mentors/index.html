@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solvery Mentors — Case Study — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.12;
+            margin-bottom: 0.5rem;
+        }
+        .page-header .subtitle {
+            font-size: 1.05rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.65;
+        }
+        .page-header .meta-line {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.38);
+            margin-top: 0.6rem;
+            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .content { max-width: 740px; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.72;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            color: #111;
+        }
+
+        .section-num {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-right: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(17,17,17,.08);
+            margin: 3rem 0;
+        }
+
+        .chart-placeholder {
+            border: 1px dashed rgba(17,17,17,.14);
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            color: rgba(17,17,17,.28);
+            font-size: 0.82rem;
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin: 1.25rem 0 1.5rem;
+            background: rgba(17,17,17,.015);
+        }
+
+        .chart-container {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+
+        .key-numbers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+        }
+        @media (max-width: 640px) {
+            .key-numbers { grid-template-columns: repeat(2, 1fr); }
+        }
+        .key-number {
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 12px;
+            padding: 1.2rem 1.25rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .key-number .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .key-number .label {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.48);
+            margin-top: 0.25rem;
+            line-height: 1.4;
+        }
+
+        /* Marketplace metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.6rem 1.5rem;
+        }
+        @media (max-width: 540px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+        }
+        .metric-label {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.55);
+        }
+        .metric-value {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #111;
+            font-family: ui-monospace, 'SF Mono', monospace;
+        }
+
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1.25rem 0 1.5rem;
+        }
+        @media (max-width: 640px) {
+            .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
+        }
+        .pipeline-step {
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: rgba(17,17,17,.68);
+        }
+        .pipeline-step .step-num {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.24);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-bottom: 0.3rem;
+        }
+        .pipeline-step .step-title {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 0.15rem;
+        }
+
+        .insight-block {
+            border-left: 3px solid rgba(17,17,17,.08);
+            padding: 0.8rem 1.25rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            background: rgba(17,17,17,.015);
+        }
+        .insight-block p {
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .file-list li {
+            font-size: 0.88rem;
+            color: rgba(17,17,17,.68);
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(17,17,17,.06);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .file-list li:last-child { border-bottom: none; }
+        .file-list code {
+            font-size: 0.82rem;
+            background: rgba(17,17,17,.04);
+            border: 1px solid rgba(17,17,17,.08);
+            padding: 0.1em 0.4em;
+            border-radius: 5px;
+            color: #111;
+        }
+
+        .cat-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1rem 0 0.5rem;
+        }
+        .cat-filter-row label {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.48);
+        }
+        .cat-filter-row select {
+            font-family: inherit;
+            font-size: 0.85rem;
+            padding: 0.35rem 0.7rem;
+            border: 1px solid rgba(17,17,17,.12);
+            border-radius: 8px;
+            background: #fff;
+            color: #111;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 180ms ease;
+        }
+        .cat-filter-row select:focus {
+            border-color: #0071e3;
+        }
+
+        .table-wrap {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table-wrap th {
+            text-align: left;
+            font-weight: 600;
+            color: rgba(17,17,17,.48);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.12);
+        }
+        .table-wrap td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            color: rgba(17,17,17,.78);
+        }
+        .table-wrap tr:hover td {
+            background: rgba(17,17,17,.02);
+        }
+        .table-wrap a {
+            color: #0071e3;
+            text-decoration: none;
+        }
+        .table-wrap a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hypothesis list */
+        .hypothesis-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .hypothesis-list li {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.72);
+            padding: 0.55rem 0 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            position: relative;
+        }
+        .hypothesis-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.24);
+            font-weight: 600;
+        }
+        .hypothesis-list li:last-child { border-bottom: none; }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/cases/">Кейсы</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header">
+            <p class="meta-line">case study &middot; feb 2026</p>
+            <h1>Solvery Mentors Marketplace</h1>
+            <p class="subtitle">Двусторонний маркетплейс: предложение (менторы) &harr; спрос (сессии) &middot; сигналы качества &middot; ценообразование</p>
+        </header>
+
+        <div class="content">
+
+            <p>
+                Solvery — двусторонний маркетплейс, соединяющий менторов (предложение) и учеников (спрос).
+                В качестве прокси спроса используем <strong>sessions_count</strong>, как сигнал качества — отзывы.
+                Анализ диагностирует ликвидность категорий, концентрацию спроса и риск cold start среди 726 профилей.
+            </p>
+
+            <!-- KPI cards -->
+            <div class="key-numbers">
+                <div class="key-number">
+                    <div class="value">726</div>
+                    <div class="label">менторов в каталоге</div>
+                </div>
+                <div class="key-number" id="price-stats">
+                    <div class="value">14</div>
+                    <div class="label">полей на профиль</div>
+                </div>
+                <div class="key-number" id="sessions-stats">
+                    <div class="value">0 %</div>
+                    <div class="label">потерь при извлечении</div>
+                </div>
+                <div class="key-number">
+                    <div class="value">11</div>
+                    <div class="label">категорий (derived)</div>
+                </div>
+            </div>
+
+            <!-- Marketplace metrics (injected from summary.json) -->
+            <h3>Метрики маркетплейса (прокси)</h3>
+            <div id="marketplace-metrics" style="margin-bottom:2rem;">
+                <p style="color:rgba(17,17,17,.28);font-size:0.82rem;">Загрузка метрик...</p>
+            </div>
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">01</span>Контекст</h2>
+            <!-- ========================================== -->
+
+            <p>
+                <strong>Solvery</strong> — маркетплейс менторов с фокусом на IT и продуктовые роли.
+                Каталог содержит профили менторов с ценами, навыками, отзывами и статистикой сессий.
+                Публичный API не документирован, но доступен через фронтенд SPA.
+            </p>
+
+            <p>
+                Цель кейса — извлечь полный каталог через обратную инженерию API,
+                построить воспроизводимый пайплайн и проанализировать структуру рынка менторства:
+                ценообразование, связь опыта с востребованностью, распределение навыков.
+            </p>
+
+            <h3>Фрейминг маркетплейса</h3>
+            <ul class="hypothesis-list">
+                <li><strong>Предложение (supply)</strong> — профили менторов: навыки, цена, доступность</li>
+                <li><strong>Спрос (demand proxy)</strong> — количество завершённых сессий</li>
+                <li><strong>Сигнал качества</strong> — отзывы (58% профилей без отзывов)</li>
+                <li><strong>Риск концентрации</strong> — эффект ранжирования усиливает «богатые становятся богаче»</li>
+            </ul>
+
+            <div class="insight-block">
+                <p>Данные извлечены полностью: 726 из 726 (по данным API). Дубликаты: 0. Потери полей: 0 %.
+                Rebuild: <code>python3 build_case_artifacts.py</code></p>
+            </div>
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">02</span>Data Pipeline</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Пайплайн состоит из двух скриптов. Первый использует Playwright для перехвата
+                POST-запросов к <code>/api/mentoring/listing/get</code>, сохраняет тело запроса
+                и заголовки для точного воспроизведения. Второй реплеит POST-пагинацию
+                через <code>pagination.page</code> в JSON-body, извлекает
+                <code>result.entities[*].mentorProfile</code> и нормализует 14 целевых полей.
+            </p>
+
+            <div class="pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Detect</div>
+                    Playwright + network interception &rarr; endpoint, body, headers
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Extract</div>
+                    POST replay, nested pagination, 73 pages &times; 10 entities
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Normalize</div>
+                    Flatten mentorProfile, services.mentoring.rate, statistics
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">04</div>
+                    <div class="step-title">Validate</div>
+                    Dedup, missing fields audit, total count check
+                </div>
+            </div>
+
+            <h3>Файлы пайплайна</h3>
+            <ul class="file-list">
+                <li><code>detect_endpoint.py</code> Playwright: обнаружение API, перехват POST body</li>
+                <li><code>solvery_extractor.py</code> POST-пагинация, нормализация, CSV/JSON</li>
+                <li><code>build_case_artifacts.py</code> Категоризация + summary.json для графиков</li>
+                <li><code>solvery_analysis.ipynb</code> EDA: распределения, кластеризация, top-N</li>
+                <li><code>solvery_mentors.csv</code> Нормализованный датасет (726 &times; 14)</li>
+                <li><code>solvery_mentors_raw.json</code> Сырые ответы API (8.3 MB)</li>
+            </ul>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">03</span>Структура рынка</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Распределение менторов по специализациям неравномерно:
+                аналитика и BI доминируют (42 %), за ними следуют бэкенд-разработка
+                и Data Science. Продуктовые и дизайн-роли
+                представлены значительно меньше.
+            </p>
+
+            <div class="chart-container" id="chart-categories"></div>
+
+            <h3>Ценовые диапазоны по категориям</h3>
+            <p>
+                Медианная цена и разброс p25&ndash;p75 существенно различаются между категориями.
+                Точка — медиана, горизонтальная линия — межквартильный диапазон.
+            </p>
+            <div class="chart-container" id="chart-category-price"></div>
+
+            <h3>Холодный старт: доля менторов с 0 отзывов</h3>
+            <p>
+                Процент менторов без единого отзыва — индикатор «холодного старта» категории.
+                Высокий показатель означает слабый сигнал качества для покупателей.
+            </p>
+            <div class="chart-container" id="chart-cold-start"></div>
+
+            <h3>Спрос vs предложение (доля сессий / доля менторов)</h3>
+            <p>
+                Предложение — доля менторов в категории.
+                Спрос — доля сессий.
+                D/S &gt; 1 означает превышение спроса над предложением.
+            </p>
+            <div class="chart-container" id="chart-demand-supply"></div>
+
+            <div class="insight-block">
+                <p>
+                    <strong>Backend</strong> (D/S = 1.91) — 31% сессий при 16% предложения: наиболее дефицитная ниша.
+                    <strong>Management/Career</strong> (D/S = 0.23) — 4&times; избыток предложения: 9% менторов, но лишь 2% сессий.
+                    D/S &gt; 1 = спрос превышает предложение (возможность привлечения). D/S &lt; 1 = избыток предложения (нужна активация или репозиционирование).
+                </p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">04</span>Цена и опыт</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Ценообразование на платформе имеет выраженный правый хвост:
+                основная масса менторов концентрируется в диапазоне 2 900 &ndash; 7 000 руб/час,
+                при этом единичные профили выходят за 30 000 руб/час.
+                Количество сессий показывает ещё более тяжёлый хвост.
+            </p>
+
+            <div class="chart-container" id="chart-price-hist"></div>
+
+            <div class="chart-container" id="chart-sessions-hist"></div>
+
+            <p>
+                Связь между ценой и объёмом сессий нелинейна.
+                Размер точки отражает количество отзывов, цвет — категорию.
+                Оси ограничены p99 для читаемости (линейная шкала).
+            </p>
+
+            <div class="cat-filter-row">
+                <label for="cat-filter">Фильтр:</label>
+                <select id="cat-filter"></select>
+            </div>
+            <div class="chart-container" id="chart-scatter"></div>
+
+            <h3>Матрица корреляций</h3>
+            <div class="chart-container" id="chart-heatmap"></div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">05</span>Pareto-анализ</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Небольшая группа менторов генерирует основную массу сессий платформы.
+                Анализ Pareto позволяет выделить ядро наиболее активных профилей
+                и понять, что отличает их от длинного хвоста.
+            </p>
+
+            <h3>Кривая Лоренца — концентрация сессий</h3>
+            <p>
+                Кривая показывает, какую долю всех сессий аккумулирует нижняя доля менторов.
+                Чем дальше кривая от диагонали, тем выше неравенство.
+            </p>
+            <div class="chart-container" id="chart-lorenz"></div>
+
+            <div class="insight-block">
+                <p>Gini = 0.736 — высокая концентрация спроса, типичная для маркетплейсов с алгоритмическим ранжированием.</p>
+            </div>
+
+            <h3>Ядро vs длинный хвост — кто генерирует сессии</h3>
+            <p>
+                Менторы разбиты на три сегмента по количеству сессий:
+                ядро (top 5 %), середина (next 25 %), длинный хвост (остальные 70 %).
+                Полоса показывает долю сессий каждого сегмента.
+            </p>
+            <div class="chart-container" id="chart-core-segments"></div>
+
+            <div class="insight-block">
+                <p>
+                    <strong>Зависимость от ядра:</strong> топ-5% менторов генерируют 42.3% всех сессий — выручка платформы концентрируется здесь.<br>
+                    <strong>Проблема длинного хвоста:</strong> 69.8% менторов дают лишь 13.8% сессий (медиана: 6 сессий, 0 отзывов).<br>
+                    <strong>Следствие:</strong> потеря одного core-ментора имеет непропорциональный эффект; активация хвоста требует снижения барьера cold start.
+                </p>
+            </div>
+
+            <h3>Top 20 по количеству сессий</h3>
+            <div class="table-wrap" id="table-top-sessions"></div>
+
+            <h3>Top 20 по количеству отзывов</h3>
+            <div class="table-wrap" id="table-top-reviews"></div>
+
+            <h3>10 самых доступных менторов (&gt;200 сессий)</h3>
+            <div class="table-wrap" id="table-affordable-active"></div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">06</span>Механизмы маркетплейса (гипотезы)</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Шесть механизмов объясняют наблюдаемую динамику. Каждый связывает паттерн данных со структурной причиной и продуктовым рычагом.
+            </p>
+
+            <ul class="hypothesis-list">
+                <li><strong>Петля ранжирования.</strong> Gini = 0.736; топ-10% забирают 59% сессий. Ранжирование усиливает ранний успех в нарастающую видимость — классический эффект «богатые богатеют». Рычаг: диверсифицировать discovery за пределы сортировки по репутации.</li>
+                <li><strong>Слабый сигнал качества.</strong> 58% менторов без отзывов. Покупателям не на что опереться при выборе нового предложения — концентрация усиливается. Рычаг: автоматические запросы отзывов, пробные сессии.</li>
+                <li><strong>Ценовой якорь.</strong> p75/p25 = 1.96&times;. Большинство менторов кластеризуются у платформенного минимума. Цена не несёт сигнала дифференциации. Рычаг: ценовые пакеты, value-based тарификация.</li>
+                <li><strong>Дисбаланс liquidity по нишам.</strong> Backend D/S = 1.91 (дефицит предложения); Management/Career D/S = 0.23 (избыток). Привлечение менторов нужно в высоко-D/S нишах; избыточным категориям — активация спроса или репозиционирование.</li>
+                <li><strong>Барьер cold start.</strong> 17.5% менторов с нулём сессий. Без первых транзакций профили остаются невидимыми. Рычаг: буст в ранжировании для новичков, онбординг-воронки, стартовые пакеты.</li>
+                <li><strong>Риск зависимости от ядра.</strong> Топ-5% генерируют 42.3% сессий. Отток даже нескольких core-менторов непропорционально влияет на GMV. Рычаг: выделенный аккаунт-менеджмент, стимулы удержания, эксклюзивность.</li>
+            </ul>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">07</span>Выводы для продукта</h2>
+            <!-- ========================================== -->
+
+            <h3>1. Ликвидность и стратегия предложения</h3>
+            <ul class="hypothesis-list">
+                <li>Приоритет привлечения менторов — ниши с высоким D/S: Backend (1.91), DevOps (1.49), Mobile (1.12) — спрос превышает предложение.</li>
+                <li>Избыточные категории (Management D/S = 0.23, Analytics D/S = 0.92): инвестировать в demand-маркетинг или перепозиционировать менторов в смежные высокоспросовые навыки.</li>
+                <li>Трекать D/S ratio еженедельно по категориям как опережающий индикатор баланса маркетплейса.</li>
+            </ul>
+
+            <h3>2. Удержание ядра и управление рисками</h3>
+            <ul class="hypothesis-list">
+                <li>Топ-5% генерируют 42.3% сессий. Идентифицировать и защитить ~37 менторов выделенным аккаунт-менеджментом.</li>
+                <li>Мониторить отток core-менторов ежемесячно — потеря 3&ndash;5 профилей может снизить GMV платформы на 10&ndash;15%.</li>
+                <li>Внедрить уровневые стимулы: бонус к revenue share, приоритетная поддержка, бейджи за устойчивую активность.</li>
+            </ul>
+
+            <h3>3. Активация длинного хвоста</h3>
+            <ul class="hypothesis-list">
+                <li>69.8% менторов (длинный хвост) дают лишь 13.8% сессий. Медиана: 6 сессий, 0 отзывов — фактически невидимы.</li>
+                <li>Снизить барьер cold start: буст в ранжировании первые 30 дней, программа гарантированной первой сессии, онбординг с оптимизацией профиля.</li>
+                <li>Целевая метрика активации: перевод ментора с 0 &rarr; 5 сессий (first-transaction milestone).</li>
+            </ul>
+
+            <h3>4. Ценообразование и дизайн сигналов</h3>
+            <ul class="hypothesis-list">
+                <li>Ценовой разброс p75/p25 = 1.96&times;. Почти все менторы в узком диапазоне — цена не несёт сигнала качества.</li>
+                <li>Внедрить структурные ценовые пакеты для дифференциации за пределами часовой ставки.</li>
+                <li>58% менторов без отзывов — система отзывов не выполняет функцию. Добавить автоматический запрос отзыва после сессии, показывать количество сессий как вторичный сигнал доверия.</li>
+            </ul>
+
+        </div>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+    <script src="charts.js"></script>
+</body>
+</html>
