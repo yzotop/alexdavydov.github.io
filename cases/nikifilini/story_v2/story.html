@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>NIKIFILINI — Story V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #E0E0DE;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #F6F6F4;
+    margin: 40px auto;
+    padding: 120px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── tag ───────────────────────────── */
+  .slide-tag {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 48px;
+  }
+
+  /* ── accent line ────────────────────── */
+  .accent-line {
+    width: 80px;
+    height: 6px;
+    border-radius: 3px;
+    margin-bottom: 48px;
+  }
+  .accent-graphite { background: #2B2B2B; }
+  .accent-blue     { background: #3A6EA5; }
+  .accent-amber    { background: #C68A2E; }
+  .accent-red      { background: #C44536; }
+
+  /* ── headline / subtitle ────────────── */
+  .slide-title {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.12;
+    color: #1A1A1A;
+    margin-bottom: 28px;
+  }
+  .slide-subtitle {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.52;
+    color: #666;
+    margin-bottom: 56px;
+  }
+
+  /* ── KPI grid ───────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 56px;
+  }
+  .kpi-card {
+    background: #ECECEA;
+    border-radius: 18px;
+    padding: 36px 32px;
+  }
+  .kpi-value {
+    font-size: 56px;
+    font-weight: 800;
+    color: #1A1A1A;
+    line-height: 1.1;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    margin-bottom: 10px;
+  }
+  .kpi-label {
+    font-size: 24px;
+    font-weight: 500;
+    color: #888;
+  }
+
+  /* ── big stat ───────────────────────── */
+  .big-stat {
+    font-size: 84px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .big-stat-label {
+    font-size: 32px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 48px;
+  }
+  .color-graphite { color: #2B2B2B; }
+  .color-blue     { color: #3A6EA5; }
+  .color-amber    { color: #C68A2E; }
+  .color-red      { color: #C44536; }
+
+  /* ── chart area ─────────────────────── */
+  .chart-area {
+    flex: 1;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .chart-area svg {
+    display: block;
+  }
+
+  /* ── insight block ──────────────────── */
+  .insight {
+    background: #ECECEA;
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-top: auto;
+    margin-bottom: 20px;
+  }
+  .insight p {
+    font-size: 28px;
+    line-height: 1.52;
+    color: #444;
+  }
+  .insight strong {
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+
+  /* ── note (p99, etc.) ───────────────── */
+  .chart-note {
+    font-size: 20px;
+    color: #AAA;
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+
+  /* ── mini KPI row ───────────────────── */
+  .kpi-row {
+    display: flex;
+    gap: 36px;
+    margin-bottom: 40px;
+  }
+  .kpi-inline {
+    display: flex;
+    flex-direction: column;
+  }
+  .kpi-inline .kpi-value {
+    font-size: 52px;
+  }
+
+  /* ── footer ─────────────────────────── */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    padding-top: 40px;
+  }
+  .slide-footer span {
+    font-size: 22px;
+    color: #AAA;
+    font-weight: 500;
+  }
+  .slide-footer .author {
+    letter-spacing: 0.04em;
+  }
+
+  /* ── bullet list ────────────────────── */
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+  }
+  .bullet-list li {
+    font-size: 30px;
+    line-height: 1.6;
+    color: #444;
+    padding-left: 32px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .bullet-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: #BBB;
+  }
+
+  /* ── table override for slide ───────── */
+  .chart-area table td {
+    padding: 18px 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================== SLIDE 1 ============================== -->
+<section class="slide" data-slide="1">
+  <div class="slide-tag">CASE #2 · NIKIFILINI</div>
+  <div class="accent-line accent-graphite"></div>
+
+  <div class="slide-title">Что говорит<br>каталог</div>
+  <div class="slide-subtitle">
+    D2C fashion-бренд · drop-модель · производство по запросу
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpi-sku">—</div>
+      <div class="kpi-label">SKU в каталоге</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpi-cats">—</div>
+      <div class="kpi-label">категорий</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpi-median">—</div>
+      <div class="kpi-label">медианная цена</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" id="kpi-oos">—</div>
+      <div class="kpi-label">нет в наличии</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <p>Аниме-принты, эксклюзивные дропы и ограниченные тиражи — каталог отражает D2C-стратегию с упором на комьюнити.</p>
+  </div>
+
+  <div class="slide-footer">
+    <span class="author">davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ============================== SLIDE 2 ============================== -->
+<section class="slide" data-slide="2">
+  <div class="slide-tag">Ассортимент</div>
+  <div class="accent-line accent-graphite"></div>
+
+  <div class="slide-title">Что продают</div>
+  <div class="slide-subtitle">
+    Распределение SKU по товарным категориям (top 10)
+  </div>
+
+  <div class="chart-area" id="chart-cat-mix"></div>
+
+  <div class="insight">
+    <p><strong>Футболки и худи — ядро каталога.</strong> Узкая категорийная матрица типична для D2C-бренда с drop-моделью.</p>
+  </div>
+
+  <div class="slide-footer">
+    <span class="author">davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ============================== SLIDE 3 ============================== -->
+<section class="slide" data-slide="3">
+  <div class="slide-tag">Ценообразование</div>
+  <div class="accent-line accent-blue"></div>
+
+  <div class="slide-title">Как устроены<br>цены</div>
+  <div class="slide-subtitle">
+    Распределение текущих цен каталога
+  </div>
+
+  <div class="big-stat color-blue">Два ценовых режима</div>
+  <div class="big-stat-label">Массовый сегмент + лимитированные позиции</div>
+
+  <div class="chart-area" id="chart-price-hist"></div>
+  <div class="chart-note">Ось ограничена p99 для читабельности</div>
+
+  <div class="slide-footer">
+    <span class="author">davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ============================== SLIDE 4 ============================== -->
+<section class="slide" data-slide="4">
+  <div class="slide-tag">Промо-механика</div>
+  <div class="accent-line accent-amber"></div>
+
+  <div class="slide-title">Промо-механика</div>
+
+  <div class="big-stat color-amber" id="kpi-disc-share">—</div>
+  <div class="big-stat-label">SKU со скидкой</div>
+
+  <div class="kpi-row">
+    <div class="kpi-inline">
+      <div class="kpi-value color-amber" id="kpi-disc-median">—</div>
+      <div class="kpi-label">медианная скидка</div>
+    </div>
+  </div>
+
+  <div class="slide-subtitle" style="margin-bottom: 32px;">Топ-3 по скидке</div>
+  <div class="chart-area" id="table-discount"></div>
+
+  <div class="insight">
+    <p><strong>Скидка стала базовой ценой.</strong> Когда подавляющее большинство SKU «со скидкой», это не акция — это формат ценообразования.</p>
+  </div>
+
+  <div class="slide-footer">
+    <span class="author">davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ============================== SLIDE 5 ============================== -->
+<section class="slide" data-slide="5">
+  <div class="slide-tag">Дефицит</div>
+  <div class="accent-line accent-red"></div>
+
+  <div class="slide-title">Дефицит<br>как сигнал</div>
+
+  <div class="big-stat color-red" id="kpi-oos-total">—</div>
+  <div class="big-stat-label">товаров нет в наличии</div>
+
+  <div class="chart-area" id="chart-stockout"></div>
+
+  <div class="insight">
+    <p><strong>В drop-модели дефицит может усиливать спрос.</strong> Но системный stock-out = потерянная выручка.</p>
+  </div>
+
+  <div class="slide-footer">
+    <span class="author">davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<script src="charts_story.js"></script>
+</body>
+</html>
