@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>NIKIFILINI v4.3 — Slide 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #C0C0BC;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grain-filter { position: absolute; width: 0; height: 0; }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #F5F4F2;
+    margin: 40px auto;
+    padding: 120px 120px 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    filter: url(#noiseFilter);
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .slide > * { position: relative; z-index: 2; }
+
+  /* ── label ──────────────────────── */
+  .slide-label {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #BBB;
+    margin-bottom: 16px;
+  }
+
+  .accent-rule {
+    width: 56px;
+    height: 4px;
+    border-radius: 2px;
+    background: #2A2A2A;
+    margin-bottom: 56px;
+  }
+
+  /* ── title ──────────────────────── */
+  .slide-title {
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1.06;
+    color: #1A1A1A;
+    letter-spacing: -0.015em;
+    margin-bottom: 64px;
+  }
+
+  /* ── insight block ──────────────── */
+  .insight-block {
+    margin-bottom: 56px;
+  }
+  .insight-main {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #1A1A1A;
+    margin-bottom: 20px;
+  }
+  .insight-main .num {
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .insight-main .accent-blue { color: #3F6EA6; }
+  .insight-conclusion {
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #777;
+  }
+
+  /* ── supporting bullets ─────────── */
+  .support-block {
+    margin-bottom: 48px;
+  }
+  .support-line {
+    font-size: 24px;
+    line-height: 1.7;
+    color: #888;
+  }
+  .support-line strong {
+    font-weight: 600;
+    color: #555;
+  }
+  .support-line .mono {
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    font-weight: 600;
+    color: #555;
+  }
+  .support-sep {
+    height: 1px;
+    background: #E6E6E0;
+    margin: 20px 0;
+  }
+
+  /* ── chart ──────────────────────── */
+  .chart-section {
+    margin-top: auto;
+  }
+  .chart-caption {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #CCC;
+    margin-bottom: 12px;
+  }
+  .chart-area svg { display: block; }
+
+  /* ── footer ─────────────────────── */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+  }
+  .slide-footer span {
+    font-size: 18px;
+    color: #CCC;
+    font-weight: 500;
+  }
+  .slide-footer .caption-editorial {
+    font-style: italic;
+  }
+
+  /* ── slide 2: category list ─────── */
+  .accent-red { color: #C3423F; }
+  .accent-red-text { color: #C3423F !important; }
+
+  .cat-list {
+    margin-bottom: 48px;
+  }
+  .cat-row {
+    display: flex;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid #EAEAE6;
+  }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-row-sep { margin-top: 12px; border-top: 1px solid #DDDDD8; padding-top: 24px; }
+  .cat-row-premium { background: rgba(195,66,63,0.03); margin: 0 -16px; padding: 20px 16px; border-radius: 12px; border-bottom: none; }
+  .cat-name {
+    font-size: 30px;
+    font-weight: 600;
+    color: #333;
+    min-width: 200px;
+  }
+  .cat-dots {
+    flex: 1;
+    border-bottom: 2px dotted #DDD;
+    margin: 0 16px;
+    height: 1px;
+    align-self: center;
+  }
+  .cat-price {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  /* ── slide 4: kpi row ────────────── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 40px;
+    margin-bottom: 48px;
+    padding: 32px 0;
+    border-top: 1px solid #E6E6E0;
+    border-bottom: 1px solid #E6E6E0;
+  }
+  .kpi-item { display: flex; flex-direction: column; }
+  .kpi-value {
+    font-size: 38px;
+    font-weight: 800;
+    color: #1A1A1A;
+    letter-spacing: -0.01em;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .kpi-label {
+    font-size: 20px;
+    font-weight: 500;
+    color: #AAA;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<svg class="grain-filter" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="saturate" values="0"/>
+  </filter>
+</svg>
+
+<section class="slide" data-slide="1">
+  <div class="slide-label">Распределение цен</div>
+  <div class="accent-rule"></div>
+
+  <div class="slide-title">Где на самом деле<br>живёт Nikifilini?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Медиана — <span class="num accent-blue" id="kpi-median">—</span><br>
+      <span id="kpi-pct6k">—</span> каталога — до 6 000 ₽
+    </div>
+    <div class="insight-conclusion">
+      Это массовый D2C-сегмент, а не премиум.
+    </div>
+  </div>
+
+  <div class="support-block">
+    <div class="support-line">
+      p25 = <span class="mono" id="kpi-p25">—</span> &nbsp;·&nbsp;
+      p75 = <span class="mono" id="kpi-p75">—</span>
+    </div>
+    <div class="support-line">
+      Средняя цена = <strong id="kpi-mean">—</strong> → хвост дорогих SKU тянет вверх.
+    </div>
+
+    <div class="support-sep"></div>
+
+    <div class="support-line">
+      Только <strong id="kpi-pct10k">—</strong> товаров дороже 10 000 ₽.
+    </div>
+    <div class="support-line">
+      Более 20 000 ₽ — всего <strong id="kpi-over20k">—</strong> SKU из <span class="mono" id="kpi-n">—</span>.
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Распределение цен каталога</div>
+    <div class="chart-area" id="chart-hist"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 — ЦЕНЫ ПО КАТЕГОРИЯМ ════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="slide-label">Цены по категориям</div>
+  <div class="accent-rule"></div>
+
+  <div class="slide-title">Кто формирует<br>цену бренда?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Футболки и худи — массовая база.<br>
+      <span class="accent-red">Пуховики</span> — скрытый премиум внутри «Другое».
+    </div>
+  </div>
+
+  <div class="cat-list">
+    <div class="cat-row">
+      <span class="cat-name">Футболки</span>
+      <span class="cat-dots"></span>
+      <span class="cat-price" id="cat-tshirt">—</span>
+    </div>
+    <div class="cat-row">
+      <span class="cat-name">Худи</span>
+      <span class="cat-dots"></span>
+      <span class="cat-price" id="cat-hoodie">—</span>
+    </div>
+    <div class="cat-row">
+      <span class="cat-name">Джинсы</span>
+      <span class="cat-dots"></span>
+      <span class="cat-price" id="cat-jeans">—</span>
+    </div>
+    <div class="cat-row cat-row-sep">
+      <span class="cat-name">Бомберы</span>
+      <span class="cat-dots"></span>
+      <span class="cat-price" id="cat-bombers">—</span>
+    </div>
+    <div class="cat-row cat-row-premium">
+      <span class="cat-name">Пуховики</span>
+      <span class="cat-dots"></span>
+      <span class="cat-price accent-red-text" id="cat-puffers">—</span>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Ценовые диапазоны по категориям (p25–p75, whisker min–max)</div>
+    <div class="chart-area" id="chart-boxplot"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 — ТОП-10 САМЫХ ДОРОГИХ ════════════════ -->
+<section class="slide" data-slide="3">
+  <div class="slide-label">Топ-10 самых дорогих</div>
+  <div class="accent-rule"></div>
+
+  <div class="slide-title">Кто тянет верхнюю<br>границу?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Максимум одежды — <span class="num" id="kpi-max">—</span><br>
+      Верхний сегмент формируют бомберы и пуховики.
+    </div>
+  </div>
+
+  <div class="support-block">
+    <div class="support-line">
+      p95 = <span class="mono" id="kpi-p95">—</span> &nbsp;·&nbsp;
+      p99 = <span class="mono" id="kpi-p99-s3">—</span>
+    </div>
+    <div class="support-line">
+      Только <strong id="kpi-pct20k">—</strong> SKU дороже 20 000 ₽
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Top-10 самых дорогих (одежда)</div>
+    <div class="chart-area" id="chart-top10"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 — ЧТО НА САМОМ ДЕЛЕ ПРОДАЁТ ════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="slide-label">Структура каталога</div>
+  <div class="accent-rule"></div>
+
+  <div class="slide-title">Что на самом деле<br>продаёт Nikifilini?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Бренд выглядит премиальным,<br>
+      но <span class="accent-blue">66% каталога — до 6 000 ₽</span>.
+    </div>
+    <div class="insight-conclusion">
+      Премиум-сегмент сконцентрирован<br>в пуховиках и бомберах.
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-item">
+      <span class="kpi-value" id="kpi-s4-median">—</span>
+      <span class="kpi-label">медиана</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-value" id="kpi-s4-p75">—</span>
+      <span class="kpi-label">p75</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-value accent-red-text" id="kpi-s4-over20k">—</span>
+      <span class="kpi-label">> 20 000 ₽</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-value" id="kpi-s4-disc">—</span>
+      <span class="kpi-label">со скидкой (−<span id="kpi-s4-discmed">—</span>)</span>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Доля каталога по ценовым сегментам</div>
+    <div class="chart-area" id="chart-segments"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<script src="chart.js"></script>
+</body>
+</html>

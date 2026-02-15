@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>Сколько стоит одеться в NIKIFILINI?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #C8C8C4;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* grain filter */
+  .grain-filter { position: absolute; width: 0; height: 0; }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #F5F4F2;
+    margin: 40px auto;
+    padding: 140px 120px 120px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    filter: url(#noiseFilter);
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .slide > * { position: relative; z-index: 2; }
+
+  /* ── section label ──────────────── */
+  .section-label {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 16px;
+  }
+
+  /* ── accent rule ────────────────── */
+  .accent-rule {
+    width: 56px;
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 64px;
+  }
+  .rule-graphite { background: #2A2A2A; }
+  .rule-blue     { background: #3F6EA6; }
+  .rule-red      { background: #C3423F; }
+
+  /* ── headline ───────────────────── */
+  .slide-title {
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 1.06;
+    color: #1A1A1A;
+    margin-bottom: 24px;
+    letter-spacing: -0.015em;
+  }
+
+  .slide-caption {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #B0B0AA;
+    margin-bottom: 56px;
+  }
+
+  .slide-subtitle {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.52;
+    color: #777;
+    margin-bottom: 64px;
+  }
+
+  /* ── big number ─────────────────── */
+  .big-number {
+    font-size: 120px;
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .big-number-label {
+    font-size: 30px;
+    font-weight: 500;
+    color: #777;
+    margin-bottom: 56px;
+  }
+  .color-dark    { color: #1A1A1A; }
+  .color-blue    { color: #3F6EA6; }
+  .color-red     { color: #C3423F; }
+
+  /* ── body text ──────────────────── */
+  .body-text {
+    font-size: 32px;
+    line-height: 1.56;
+    color: #555;
+    margin-bottom: 48px;
+  }
+  .body-text strong {
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+
+  /* ── price list ─────────────────── */
+  .price-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 56px 0;
+  }
+  .price-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 36px;
+    line-height: 1.2;
+    color: #333;
+    padding: 24px 0;
+    border-bottom: 1px solid #E6E6E0;
+  }
+  .price-list li:last-child { border-bottom: none; }
+  .price-list .item-name {
+    font-weight: 500;
+  }
+  .price-list .item-price {
+    font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .price-list .item-price.accent-red {
+    color: #C3423F;
+    font-weight: 800;
+  }
+
+  /* ── total row ──────────────────── */
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 32px 0;
+    border-top: 3px solid #1A1A1A;
+    margin-top: 8px;
+    margin-bottom: 48px;
+  }
+  .total-label {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1A1A1A;
+  }
+  .total-value {
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── big total (centered) ───────── */
+  .big-total {
+    font-size: 100px;
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .big-total-prefix {
+    font-size: 56px;
+    font-weight: 500;
+    color: #AAA;
+    margin-right: 8px;
+  }
+
+  /* ── insight ────────────────────── */
+  .insight {
+    border-top: 1px solid #DDDDD8;
+    padding-top: 36px;
+    margin-top: auto;
+    margin-bottom: 24px;
+  }
+  .insight p {
+    font-size: 26px;
+    line-height: 1.56;
+    color: #555;
+  }
+  .insight strong {
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+
+  /* ── footer ─────────────────────── */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    padding-top: 48px;
+  }
+  .slide-footer span {
+    font-size: 20px;
+    color: #BBB;
+    font-weight: 500;
+  }
+
+  /* ── CTA link ───────────────────── */
+  .cta-link {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2A2A2A;
+    text-decoration: none;
+    border-bottom: 2px solid #2A2A2A;
+    padding-bottom: 4px;
+  }
+
+  /* ── spacer ─────────────────────── */
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<svg class="grain-filter" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="saturate" values="0"/>
+  </filter>
+</svg>
+
+<!-- ════════════════ SLIDE 1 — Cover ════════════════ -->
+<section class="slide" data-slide="1">
+  <div class="section-label">NIKIFILINI · Pricing</div>
+  <div class="accent-rule rule-graphite"></div>
+
+  <div class="slide-title">Сколько стоит<br>одеться<br>в NIKIFILINI?</div>
+
+  <div class="slide-subtitle">
+    Минимум, база и финальный уровень
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="slide-caption">Data-based catalog analysis · Feb 2026</div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 — Minimum entry ════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="section-label">Минимальный вход</div>
+  <div class="accent-rule rule-graphite"></div>
+
+  <div class="slide-title">Минимальный<br>вход</div>
+
+  <div class="spacer"></div>
+
+  <div class="big-number color-dark" id="cheapest-price">—</div>
+  <div class="big-number-label">самый дешёвый товар в каталоге</div>
+
+  <div class="spacer"></div>
+
+  <div class="body-text">
+    <strong>Войти в бренд можно дешевле 1 000 ₽.</strong><br>
+    Но это ещё не одеться.
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 — Base outfit ════════════════ -->
+<section class="slide" data-slide="3">
+  <div class="section-label">Базовый лук</div>
+  <div class="accent-rule rule-blue"></div>
+
+  <div class="slide-title">База<br>D2C-лука</div>
+
+  <div class="slide-caption">Data-based catalog analysis · Feb 2026</div>
+
+  <ul class="price-list">
+    <li>
+      <span class="item-name">Футболка</span>
+      <span class="item-price" id="price-tshirt">— ₽</span>
+    </li>
+    <li>
+      <span class="item-name">Худи</span>
+      <span class="item-price" id="price-hoodie">— ₽</span>
+    </li>
+    <li>
+      <span class="item-name">Джинсы</span>
+      <span class="item-price" id="price-jeans">— ₽</span>
+    </li>
+  </ul>
+
+  <div class="total-row">
+    <span class="total-label">Итого</span>
+    <span class="total-value color-blue" id="base-total">— ₽</span>
+  </div>
+
+  <div class="insight">
+    <p>Медианные цены каталога. Массовый сегмент + премиум-элемент.</p>
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 — Full outfit ════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="section-label">Финальный уровень</div>
+  <div class="accent-rule rule-red"></div>
+
+  <div class="slide-title">Финальный босс:<br>пуховик</div>
+
+  <div class="big-number color-red" id="puhovik-price">—</div>
+  <div class="big-number-label">медианная цена пуховика</div>
+
+  <ul class="price-list">
+    <li>
+      <span class="item-name">Футболка</span>
+      <span class="item-price" id="price-tshirt-2">— ₽</span>
+    </li>
+    <li>
+      <span class="item-name">Худи</span>
+      <span class="item-price" id="price-hoodie-2">— ₽</span>
+    </li>
+    <li>
+      <span class="item-name">Джинсы</span>
+      <span class="item-price" id="price-jeans-2">— ₽</span>
+    </li>
+    <li>
+      <span class="item-name">Пуховик</span>
+      <span class="item-price accent-red" id="price-puhovik-2">— ₽</span>
+    </li>
+  </ul>
+
+  <div class="total-row">
+    <span class="total-label">Полный лук</span>
+    <span class="total-value color-red" id="full-total">— ₽</span>
+  </div>
+
+  <div class="insight">
+    <p><strong>Пуховики — скрытый премиум внутри категории «Другое».</strong></p>
+  </div>
+
+  <a class="cta-link" href="https://davydov.my">→ Полный разбор на davydov.my</a>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<script src="charts_story_v41.js"></script>
+</body>
+</html>

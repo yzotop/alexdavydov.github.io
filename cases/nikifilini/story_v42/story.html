@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>NIKIFILINI v4.2 — Pricing story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #C0C0BC;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #F5F5F5;
+    margin: 40px auto;
+    padding: 120px 120px 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── label ──────────────────────── */
+  .slide-label {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #AAA;
+    margin-bottom: 48px;
+  }
+
+  /* ── hero number ────────────────── */
+  .hero-number {
+    font-size: 96px;
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 26px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 40px;
+  }
+  .color-dark { color: #1A1A1A; }
+  .color-blue { color: #3F6EA6; }
+  .color-red  { color: #C3423F; }
+
+  /* ── body copy ──────────────────── */
+  .body-copy {
+    font-size: 26px;
+    line-height: 1.56;
+    color: #666;
+    margin-bottom: 40px;
+  }
+  .body-copy strong { font-weight: 700; color: #333; }
+
+  /* ── price breakdown ────────────── */
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid #E6E6E0;
+    font-size: 30px;
+    color: #333;
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-row .name { font-weight: 500; }
+  .price-row .val { font-weight: 700; letter-spacing: -0.01em; }
+  .price-row .val.accent-red { color: #C3423F; font-weight: 800; }
+
+  .price-breakdown { margin-bottom: 32px; }
+
+  /* ── total line ─────────────────── */
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 3px solid #1A1A1A;
+    padding: 28px 0 0;
+    margin-bottom: 40px;
+  }
+  .total-line .tl-label { font-size: 28px; font-weight: 600; color: #1A1A1A; }
+  .total-line .tl-value { font-size: 48px; font-weight: 900; letter-spacing: -0.01em; }
+
+  /* ── small stats row ────────────── */
+  .stats-row {
+    font-size: 22px;
+    color: #999;
+    margin-bottom: 24px;
+  }
+
+  /* ── chart container ────────────── */
+  .chart-bottom {
+    margin-top: auto;
+    overflow: hidden;
+  }
+  .chart-bottom svg { display: block; }
+
+  /* chart caption */
+  .chart-caption {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #BBB;
+    margin-bottom: 12px;
+  }
+
+  /* ── footer ─────────────────────── */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 24px;
+  }
+  .slide-footer span {
+    font-size: 18px;
+    color: #CCC;
+    font-weight: 500;
+  }
+
+  /* ── spacer ─────────────────────── */
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SLIDE 1 — ДЕШЕВО ════════════════ -->
+<section class="slide" data-slide="1">
+  <div class="slide-label">Нижний уровень</div>
+
+  <div class="hero-number color-dark" id="cheapest-val">—</div>
+  <div class="hero-sub">Войти в бренд — 590 ₽</div>
+
+  <div class="body-copy">
+    Самый дешёвый товар в каталоге.<br><br>
+    <strong>Топ-20 самых доступных — почти полностью стикеры.</strong><br>
+    Это точка входа, а не гардероб.
+  </div>
+
+  <div class="chart-bottom">
+    <div class="chart-caption">Top-10 самых дешёвых SKU</div>
+    <div id="chart-cheapest"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 — БАЗА ════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="slide-label">Массовый сегмент</div>
+
+  <div class="hero-number color-blue" id="base-total">—</div>
+  <div class="hero-sub">Базовый D2C-лук</div>
+
+  <div class="price-breakdown">
+    <div class="price-row">
+      <span class="name">Футболка</span>
+      <span class="val" id="price-tshirt">—</span>
+    </div>
+    <div class="price-row">
+      <span class="name">Худи</span>
+      <span class="val" id="price-hoodie">—</span>
+    </div>
+    <div class="price-row">
+      <span class="name">Джинсы</span>
+      <span class="val" id="price-jeans">—</span>
+    </div>
+  </div>
+
+  <div class="body-copy">
+    Футболки и худи — ядро ассортимента.<br>
+    Медианная цена каталога — <strong id="median-catalog">—</strong>.
+  </div>
+
+  <div class="chart-bottom">
+    <div class="chart-caption">Распределение цен · ось ограничена p99</div>
+    <div id="chart-hist"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 — ПРЕМИУМ ════════════════ -->
+<section class="slide" data-slide="3">
+  <div class="slide-label">Верхний коридор</div>
+
+  <div class="hero-number color-red" id="puhovik-price">—</div>
+  <div class="hero-sub">Пуховик — медианная цена категории</div>
+
+  <div class="body-copy">
+    <strong>Пуховики формируют премиум-сегмент</strong><br>
+    внутри категории «Другое».
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="chart-bottom">
+    <div class="chart-caption">Ценовые диапазоны по категориям</div>
+    <div id="chart-boxplot"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 — ПОЛНЫЙ ЛУК ════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="slide-label">Финальный уровень</div>
+
+  <div class="hero-number color-dark" id="full-total">—</div>
+  <div class="hero-sub">Полный комплект</div>
+
+  <div class="price-breakdown">
+    <div class="price-row">
+      <span class="name">База (футболка + худи + джинсы)</span>
+      <span class="val" id="base-val">—</span>
+    </div>
+    <div class="price-row">
+      <span class="name">Пуховик</span>
+      <span class="val accent-red" id="puh-val">—</span>
+    </div>
+  </div>
+
+  <div class="total-line">
+    <span class="tl-label">Разница база → полный лук</span>
+    <span class="tl-value color-red" id="ratio-val">—</span>
+  </div>
+
+  <div class="body-copy">
+    86.6% SKU продаются со скидкой (медиана −40%).
+  </div>
+
+  <div class="chart-bottom">
+    <div class="chart-caption">Сравнение уровней</div>
+    <div id="chart-compare"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span>davydov.my</span>
+    <span>feb 2026</span>
+  </div>
+</section>
+
+<script src="charts_story_v42.js"></script>
+</body>
+</html>

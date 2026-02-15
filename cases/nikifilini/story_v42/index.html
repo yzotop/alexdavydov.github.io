@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>NIKIFILINI v4.2 — Telegram Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0A0A0A;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── noise filter ─────────── */
+  .grain-filter { position: absolute; width: 0; height: 0; }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #141416;
+    margin: 40px auto;
+    padding: 120px 100px 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    filter: url(#noiseFilter);
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .slide > * { position: relative; z-index: 2; }
+
+  /* ── section label ─────────── */
+  .slide-label {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 14px;
+  }
+
+  .accent-rule {
+    width: 48px;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 52px;
+  }
+  .accent-blue  { background: #5B8DBE; }
+  .accent-green { background: #6BAF7A; }
+  .accent-amber { background: #D4A34A; }
+  .accent-red   { background: #C45C5C; }
+
+  /* ── title ─────────────────── */
+  .slide-title {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #F0F0F0;
+    letter-spacing: -0.02em;
+    margin-bottom: 56px;
+  }
+
+  /* ── insight block ─────────── */
+  .insight-block {
+    margin-bottom: 48px;
+  }
+  .insight-main {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #E8E8E8;
+    margin-bottom: 16px;
+  }
+  .insight-main .num {
+    letter-spacing: -0.01em;
+  }
+  .insight-main .hl-blue  { color: #7EB3DE; }
+  .insight-main .hl-green { color: #8FD49E; }
+  .insight-main .hl-amber { color: #E8BF6A; }
+  .insight-main .hl-red   { color: #E87C7C; }
+
+  .insight-sub {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+  }
+
+  /* ── facts ─────────────────── */
+  .facts-block {
+    margin-bottom: 40px;
+  }
+  .fact-line {
+    font-size: 24px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+  .fact-line strong {
+    font-weight: 700;
+    color: rgba(255,255,255,0.65);
+  }
+  .fact-line .mono {
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .facts-sep {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 16px 0;
+  }
+
+  /* ── kpi pair (slide 2) ────── */
+  .kpi-pair {
+    display: flex;
+    gap: 48px;
+    margin-bottom: 40px;
+    padding: 28px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .kpi-box {}
+  .kpi-box-label {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 8px;
+  }
+  .kpi-box-value {
+    font-size: 44px;
+    font-weight: 900;
+    color: #E8E8E8;
+    letter-spacing: -0.01em;
+  }
+  .kpi-box-sub {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+  }
+
+  /* ── chart ─────────────────── */
+  .chart-section {
+    margin-top: auto;
+  }
+  .chart-caption {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    margin-bottom: 12px;
+  }
+  .chart-area svg { display: block; }
+
+  /* ── footer ────────────────── */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 24px;
+  }
+  .slide-footer span {
+    font-size: 17px;
+    color: rgba(255,255,255,0.18);
+    font-weight: 500;
+  }
+  .slide-footer .caption-editorial {
+    font-style: italic;
+  }
+
+  /* ── slide 3 facts ─────────── */
+  .top-list {}
+  .top-item {
+    display: flex;
+    align-items: baseline;
+    padding: 10px 0;
+  }
+  .top-cnt {
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .top-cat {
+    font-size: 22px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    min-width: 120px;
+  }
+  .top-desc {
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    margin-left: 8px;
+  }
+  .top-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.65);
+    margin-left: auto;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+  }
+</style>
+</head>
+<body>
+
+<svg class="grain-filter" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="saturate" values="0"/>
+  </filter>
+</svg>
+
+<!-- ════════════════ SLIDE 1 — РАСПРЕДЕЛЕНИЕ ЦЕН ════════════════ -->
+<section class="slide" data-slide="1">
+  <div class="slide-label">Распределение цен · весь каталог</div>
+  <div class="accent-rule accent-blue"></div>
+
+  <div class="slide-title">Сколько стоит<br>Nikifilini?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Медианная цена — <span class="num hl-blue">4 044 ₽</span><br>
+      <span class="hl-blue">66%</span> каталога — до 6 000 ₽
+    </div>
+  </div>
+
+  <div class="facts-block">
+    <div class="fact-line">1 324 SKU с ценой</div>
+    <div class="fact-line">p75 = <span class="mono">7 554 ₽</span> · p90 = <span class="mono">12 650 ₽</span></div>
+    <div class="fact-line">p99 = <span class="mono">22 150 ₽</span> · максимум = <strong>30 000 ₽</strong> (сертификат)</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Распределение цен с обрезкой по p99</div>
+    <div class="chart-area" id="chart-hist"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 — ТОЛЬКО ОДЕЖДА ════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="slide-label">Одежда vs не-одежда</div>
+  <div class="accent-rule accent-green"></div>
+
+  <div class="slide-title">А если оставить<br>только одежду?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Медиана одежды — <span class="num hl-green">4 194 ₽</span><br>
+      <span class="hl-green">+150 ₽</span> к общей медиане
+    </div>
+    <div class="insight-sub">
+      Сертификаты и стикеры слегка тянут вниз
+    </div>
+  </div>
+
+  <div class="kpi-pair">
+    <div class="kpi-box">
+      <div class="kpi-box-label">Весь каталог</div>
+      <div class="kpi-box-value">1 324</div>
+      <div class="kpi-box-sub">SKU · медиана 4 044 ₽</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-box-label">Только одежда</div>
+      <div class="kpi-box-value" style="color: #8FD49E;">1 179</div>
+      <div class="kpi-box-sub">SKU · медиана 4 194 ₽</div>
+    </div>
+  </div>
+
+  <div class="facts-block">
+    <div class="fact-line"><strong>145 SKU</strong> — не-одежда (постеры, стикеры, коврики, сертификаты…)</div>
+    <div class="fact-line">p99 одежды = <span class="mono">20 955 ₽</span> (vs 22 150 ₽ у всех)</div>
+    <div class="fact-line">Максимум одежды = <strong>23 990 ₽</strong> (джинсовый бомбер)</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Медиана / p75 / p99 / max — весь каталог vs одежда</div>
+    <div class="chart-area" id="chart-compare"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 — ВЕРХНИЙ КОРИДОР ════════════════ -->
+<section class="slide" data-slide="3">
+  <div class="slide-label">Верхний ценовой коридор</div>
+  <div class="accent-rule accent-amber"></div>
+
+  <div class="slide-title">Кто формирует<br>верхний коридор?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Топ одежды = <span class="num hl-amber">20–24 тыс ₽</span>
+    </div>
+  </div>
+
+  <div class="facts-block">
+    <div class="top-list">
+      <div class="top-item"><span class="top-cnt">3×</span><span class="top-cat" style="color:#E8BF6A">Бомберы</span><span class="top-price">23 990 ₽</span></div>
+      <div class="top-item"><span class="top-cnt">3×</span><span class="top-cat" style="color:#E87C7C">Пуховики</span><span class="top-price">23 850 ₽</span></div>
+      <div class="top-item"><span class="top-cnt">1×</span><span class="top-cat">Рубашка</span><span class="top-price">23 790 ₽</span></div>
+      <div class="top-item"><span class="top-cnt">3×</span><span class="top-cat">Худи / Свитеры</span><span class="top-price">20 990 ₽</span></div>
+    </div>
+
+    <div class="facts-sep"></div>
+
+    <div class="fact-line">> 20 000 ₽: весь каталог — <strong>23 SKU</strong> (1.7%)</div>
+    <div class="fact-line">> 20 000 ₽: только одежда — <strong>13 SKU</strong> (1.1%)</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Топ-10 самых дорогих SKU (одежда)</div>
+    <div class="chart-area" id="chart-top10"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 — ОСНОВНОЙ РЫНОК ════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="slide-label">Ценовые сегменты</div>
+  <div class="accent-rule accent-red"></div>
+
+  <div class="slide-title">Где основной<br>объём?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Основной рынок —<br><span class="num hl-red">3 000–6 000 ₽</span>
+    </div>
+  </div>
+
+  <div class="facts-block">
+    <div class="fact-line"><strong>36%</strong> каталога — в этом диапазоне</div>
+    <div class="fact-line"><strong>66%</strong> — до 6 000 ₽</div>
+    <div class="facts-sep"></div>
+    <div class="fact-line">> 10 000 ₽ — <strong>16%</strong></div>
+    <div class="fact-line">> 20 000 ₽ — <strong>1–2%</strong></div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Доля каталога по ценовым сегментам</div>
+    <div class="chart-area" id="chart-segments"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<script src="chart.js"></script>
+</body>
+</html>
