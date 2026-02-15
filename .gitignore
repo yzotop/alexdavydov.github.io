@@ -69,13 +69,22 @@ stories/
 **/detected_endpoint.txt
 
 # ── Case research artifacts (not for publish) ──
-cases/**/*_extractor.py
-cases/**/*_raw.json
-cases/**/build_case_artifacts.py
-cases/**/*.ipynb
+cases/**/*.py
 cases/**/*.csv
-cases/**/verify_*.py
-cases/**/export_story.py
-cases/**/build_story_artifacts.py
+cases/**/*.ipynb
+cases/**/*_raw.json
 cases/**/pyproject.toml
 cases/**/requirements.txt
+
+# ── Exceptions: story_v* dirs are publish assets (keep everything) ──
+!cases/**/story_v*/
+!cases/**/story_v*/**
+
+# ── Exceptions: explicit case-level publish files ──
+!cases/**/index.html
+!cases/**/charts.js
+!cases/**/chart.js
+!cases/**/summary.json
+!cases/**/metrics_v2.json
+!cases/**/README.md
+!cases/**/.gitignore

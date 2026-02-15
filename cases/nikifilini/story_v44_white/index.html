@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>NIKIFILINI v4.4 — Apparel Only (White)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #E8E8E8;
+    font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    background: #FFFFFF;
+    margin: 40px auto;
+    padding: 120px 100px 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── section label ─────────── */
+  .slide-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #BBB;
+    margin-bottom: 14px;
+  }
+
+  .accent-rule {
+    width: 48px;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 52px;
+  }
+  .rule-blue { background: #4A7FB5; }
+  .rule-gold { background: #C49A3C; }
+
+  /* ── title ─────────────────── */
+  .slide-title {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #111;
+    letter-spacing: -0.02em;
+    margin-bottom: 52px;
+  }
+
+  /* ── insight ───────────────── */
+  .insight-block { margin-bottom: 40px; }
+  .insight-main {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #1A1A1A;
+    margin-bottom: 14px;
+  }
+  .hl-blue { color: #4A7FB5; }
+  .hl-gold { color: #B8912F; }
+  .hl-red  { color: #C45050; }
+
+  .insight-sub {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #999;
+  }
+
+  /* ── facts ─────────────────── */
+  .facts-block { margin-bottom: 36px; }
+  .fact-line {
+    font-size: 23px;
+    line-height: 1.8;
+    color: #888;
+    font-weight: 500;
+  }
+  .fact-line strong { font-weight: 700; color: #555; }
+  .fact-line .mono {
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    font-weight: 600; color: #555;
+  }
+  .facts-sep { height: 1px; background: #F0F0F0; margin: 14px 0; }
+
+  /* ── stats row (slide 1 middle) ── */
+  .stats-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 48px;
+    padding: 36px 0;
+    border-top: 1px solid #ECECEC;
+    border-bottom: 1px solid #ECECEC;
+  }
+  .stat-col {
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .stat-col + .stat-col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 1px;
+    background: #E8E8E8;
+  }
+  .stat-value {
+    font-size: 44px;
+    font-weight: 900;
+    color: #1A1A1A;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #BBB;
+    margin-top: 10px;
+  }
+
+  /* ── corridor 2-col block (slide 1) ── */
+  .corridor-section {
+    margin-bottom: 40px;
+  }
+  .corridor-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #CCC;
+    margin-bottom: 20px;
+  }
+  .corridor-grid {
+    display: flex;
+    gap: 0;
+  }
+  .corridor-col {
+    flex: 1;
+    position: relative;
+  }
+  .corridor-col + .corridor-col {
+    padding-left: 40px;
+  }
+  .corridor-col + .corridor-col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #ECECEC;
+  }
+  .corridor-line {
+    font-size: 24px;
+    line-height: 2.0;
+    color: #888;
+    font-weight: 500;
+  }
+  .corridor-line strong {
+    font-weight: 700;
+    color: #555;
+  }
+  .corridor-line .mono {
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    font-weight: 600;
+    color: #555;
+  }
+
+  /* ── profile segments (slide 1) ── */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 48px;
+  }
+  .profile-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+  }
+  .profile-name {
+    font-size: 21px;
+    font-weight: 500;
+    color: #AAA;
+  }
+  .profile-range {
+    font-size: 21px;
+    font-weight: 600;
+    color: #777;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    white-space: nowrap;
+  }
+
+  /* ── catalog bar rows (slide 1) ── */
+  .bar-rows { margin-bottom: 0; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-name {
+    font-size: 21px;
+    font-weight: 600;
+    color: #555;
+    width: 260px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 14px;
+    background: #F0F0F0;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    background: #4A7FB5;
+  }
+  .bar-fill-muted {
+    height: 100%;
+    border-radius: 7px;
+    background: #D4D4D4;
+  }
+  .bar-pct {
+    font-size: 21px;
+    font-weight: 700;
+    color: #888;
+    width: 100px;
+    text-align: right;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    flex-shrink: 0;
+  }
+
+  /* ── comparison table (slide 4) ── */
+  .cmp-table {
+    margin-bottom: 28px;
+    padding: 28px 0 20px;
+    border-top: 1px solid #ECECEC;
+    border-bottom: 1px solid #ECECEC;
+  }
+  .cmp-header {
+    display: flex;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F0F0F0;
+    margin-bottom: 4px;
+  }
+  .cmp-header span {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #CCC;
+  }
+  .cmp-col-label { width: 200px; }
+  .cmp-col-a { width: 220px; text-align: right; }
+  .cmp-col-b { flex: 1; text-align: right; }
+
+  .cmp-row {
+    display: flex;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid #F8F8F8;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-label {
+    width: 200px;
+    font-size: 22px;
+    font-weight: 500;
+    color: #AAA;
+  }
+  .cmp-val-a {
+    width: 220px;
+    text-align: right;
+    font-size: 24px;
+    font-weight: 700;
+    color: #4A7FB5;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+  }
+  .cmp-val-b {
+    flex: 1;
+    text-align: right;
+    font-size: 24px;
+    font-weight: 600;
+    color: #BBB;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+  }
+
+  .cmp-conclusion {
+    font-size: 23px;
+    font-weight: 600;
+    color: #999;
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+
+  /* ── breakdown table (slide 3) ── */
+  .breakdown-table {
+    margin-bottom: 36px;
+  }
+  .breakdown-header {
+    display: flex;
+    padding: 0 0 10px;
+    border-bottom: 1px solid #E8E8E8;
+    margin-bottom: 4px;
+  }
+  .breakdown-header span {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #CCC;
+  }
+  .bk-col-cat { width: 260px; }
+  .bk-col-sku { width: 120px; text-align: right; }
+  .bk-col-price { flex: 1; text-align: right; }
+
+  .breakdown-row {
+    display: flex;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .bk-cat {
+    width: 260px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #333;
+  }
+  .bk-sku {
+    width: 120px;
+    text-align: right;
+    font-size: 24px;
+    font-weight: 600;
+    color: #BBB;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+  }
+  .bk-price {
+    flex: 1;
+    text-align: right;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1A1A1A;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+    letter-spacing: -0.01em;
+  }
+  .bk-gold .bk-cat { color: #B8912F; }
+  .bk-gold .bk-price { color: #B8912F; }
+  .bk-red .bk-cat { color: #C45050; }
+  .bk-red .bk-price { color: #C45050; }
+
+  .breakdown-summary {
+    font-size: 22px;
+    font-weight: 500;
+    color: #AAA;
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+  .breakdown-summary strong {
+    font-weight: 700;
+    color: #888;
+  }
+
+  /* ── category list (slide 2) ── */
+  .cat-list { margin-bottom: 40px; }
+  .cat-row {
+    display: flex;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-name {
+    font-size: 28px; font-weight: 600; color: #333; min-width: 200px;
+  }
+  .cat-dots {
+    flex: 1; border-bottom: 2px dotted #E0E0E0;
+    margin: 0 16px; height: 1px; align-self: center;
+  }
+  .cat-price {
+    font-size: 28px; font-weight: 700; color: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em; white-space: nowrap;
+  }
+  .cat-row-premium {
+    background: rgba(196,154,60,0.04);
+    margin: 0 -12px; padding: 16px 12px;
+    border-radius: 10px; border-bottom: none;
+    margin-top: 8px;
+  }
+  .cat-row-premium .cat-name { color: #B8912F; }
+  .cat-row-premium .cat-price { color: #B8912F; }
+
+  /* ── top list (slide 3) ────── */
+  .top-item {
+    display: flex; align-items: baseline; padding: 10px 0;
+  }
+  .top-cnt {
+    font-size: 22px; font-weight: 700; color: #CCC; width: 36px; flex-shrink: 0;
+  }
+  .top-cat {
+    font-size: 22px; font-weight: 600; color: #666; min-width: 140px;
+  }
+  .top-price {
+    font-size: 22px; font-weight: 700; color: #333; margin-left: auto;
+    font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+  }
+
+  /* ── chart ─────────────────── */
+  .chart-section { margin-top: auto; }
+  .chart-caption {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #CCC; margin-bottom: 12px;
+  }
+  .chart-area svg { display: block; }
+
+  /* ── footer ────────────────── */
+  .slide-footer {
+    display: flex; justify-content: space-between; padding-top: 20px;
+  }
+  .slide-footer span {
+    font-size: 16px; color: #CCC; font-weight: 500;
+  }
+  .slide-footer .caption-editorial { font-style: italic; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SLIDE 1 — РАСПРЕДЕЛЕНИЕ ЦЕН ОДЕЖДЫ ════════════════ -->
+<section class="slide" data-slide="1">
+  <div class="slide-label">Только одежда · 1 179 SKU</div>
+  <div class="accent-rule rule-blue"></div>
+
+  <div class="slide-title">Сколько стоит<br>одежда Nikifilini?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Медиана — <span class="hl-blue">4 194 ₽</span><br>
+      <span class="hl-blue">65%</span> одежды — до 6 000 ₽
+    </div>
+    <div class="insight-sub">
+      Это массовый D2C-сегмент, не премиум.
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-col">
+      <div class="stat-value">1 179</div>
+      <div class="stat-label">SKU</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-value" style="color:#4A7FB5">4 194 ₽</div>
+      <div class="stat-label">Медиана</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-value">7 554 ₽</div>
+      <div class="stat-label">p75</div>
+    </div>
+  </div>
+
+  <div class="corridor-section" style="margin-bottom:28px">
+    <div class="corridor-label">Структура каталога</div>
+    <div class="bar-rows">
+      <div class="bar-row">
+        <span class="bar-name">Футболки</span>
+        <div class="bar-track"><div class="bar-fill" style="width:33%"></div></div>
+        <span class="bar-pct">33%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-name">Худи</span>
+        <div class="bar-track"><div class="bar-fill" style="width:18%"></div></div>
+        <span class="bar-pct">18%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-name">Остальные категории</span>
+        <div class="bar-track"><div class="bar-fill-muted" style="width:49%"></div></div>
+        <span class="bar-pct">49%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Распределение цен одежды (обрезка по p99)</div>
+    <div class="chart-area" id="chart-hist"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 2 — СТРУКТУРА ЦЕНЫ ОДЕЖДЫ ════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="slide-label">Цены по категориям одежды</div>
+  <div class="accent-rule rule-blue"></div>
+
+  <div class="slide-title">Кто формирует<br>цену одежды?</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      Футболки и худи — ядро.<br>
+      <span class="hl-gold">Бомберы и пуховики</span> — верхний коридор.
+    </div>
+  </div>
+
+  <div class="cat-list" id="cat-list"></div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Ценовые диапазоны по категориям (p25–p75, whisker min–max)</div>
+    <div class="chart-area" id="chart-boxplot"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 3 — ВЕРХНИЙ КОРИДОР ════════════════ -->
+<section class="slide" data-slide="3">
+  <div class="slide-label">Верхний ценовой коридор</div>
+  <div class="accent-rule rule-gold"></div>
+
+  <div class="slide-title" style="margin-bottom:28px">Где начинается<br>премиум?</div>
+
+  <div class="insight-block" style="margin-bottom:24px">
+    <div class="insight-main" style="margin-bottom:8px">
+      Топ одежды = <span class="hl-gold">20–24 тыс ₽</span><br>
+      Это <span class="hl-gold">1.1%</span> SKU
+    </div>
+    <div class="insight-sub">
+      Категории, формирующие > 20 000 ₽
+    </div>
+  </div>
+
+  <div class="breakdown-table" style="margin-bottom:20px">
+    <div class="breakdown-header">
+      <span class="bk-col-cat">Категория</span>
+      <span class="bk-col-sku">SKU</span>
+      <span class="bk-col-price">Цена</span>
+    </div>
+
+    <div class="breakdown-row bk-gold">
+      <span class="bk-cat">Бомберы</span>
+      <span class="bk-sku">3 SKU</span>
+      <span class="bk-price">23 990 ₽</span>
+    </div>
+    <div class="breakdown-row bk-red">
+      <span class="bk-cat">Пуховики</span>
+      <span class="bk-sku">3 SKU</span>
+      <span class="bk-price">23 850 ₽</span>
+    </div>
+    <div class="breakdown-row">
+      <span class="bk-cat">Рубашка</span>
+      <span class="bk-sku">1 SKU</span>
+      <span class="bk-price">23 790 ₽</span>
+    </div>
+    <div class="breakdown-row">
+      <span class="bk-cat">Худи / Свитеры</span>
+      <span class="bk-sku">3 SKU</span>
+      <span class="bk-price">20 990 ₽</span>
+    </div>
+
+    <div class="breakdown-summary">
+      <strong>13 SKU</strong> из 1 179 (1.1%) формируют верхний ценовой коридор
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Топ-10 самых дорогих SKU (одежда)</div>
+    <div class="chart-area" id="chart-top10"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<!-- ════════════════ SLIDE 4 — ФОКУС: ФУТБОЛКИ ════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="slide-label">Фокус · Футболки</div>
+  <div class="accent-rule rule-blue"></div>
+
+  <div class="slide-title">Футболки —<br>фундамент бренда</div>
+
+  <div class="insight-block">
+    <div class="insight-main">
+      <span class="hl-blue">385</span> SKU<br>
+      Медиана <span class="hl-blue" id="kpi-ts-med">—</span>
+    </div>
+  </div>
+
+  <div class="facts-block">
+    <div class="fact-line">Основной диапазон: <span class="mono" id="kpi-ts-range">—</span></div>
+    <div class="fact-line">p75 = <span class="mono" id="kpi-ts-p75">—</span></div>
+    <div class="fact-line">Максимум = <strong id="kpi-ts-max">—</strong></div>
+  </div>
+
+  <div class="cmp-table">
+    <div class="corridor-label" style="margin-bottom:16px">Позиция в каталоге</div>
+    <div class="cmp-header">
+      <span class="cmp-col-label">Метрика</span>
+      <span class="cmp-col-a">Футболки</span>
+      <span class="cmp-col-b">Вся одежда</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">SKU</span>
+      <span class="cmp-val-a">385</span>
+      <span class="cmp-val-b">1 179</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Доля</span>
+      <span class="cmp-val-a">33%</span>
+      <span class="cmp-val-b">100%</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Медиана</span>
+      <span class="cmp-val-a">2 900 ₽</span>
+      <span class="cmp-val-b">4 194 ₽</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">p90</span>
+      <span class="cmp-val-a">3 414 ₽</span>
+      <span class="cmp-val-b">12 650 ₽</span>
+    </div>
+    <div class="cmp-conclusion">
+      Футболки — самый массовый и самый «узкий» по цене сегмент бренда.
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-caption">Распределение цен футболок (обрезка по p99)</div>
+    <div class="chart-area" id="chart-tshirt"></div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="caption-editorial">Data-based catalog analysis · Feb 2026</span>
+    <span>davydov.my</span>
+  </div>
+</section>
+
+<script src="chart.js"></script>
+</body>
+</html>
