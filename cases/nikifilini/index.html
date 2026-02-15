@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKIFILINI — Case Study — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.12;
+            margin-bottom: 0.5rem;
+        }
+        .page-header .subtitle {
+            font-size: 1.05rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.65;
+        }
+        .page-header .meta-line {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.38);
+            margin-top: 0.6rem;
+            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .content { max-width: 740px; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.72;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            color: #111;
+        }
+
+        .section-num {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-right: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(17,17,17,.08);
+            margin: 3rem 0;
+        }
+
+        .chart-container {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+
+        .key-numbers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+        }
+        @media (max-width: 640px) {
+            .key-numbers { grid-template-columns: repeat(2, 1fr); }
+        }
+        .key-number {
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 12px;
+            padding: 1.2rem 1.25rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .key-number .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .key-number .label {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.48);
+            margin-top: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .insight-block {
+            border-left: 3px solid rgba(17,17,17,.08);
+            padding: 0.8rem 1.25rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            background: rgba(17,17,17,.015);
+        }
+        .insight-block p {
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0;
+        }
+
+        .hypothesis-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .hypothesis-list li {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.72);
+            padding: 0.55rem 0 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            position: relative;
+        }
+        .hypothesis-list li::before {
+            content: "\2192";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.24);
+            font-weight: 600;
+        }
+        .hypothesis-list li:last-child { border-bottom: none; }
+
+        .table-wrap {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table-wrap th {
+            text-align: left;
+            font-weight: 600;
+            color: rgba(17,17,17,.48);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.12);
+        }
+        .table-wrap td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            color: rgba(17,17,17,.78);
+        }
+        .table-wrap tr:hover td {
+            background: rgba(17,17,17,.02);
+        }
+        .table-wrap a {
+            color: #0071e3;
+            text-decoration: none;
+        }
+        .table-wrap a:hover {
+            text-decoration: underline;
+        }
+
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1.25rem 0 1.5rem;
+        }
+        @media (max-width: 640px) {
+            .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
+        }
+        .pipeline-step {
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: rgba(17,17,17,.68);
+        }
+        .pipeline-step .step-num {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.24);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-bottom: 0.3rem;
+        }
+        .pipeline-step .step-title {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 0.15rem;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .file-list li {
+            font-size: 0.88rem;
+            color: rgba(17,17,17,.68);
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(17,17,17,.06);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .file-list li:last-child { border-bottom: none; }
+        .file-list code {
+            font-size: 0.82rem;
+            background: rgba(17,17,17,.04);
+            border: 1px solid rgba(17,17,17,.08);
+            padding: 0.1em 0.4em;
+            border-radius: 5px;
+            color: #111;
+        }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/cases/">Кейсы</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header">
+            <p class="meta-line">case study &middot; feb 2026</p>
+            <h1>NIKIFILINI Store</h1>
+            <p class="subtitle">D2C fashion-бренд: ассортимент, ценовые коридоры, промо-механика и stock-out как сигнал спроса</p>
+        </header>
+
+        <div class="content">
+
+            <!-- KPI cards -->
+            <div class="key-numbers">
+                <div class="key-number">
+                    <div class="value" id="kpi-sku">—</div>
+                    <div class="label">SKU в каталоге</div>
+                </div>
+                <div class="key-number">
+                    <div class="value" id="kpi-categories">—</div>
+                    <div class="label">категорий товаров</div>
+                </div>
+                <div class="key-number">
+                    <div class="value" id="kpi-median-price">—</div>
+                    <div class="label">медианная цена</div>
+                </div>
+                <div class="key-number">
+                    <div class="value" id="kpi-discount">—</div>
+                    <div class="label">SKU со скидкой</div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">01</span>Контекст</h2>
+            <!-- ========================================== -->
+
+            <p>
+                <strong>NIKIFILINI</strong> — российский D2C fashion-бренд с фокусом на аниме-культуру и streetwear.
+                Бизнес-модель: drop-механика (лимитированные коллекции), промо через скидки и предзаказы,
+                производство по запросу (30+ дней на изготовление).
+                Каталог объединяет футболки, худи, свитшоты, джинсы, бомберы и аксессуары с принтами
+                по мотивам Naruto, Evangelion, Chainsaw Man, Berserk и других тайтлов.
+            </p>
+
+            <p>
+                Цель кейса — извлечь публичный каталог nikifilinistore.ru, проанализировать
+                структуру ассортимента, ценовые коридоры и долю stock-out как индикатор спроса/дефицита.
+            </p>
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">02</span>Данные и метод</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Источник — публичный каталог WooCommerce-магазина.
+                Парсинг HTML-страниц (<code>/shop/page/N/</code>) с пагинацией.
+                Никаких персональных данных, обхода авторизации или CAPTCHA.
+                Rate-limit: 0.4–1.0 с между запросами.
+            </p>
+
+            <div class="pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Crawl</div>
+                    Пагинация /shop/page/N/, 112 страниц
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Parse</div>
+                    BeautifulSoup: цена, категория, stock, теги
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Normalize</div>
+                    Категоризация по product_cat-* классам
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-num">04</div>
+                    <div class="step-title">Aggregate</div>
+                    summary.json &rarr; SVG-графики
+                </div>
+            </div>
+
+            <h3>Файлы пайплайна</h3>
+            <ul class="file-list">
+                <li><code>nikifilini_extractor.py</code> Парсинг каталога, CSV/JSON</li>
+                <li><code>build_case_artifacts.py</code> Агрегации &rarr; summary.json</li>
+                <li><code>charts.js</code> SVG-рендер графиков (vanilla JS)</li>
+                <li><code>nikifilini_catalog.csv</code> Нормализованный датасет</li>
+            </ul>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">03</span>Ассортимент</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Структура каталога по типам товаров. Бар показывает количество SKU в каждой категории
+                и долю от общего ассортимента.
+            </p>
+
+            <div class="chart-container" id="chart-category-counts"></div>
+
+            <div class="insight-block">
+                <p>
+                    D2C fashion с выраженным перекосом в футболки и худи — базовые товары с высокой маржинальностью принта.
+                    Бомберы и топы — нишевые позиции с потенциально более высоким средним чеком.
+                </p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">04</span>Цены и коридоры</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Распределение цен по каталогу (текущая цена, ограничено p99 для читаемости).
+            </p>
+
+            <div class="chart-container" id="chart-price-hist"></div>
+
+            <h3>Ценовые диапазоны по категориям</h3>
+            <p>
+                Точка — медиана, горизонтальная линия — межквартильный диапазон (p25&ndash;p75).
+                Различия между категориями отражают разницу в себестоимости и воспринимаемой ценности.
+            </p>
+
+            <div class="chart-container" id="chart-category-price"></div>
+
+            <div class="insight-block">
+                <p>
+                    Бомберы и джинсы формируют верхний ценовой сегмент.
+                    Футболки и лонгсливы — массовый сегмент с узким ценовым коридором, типичным для D2C с промо-моделью.
+                </p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">05</span>Промо и скидки</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Доля SKU со скидкой и топ-20 товаров с наибольшей абсолютной скидкой.
+                Промо-стратегия NIKIFILINI — массовые скидки 40% на большую часть каталога,
+                что характерно для D2C-брендов с якорной ценой.
+            </p>
+
+            <h3>Топ-20 по размеру скидки</h3>
+            <div class="table-wrap" id="table-discount"></div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">06</span>Stock-out как сигнал спроса</h2>
+            <!-- ========================================== -->
+
+            <p>
+                Товары «нет в наличии» — индикатор повышенного спроса или ошибки планирования.
+                В модели D2C с производством по запросу (30+ дней) stock-out может означать
+                как намеренный дефицит (drop-механика), так и реальный дисбаланс.
+            </p>
+
+            <div class="chart-container" id="chart-oos-category"></div>
+
+            <div class="insight-block">
+                <p>
+                    Категории с высоким % stock-out заслуживают отдельного анализа:
+                    намеренная лимитированность (FOMO) или непокрытый спрос?
+                    Для продуктовой аналитики — сигнал к A/B-тесту replenishment vs scarcity messaging.
+                </p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- ========================================== -->
+            <h2><span class="section-num">07</span>Выводы для продукта</h2>
+            <!-- ========================================== -->
+
+            <ul class="hypothesis-list">
+                <li><strong>Ассортиментная концентрация.</strong> Футболки и худи — ядро каталога. Расширение в аксессуары или коллаборации может диверсифицировать средний чек.</li>
+                <li><strong>Промо-якорь.</strong> Массовая скидка 40% создаёт якорную цену. Риск: покупатели перестают воспринимать «полную» цену как реальную. Рычаг: тестировать персонализированные промо вместо blanket-скидки.</li>
+                <li><strong>Stock-out как рычаг.</strong> В D2C с drop-механикой stock-out может усиливать urgency. Но если stock-out системный — это потерянная выручка. Рычаг: трекать conversion rate на OOS-страницах, тестировать waitlist.</li>
+                <li><strong>Коллекции как SKU-драйвер.</strong> Аниме-коллаборации (Naruto, Evangelion, Chainsaw Man) формируют тематические кластеры. Cross-sell между коллекциями — потенциал роста AOV.</li>
+                <li><strong>Ценовая сегментация.</strong> Разброс p25–p75 по категориям указывает на естественную сегментацию: базовый (футболки), средний (худи/свитшоты), премиум (бомберы/custom). Каждый сегмент требует своей промо-стратегии.</li>
+            </ul>
+
+            <hr class="divider">
+
+            <h3>Топ-20 самых дорогих SKU</h3>
+            <div class="table-wrap" id="table-expensive"></div>
+
+            <h3>Топ-20 самых доступных SKU</h3>
+            <div class="table-wrap" id="table-affordable"></div>
+
+        </div>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+    <script src="charts.js"></script>
+</body>
+</html>
