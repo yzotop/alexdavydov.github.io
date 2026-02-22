@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Национальная лотерея — структура портфеля и вероятностная экономика — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+        }
+        .page-header .subtitle {
+            font-size: 1.05rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.65;
+        }
+        .page-header .meta-line {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.38);
+            margin-top: 0.6rem;
+            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .content { max-width: 740px; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.72;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            color: #111;
+        }
+
+        .section-num {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-right: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(17,17,17,.08);
+            margin: 3rem 0;
+        }
+
+        .key-numbers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+        }
+        @media (max-width: 640px) {
+            .key-numbers { grid-template-columns: repeat(2, 1fr); }
+        }
+        .key-number {
+            border: 1px solid rgba(17,17,17,.08);
+            border-radius: 12px;
+            padding: 1.2rem 1.25rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .key-number .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .key-number .label {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.48);
+            margin-top: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .chart-container {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .table-wrap {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table-wrap th {
+            text-align: left;
+            font-weight: 600;
+            color: rgba(17,17,17,.48);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.12);
+        }
+        .table-wrap td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            color: rgba(17,17,17,.78);
+        }
+        .table-wrap tr:hover td {
+            background: rgba(17,17,17,.02);
+        }
+        .table-wrap .mono {
+            font-family: ui-monospace, 'SF Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        .insight-block {
+            border-left: 3px solid rgba(17,17,17,.08);
+            padding: 0.8rem 1.25rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            background: rgba(17,17,17,.015);
+        }
+        .insight-block p {
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0;
+        }
+
+        .hypothesis-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .hypothesis-list li {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.72);
+            padding: 0.55rem 0 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            position: relative;
+        }
+        .hypothesis-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.24);
+            font-weight: 600;
+        }
+        .hypothesis-list li:last-child { border-bottom: none; }
+
+        .formula-block {
+            background: rgba(17,17,17,.02);
+            border: 1px solid rgba(17,17,17,.06);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.25rem 0;
+            font-family: ui-monospace, 'SF Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: rgba(17,17,17,.82);
+            overflow-x: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/cases/" class="active">Кейсы</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <header class="page-header">
+            <p class="meta-line">case study &middot; feb 2026</p>
+            <h1>Национальная лотерея — структура портфеля и вероятностная экономика</h1>
+            <p class="subtitle">17 продуктов &middot; hypergeometric distribution &middot; Monte Carlo &middot; RTP &middot; портфельная стратегия</p>
+        </header>
+
+        <div class="content">
+
+            <!-- KPI cards -->
+            <div class="key-numbers">
+                <div class="key-number">
+                    <div class="value">17</div>
+                    <div class="label">продуктов в портфеле</div>
+                </div>
+                <div class="key-number">
+                    <div class="value">10–700 ₽</div>
+                    <div class="label">диапазон цен билета</div>
+                </div>
+                <div class="key-number">
+                    <div class="value">0.9–201 М</div>
+                    <div class="label">диапазон джекпотов, ₽</div>
+                </div>
+                <div class="key-number">
+                    <div class="value">3 типа</div>
+                    <div class="label">Keno · Bingo · Special</div>
+                </div>
+            </div>
+
+
+            <!-- ═══ 1. ЗАЧЕМ ЭТОТ КЕЙС ═══ -->
+            <h2><span class="section-num">01</span> Зачем этот кейс</h2>
+
+            <p>
+                Национальная лотерея (nloto.ru) — одна из крупнейших лотерейных платформ в России.
+                Портфель включает 17 онлайн-продуктов разных механик: от классических кено-стилевых
+                лотерей до бинго и ставочных форматов.
+            </p>
+            <p>
+                Цель анализа — реконструировать вероятностную экономику продуктов на основе
+                публично доступных правил игры и таблиц выплат. Это позволяет оценить
+                <strong>RTP</strong> (Return to Player), <strong>variance</strong>,
+                структуру маржи и выявить стратегические паттерны в портфеле.
+            </p>
+            <p>
+                Анализ выполнен исключительно на основе открытых данных.
+                Внутренняя финансовая информация оператора не использовалась.
+                Все оценки RTP являются теоретическими и могут отличаться от фактических
+                показателей из-за pari-mutuel пулов, множителей и условий,
+                не отражённых в публичных таблицах.
+            </p>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 2. СТРУКТУРА ПОРТФЕЛЯ ═══ -->
+            <h2><span class="section-num">02</span> Структура продуктового портфеля</h2>
+
+            <p>
+                Все 17 продуктов классифицированы по механике розыгрыша:
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Тип</th>
+                            <th>Кол-во</th>
+                            <th>Доля</th>
+                            <th>Механика</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Keno / Digital</strong></td>
+                            <td class="mono">10</td>
+                            <td class="mono">59%</td>
+                            <td>Выбор чисел, совпадения с розыгрышем (hypergeometric)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bingo-style</strong></td>
+                            <td class="mono">5</td>
+                            <td class="mono">29%</td>
+                            <td>Карточка с числами, последовательное выпадение шаров</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Special</strong></td>
+                            <td class="mono">2</td>
+                            <td class="mono">12%</td>
+                            <td>Ставки на спорт, суммы кубиков, комплексные механики</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart-container">
+                <img src="assets/01_portfolio.png" alt="Структура портфеля по типу продукта">
+            </div>
+
+            <div class="insight-block">
+                <p>
+                    Портфель выраженно <strong>Keno-heavy</strong>: 59% продуктов используют
+                    механику выбора чисел. Это объяснимо — кено-формат допускает гибкую
+                    параметризацию (размер поля, количество полей, множители) и высокую
+                    частоту тиражей (до 96 в день).
+                </p>
+            </div>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 3. ЦЕНА И ДЖЕКПОТЫ ═══ -->
+            <h2><span class="section-num">03</span> Цена билета и джекпоты</h2>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Продукт</th>
+                            <th>Цена, ₽</th>
+                            <th>Тип</th>
+                            <th>Частота</th>
+                            <th>Джекпот, ₽</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Великолепная 8</td><td class="mono">10</td><td>Keno</td><td>каждые 15 мин</td><td class="mono">2,1 М</td></tr>
+                        <tr><td>Трижды три</td><td class="mono">30</td><td>Bingo</td><td>каждые 7 ч</td><td class="mono">1,1 М</td></tr>
+                        <tr><td>Форсаж 75</td><td class="mono">50</td><td>Bingo</td><td>каждые 3 ч</td><td class="mono">75 М</td></tr>
+                        <tr><td>Трилогия</td><td class="mono">50</td><td>Keno</td><td>каждые 45 мин</td><td class="mono">1,5 М</td></tr>
+                        <tr><td>Премьер</td><td class="mono">80</td><td>Keno</td><td>каждые 30 мин</td><td class="mono">104 М</td></tr>
+                        <tr><td>Мечталлион Экспресс</td><td class="mono">100</td><td>Bingo</td><td>каждые 30 мин</td><td class="mono">100 М</td></tr>
+                        <tr><td>Мечталлион</td><td class="mono">100</td><td>Bingo</td><td>1×/неделю</td><td class="mono">201 М</td></tr>
+                        <tr><td>Турнир</td><td class="mono">100</td><td>Special</td><td>каждый час</td><td class="mono">3 М</td></tr>
+                        <tr><td>Лавина призов</td><td class="mono">100</td><td>Keno</td><td>каждые 135 мин</td><td class="mono">20 М</td></tr>
+                        <tr><td>5 из 36</td><td class="mono">100</td><td>Keno</td><td>каждые 2 ч</td><td class="mono">5,5 М</td></tr>
+                        <tr><td>12 Добрых дел</td><td class="mono">200</td><td>Keno</td><td>каждые 315 мин</td><td class="mono">10 М</td></tr>
+                        <tr><td>Цветные шары</td><td class="mono">200</td><td>Keno</td><td>каждый час</td><td class="mono">20 М</td></tr>
+                        <tr><td>Топ 12</td><td class="mono">250</td><td>Keno</td><td>каждые 45 мин</td><td class="mono">31 М</td></tr>
+                        <tr><td>Сумма Фортуны</td><td class="mono">250</td><td>Special</td><td>каждый час</td><td class="mono">0,9 М</td></tr>
+                        <tr><td>Большая 8</td><td class="mono">250</td><td>Keno</td><td>каждые 15 мин</td><td class="mono">5 М</td></tr>
+                        <tr><td>4×4</td><td class="mono">500</td><td>Bingo</td><td>каждый час</td><td class="mono">25 М</td></tr>
+                        <tr><td>Супер 8</td><td class="mono">700</td><td>Keno</td><td>каждые 30 мин</td><td class="mono">15 М</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Медианная цена билета — <strong>100 ₽</strong>. Диапазон — от 10 ₽
+                (Великолепная 8, самый дешёвый вход) до 700 ₽ (Супер 8, единственный
+                продукт в премиум-сегменте).
+            </p>
+
+            <div class="chart-container">
+                <img src="assets/05_jackpots.png" alt="Размер джекпота по продуктам">
+            </div>
+
+            <h3>Перекрытие ценовых сегментов</h3>
+
+            <p>
+                Три ценовых кластера содержат по пять и более продуктов:
+            </p>
+            <ul class="hypothesis-list">
+                <li><strong>0–99 ₽</strong> — Трижды три, Форсаж 75, Трилогия, Премьер, Великолепная 8</li>
+                <li><strong>100–199 ₽</strong> — Мечталлион Экспресс, Мечталлион, Турнир, Лавина, 5 из 36</li>
+                <li><strong>200–299 ₽</strong> — 12 Добрых дел, Цветные шары, Топ 12, Сумма Фортуны, Большая 8</li>
+            </ul>
+
+            <div class="insight-block">
+                <p>
+                    Высокая плотность в ценовых сегментах указывает на потенциальный
+                    <strong>риск каннибализации</strong>: продукты конкурируют за одного
+                    и того же игрока на одном уровне цены. Дифференциация достигается
+                    через variance-профиль, тематику и частоту тиражей.
+                </p>
+            </div>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 4. ВЕРОЯТНОСТНОЕ МОДЕЛИРОВАНИЕ ═══ -->
+            <h2><span class="section-num">04</span> Вероятностное моделирование</h2>
+
+            <h3>4.1 Keno / Digital: hypergeometric distribution</h3>
+
+            <p>
+                Для лотерей с выбором чисел вероятность совпадения точно описывается
+                гипергеометрическим распределением:
+            </p>
+
+            <div class="formula-block">
+                P(X = x) = C(n, x) · C(N − n, K − x) / C(N, K)<br><br>
+                N — общее количество чисел в поле<br>
+                n — чисел, выбранных игроком<br>
+                K — чисел, разыгранных лотереей<br>
+                x — количество совпадений
+            </div>
+
+            <p>
+                <strong>Пример: «5 из 36».</strong> Игрок выбирает 5 чисел из 36,
+                лотерея разыгрывает 5. Распределение вероятностей:
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Совпадений</th>
+                            <th>Вероятность</th>
+                            <th>1/P</th>
+                            <th>Выплата, ₽</th>
+                            <th>EV, ₽</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="mono">5 из 5</td><td class="mono">0.000003</td><td class="mono">1 : 376 992</td><td class="mono">5 451 685 *</td><td class="mono">14.46</td></tr>
+                        <tr><td class="mono">4 из 5</td><td class="mono">0.000411</td><td class="mono">1 : 2 432</td><td class="mono">100 000</td><td class="mono">41.11</td></tr>
+                        <tr><td class="mono">3 из 5</td><td class="mono">0.012334</td><td class="mono">1 : 81</td><td class="mono">10 000</td><td class="mono">123.34</td></tr>
+                        <tr><td class="mono">2 из 5</td><td class="mono">0.119233</td><td class="mono">1 : 8.4</td><td class="mono">1 000</td><td class="mono">119.23</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size:0.8rem; color:rgba(17,17,17,.38);">
+                * Джекпот — pari-mutuel, делится между победителями.
+            </p>
+
+            <div class="chart-container">
+                <img src="assets/07_hypergeometric.png" alt="Гипергеометрическое распределение: 5 из 36">
+            </div>
+
+            <p>
+                <strong>Expected Value</strong> (суммарный) для «5 из 36» составляет 298 ₽
+                при цене билета 100 ₽, что даёт теоретический RTP > 100%.
+                Это означает, что публичная таблица выплат не отражает всех условий игры —
+                вероятно, действуют дополнительные ограничения: множители, pari-mutuel пулы
+                или условные правила, которые снижают фактический RTP до регуляторного уровня (~50%).
+            </p>
+
+            <div class="insight-block">
+                <p>
+                    Этот паттерн — расхождение между «наивным» RTP на основе публичных таблиц
+                    и фактическим RTP — наблюдается у 8 из 17 продуктов.
+                    Для таких продуктов в анализе используется <strong>оценка RTP = 50%</strong>,
+                    соответствующая регуляторному минимуму призового фонда.
+                </p>
+            </div>
+
+            <h3>4.2 Bingo-style: Monte Carlo simulation</h3>
+
+            <p>
+                Для бинго-механик аналитическое решение затруднено: выигрыш зависит
+                от <em>последовательности</em> выпадения шаров, а не только от набора
+                совпадений. Для оценки вероятностей применён Monte Carlo с 200 000 итерациями.
+            </p>
+
+            <p>
+                Параметры симуляции:
+            </p>
+            <ul class="hypothesis-list">
+                <li><strong>Мечталлион</strong> — карточка 4×4, числа 1–40, 40 ходов розыгрыша</li>
+                <li><strong>Мечталлион Экспресс</strong> — карточка 4×4, числа 1–80, 50 ходов</li>
+                <li><strong>Форсаж 75</strong> — карточка 5×5, числа 1–75, 73 хода</li>
+                <li><strong>4×4</strong> — карточка 4×4, числа 1–80, 43 хода</li>
+                <li><strong>Трижды три</strong> — карточка 3×3, числа 1–30, 17 ходов</li>
+            </ul>
+
+            <p>
+                Ключевое отличие бинго от кено — <strong>эмоциональная волатильность</strong>.
+                Игрок видит, как постепенно закрывается карточка, что создаёт ощущение
+                «почти выиграл» (near-miss effect). Это влияет на повторные покупки
+                сильнее, чем сухой показатель RTP.
+            </p>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 5. RTP И ЧАСТОТА ═══ -->
+            <h2><span class="section-num">05</span> RTP и частота тиражей</h2>
+
+            <div class="chart-container">
+                <img src="assets/02_rtp.png" alt="RTP по продуктам">
+            </div>
+
+            <p>
+                Среди продуктов с точными моделями RTP варьируется от <strong>3.4%</strong>
+                (Лавина призов) до <strong>42.8%</strong> (Премьер). Средний RTP
+                по точным моделям — <strong>~16%</strong>. Продукты с оценочным RTP (50%)
+                выделены полупрозрачным цветом.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Продукт</th>
+                            <th>RTP</th>
+                            <th>Маржа</th>
+                            <th>Цена, ₽</th>
+                            <th>Модель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Лавина призов</td><td class="mono">3.4%</td><td class="mono">96.6%</td><td class="mono">100</td><td>exact</td></tr>
+                        <tr><td>4×4</td><td class="mono">7.8%</td><td class="mono">92.2%</td><td class="mono">500</td><td>Monte Carlo</td></tr>
+                        <tr><td>Супер 8</td><td class="mono">8.3%</td><td class="mono">91.7%</td><td class="mono">700</td><td>exact</td></tr>
+                        <tr><td>Трилогия</td><td class="mono">8.6%</td><td class="mono">91.4%</td><td class="mono">50</td><td>exact</td></tr>
+                        <tr><td>Топ 12</td><td class="mono">9.1%</td><td class="mono">90.9%</td><td class="mono">250</td><td>exact</td></tr>
+                        <tr><td>12 Добрых дел</td><td class="mono">13.0%</td><td class="mono">87.0%</td><td class="mono">200</td><td>exact</td></tr>
+                        <tr><td>Большая 8</td><td class="mono">15.2%</td><td class="mono">84.8%</td><td class="mono">250</td><td>exact</td></tr>
+                        <tr><td>Сумма Фортуны</td><td class="mono">16.0%</td><td class="mono">84.0%</td><td class="mono">250</td><td>оценка</td></tr>
+                        <tr><td>Турнир</td><td class="mono">37.3%</td><td class="mono">62.7%</td><td class="mono">100</td><td>exact</td></tr>
+                        <tr><td>Премьер</td><td class="mono">42.8%</td><td class="mono">57.2%</td><td class="mono">80</td><td>exact</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size:0.8rem; color:rgba(17,17,17,.38);">
+                Для 7 продуктов с расчётным RTP &gt; 100% использована оценка 50%
+                (регуляторный минимум). Они не включены в таблицу выше.
+            </p>
+
+            <h3>Частота тиражей vs RTP</h3>
+
+            <div class="chart-container">
+                <img src="assets/08_freq_rtp.png" alt="Частота тиражей vs RTP">
+            </div>
+
+            <p>
+                Корреляция между частотой тиражей и RTP практически отсутствует:
+                <strong>r ≈ −0.05</strong>. Оператор не использует частоту как рычаг
+                для систематического снижения RTP — продукты с быстрыми тиражами
+                (каждые 15 минут) и редкими (раз в неделю) могут иметь схожий RTP.
+            </p>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 6. ПОРТФЕЛЬНАЯ СТРАТЕГИЯ ═══ -->
+            <h2><span class="section-num">06</span> Интерпретация портфельной стратегии</h2>
+
+            <div class="chart-container">
+                <img src="assets/03_ev_risk.png" alt="EV vs волатильность">
+            </div>
+
+            <ul class="hypothesis-list">
+                <li>
+                    <strong>Доминирование Keno.</strong>
+                    10 из 17 продуктов — кено-формат. Это позволяет быстро запускать
+                    новые лотереи, варьируя параметры (размер поля, число полей,
+                    бонусный шар) без изменения базовой инфраструктуры.
+                </li>
+                <li>
+                    <strong>Два кластера волатильности.</strong>
+                    Продукты чётко делятся на «джекпот-якоря» (Мечталлион, Премьер —
+                    ultra-high variance, low frequency) и «рабочие лошадки»
+                    (Великолепная 8, Трижды три — low variance, high frequency).
+                </li>
+                <li>
+                    <strong>Ценовое перекрытие.</strong>
+                    5 продуктов конкурируют в диапазоне 100 ₽ и 5 — в диапазоне 200–250 ₽.
+                    Дифференциация достигается через variance-профиль и тематику,
+                    но с точки зрения WAU-каннибализации это зона риска.
+                </li>
+                <li>
+                    <strong>Отсутствие instant-механик.</strong>
+                    В портфеле нет скретч-карт или мгновенных лотерей.
+                    На международных рынках (UK, US) instant-формат занимает
+                    до 60% выручки лотерейных операторов.
+                </li>
+                <li>
+                    <strong>Поведенческая сегментация.</strong>
+                    Бинго-продукты работают через near-miss эффект и эмоциональную
+                    вовлечённость (розыгрыш как процесс). Кено-продукты —
+                    через быстрый цикл и рациональный расчёт.
+                    Специальные продукты (Турнир) — через привязку к внешним событиям.
+                </li>
+                <li>
+                    <strong>Единственный premium-продукт.</strong>
+                    Супер 8 (700 ₽) — единственный продукт выше 500 ₽.
+                    Premium-сегмент (1000+ ₽) отсутствует.
+                </li>
+                <li>
+                    <strong>Частота как retention-инструмент.</strong>
+                    4 продукта проводят тиражи чаще, чем раз в 30 минут.
+                    Это создаёт habitual loop: результат виден быстро,
+                    что стимулирует повторную покупку.
+                </li>
+            </ul>
+
+            <div class="chart-container">
+                <img src="assets/06_margin.png" alt="Маржа по типам продуктов">
+            </div>
+
+            <div class="chart-container">
+                <img src="assets/04_price_rtp.png" alt="Цена билета vs RTP">
+            </div>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 7. СЦЕНАРИИ ═══ -->
+            <h2><span class="section-num">07</span> Что это может означать для стратегии продукта</h2>
+
+            <p>
+                На основе публичной механики и структуры портфеля можно выделить
+                три сценария развития — в зависимости от стратегического приоритета оператора.
+            </p>
+
+            <h3>Если приоритет — удержание (retention)</h3>
+            <p>
+                Высокая частота тиражей и low-variance продукты (Великолепная 8,
+                Трижды три) уже работают на habitual play. На основе публичных данных
+                можно предположить, что усиление кросс-продуктовой лояльности
+                (например, бонусные билеты за серию покупок) увеличило бы
+                переход между продуктами и LTV.
+            </p>
+
+            <h3>Если приоритет — привлечение (acquisition)</h3>
+            <p>
+                Четыре продукта с ценой ≤50 ₽ формируют воронку входа.
+                Однако отсутствие instant-формата (мгновенные результаты без ожидания тиража)
+                ограничивает импульсные покупки. На международных рынках
+                именно скретч-карты обеспечивают первый контакт с продуктом.
+            </p>
+
+            <h3>Если приоритет — баланс портфеля</h3>
+            <p>
+                Портфель перекошен в сторону Keno/Digital (59%). Добавление
+                продуктов с принципиально другой механикой (instant, event-based)
+                снизило бы зависимость от одного типа розыгрыша. Кроме того,
+                публикация официальных RTP (как требуется на регулируемых рынках
+                UK/EU) могла бы стать инструментом дифференциации и повышения доверия.
+            </p>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 8. МЕТОДОЛОГИЯ ═══ -->
+            <h2><span class="section-num">08</span> Методология и ограничения</h2>
+
+            <p><strong>Источник данных:</strong> публичные страницы nloto.ru,
+                извлечение через <code>__NEXT_DATA__</code> (Next.js SSR payload).
+                Февраль 2026. 17 продуктов, 177 строк таблиц выплат.</p>
+
+            <p><strong>Модели:</strong></p>
+            <ul class="hypothesis-list">
+                <li>Keno / Digital — точный расчёт по hypergeometric distribution</li>
+                <li>Bingo — Monte Carlo, 200 000 итераций на продукт</li>
+                <li>Турнир — multinomial model (12 матчей, 3 исхода)</li>
+                <li>Сумма Фортуны — комбинаторная модель (6d6)</li>
+            </ul>
+
+            <p><strong>Ограничения:</strong></p>
+            <ul class="hypothesis-list">
+                <li>RTP для 8 продуктов оценён в 50% (регуляторный минимум), т.к. наивная модель даёт RTP &gt; 100% — признак неполноты публичных данных</li>
+                <li>Pari-mutuel джекпоты не поддаются точной оценке без данных о количестве проданных билетов</li>
+                <li>Множители и развёрнутые ставки (доступные на сайте) меняют эффективную цену и RTP, но не учтены в базовой модели</li>
+                <li>Анализ не использует внутреннюю финансовую информацию оператора</li>
+            </ul>
+
+            <p><strong>Воспроизводимость:</strong> весь код (crawler, модели, визуализации) доступен в
+                <a href="https://github.com/alexdavydov" style="color:#0071e3;">исходном репозитории</a>
+                анализа.</p>
+
+
+            <hr class="divider">
+
+            <a href="/cases/" class="back-link">← Все кейсы</a>
+        </div>
+
+        <footer class="site-footer" style="margin-top:3rem;">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+</body>
+</html>
