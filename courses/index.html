@@ -75,6 +75,26 @@ h1{
 }
 .badge--draft{background:rgba(180,83,9,.08);color:#b45309}
 .badge--pub{background:rgba(4,120,87,.08);color:#047857}
+.filter-bar{
+    margin-bottom:1.5rem;
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+    font-size:0.88rem;
+    color:rgba(17,17,17,.48)
+}
+.filter-bar select{
+    font-family:inherit;
+    font-size:0.88rem;
+    padding:0.35rem 0.75rem;
+    border:1px solid rgba(17,17,17,.12);
+    border-radius:8px;
+    background:#fff;
+    color:#111;
+    cursor:pointer;
+    transition:border-color 180ms ease
+}
+.filter-bar select:hover{border-color:rgba(17,17,17,.24)}
 </style>
 </head>
 <body>
@@ -95,51 +115,74 @@ h1{
   <p class="intro">Структурированные программы по аналитике, экспериментам и системному мышлению.</p>
   <p style="font-size: 0.88rem; color: rgba(17,17,17,.38); margin-bottom: 2.5rem; line-height: 1.65;">Курсы — обучение. <a href="/lab/" style="color: rgba(17,17,17,.48); text-decoration: none; border-bottom: 1px solid rgba(17,17,17,.12);">Инструменты</a> — применение. <a href="/knowledge/" style="color: rgba(17,17,17,.48); text-decoration: none; border-bottom: 1px solid rgba(17,17,17,.12);">База знаний</a> — расширение горизонта.</p>
 
-  <div class="cards">
-
-    <a class="card" href="../lab/monetization/index.html">
-      <div class="card-num">01</div>
-      <div class="card-title">Математика монетизации рекламы</div>
-      <div class="card-desc">Модели, метрики и операционные паттерны рекламной монетизации.</div>
-      <div class="card-meta"><span class="badge badge--pub">Published</span></div>
-    </a>
-
-    <a class="card" href="../lab/experiments/index.html">
-      <div class="card-num">02</div>
-      <div class="card-title">Математика экспериментов в монетизации</div>
-      <div class="card-desc">Дизайн и анализ экспериментов в контексте рекламных продуктов.</div>
-      <div class="card-meta"><span class="badge badge--pub">Published</span></div>
-    </a>
-
-    <a class="card" href="../lab/ab-decisions/index.html">
-      <div class="card-num">03</div>
-      <div class="card-title">A/B-тестирование: принятие решений на практике</div>
-      <div class="card-desc">Практические кейсы принятия решений по результатам A/B-тестов.</div>
-      <div class="card-meta"><span class="badge badge--pub">Published</span></div>
-    </a>
-
-    <a class="card" href="../lab/product-analytics/index.html">
-      <div class="card-num">04</div>
-      <div class="card-title">Аналитика продукта: как читать систему, а не цифры</div>
-      <div class="card-desc">Механизмы продукта, потоки, задержки и неоднородность — прежде чем смотреть на метрики.</div>
-      <div class="card-meta"><span class="badge badge--pub">Published</span></div>
-    </a>
-
-    <a class="card" href="../lab/ab-stat-os/index.html">
-      <div class="card-num">05</div>
-      <div class="card-title">Статистика A/B-тестирования: операционная система аналитика</div>
-      <div class="card-desc">Типы метрик, выбор статкритерия, variance reduction, кластерные эксперименты, типовые ошибки.</div>
-      <div class="card-meta"><span class="badge badge--draft">Draft</span></div>
-    </a>
-
-    <a class="card" href="../lab/graphs-analytics/index.html">
-      <div class="card-num">06</div>
-      <div class="card-title">Графики в аналитике и принятии решений</div>
-      <div class="card-desc">Как строить графики, которые аргументируют решение, а не украшают слайд.</div>
-      <div class="card-meta"><span class="badge badge--pub">Published</span></div>
-    </a>
-
+  <div class="filter-bar">
+    <label for="type-filter">Фильтр:</label>
+    <select id="type-filter">
+      <option value="all">Все</option>
+      <option value="course" selected>Курсы</option>
+      <option value="glossary">Глоссарий</option>
+      <option value="simulator">Симуляторы</option>
+      <option value="calculator">Калькуляторы</option>
+    </select>
   </div>
+
+  <div class="cards" id="cards-container">
+    <!-- Fallback: static list shown when JS or fetch fails -->
+    <noscript>
+      <a class="card" href="../lab/monetization/index.html"><div class="card-title">Математика монетизации рекламы</div></a>
+      <a class="card" href="../lab/experiments/index.html"><div class="card-title">Математика экспериментов в монетизации</div></a>
+      <a class="card" href="../lab/ab-decisions/index.html"><div class="card-title">A/B-тестирование: принятие решений</div></a>
+      <a class="card" href="../lab/product-analytics/index.html"><div class="card-title">Аналитика продукта</div></a>
+      <a class="card" href="../lab/ab-stat-os/index.html"><div class="card-title">Статистика A/B-тестирования</div></a>
+      <a class="card" href="../lab/graphs-analytics/index.html"><div class="card-title">Графики в аналитике</div></a>
+    </noscript>
+  </div>
+
+  <script>
+  (function() {
+    var container = document.getElementById('cards-container');
+    var filter = document.getElementById('type-filter');
+    var items = [];
+
+    function renderCards(type) {
+      var html = '';
+      var n = 0;
+      items.forEach(function(item) {
+        if (item.status === 'archived') return;
+        if (type !== 'all' && item.type !== type) return;
+        n++;
+        var badge = item.status === 'draft'
+          ? '<span class="badge badge--draft">Draft</span>'
+          : '<span class="badge badge--pub">Published</span>';
+        html += '<a class="card" href="/' + item.entry + '">'
+          + '<div class="card-num">' + String(n).padStart(2, '0') + '</div>'
+          + '<div class="card-title">' + item.title + '</div>'
+          + '<div class="card-desc">' + (item.description || '') + '</div>'
+          + '<div class="card-meta">' + badge + '</div>'
+          + '</a>';
+      });
+      if (!html) html = '<p style="color:rgba(17,17,17,.38)">Нет элементов для выбранного фильтра.</p>';
+      container.innerHTML = html;
+    }
+
+    fetch('/lab/_manifest.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        items = data;
+        renderCards(filter.value);
+        filter.addEventListener('change', function() { renderCards(this.value); });
+      })
+      .catch(function() {
+        container.innerHTML =
+          '<a class="card" href="../lab/monetization/index.html"><div class="card-num">01</div><div class="card-title">Математика монетизации рекламы</div></a>'
+          + '<a class="card" href="../lab/experiments/index.html"><div class="card-num">02</div><div class="card-title">Математика экспериментов в монетизации</div></a>'
+          + '<a class="card" href="../lab/ab-decisions/index.html"><div class="card-num">03</div><div class="card-title">A/B-тестирование: принятие решений</div></a>'
+          + '<a class="card" href="../lab/product-analytics/index.html"><div class="card-num">04</div><div class="card-title">Аналитика продукта</div></a>'
+          + '<a class="card" href="../lab/ab-stat-os/index.html"><div class="card-num">05</div><div class="card-title">Статистика A/B-тестирования</div></a>'
+          + '<a class="card" href="../lab/graphs-analytics/index.html"><div class="card-num">06</div><div class="card-title">Графики в аналитике</div></a>';
+      });
+  })();
+  </script>
 
   <p style="margin-top: 2.5rem; font-size: 0.88rem; color: rgba(17,17,17,.38);">Применить на практике → <a href="/lab/" style="color: rgba(17,17,17,.48); text-decoration: none; border-bottom: 1px solid rgba(17,17,17,.12);">Инструменты</a></p>
 
