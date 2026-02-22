@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — davydov.my</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 3rem 1.5rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .error-block {
+            margin-top: 4rem;
+            margin-bottom: 4rem;
+            max-width: 540px;
+        }
+        .error-block h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            color: rgba(17,17,17,.10);
+            margin-bottom: 1rem;
+        }
+        .error-block h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .error-block p {
+            font-size: 0.95rem;
+            color: rgba(17,17,17,.58);
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+        .error-block a {
+            color: #0071e3;
+            text-decoration: none;
+        }
+        .error-block a:hover {
+            text-decoration: underline;
+        }
+        .error-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+        }
+        #redirect-notice {
+            display: none;
+            margin-top: 2rem;
+            padding: 1rem 1.25rem;
+            background: rgba(0,113,227,.04);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.58);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="top-nav">
+            <a href="/">Главная</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/lab/">Инструменты</a>
+            <a href="/knowledge/">База знаний</a>
+            <a href="/cases/">Кейсы</a>
+            <a href="/career/">Карьера</a>
+            <a href="/about/">Обо мне</a>
+            <a href="/search/">Поиск</a>
+            <a href="/companies/">Для компаний</a>
+        </nav>
+
+        <div class="error-block" id="error-block">
+            <h1>404</h1>
+            <h2>Страница не найдена</h2>
+            <p>Возможно, она была перемещена или удалена. Попробуйте начать с одного из разделов:</p>
+            <div class="error-links">
+                <a href="/">Главная</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/cases/">Кейсы</a>
+                <a href="/search/">Поиск</a>
+            </div>
+        </div>
+
+        <div id="redirect-notice">Перенаправление…</div>
+
+        <footer class="site-footer">
+            <span>&copy; 2026 davydov.my</span>
+            <nav class="site-footer-links">
+                <a href="https://t.me/Datalake">Telegram</a>
+                <a href="/courses/">Курсы</a>
+                <a href="/lab/">Инструменты</a>
+                <a href="/search/">Поиск</a>
+            </nav>
+        </footer>
+    </div>
+
+<script>
+(function() {
+    var path = window.location.pathname;
+
+    function normalize(p) {
+        var variants = [p];
+        if (p.endsWith('/index.html')) {
+            variants.push(p.replace(/\/index\.html$/, '/'));
+        }
+        if (!p.endsWith('/') && p.lastIndexOf('.') <= p.lastIndexOf('/')) {
+            variants.push(p + '/');
+        }
+        if (p.endsWith('/') && p.length > 1) {
+            variants.push(p.slice(0, -1));
+        }
+        return variants;
+    }
+
+    function tryRedirect(map) {
+        var variants = normalize(path);
+        for (var i = 0; i < variants.length; i++) {
+            if (map[variants[i]]) {
+                document.getElementById('redirect-notice').style.display = 'block';
+                document.getElementById('error-block').style.display = 'none';
+                window.location.replace(map[variants[i]]);
+                return;
+            }
+        }
+    }
+
+    if (typeof fetch === 'function') {
+        fetch('/assets/redirects.json')
+            .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(tryRedirect)
+            .catch(function() {});
+    }
+})();
+</script>
+</body>
+</html>
