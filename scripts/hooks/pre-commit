@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Pre-commit hook: block large files from entering the repo.
+# Install: ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit
+exec "$(git rev-parse --show-toplevel)/scripts/check_large_files.sh"

@@ -124,6 +124,30 @@ alexdavydov.github.io/
 
 Единый язык проекта: определения терминов аналитики и монетизации. На страницах курса и в калькуляторах используются ссылки на [`GLOSSARY.md`](./GLOSSARY.md) вместо дублирования определений.
 
+## Redirects
+
+When pages are moved or deleted, add redirect rules to
+[`assets/redirects.json`](./assets/redirects.json). The custom
+[`404.html`](./404.html) fetches this file and automatically redirects
+matching paths. Format: `{ "/old/path/": "/new/target/" }`.
+Supports trailing-slash and `/index.html` normalization.
+
+## Large file guard
+
+A pre-commit hook blocks files larger than 10 MB from being committed.
+Data files belong in `~/data/`, not in this repo.
+
+```bash
+# Install the hook (one-time, from repo root):
+ln -sf ../../scripts/hooks/pre-commit .git/hooks/pre-commit
+
+# Audit existing files manually:
+scripts/check_large_files.sh --all
+```
+
+To allowlist a file, edit the `ALLOWLIST` array in
+`scripts/check_large_files.sh`.
+
 ## Maintenance (internal)
 
 Internal maintainer notes (deploy checklist, private materials policy, `real_tests/` workflow) are documented in [`INTERNALS.md`](./INTERNALS.md).
