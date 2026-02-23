@@ -666,6 +666,8 @@
                     </label>
                 </div>
                 <button id="pv-btn" style="padding:8px 24px;border:none;border-radius:8px;background:#111;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Посчитать</button>
+                <button id="pv-prefill" style="padding:8px 24px;border:1px solid rgba(17,17,17,.12);border-radius:8px;background:#fff;color:rgba(17,17,17,.68);font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:1rem;margin-left:0.5rem;">Мой кейс: M4 за 77k</button>
+                <p id="pv-meta" style="font-size:.78rem;color:rgba(17,17,17,.38);margin:0 0 1rem;font-family:ui-monospace,'SF Mono',monospace;display:none;"></p>
                 <div id="pv-result" style="display:none;"></div>
                 <canvas id="pv-chart" width="640" height="120" style="display:none;width:100%;height:auto;border-radius:8px;margin-top:0.75rem;"></canvas>
             </div>
@@ -675,10 +677,9 @@
             <script>
             (function(){
                 var DATA=null;
-                var ROOT=document.getElementById('pv-root');
 
                 function $(id){return document.getElementById(id)}
-                function fmt(n){return n==null?'—':n.toLocaleString('ru-RU')}
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
 
                 function populateSelect(sel,vals,label){
                     sel.innerHTML='<option value="">'+label+'</option>';
@@ -760,6 +761,10 @@
                     ctx.textAlign='right';ctx.fillText(fmt(mx),W-pad,H-4);
                 }
 
+                function isMyCase(){
+                    return $('pv-chip').value==='M4'&&parseFloat($('pv-price').value)===77000;
+                }
+
                 function run(){
                     var out=$('pv-result');
                     if(!DATA){out.style.display='block';out.innerHTML='<p style="color:rgba(17,17,17,.48);font-size:.85rem;">Данные загружаются\u2026</p>';return}
@@ -800,9 +805,11 @@
                         else if(pct<=75){verdict='Чуть выше медианы. Не критично, но можно было лучше.';vcolor='#b26a00'}
                         else{verdict='Дороговато. Или конфигурация топовая, или стоит поторговаться.';vcolor='#c62828'}
 
+                        var extra=isMyCase()?' <span style="color:rgba(17,17,17,.38);font-size:.82rem;">\u2014 проверяю свою покупку, без оправданий :)</span>':'';
+
                         h+='<div style="margin-top:1rem;padding:1rem 1.25rem;border-radius:10px;border-left:3px solid '+vcolor+';background:rgba(17,17,17,.015);">'+
                            '<p style="margin:0;font-size:.95rem;color:rgba(17,17,17,.82);">'+
-                           '<strong style="color:'+vcolor+'">P'+pct+'</strong> \u2014 '+verdict+'</p></div>';
+                           '<strong style="color:'+vcolor+'">P'+pct+'</strong> \u2014 '+verdict+extra+'</p></div>';
                     } else {
                         h+='</tbody></table></div>';
                         h+='<p style="font-size:.85rem;color:rgba(17,17,17,.38);margin-top:.75rem;">Введи цену, чтобы получить перцентиль.</p>';
@@ -813,14 +820,38 @@
                     drawHist(prices,userPrice);
                 }
 
-                function init(data){
-                    DATA=data;
-                    populateSelect($('pv-family'),unique(data,'family'),'Любая');
-                    populateSelect($('pv-chip'),unique(data,'chip'),'Любой');
-                    populateSelect($('pv-size'),unique(data,'size'),'Любой');
-                    populateSelect($('pv-ram'),unique(data,'ram_gb'),'Любой');
-                    populateSelect($('pv-ssd'),unique(data,'ssd'),'Любой');
+                function prefill(){
+                    var sel=$('pv-chip');
+                    var found=false;
+                    for(var i=0;i<sel.options.length;i++){
+                        if(sel.options[i].value==='M4'){sel.selectedIndex=i;found=true;break}
+                    }
+                    if(!found){$('pv-result').style.display='block';$('pv-result').innerHTML='<div class="insight-block"><p>Чип M4 не найден в данных.</p></div>';return}
+                    $('pv-family').value='';
+                    $('pv-size').value='';
+                    $('pv-ram').value='';
+                    $('pv-ssd').value='';
+                    $('pv-price').value='77000';
+                    run();
+                }
+
+                function init(payload){
+                    var rows=Array.isArray(payload)?payload:payload.rows;
+                    DATA=rows;
+
+                    if(payload.generated_at){
+                        var m=$('pv-meta');
+                        m.textContent=payload.n+' объявлений \u00B7 snapshot: '+payload.generated_at+' \u00B7 источник: '+(payload.source||'Avito');
+                        m.style.display='block';
+                    }
+
+                    populateSelect($('pv-family'),unique(rows,'family'),'Любая');
+                    populateSelect($('pv-chip'),unique(rows,'chip'),'Любой');
+                    populateSelect($('pv-size'),unique(rows,'size'),'Любой');
+                    populateSelect($('pv-ram'),unique(rows,'ram_gb'),'Любой');
+                    populateSelect($('pv-ssd'),unique(rows,'ssd'),'Любой');
                     $('pv-btn').addEventListener('click',run);
+                    $('pv-prefill').addEventListener('click',prefill);
                     $('pv-price').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
                 }
 
