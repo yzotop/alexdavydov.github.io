@@ -220,19 +220,20 @@
                         var root=$('onepager-root');
                         root.style.display='block';
 
+                        var nc=d.n_clean||d.n_total;
                         var heroSub=$('hero-subtitle');
                         if(heroSub){
                             var cq=d.coverage&&d.coverage.total_queries?d.coverage.total_queries+' запросов':'\u2026';
-                            heroSub.innerHTML=fmt(d.n_total)+' объявлений Avito &middot; '+cq+' &times; 30 городов &middot; парсинг конфигураций &middot; проверка цены M4 за 77k';
+                            heroSub.innerHTML=fmt(nc)+' clean объявлений Avito &middot; '+cq+' &times; 30 городов &middot; парсинг конфигураций &middot; проверка цены M4 за 77k';
                         }
                         var methN=$('method-n');if(methN)methN.textContent=fmt(d.n_total);
 
-                        $('op-hero').textContent=fmt(d.n_total)+' уникальных объявлений \u00B7 snapshot '+d.snapshot_date+' \u00B7 Avito';
+                        $('op-hero').innerHTML=fmt(nc)+' clean объявлений <span style="font-size:.82rem;color:rgba(17,17,17,.38);">(raw: '+fmt(d.n_total)+')</span> \u00B7 snapshot '+d.snapshot_date+' \u00B7 Avito';
 
                         var nums=$('op-numbers');
                         nums.innerHTML=
-                            numBlock(fmt(d.n_total),'объявлений в выборке')+
-                            numBlock(fmt(d.price.median)+' \u20BD','медиана цены')+
+                            numBlock(fmt(nc),'clean объявлений <span style="font-size:.65rem;opacity:.5">5k\u2013500k \u20BD</span>')+
+                            numBlock(fmt(d.price.median)+' \u20BD','медиана цены (clean)')+
                             numBlock(fmt(d.price.p25)+'\u2013'+fmt(d.price.p75)+' \u20BD','середина рынка (P25\u2013P75)')+
                             numBlock(fmt(d.price.p90)+' \u20BD','верх рынка (P90)');
 
@@ -243,14 +244,19 @@
                         }
                         if(d.median_by_chip&&d.median_by_chip.length>=2){
                             var chips=d.median_by_chip;
-                            var intel=null,mChip=null;
+                            var intelAll=0,intelSum=0,mChip=null;
                             for(var i=0;i<chips.length;i++){
-                                if(chips[i].chip==='Intel')intel=chips[i];
-                                if(chips[i].chip==='M4')mChip=chips[i];
+                                var cn=chips[i].chip;
+                                if(cn==='Intel'||cn==='Intel i5'||cn==='Intel i7'||cn==='Intel i9'){
+                                    intelAll+=chips[i].count;
+                                    intelSum+=chips[i].median*chips[i].count;
+                                }
+                                if(cn==='M4')mChip=chips[i];
                             }
-                            if(intel&&mChip){
-                                var ratio=(mChip.median/intel.median).toFixed(1);
-                                ins.push('M4 vs Intel: медиана '+fmt(mChip.median)+' vs '+fmt(intel.median)+' \u20BD (\u00D7'+ratio+').');
+                            if(intelAll>0&&mChip){
+                                var intelWm=Math.round(intelSum/intelAll);
+                                var ratio=(mChip.median/intelWm).toFixed(1);
+                                ins.push('Apple Silicon (M4) vs Intel-family: медиана '+fmt(mChip.median)+' vs '+fmt(intelWm)+' \u20BD (\u00D7'+ratio+').');
                             }
                         }
                         if(d.price.p90&&d.price.p25){
@@ -283,16 +289,11 @@
                         if(d.m4_summary&&d.m4_summary.count&&d.m4_summary.median){
                             var m=$('op-m4');
                             m.style.display='block';
-                            var pct77k=0,prices77k=d.m4_summary;
-                            if(prices77k.p25&&77000<prices77k.p25){pct77k=20}
-                            else if(77000<=prices77k.median){pct77k=40}
-                            else if(77000<=prices77k.p75){pct77k=60}
-                            else{pct77k=80}
-                            var txt='На выборке '+fmt(d.n_total)+' объявлений M4 за 77\u00A0000 \u20BD ';
-                            if(77000<=prices77k.median){
-                                txt+='оказывается ниже медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Похоже, это не самая глупая покупка.';
+                            var txt='На выборке '+fmt(nc)+' clean объявлений M4 за 77\u00A0000 \u20BD ';
+                            if(77000<=d.m4_summary.median){
+                                txt+='ниже медианы сегмента ('+fmt(d.m4_summary.median)+' \u20BD). Похоже, ок.';
                             }else{
-                                txt+='выше медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Рынок видел и дешевле.';
+                                txt+='выше медианы сегмента ('+fmt(d.m4_summary.median)+' \u20BD). Рынок видел и дешевле.';
                             }
                             m.innerHTML='<div style="padding:1rem 1.25rem;border-radius:10px;border-left:3px solid rgba(17,17,17,.15);background:rgba(17,17,17,.015);">'+
                                 '<p style="margin:0;font-size:.92rem;color:rgba(17,17,17,.72);">'+txt+'</p></div>';
@@ -400,7 +401,7 @@
                     </label>
                 </div>
                 <button id="pv-btn" style="padding:8px 24px;border:none;border-radius:8px;background:#111;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Посчитать</button>
-                <button id="pv-prefill" style="padding:8px 24px;border:1px solid rgba(17,17,17,.12);border-radius:8px;background:#fff;color:rgba(17,17,17,.68);font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:1rem;margin-left:0.5rem;">Мой кейс: M4 за 77k</button>
+                <button id="pv-prefill" style="padding:8px 24px;border:1px solid rgba(17,17,17,.12);border-radius:8px;background:#fff;color:rgba(17,17,17,.68);font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:1rem;margin-left:0.5rem;">Мой кейс: M4 &bull; 15&Prime; &bull; 16/256 &bull; 77k</button>
                 <p id="pv-meta" style="font-size:.78rem;color:rgba(17,17,17,.38);margin:0 0 1rem;font-family:ui-monospace,'SF Mono',monospace;display:none;"></p>
                 <div id="pv-result" style="display:none;"></div>
                 <canvas id="pv-chart" width="640" height="120" style="display:none;width:100%;height:auto;border-radius:8px;margin-top:0.75rem;"></canvas>
@@ -420,6 +421,13 @@
                     vals.forEach(function(v){
                         var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);
                     });
+                }
+
+                function setSelect(sel,val){
+                    for(var i=0;i<sel.options.length;i++){
+                        if(sel.options[i].value===String(val)){sel.selectedIndex=i;return true}
+                    }
+                    return false;
                 }
 
                 function unique(arr,key){
@@ -446,6 +454,7 @@
                     var ram=$('pv-ram').value;
                     var ssd=$('pv-ssd').value;
                     return data.filter(function(r){
+                        if(!r.is_clean)return false;
                         if(fam&&r.family!==fam)return false;
                         if(chip&&r.chip!==chip)return false;
                         if(size&&r.size!=+size)return false;
@@ -508,18 +517,25 @@
 
                     if(prices.length<5){
                         out.style.display='block';
-                        out.innerHTML='<div class="insight-block"><p>В этом сегменте <strong>'+prices.length+'</strong> объявлени'+
+                        var warn=prices.length<20?'Мало данных в сегменте ('+prices.length+'), ослабь фильтры (например, убери SSD).':'';
+                        out.innerHTML='<div class="insight-block"><p>В этом сегменте <strong>'+prices.length+'</strong> clean объявлени'+
                             (prices.length===1?'е':prices.length<5?'я':'й')+
-                            '. Попробуй расширить фильтр (убери RAM/SSD).</p></div>';
+                            '. '+(warn||'Попробуй расширить фильтр.')+'</p></div>';
                         $('pv-chart').style.display='none';
                         return;
                     }
 
                     var p25=quantile(prices,.25),p50=quantile(prices,.5),p75=quantile(prices,.75),p90=quantile(prices,.9);
 
+                    var warnRow='';
+                    if(prices.length<20){
+                        warnRow='<tr><td colspan="2" style="font-size:.78rem;color:#b26a00;">Мало данных ('+prices.length+'), ослабь фильтры для надёжности.</td></tr>';
+                    }
+
                     var h='<div class="table-wrap"><table>'+
                         '<thead><tr><th>Метрика</th><th>Значение</th></tr></thead><tbody>'+
-                        '<tr><td>Объявлений в сегменте</td><td class="mono"><strong>'+prices.length+'</strong></td></tr>'+
+                        '<tr><td>N (clean) в сегменте</td><td class="mono"><strong>'+prices.length+'</strong></td></tr>'+
+                        warnRow+
                         '<tr><td>P25</td><td class="mono">'+fmt(Math.round(p25))+' \u20BD</td></tr>'+
                         '<tr><td>Медиана (P50)</td><td class="mono"><strong>'+fmt(Math.round(p50))+' \u20BD</strong></td></tr>'+
                         '<tr><td>P75</td><td class="mono">'+fmt(Math.round(p75))+' \u20BD</td></tr>'+
@@ -555,16 +571,15 @@
                 }
 
                 function prefill(){
-                    var sel=$('pv-chip');
-                    var found=false;
-                    for(var i=0;i<sel.options.length;i++){
-                        if(sel.options[i].value==='M4'){sel.selectedIndex=i;found=true;break}
+                    if(!setSelect($('pv-chip'),'M4')){
+                        $('pv-result').style.display='block';
+                        $('pv-result').innerHTML='<div class="insight-block"><p>Чип M4 не найден в данных.</p></div>';
+                        return;
                     }
-                    if(!found){$('pv-result').style.display='block';$('pv-result').innerHTML='<div class="insight-block"><p>Чип M4 не найден в данных.</p></div>';return}
                     $('pv-family').value='';
-                    $('pv-size').value='';
-                    $('pv-ram').value='';
-                    $('pv-ssd').value='';
+                    setSelect($('pv-size'),'15');
+                    setSelect($('pv-ram'),'16');
+                    setSelect($('pv-ssd'),'256GB');
                     $('pv-price').value='77000';
                     run();
                 }
@@ -573,17 +588,18 @@
                     var rows=Array.isArray(payload)?payload:payload.rows;
                     DATA=rows;
 
+                    var cleanRows=rows.filter(function(r){return r.is_clean});
                     if(payload.generated_at){
                         var m=$('pv-meta');
-                        m.textContent=payload.n+' объявлений \u00B7 snapshot: '+payload.generated_at+' \u00B7 источник: '+(payload.source||'Avito');
+                        m.textContent=(payload.n_clean||cleanRows.length)+' clean объявлений \u00B7 snapshot: '+payload.generated_at+' \u00B7 источник: '+(payload.source||'Avito');
                         m.style.display='block';
                     }
 
-                    populateSelect($('pv-family'),unique(rows,'family'),'Любая');
-                    populateSelect($('pv-chip'),unique(rows,'chip'),'Любой');
-                    populateSelect($('pv-size'),unique(rows,'size'),'Любой');
-                    populateSelect($('pv-ram'),unique(rows,'ram_gb'),'Любой');
-                    populateSelect($('pv-ssd'),unique(rows,'ssd'),'Любой');
+                    populateSelect($('pv-family'),unique(cleanRows,'family'),'Любая');
+                    populateSelect($('pv-chip'),unique(cleanRows,'chip'),'Любой');
+                    populateSelect($('pv-size'),unique(cleanRows,'size'),'Любой');
+                    populateSelect($('pv-ram'),unique(cleanRows,'ram_gb'),'Любой');
+                    populateSelect($('pv-ssd'),unique(cleanRows,'ssd'),'Любой');
                     $('pv-btn').addEventListener('click',run);
                     $('pv-prefill').addEventListener('click',prefill);
                     $('pv-price').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
