@@ -855,7 +855,7 @@
                     $('pv-price').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
                 }
 
-                fetch('assets/market_latest.min.json')
+                fetch('assets/market_latest.min.json?v='+Date.now())
                     .then(function(r){return r.json()})
                     .then(init)
                     .catch(function(){
@@ -899,7 +899,7 @@
                         '<div style="font-size:.72rem;color:rgba(17,17,17,.42);margin-top:2px;">'+label+'</div></div>';
                 }
 
-                fetch('assets/market_summary.json')
+                fetch('assets/market_summary.json?v='+Date.now())
                     .then(function(r){return r.json()})
                     .then(function(d){
                         var root=$('onepager-root');
