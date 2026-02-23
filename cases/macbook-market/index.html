@@ -304,6 +304,99 @@
             </script>
 
 
+            <div id="seg-tables" style="display:none;">
+                <h3 style="margin-top:2.5rem;">Цены по линейке</h3>
+                <div id="seg-family"></div>
+
+                <h3>Цены по чипу</h3>
+                <div id="seg-chip"></div>
+
+                <h3>Цены по диагонали</h3>
+                <div id="seg-size"></div>
+            </div>
+
+            <script>
+            (function(){
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
+
+                function median(arr){
+                    if(!arr.length)return 0;
+                    arr.sort(function(a,b){return a-b});
+                    var m=arr.length>>1;
+                    return arr.length%2?arr[m]:(arr[m-1]+arr[m])/2;
+                }
+
+                function cleanRows(rows){
+                    return rows.filter(function(r){
+                        if(typeof r.is_clean!=='undefined')return r.is_clean;
+                        return r.price>=5000&&r.price<=500000;
+                    });
+                }
+
+                function groupStats(rows,keyFn){
+                    var groups={};
+                    rows.forEach(function(r){
+                        if(r.price==null)return;
+                        var k=keyFn(r);
+                        if(!groups[k])groups[k]=[];
+                        groups[k].push(r.price);
+                    });
+                    var out=[];
+                    for(var k in groups){
+                        var prices=groups[k];
+                        out.push({key:k,n:prices.length,min:Math.min.apply(null,prices),med:Math.round(median(prices)),max:Math.max.apply(null,prices)});
+                    }
+                    return out;
+                }
+
+                function renderTable(el,stats,colLabel,footnote){
+                    var h='<div class="table-wrap"><table><thead><tr>'+
+                        '<th>'+colLabel+'</th><th>мин, \u20BD</th><th>медиана, \u20BD</th><th>макс, \u20BD</th><th>кол-во</th>'+
+                        '</tr></thead><tbody>';
+                    stats.forEach(function(s){
+                        var label=s.key;
+                        if(s.n<30)label+==' <span style="font-size:.72rem;color:rgba(17,17,17,.32);font-weight:400;">(n<30)</span>';
+                        h+='<tr><td><strong>'+label+'</strong></td>'+
+                            '<td class="mono">'+fmt(s.min)+'</td>'+
+                            '<td class="mono"><strong>'+fmt(s.med)+'</strong></td>'+
+                            '<td class="mono">'+fmt(s.max)+'</td>'+
+                            '<td class="mono">'+fmt(s.n)+'</td></tr>';
+                    });
+                    h+='</tbody></table></div>';
+                    h+='<p style="font-size:.72rem;color:rgba(17,17,17,.32);margin:0.2rem 0 0;">'+footnote+'</p>';
+                    el.innerHTML=h;
+                }
+
+                fetch('assets/market_latest.min.json?v='+Date.now())
+                    .then(function(r){return r.json()})
+                    .then(function(payload){
+                        var rows=Array.isArray(payload)?payload:payload.rows;
+                        var clean=cleanRows(rows);
+
+                        var byFamily=groupStats(clean,function(r){return r.family_norm||r.family||'Unknown'});
+                        byFamily.sort(function(a,b){return b.n-a.n});
+                        renderTable(document.getElementById('seg-family'),byFamily,'Модель','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        var byChip=groupStats(clean,function(r){return r.chip||'Unknown'});
+                        byChip.sort(function(a,b){return b.n-a.n});
+                        renderTable(document.getElementById('seg-chip'),byChip,'Чип','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        var bySize=groupStats(clean,function(r){return r.size!=null?r.size+'\u2033':'Unknown'});
+                        bySize.sort(function(a,b){
+                            var na=parseFloat(a.key),nb=parseFloat(b.key);
+                            if(isNaN(na))return 1;
+                            if(isNaN(nb))return -1;
+                            return na-nb;
+                        });
+                        renderTable(document.getElementById('seg-size'),bySize,'Диагональ','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        document.getElementById('seg-tables').style.display='block';
+                    })
+                    .catch(function(){});
+            })();
+            </script>
+
+
             <hr class="divider">
 
 
