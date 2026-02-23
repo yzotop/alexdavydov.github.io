@@ -78,54 +78,6 @@
             margin: 3rem 0;
         }
 
-        .key-numbers {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0 2rem;
-        }
-        @media (max-width: 640px) {
-            .key-numbers { grid-template-columns: repeat(2, 1fr); }
-        }
-        .key-number {
-            border: 1px solid rgba(17,17,17,.08);
-            border-radius: 12px;
-            padding: 1.2rem 1.25rem;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-        }
-        .key-number .value {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #111;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-        }
-        .key-number .label {
-            font-size: 0.78rem;
-            color: rgba(17,17,17,.48);
-            margin-top: 0.25rem;
-            line-height: 1.4;
-        }
-
-        .chart-container {
-            margin: 1.25rem 0 1.5rem;
-            overflow-x: auto;
-        }
-        .chart-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 8px;
-        }
-        .chart-caption {
-            font-size: 0.78rem;
-            color: rgba(17,17,17,.38);
-            margin-top: 0.4rem;
-            line-height: 1.4;
-        }
-
         .table-wrap {
             margin: 1.25rem 0 1.5rem;
             overflow-x: auto;
@@ -193,53 +145,6 @@
         }
         .hypothesis-list li:last-child { border-bottom: none; }
 
-        .pipeline-steps {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin: 1.25rem 0 1.5rem;
-        }
-        @media (max-width: 640px) {
-            .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
-        }
-        .pipeline-step {
-            border: 1px solid rgba(17,17,17,.06);
-            border-radius: 10px;
-            padding: 1rem;
-            font-size: 0.82rem;
-            line-height: 1.5;
-            color: rgba(17,17,17,.68);
-        }
-        .pipeline-step strong {
-            display: block;
-            font-size: 0.78rem;
-            color: rgba(17,17,17,.38);
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            margin-bottom: 0.3rem;
-        }
-
-        .verdict-block {
-            border: 1px solid rgba(17,17,17,.08);
-            border-radius: 12px;
-            padding: 1.5rem 1.75rem;
-            margin: 1.5rem 0;
-            background: rgba(17,17,17,.015);
-        }
-        .verdict-block .verdict-header {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 0.75rem;
-        }
-        .verdict-block p {
-            font-size: 0.9rem;
-            line-height: 1.72;
-            color: rgba(17,17,17,.72);
-            margin-bottom: 0.8rem;
-        }
-        .verdict-block p:last-child { margin-bottom: 0; }
-
         .back-link {
             display: inline-block;
             font-size: 0.85rem;
@@ -267,377 +172,206 @@
         <header class="page-header">
             <p class="meta-line">case study &middot; feb 2026</p>
             <h1>Рынок б/у MacBook в России: цены, сегменты, ликвидность</h1>
-            <p class="subtitle" id="hero-subtitle">547 объявлений Avito &middot; 20 запросов &times; 7 городов &middot; парсинг конфигураций &middot; и проверка своей покупки M4 за 77k</p>
+            <p class="subtitle" id="hero-subtitle">Данные Avito &middot; парсинг конфигураций &middot; сравнение сегментов &middot; проверка цены M4 за 77k</p>
         </header>
 
         <div class="content">
 
-            <div class="key-numbers">
-                <div class="key-number">
-                    <div class="value" id="hero-n">547</div>
-                    <div class="label">уникальных объявлений</div>
+
+            <!-- ═══ 01. ФИНАЛЬНЫЙ СРЕЗ ═══ -->
+            <h2 id="snapshot"><span class="section-num">01</span> Финальный срез рынка</h2>
+
+            <p style="font-size:.82rem;color:rgba(17,17,17,.42);margin-bottom:1.25rem;">
+                <a href="#deep" style="color:rgba(17,17,17,.42);text-decoration:none;margin-right:12px;">Глубокий анализ &darr;</a>
+                <a href="#check" style="color:rgba(17,17,17,.42);text-decoration:none;margin-right:12px;">Проверить цену &darr;</a>
+                <a href="#method" style="color:rgba(17,17,17,.42);text-decoration:none;">Методология &darr;</a>
+            </p>
+
+            <div id="onepager-root" style="display:none;">
+                <p id="op-hero" style="font-size:.95rem;color:rgba(17,17,17,.68);margin-bottom:1.25rem;"></p>
+
+                <div id="op-numbers" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.5rem;"></div>
+
+                <div id="op-insights" style="margin-bottom:1.5rem;"></div>
+
+                <div id="op-coverage" style="display:none;margin-bottom:1.5rem;">
+                    <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.48);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;">Coverage</p>
+                    <p id="op-cov-line" style="font-size:.88rem;color:rgba(17,17,17,.58);margin-bottom:.5rem;"></p>
                 </div>
-                <div class="key-number">
-                    <div class="value" id="hero-median">42 000 ₽</div>
-                    <div class="label">медиана цены</div>
-                </div>
-                <div class="key-number">
-                    <div class="value">88%</div>
-                    <div class="label">чип определён из title</div>
-                </div>
-                <div class="key-number">
-                    <div class="value">18 чипов</div>
-                    <div class="label">от Intel до M5 Ultra</div>
-                </div>
+
+                <div id="op-m4" style="display:none;margin-bottom:1rem;"></div>
             </div>
+            <noscript><p style="color:rgba(17,17,17,.48);font-size:.85rem;">Для отображения нужен JavaScript.</p></noscript>
 
+            <script>
+            (function(){
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
+                function $(id){return document.getElementById(id)}
 
-            <!-- ═══ TL;DR ═══ -->
-            <h2><span class="section-num">00</span> TL;DR</h2>
+                function numBlock(value,label){
+                    return '<div style="text-align:center;padding:0.75rem 0.5rem;border-radius:10px;background:rgba(17,17,17,.02);">'+
+                        '<div style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">'+value+'</div>'+
+                        '<div style="font-size:.72rem;color:rgba(17,17,17,.42);margin-top:2px;">'+label+'</div></div>';
+                }
 
-            <ul class="hypothesis-list">
-                <li><strong>Медиана рынка — 42 000 ₽.</strong> Диапазон от 1 000 до 375 000 ₽. Рынок растянут: Intel б/у за 15–25k и M4 Pro за 150–200k — это разные вселенные.</li>
-                <li><strong>Air доминирует.</strong> 56% объявлений — MacBook Air. Pro — 42%. Чистый «MacBook» (12") — 2%.</li>
-                <li><strong>13 дюймов — король.</strong> 65% объявлений с определённым размером — это 13". 15" на втором месте (14%).</li>
-                <li><strong>Intel всё ещё массовый.</strong> 117 объявлений Intel (21%) — самый частый чип. M4 на втором месте (101 объявлений), M1 на третьем (95).</li>
-                <li><strong>M4 Max — самый дорогой.</strong> Медиана 310k. За ним M3 Max (202k) и M4 Pro (173k). Apple Silicon premium работает.</li>
-                <li><strong>Ликвидность — пока вопрос.</strong> Два снапшота одинаковые (0% исчезновений). Нужны ежедневные сборы для оценки реальной скорости продаж.</li>
-                <li><strong>77k за M4 — проверим в конце.</strong> Спойлер: зависит от сегмента.</li>
-            </ul>
+                fetch('assets/market_summary.json?v='+Date.now())
+                    .then(function(r){return r.json()})
+                    .then(function(d){
+                        var root=$('onepager-root');
+                        root.style.display='block';
+
+                        var heroSub=$('hero-subtitle');
+                        if(heroSub){
+                            var cq=d.coverage&&d.coverage.total_queries?d.coverage.total_queries+' запросов':'\u2026';
+                            heroSub.innerHTML=fmt(d.n_total)+' объявлений Avito &middot; '+cq+' &times; 30 городов &middot; парсинг конфигураций &middot; проверка цены M4 за 77k';
+                        }
+                        var methN=$('method-n');if(methN)methN.textContent=fmt(d.n_total);
+
+                        $('op-hero').textContent=fmt(d.n_total)+' уникальных объявлений \u00B7 snapshot '+d.snapshot_date+' \u00B7 Avito';
+
+                        var nums=$('op-numbers');
+                        nums.innerHTML=
+                            numBlock(fmt(d.n_total),'объявлений в выборке')+
+                            numBlock(fmt(d.price.median)+' \u20BD','медиана цены')+
+                            numBlock(fmt(d.price.p25)+'\u2013'+fmt(d.price.p75)+' \u20BD','середина рынка (P25\u2013P75)')+
+                            numBlock(fmt(d.price.p90)+' \u20BD','верх рынка (P90)');
+
+                        var ins=[];
+                        if(d.top_segments&&d.top_segments.length){
+                            var top=d.top_segments[0];
+                            ins.push('Самый массовый сегмент: <strong>'+top.chip+' '+top.size+'&Prime;</strong> ('+top.count+' объявлений, медиана '+fmt(top.median)+' \u20BD).');
+                        }
+                        if(d.median_by_chip&&d.median_by_chip.length>=2){
+                            var chips=d.median_by_chip;
+                            var intel=null,mChip=null;
+                            for(var i=0;i<chips.length;i++){
+                                if(chips[i].chip==='Intel')intel=chips[i];
+                                if(chips[i].chip==='M4')mChip=chips[i];
+                            }
+                            if(intel&&mChip){
+                                var ratio=(mChip.median/intel.median).toFixed(1);
+                                ins.push('M4 vs Intel: медиана '+fmt(mChip.median)+' vs '+fmt(intel.median)+' \u20BD (\u00D7'+ratio+').');
+                            }
+                        }
+                        if(d.price.p90&&d.price.p25){
+                            var spread=(d.price.p90/d.price.p25).toFixed(1);
+                            ins.push('Price spread P90/P25 = \u00D7'+spread+' \u2014 рынок сильно растянут.');
+                        }
+                        if(d.m4_summary&&d.m4_summary.count){
+                            ins.push('Сегмент M4 (все модели): '+d.m4_summary.count+' объявлений, медиана '+fmt(d.m4_summary.median)+' \u20BD (P25\u2013P75: '+fmt(d.m4_summary.p25)+'\u2013'+fmt(d.m4_summary.p75)+').');
+                        }
+                        if(ins.length){
+                            $('op-insights').innerHTML='<ul style="list-style:none;padding:0;margin:0;">'+ins.map(function(t){
+                                return '<li style="padding:0.4rem 0 0.4rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:0.3rem;font-size:.9rem;color:rgba(17,17,17,.78);">'+t+'</li>';
+                            }).join('')+'</ul>';
+                        }
+
+                        var cov=d.coverage;
+                        $('op-coverage').style.display='block';
+                        if(cov&&cov.total_queries){
+                            var parts=[];
+                            parts.push(cov.total_queries+' запросов');
+                            if(cov.target_reached)parts.push(cov.target_reached+' достигли target');
+                            if(cov.empty_pages)parts.push(cov.empty_pages+' \u2014 empty pages');
+                            if(cov.soft_block)parts.push(cov.soft_block+' soft-block');
+                            if(cov.total_unique)parts.push(fmt(cov.total_unique)+' уникальных listing_id');
+                            $('op-cov-line').textContent=parts.join(' \u00B7 ');
+                        }else{
+                            $('op-cov-line').textContent='Coverage ещё не построен. Данные из последнего снапшота.';
+                        }
+
+                        if(d.m4_summary&&d.m4_summary.count&&d.m4_summary.median){
+                            var m=$('op-m4');
+                            m.style.display='block';
+                            var pct77k=0,prices77k=d.m4_summary;
+                            if(prices77k.p25&&77000<prices77k.p25){pct77k=20}
+                            else if(77000<=prices77k.median){pct77k=40}
+                            else if(77000<=prices77k.p75){pct77k=60}
+                            else{pct77k=80}
+                            var txt='На выборке '+fmt(d.n_total)+' объявлений M4 за 77\u00A0000 \u20BD ';
+                            if(77000<=prices77k.median){
+                                txt+='оказывается ниже медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Похоже, это не самая глупая покупка.';
+                            }else{
+                                txt+='выше медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Рынок видел и дешевле.';
+                            }
+                            m.innerHTML='<div style="padding:1rem 1.25rem;border-radius:10px;border-left:3px solid rgba(17,17,17,.15);background:rgba(17,17,17,.015);">'+
+                                '<p style="margin:0;font-size:.92rem;color:rgba(17,17,17,.72);">'+txt+'</p></div>';
+                        }
+                    })
+                    .catch(function(){});
+            })();
+            </script>
 
 
             <hr class="divider">
 
 
-            <!-- ═══ 01. ЗАЧЕМ ═══ -->
-            <h2><span class="section-num">01</span> Зачем этот кейс</h2>
+            <!-- ═══ 02. ГЛУБОКИЙ АНАЛИЗ ═══ -->
+            <h2 id="deep"><span class="section-num">02</span> Глубокий анализ рынка</h2>
 
-            <p>
-                Рынок б/у MacBook на Avito — это тысячи объявлений без единой структуры.
-                Заголовки написаны кто во что горазд: «макбук эир м1 8/256 как новый!!!» и
-                «Apple MacBook Air 13 M1 8GB 256GB SSD Space Gray» — это один и тот же
-                товар, но машине об этом не сказали.
-            </p>
-            <p>
-                Цель — собрать достаточно данных, распарсить конфигурации из свободного текста,
-                и ответить на простые вопросы: сколько стоит конкретный сегмент (чип &times; размер &times; RAM),
-                какие сегменты самые массовые, и&nbsp;&mdash;&nbsp;честно&nbsp;&mdash;&nbsp;не переплатил ли я за свой M4.
-            </p>
-            <p>
-                Побочный продукт: инфраструктура для ежедневных снапшотов,
-                из которых можно оценить ликвидность (через исчезновение объявлений как proxy продаж).
-            </p>
+            <p style="color:rgba(17,17,17,.58);font-size:.92rem;margin-bottom:1.5rem;">Шесть графиков: сначала «сколько стоит», затем «от чего зависит».</p>
 
+            <div style="display:grid;gap:1.5rem;margin-bottom:2rem;">
 
-            <hr class="divider">
-
-
-            <!-- ═══ 02. СБОР ДАННЫХ ═══ -->
-            <h2><span class="section-num">02</span> Данные и сбор</h2>
-
-            <p>
-                Avito отдаёт максимум ~50 страниц на один поисковый запрос.
-                При ~50 объявлениях на страницу это потолок в ~2 500 листингов — и они повторяются
-                при переборе. Чтобы выйти за это окно, используется <strong>query plan</strong>:
-                набор запросов, каждый с разной комбинацией параметров.
-            </p>
-
-            <div class="pipeline-steps">
-                <div class="pipeline-step">
-                    <strong>Города</strong>
-                    Москва, СПб, Новосибирск, Екатеринбург, Казань, Краснодар, Ростов + вся Россия
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Распределение цен</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Рынок широкий: основная масса &mdash; 15&ndash;100k, но хвост дорогих конфигураций (M4&nbsp;Pro, M4&nbsp;Max) тянется далеко вправо.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: слева &mdash; дешёвые Intel, справа &mdash; топовые Apple&nbsp;Silicon. Красная линия &mdash; медиана.</p>
+                    <img src="assets/deep/price_hist_log.png" alt="Гистограмма цен" style="width:100%;height:auto;border-radius:8px;">
                 </div>
-                <div class="pipeline-step">
-                    <strong>Сортировки</strong>
-                    По дате, релевантности, цене &uarr;, цене &darr; — 4 окна на каждый город
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цены по чипам</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Чип &mdash; главный фактор цены. Intel&nbsp;i5 и M1 &mdash; нижняя полка; M4&nbsp;Pro и M4&nbsp;Max &mdash; премиум.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: линия внутри коробки &mdash; медиана; коробка &mdash; P25&ndash;P75 (середина рынка); «усы» &mdash; хвосты распределения.</p>
+                    <img src="assets/deep/price_box_chip.png" alt="Boxplot по чипам" style="width:100%;height:auto;border-radius:8px;">
                 </div>
-                <div class="pipeline-step">
-                    <strong>Ценовые бины</strong>
-                    0–40k, 40–70k, 70–110k, 110–160k, 160k+ — перекрывающие сегменты
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Экран (13/14/15/16) vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">14&Prime; и 16&Prime; стоят заметно дороже &mdash; это Pro-сегмент с мощными чипами. 13&Prime; &mdash; массовый и доступный.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: сравни медианы (красные линии) и ширину коробок &mdash; узкая = предсказуемая цена.</p>
+                    <img src="assets/deep/price_box_size.png" alt="Boxplot по размеру экрана" style="width:100%;height:auto;border-radius:8px;">
                 </div>
-                <div class="pipeline-step">
-                    <strong>Запросы</strong>
-                    «macbook», «macbook pro», «macbook air» — разный recall из поиска
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Air vs Pro</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Pro стоит ощутимо дороже Air при тех же поколениях чипов &mdash; премия за экран, охлаждение и порты.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: две коробки рядом &mdash; чем правее медиана, тем дороже линейка.</p>
+                    <img src="assets/deep/price_box_family.png" alt="Boxplot Air vs Pro" style="width:100%;height:auto;border-radius:8px;">
                 </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Чип &times; экран: где объём рынка</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Самые массовые комбинации &mdash; M4&nbsp;13&Prime; и Intel&nbsp;13&Prime;. Редкие &mdash; M3&nbsp;Max&nbsp;14&Prime;, M5&nbsp;16&Prime;.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая ячейка &mdash; количество объявлений. Темнее = больше. Число внутри &mdash; точный count.</p>
+                    <img src="assets/deep/heatmap_chip_size_count.png" alt="Heatmap чип × экран" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">RAM vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Больше RAM = дороже, но разброс внутри каждого уровня огромный &mdash; чип и модель важнее. RAM определена не у всех объявлений &mdash; график по подвыборке.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая точка &mdash; объявление. Красная линия &mdash; медиана на каждом уровне RAM.</p>
+                    <img src="assets/deep/price_scatter_ram_price.png" alt="Scatter RAM vs цена" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
             </div>
 
-            <p>
-                Итого: <strong>20 запросов</strong>, суммарный target ~9 300 объявлений.
-                После глобальной дедупликации по <code>listing_id</code> остаётся уникальная выборка.
-            </p>
-
-            <h3>Безопасность сбора</h3>
-
-            <p>
-                Avito агрессивно блокирует автоматизацию. Пайплайн построен так,
-                чтобы минимизировать риск:
-            </p>
-
-            <ul class="hypothesis-list">
-                <li><strong>Throttle:</strong> 1–2.5 секунды между страницами, 60–180 секунд backoff при soft-block</li>
-                <li><strong>Resume:</strong> checkpoint после каждой страницы. Прерывание Ctrl+C безопасно — следующий запуск продолжит с места остановки</li>
-                <li><strong>Global dedup:</strong> один набор seen_ids на весь план. Объявление из Москвы не соберётся повторно из запроса «вся Россия»</li>
-                <li><strong>Persistent browser state:</strong> cookies и localStorage сохраняются между сессиями</li>
-                <li><strong>Soft-block detection:</strong> мало карточек, одинаковый контент, маркеры капчи &rarr; автоматический cooldown</li>
-            </ul>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 03. КАЧЕСТВО ДАННЫХ ═══ -->
-            <h2><span class="section-num">03</span> Качество данных: парсинг конфигураций</h2>
-
-            <p>
-                Авито не отдаёт структурированные характеристики в поисковой выдаче.
-                Единственный источник — свободный текст заголовка.
-                Парсер извлекает пять параметров: <strong>chip</strong>, <strong>family</strong>
-                (Air/Pro), <strong>size</strong>, <strong>RAM</strong>, <strong>SSD</strong>.
-            </p>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Параметр</th>
-                            <th>Определён</th>
-                            <th>Не определён</th>
-                            <th>Примеры паттернов</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>chip</strong></td>
-                            <td class="mono">88%</td>
-                            <td class="mono">65 объявлений</td>
-                            <td>M1, M4 Pro, Intel i7, «Core i5», год &le; 2019 &rarr; Intel</td>
-                        </tr>
-                        <tr>
-                            <td><strong>family</strong></td>
-                            <td class="mono">99.8%</td>
-                            <td class="mono">1</td>
-                            <td>Air, Pro, «макбук», MacBook (без Air/Pro) &rarr; MacBook</td>
-                        </tr>
-                        <tr>
-                            <td><strong>size</strong></td>
-                            <td class="mono">81%</td>
-                            <td class="mono">102</td>
-                            <td>13&quot;, 13.3, 13-inch, 13 дюймов, air15 &rarr; 15</td>
-                        </tr>
-                        <tr>
-                            <td><strong>RAM</strong></td>
-                            <td colspan="3">Извлекается из слэш-нотации (16/512) и явных «16GB», «16гб»</td>
-                        </tr>
-                        <tr>
-                            <td><strong>SSD</strong></td>
-                            <td colspan="3">256GB, 512GB, 1TB; «1024GB» &rarr; 1TB</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="insight-block">
-                <p>
-                    <strong>12% объявлений</strong> с неопределённым чипом — это в основном
-                    заголовки вида «Макбук в идеале» или «Apple ноутбук».
-                    Они исключаются из чип-сегментации, но участвуют в общей ценовой статистике.
-                </p>
-            </div>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 04. АНАЛИТИКА ЦЕН ═══ -->
-            <h2><span class="section-num">04</span> Аналитика цен</h2>
-
-            <h3>Распределение цен</h3>
-
-            <div class="chart-container">
-                <img src="assets/price_hist.png" alt="Распределение цен MacBook на Avito">
-            </div>
-            <p class="chart-caption">
-                Гистограмма цен всех 547 объявлений. Два выраженных пика: ~15–25k (Intel)
-                и ~40–50k (M1/M2). Правый хвост — M4 Pro/Max до 375k.
-            </p>
-
-            <h3>Цена по чипу</h3>
-
-            <div class="chart-container">
-                <img src="assets/price_box_by_chip.png" alt="Цена по чипу (boxplot)">
-            </div>
-            <p class="chart-caption">
-                Boxplot по чипу. Каждый бокс — медиана, 25/75 перцентили и выбросы.
-                Intel разброс широкий (старые модели разных поколений),
-                M4 Max и M3 Max ожидаемо на вершине.
-            </p>
-
-            <h3>Цена по размеру экрана</h3>
-
-            <div class="chart-container">
-                <img src="assets/price_box_by_size.png" alt="Цена по размеру экрана (boxplot)">
-            </div>
-            <p class="chart-caption">
-                16" — самый дорогой формат (Pro-линейка). 13" — самый массовый и бюджетный.
-                14" — исключительно Pro (начиная с M1 Pro, 2021), отсюда высокая медиана.
-            </p>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 05. СЕГМЕНТЫ РЫНКА ═══ -->
-            <h2><span class="section-num">05</span> Сегменты рынка</h2>
-
-            <h3>Медиана цены по чипу</h3>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Чип</th>
-                            <th>Медиана, ₽</th>
-                            <th>Объявлений</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>M4 Max</strong></td><td class="mono">309 790</td><td class="mono">4</td></tr>
-                        <tr><td><strong>M3 Max</strong></td><td class="mono">202 245</td><td class="mono">2</td></tr>
-                        <tr><td><strong>M4 Pro</strong></td><td class="mono">173 490</td><td class="mono">8</td></tr>
-                        <tr><td><strong>M5</strong></td><td class="mono">141 890</td><td class="mono">13</td></tr>
-                        <tr><td><strong>M1 Max</strong></td><td class="mono">119 000</td><td class="mono">2</td></tr>
-                        <tr><td><strong>M3 Pro</strong></td><td class="mono">115 500</td><td class="mono">6</td></tr>
-                        <tr><td><strong>M2 Pro</strong></td><td class="mono">105 500</td><td class="mono">2</td></tr>
-                        <tr><td>M4</td><td class="mono">80 000</td><td class="mono">101</td></tr>
-                        <tr><td>M1 Pro</td><td class="mono">72 000</td><td class="mono">15</td></tr>
-                        <tr><td>M3</td><td class="mono">69 900</td><td class="mono">13</td></tr>
-                        <tr><td>M2</td><td class="mono">55 000</td><td class="mono">47</td></tr>
-                        <tr><td>Intel i9</td><td class="mono">41 990</td><td class="mono">3</td></tr>
-                        <tr><td>M1</td><td class="mono">41 000</td><td class="mono">95</td></tr>
-                        <tr><td>Intel i7</td><td class="mono">34 245</td><td class="mono">24</td></tr>
-                        <tr><td>Intel i5</td><td class="mono">24 999</td><td class="mono">28</td></tr>
-                        <tr><td>Intel</td><td class="mono">17 000</td><td class="mono">117</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Самые массовые сегменты (чип &times; размер)</h3>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Чип</th>
-                            <th>Размер</th>
-                            <th>Медиана, ₽</th>
-                            <th>Объявлений</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Intel</td><td class="mono">13"</td><td class="mono">17 000</td><td class="mono">75</td></tr>
-                        <tr><td><strong>M4</strong></td><td class="mono">13"</td><td class="mono">73 000</td><td class="mono">62</td></tr>
-                        <tr><td>M1</td><td class="mono">13"</td><td class="mono">41 000</td><td class="mono">57</td></tr>
-                        <tr><td>M2</td><td class="mono">13"</td><td class="mono">54 027</td><td class="mono">32</td></tr>
-                        <tr><td>Intel i5</td><td class="mono">13"</td><td class="mono">24 999</td><td class="mono">25</td></tr>
-                        <tr><td>M4</td><td class="mono">15"</td><td class="mono">100 245</td><td class="mono">20</td></tr>
-                        <tr><td>Intel</td><td class="mono">15"</td><td class="mono">19 950</td><td class="mono">18</td></tr>
-                        <tr><td>M5</td><td class="mono">14"</td><td class="mono">140 540</td><td class="mono">12</td></tr>
-                        <tr><td>Intel i7</td><td class="mono">16"</td><td class="mono">38 500</td><td class="mono">11</td></tr>
-                        <tr><td>M4</td><td class="mono">14"</td><td class="mono">124 490</td><td class="mono">10</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="insight-block">
-                <p>
-                    Три крупнейших сегмента — Intel 13", M4 13" и M1 13" — описывают
-                    <strong>35% всего рынка.</strong> Это бюджетный, актуальный и
-                    «предыдущее поколение Apple Silicon» соответственно.
-                    Интересно, что M4 13" уже обогнал M1 13" по объёму предложения.
-                </p>
+            <div style="padding:1rem 1.25rem;border-radius:10px;background:rgba(17,17,17,.015);margin-bottom:1.5rem;">
+                <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.42);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .5rem;">Выводы в 3 строки</p>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Цена сильнее всего объясняется сегментом: чип &times; размер экрана &times; линейка (Air/Pro).</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Intel &mdash; дешёвый хвост рынка. Apple&nbsp;Silicon &mdash; основной ценовой объём.</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);font-size:.9rem;color:rgba(17,17,17,.72);">M4 за 77k на этой выборке &mdash; ниже медианы сегмента M4.</li>
+                </ul>
             </div>
 
 
             <hr class="divider">
 
 
-            <!-- ═══ 06. ЛИКВИДНОСТЬ ═══ -->
-            <h2><span class="section-num">06</span> Ликвидность (proxy продаж)</h2>
-
-            <p>
-                Avito не публикует данные о продажах. Но если объявление <em>исчезло</em>
-                между двумя снапшотами — это proxy: либо продано, либо снято.
-                Disappearance rate по сегментам позволяет оценить относительную ликвидность.
-            </p>
-
-            <div class="chart-container">
-                <img src="assets/liquidity_by_chip_2026-02-23.png" alt="Ликвидность по чипу">
-            </div>
-
-            <div class="insight-block">
-                <p>
-                    <strong>Честный дисклеймер:</strong> на текущий момент два снапшота
-                    (22 и 23 февраля) идентичны — 0% исчезновений. Это означает,
-                    что либо интервал слишком короткий, либо оба снапшота построены
-                    из одних и тех же сырых данных. Для валидной оценки ликвидности
-                    нужны ежедневные сборы в течение 1–2 недель.
-                </p>
-            </div>
-
-            <p>
-                Инфраструктура для этого готова: <code>scripts/build_dataset.py</code> генерирует
-                датированные снапшоты, <code>scripts/snapshot_compare.py</code> автоматически
-                находит два последних и строит отчёт с сегментацией.
-            </p>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 07. Я КУПИЛ M4 ЗА 77k ═══ -->
-            <h2><span class="section-num">07</span> Я купил M4 за 77k и кто я после этого</h2>
-
-            <p>
-                Купил MacBook на M4 за 77 000 ₽ и, как любой нормальный аналитик,
-                вместо того чтобы радоваться покупке — собрал 547 объявлений, написал парсер
-                на regex и построил пайплайн, чтобы проверить, не клоун ли я.
-            </p>
-            <p>
-                Построить целый аналитический проект, чтобы оправдать покупку ноутбука —
-                это либо профессиональная деформация, либо прокрастинация.
-                Я честно не уверен, что из двух.
-            </p>
-
-            <div class="verdict-block">
-                <div class="verdict-header">Вердикт по данным</div>
-                <p>
-                    <strong>Медиана M4 (все конфигурации): 80 000 ₽.</strong>
-                    77k — это 38-й перцентиль: только 38% объявлений M4 дешевле.
-                    Формально — чуть ниже медианы.
-                </p>
-                <p>
-                    Но медиана — опасный инструмент, если не учитывать сегмент.
-                    M4 13" (Air) — медиана <strong>73 000 ₽</strong>.
-                    M4 15" (Air) — медиана <strong>100 245 ₽</strong>.
-                    M4 14" (Pro) — медиана <strong>124 490 ₽</strong>.
-                </p>
-                <p>
-                    Если мой M4 — 13-дюймовый Air, то 77k — чуть выше медианы сегмента.
-                    Нормальная цена, не великая сделка.
-                    Если 15-дюймовый Air — то 77k на 23% ниже медианы, и это уже хорошо.
-                </p>
-                <p>
-                    <strong>Вывод:</strong> корректный verdict возможен только внутри
-                    сегмента (чип &times; размер &times; RAM &times; SSD).
-                    «Средняя цена M4» — это средняя температура по больнице.
-                </p>
-            </div>
-
-            <hr class="divider">
-
-
-            <!-- ═══ 07b. ИНТЕРАКТИВ ═══ -->
-            <h2><span class="section-num">07<small>b</small></span> Проверь свою цену</h2>
+            <!-- ═══ 03. ИНТЕРАКТИВ ═══ -->
+            <h2 id="check"><span class="section-num">03</span> Проверь свою цену</h2>
 
             <p>
                 Выбери конфигурацию и введи цену.
@@ -869,194 +603,8 @@
             <hr class="divider">
 
 
-            <!-- ═══ 07c. ФИНАЛЬНЫЙ СРЕЗ ═══ -->
-            <h2><span class="section-num">07<small>c</small></span> Финальный срез рынка</h2>
-
-            <div id="onepager-root" style="display:none;">
-                <p id="op-hero" style="font-size:.95rem;color:rgba(17,17,17,.68);margin-bottom:1.25rem;"></p>
-
-                <div id="op-numbers" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.5rem;"></div>
-
-                <div id="op-insights" style="margin-bottom:1.5rem;"></div>
-
-                <div id="op-coverage" style="display:none;margin-bottom:1.5rem;">
-                    <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.48);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;">Coverage</p>
-                    <p id="op-cov-line" style="font-size:.88rem;color:rgba(17,17,17,.58);margin-bottom:.5rem;"></p>
-                </div>
-
-                <div id="op-m4" style="display:none;margin-bottom:1rem;"></div>
-            </div>
-            <noscript><p style="color:rgba(17,17,17,.48);font-size:.85rem;">Для отображения нужен JavaScript.</p></noscript>
-
-            <script>
-            (function(){
-                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
-                function $(id){return document.getElementById(id)}
-
-                function numBlock(value,label){
-                    return '<div style="text-align:center;padding:0.75rem 0.5rem;border-radius:10px;background:rgba(17,17,17,.02);">'+
-                        '<div style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">'+value+'</div>'+
-                        '<div style="font-size:.72rem;color:rgba(17,17,17,.42);margin-top:2px;">'+label+'</div></div>';
-                }
-
-                fetch('assets/market_summary.json?v='+Date.now())
-                    .then(function(r){return r.json()})
-                    .then(function(d){
-                        var root=$('onepager-root');
-                        root.style.display='block';
-
-                        var heroN=$('hero-n');if(heroN)heroN.textContent=fmt(d.n_total);
-                        var heroMed=$('hero-median');if(heroMed)heroMed.textContent=fmt(d.price.median)+' \u20BD';
-                        var heroSub=$('hero-subtitle');
-                        if(heroSub){
-                            var cq=d.coverage&&d.coverage.total_queries?d.coverage.total_queries+' запросов':'20 запросов';
-                            heroSub.innerHTML=fmt(d.n_total)+' объявлений Avito &middot; '+cq+' &times; 30 городов &middot; парсинг конфигураций &middot; и проверка своей покупки M4 за 77k';
-                        }
-                        var methN=$('method-n');if(methN)methN.textContent=fmt(d.n_total);
-
-                        $('op-hero').textContent=fmt(d.n_total)+' уникальных объявлений \u00B7 snapshot '+d.snapshot_date+' \u00B7 Avito';
-
-                        var nums=$('op-numbers');
-                        nums.innerHTML=
-                            numBlock(fmt(d.n_total),'объявлений')+
-                            numBlock(fmt(d.price.median)+' \u20BD','медиана')+
-                            numBlock(fmt(d.price.p25)+'\u2013'+fmt(d.price.p75)+' \u20BD','P25\u2013P75')+
-                            numBlock(fmt(d.price.p90)+' \u20BD','P90');
-
-                        var ins=[];
-                        if(d.top_segments&&d.top_segments.length){
-                            var top=d.top_segments[0];
-                            ins.push('Самый массовый сегмент: <strong>'+top.chip+' '+top.size+'&Prime;</strong> ('+top.count+' объявлений, медиана '+fmt(top.median)+' \u20BD).');
-                        }
-                        if(d.median_by_chip&&d.median_by_chip.length>=2){
-                            var chips=d.median_by_chip;
-                            var intel=null,mChip=null;
-                            for(var i=0;i<chips.length;i++){
-                                if(chips[i].chip==='Intel')intel=chips[i];
-                                if(chips[i].chip==='M4')mChip=chips[i];
-                            }
-                            if(intel&&mChip){
-                                var ratio=(mChip.median/intel.median).toFixed(1);
-                                ins.push('M4 vs Intel: медиана '+fmt(mChip.median)+' vs '+fmt(intel.median)+' \u20BD (\u00D7'+ratio+').');
-                            }
-                        }
-                        if(d.price.p90&&d.price.p25){
-                            var spread=(d.price.p90/d.price.p25).toFixed(1);
-                            ins.push('Price spread P90/P25 = \u00D7'+spread+' \u2014 рынок сильно растянут.');
-                        }
-                        if(d.m4_summary&&d.m4_summary.count){
-                            ins.push('Сегмент M4 (все модели): '+d.m4_summary.count+' объявлений, медиана '+fmt(d.m4_summary.median)+' \u20BD (P25\u2013P75: '+fmt(d.m4_summary.p25)+'\u2013'+fmt(d.m4_summary.p75)+').');
-                        }
-                        if(ins.length){
-                            $('op-insights').innerHTML='<ul style="list-style:none;padding:0;margin:0;">'+ins.map(function(t){
-                                return '<li style="padding:0.4rem 0 0.4rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:0.3rem;font-size:.9rem;color:rgba(17,17,17,.78);">'+t+'</li>';
-                            }).join('')+'</ul>';
-                        }
-
-                        var cov=d.coverage;
-                        if(cov&&cov.total_queries){
-                            $('op-coverage').style.display='block';
-                            var parts=[];
-                            parts.push(cov.total_queries+' запросов');
-                            if(cov.target_reached)parts.push(cov.target_reached+' достигли target');
-                            if(cov.empty_pages)parts.push(cov.empty_pages+' \u2014 empty pages');
-                            if(cov.soft_block)parts.push(cov.soft_block+' soft-block');
-                            if(cov.total_unique)parts.push(fmt(cov.total_unique)+' уникальных');
-                            $('op-cov-line').textContent=parts.join(' \u00B7 ');
-                        }
-
-                        if(d.m4_summary&&d.m4_summary.count&&d.m4_summary.median){
-                            var m=$('op-m4');
-                            m.style.display='block';
-                            var pct77k=0,prices77k=d.m4_summary;
-                            if(prices77k.p25&&77000<prices77k.p25){pct77k=20}
-                            else if(77000<=prices77k.median){pct77k=40}
-                            else if(77000<=prices77k.p75){pct77k=60}
-                            else{pct77k=80}
-                            var txt='На выборке '+fmt(d.n_total)+' объявлений M4 за 77\u00A0000 \u20BD ';
-                            if(77000<=prices77k.median){
-                                txt+='оказывается ниже медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Похоже, это не самая глупая покупка.';
-                            }else{
-                                txt+='выше медианы сегмента ('+fmt(prices77k.median)+' \u20BD). Рынок видел и дешевле.';
-                            }
-                            m.innerHTML='<div style="padding:1rem 1.25rem;border-radius:10px;border-left:3px solid rgba(17,17,17,.15);background:rgba(17,17,17,.015);">'+
-                                '<p style="margin:0;font-size:.92rem;color:rgba(17,17,17,.72);">'+txt+'</p></div>';
-                        }
-                    })
-                    .catch(function(){});
-            })();
-            </script>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 07d. ГЛУБОКИЙ АНАЛИЗ ═══ -->
-            <h2><span class="section-num">07<small>d</small></span> Глубокий анализ рынка</h2>
-
-            <p style="color:rgba(17,17,17,.58);font-size:.92rem;margin-bottom:1.5rem;">6 графиков, которые отвечают на «сколько стоит» и «от чего зависит цена».</p>
-
-            <div style="display:grid;gap:1.5rem;margin-bottom:2rem;">
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Распределение цен</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Рынок широкий: основная масса &mdash; 15&ndash;100k, но хвост дорогих конфигураций (M4&nbsp;Pro, M4&nbsp;Max) тянется далеко вправо.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: слева &mdash; дешёвые Intel, справа &mdash; топовые Apple&nbsp;Silicon. Красная линия &mdash; медиана.</p>
-                    <img src="assets/deep/price_hist_log.png" alt="Гистограмма цен" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цены по чипам</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Чип &mdash; главный фактор цены. Intel&nbsp;i5 и M1 &mdash; нижняя полка; M4&nbsp;Pro и M4&nbsp;Max &mdash; премиум.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: линия внутри коробки &mdash; медиана; коробка &mdash; P25&ndash;P75 (середина рынка); «усы» &mdash; хвосты распределения.</p>
-                    <img src="assets/deep/price_box_chip.png" alt="Boxplot по чипам" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Экран (13/14/15/16) vs цена</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">14&Prime; и 16&Prime; стоят заметно дороже &mdash; это Pro-сегмент с мощными чипами. 13&Prime; &mdash; массовый и доступный.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: сравни медианы (красные линии) и ширину коробок &mdash; узкая = предсказуемая цена.</p>
-                    <img src="assets/deep/price_box_size.png" alt="Boxplot по размеру экрана" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Air vs Pro</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Pro стоит ощутимо дороже Air при тех же поколениях чипов &mdash; премия за экран, охлаждение и порты.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: две коробки рядом &mdash; чем правее медиана, тем дороже линейка.</p>
-                    <img src="assets/deep/price_box_family.png" alt="Boxplot Air vs Pro" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Чип &times; экран: где объём рынка</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Самые массовые комбинации &mdash; M4&nbsp;13&Prime; и Intel&nbsp;13&Prime;. Редкие &mdash; M3&nbsp;Max&nbsp;14&Prime;, M5&nbsp;16&Prime;.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая ячейка &mdash; количество объявлений. Темнее = больше. Число внутри &mdash; точный count.</p>
-                    <img src="assets/deep/heatmap_chip_size_count.png" alt="Heatmap чип × экран" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">RAM vs цена</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Больше RAM = дороже, но разброс внутри каждого уровня огромный &mdash; чип и модель важнее.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая точка &mdash; объявление. Красная линия &mdash; медиана на каждом уровне RAM.</p>
-                    <img src="assets/deep/price_scatter_ram_price.png" alt="Scatter RAM vs цена" style="width:100%;height:auto;border-radius:8px;">
-                </div>
-
-            </div>
-
-            <div style="padding:1rem 1.25rem;border-radius:10px;background:rgba(17,17,17,.015);margin-bottom:1.5rem;">
-                <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.42);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .5rem;">Выводы в 3 строки</p>
-                <ul style="list-style:none;padding:0;margin:0;">
-                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Цена сильнее всего объясняется сегментом: чип &times; размер экрана &times; линейка (Air/Pro).</li>
-                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Intel &mdash; дешёвый хвост рынка. Apple&nbsp;Silicon &mdash; основной ценовой объём.</li>
-                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);font-size:.9rem;color:rgba(17,17,17,.72);">M4 за 77k на этой выборке &mdash; ниже медианы сегмента M4.</li>
-                </ul>
-            </div>
-
-
-            <hr class="divider">
-
-
-            <!-- ═══ 08. ЧТО ДАЛЬШЕ ═══ -->
-            <h2><span class="section-num">08</span> Что можно улучшить</h2>
+            <!-- ═══ 04. ЧТО ДАЛЬШЕ ═══ -->
+            <h2><span class="section-num">04</span> Что можно улучшить</h2>
 
             <ul class="hypothesis-list">
                 <li>
@@ -1087,31 +635,25 @@
 
 
             <!-- ═══ 09. МЕТОДОЛОГИЯ ═══ -->
-            <h2><span class="section-num">09</span> Методология и ограничения</h2>
+            <h2 id="method"><span class="section-num">05</span> Методология и ограничения</h2>
 
-            <p><strong>Источник данных:</strong> публичная поисковая выдача Avito
-                (категория «Ноутбуки»). Февраль 2026.
-                Извлечение через Playwright (headful browser + persistent state).
-                <span id="method-n">547</span> уникальных объявлений после дедупликации по <code>listing_id</code>.
+            <p><strong>Источник:</strong> публичная поисковая выдача Avito (категория «Ноутбуки»), февраль 2026.
+                Playwright (headful browser + persistent state).
+                <span id="method-n">&hellip;</span> уникальных объявлений после дедупликации по <code>listing_id</code>.
                 Сбор через query plan: до 90 запросов &times; 30 городов &times; 4 сортировки.</p>
 
-            <p><strong>Парсинг конфигураций:</strong> regex-парсер на Python.
-                Поддерживает кириллицу («16гб», «М1 Про»), слэш-нотацию (16/512),
-                дюймовые форматы (13.3&quot;, 13-inch, 13 дюймов), инференс чипа по году
-                (&le;&nbsp;2019 &rarr; Intel). Протестирован на 42 edge-case заголовках.</p>
+            <p><strong>Парсинг:</strong> regex-парсер на Python.
+                Кириллица, слэш-нотация (16/512), дюймовые форматы, инференс чипа по году.
+                Часть объявлений с неопределённым чипом — систематический gap для «ленивых» заголовков.</p>
 
             <p><strong>Ограничения:</strong></p>
             <ul class="hypothesis-list">
-                <li>Avito &ne; продажи. Объявления — это <em>предложение</em>, не спрос. Цена в объявлении может не совпадать с ценой сделки.</li>
-                <li>Disappearance rate &ne; sold rate. Объявление может исчезнуть по множеству причин: продано, снято, перезалито с новым ID, скрыто модерацией.</li>
-                <li>Snapshot bias. Один снапшот видит только текущие объявления. Быстро проданные товары (высокая ликвидность) недопредставлены.</li>
-                <li>Парсинг из title. 12% объявлений с неопределённым чипом — систематический gap для «ленивых» заголовков.</li>
-                <li>Региональный bias. Московские и петербургские объявления перепредставлены из-за структуры Avito.</li>
+                <li>Avito &ne; продажи. Объявления — предложение, не спрос.</li>
+                <li>Snapshot bias: быстро проданные товары недопредставлены.</li>
+                <li>Региональный bias: Москва и СПб перепредставлены.</li>
             </ul>
 
-            <p><strong>Стек:</strong> Python, Playwright, pandas, matplotlib.
-                Код — локальный проект.
-                Данные: снапшот Avito, февраль 2026.</p>
+            <p><strong>Стек:</strong> Python, Playwright, pandas, matplotlib.</p>
 
 
             <hr class="divider">
