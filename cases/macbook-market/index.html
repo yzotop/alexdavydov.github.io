@@ -633,11 +633,206 @@
                 </p>
             </div>
 
+            <hr class="divider">
+
+
+            <!-- ═══ 07b. ИНТЕРАКТИВ ═══ -->
+            <h2><span class="section-num">07<small>b</small></span> Проверь свою цену</h2>
+
             <p>
-                Следующий шаг — интерактивный калькулятор: вбиваешь свою конфигурацию,
-                получаешь перцентиль и сравнение с рынком.
-                Пока — табличка выше даёт ориентир.
+                Выбери конфигурацию и введи цену.
+                Калькулятор покажет, как она соотносится с рынком.
             </p>
+
+            <div id="pv-root">
+                <div id="pv-controls" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin:1rem 0;">
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Линейка
+                        <select id="pv-family" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Чип
+                        <select id="pv-chip" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Экран
+                        <select id="pv-size" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">RAM
+                        <select id="pv-ram" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">SSD
+                        <select id="pv-ssd" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Цена, ₽
+                        <input id="pv-price" type="number" placeholder="77000" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;">
+                    </label>
+                </div>
+                <button id="pv-btn" style="padding:8px 24px;border:none;border-radius:8px;background:#111;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Посчитать</button>
+                <div id="pv-result" style="display:none;"></div>
+                <canvas id="pv-chart" width="640" height="120" style="display:none;width:100%;height:auto;border-radius:8px;margin-top:0.75rem;"></canvas>
+            </div>
+
+            <noscript><p style="color:rgba(17,17,17,.48);font-size:.85rem;">Для интерактива нужен JavaScript.</p></noscript>
+
+            <script>
+            (function(){
+                var DATA=null;
+                var ROOT=document.getElementById('pv-root');
+
+                function $(id){return document.getElementById(id)}
+                function fmt(n){return n==null?'—':n.toLocaleString('ru-RU')}
+
+                function populateSelect(sel,vals,label){
+                    sel.innerHTML='<option value="">'+label+'</option>';
+                    vals.forEach(function(v){
+                        var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);
+                    });
+                }
+
+                function unique(arr,key){
+                    var s={};arr.forEach(function(r){var v=r[key];if(v!=null)s[v]=1});
+                    return Object.keys(s).sort(function(a,b){
+                        var na=parseFloat(a),nb=parseFloat(b);
+                        if(!isNaN(na)&&!isNaN(nb))return na-nb;
+                        return a<b?-1:a>b?1:0;
+                    });
+                }
+
+                function quantile(sorted,q){
+                    if(!sorted.length)return null;
+                    var i=(sorted.length-1)*q;
+                    var lo=Math.floor(i),hi=Math.ceil(i);
+                    if(lo===hi)return sorted[lo];
+                    return sorted[lo]*(hi-i)+sorted[hi]*(i-lo);
+                }
+
+                function filter(data){
+                    var fam=$('pv-family').value;
+                    var chip=$('pv-chip').value;
+                    var size=$('pv-size').value;
+                    var ram=$('pv-ram').value;
+                    var ssd=$('pv-ssd').value;
+                    return data.filter(function(r){
+                        if(fam&&r.family!==fam)return false;
+                        if(chip&&r.chip!==chip)return false;
+                        if(size&&r.size!=+size)return false;
+                        if(ram&&r.ram_gb!=+ram)return false;
+                        if(ssd&&r.ssd!==ssd)return false;
+                        return true;
+                    });
+                }
+
+                function drawHist(prices,userPrice){
+                    var c=$('pv-chart'),ctx=c.getContext('2d');
+                    c.style.display='block';
+                    var W=c.width=c.offsetWidth*2,H=c.height=240;
+                    ctx.clearRect(0,0,W,H);
+                    if(prices.length<3)return;
+
+                    var mn=Math.min.apply(null,prices),mx=Math.max.apply(null,prices);
+                    if(mn===mx){mx=mn+1}
+                    var bins=20,bw=(mx-mn)/bins,counts=new Array(bins).fill(0);
+                    prices.forEach(function(p){var i=Math.min(Math.floor((p-mn)/bw),bins-1);counts[i]++});
+                    var maxC=Math.max.apply(null,counts);if(!maxC)maxC=1;
+
+                    var pad=30,gw=W-pad*2,gh=H-pad-10;
+                    ctx.fillStyle='rgba(17,17,17,.06)';
+                    for(var i=0;i<bins;i++){
+                        var bh=counts[i]/maxC*gh;
+                        ctx.fillRect(pad+i*(gw/bins)+1,H-pad-bh,gw/bins-2,bh);
+                    }
+                    ctx.fillStyle='rgba(17,17,17,.18)';
+                    for(var i=0;i<bins;i++){
+                        var bh=counts[i]/maxC*gh;
+                        ctx.fillRect(pad+i*(gw/bins)+1,H-pad-bh,gw/bins-2,bh);
+                    }
+
+                    if(userPrice!=null&&userPrice>=mn&&userPrice<=mx){
+                        var x=pad+(userPrice-mn)/(mx-mn)*gw;
+                        ctx.strokeStyle='#e33';ctx.lineWidth=2;
+                        ctx.beginPath();ctx.moveTo(x,5);ctx.lineTo(x,H-pad);ctx.stroke();
+                        ctx.fillStyle='#e33';ctx.font='bold '+(W>800?'22':'18')+'px -apple-system,sans-serif';
+                        ctx.textAlign='center';
+                        ctx.fillText(fmt(userPrice)+' \u20BD',x,H-pad+18);
+                    }
+
+                    ctx.fillStyle='rgba(17,17,17,.28)';
+                    ctx.font=(W>800?'18':'14')+'px -apple-system,sans-serif';
+                    ctx.textAlign='left';ctx.fillText(fmt(mn),pad,H-4);
+                    ctx.textAlign='right';ctx.fillText(fmt(mx),W-pad,H-4);
+                }
+
+                function run(){
+                    var out=$('pv-result');
+                    if(!DATA){out.style.display='block';out.innerHTML='<p style="color:rgba(17,17,17,.48);font-size:.85rem;">Данные загружаются\u2026</p>';return}
+                    var seg=filter(DATA);
+                    var prices=seg.map(function(r){return r.price}).sort(function(a,b){return a-b});
+                    var userPrice=parseFloat($('pv-price').value)||null;
+
+                    if(prices.length<5){
+                        out.style.display='block';
+                        out.innerHTML='<div class="insight-block"><p>В этом сегменте <strong>'+prices.length+'</strong> объявлени'+
+                            (prices.length===1?'е':prices.length<5?'я':'й')+
+                            '. Попробуй расширить фильтр (убери RAM/SSD).</p></div>';
+                        $('pv-chart').style.display='none';
+                        return;
+                    }
+
+                    var p25=quantile(prices,.25),p50=quantile(prices,.5),p75=quantile(prices,.75),p90=quantile(prices,.9);
+
+                    var h='<div class="table-wrap"><table>'+
+                        '<thead><tr><th>Метрика</th><th>Значение</th></tr></thead><tbody>'+
+                        '<tr><td>Объявлений в сегменте</td><td class="mono"><strong>'+prices.length+'</strong></td></tr>'+
+                        '<tr><td>P25</td><td class="mono">'+fmt(Math.round(p25))+' \u20BD</td></tr>'+
+                        '<tr><td>Медиана (P50)</td><td class="mono"><strong>'+fmt(Math.round(p50))+' \u20BD</strong></td></tr>'+
+                        '<tr><td>P75</td><td class="mono">'+fmt(Math.round(p75))+' \u20BD</td></tr>'+
+                        '<tr><td>P90</td><td class="mono">'+fmt(Math.round(p90))+' \u20BD</td></tr>';
+
+                    if(userPrice){
+                        var below=0;prices.forEach(function(p){if(p<userPrice)below++});
+                        var pct=Math.round(below/prices.length*100);
+                        h+='<tr><td>Твоя цена</td><td class="mono"><strong>'+fmt(userPrice)+' \u20BD</strong></td></tr>'+
+                           '<tr><td>Перцентиль</td><td class="mono"><strong>P'+pct+'</strong></td></tr>';
+                        h+='</tbody></table></div>';
+
+                        var verdict,vcolor;
+                        if(pct<=25){verdict='Отличная цена. Или подвох, или повезло.';vcolor='#1a8d1a'}
+                        else if(pct<=40){verdict='Ниже медианы \u2014 хороший вариант.';vcolor='#2e7d32'}
+                        else if(pct<=60){verdict='Рыночная цена. Нормально.';vcolor='#555'}
+                        else if(pct<=75){verdict='Чуть выше медианы. Не критично, но можно было лучше.';vcolor='#b26a00'}
+                        else{verdict='Дороговато. Или конфигурация топовая, или стоит поторговаться.';vcolor='#c62828'}
+
+                        h+='<div style="margin-top:1rem;padding:1rem 1.25rem;border-radius:10px;border-left:3px solid '+vcolor+';background:rgba(17,17,17,.015);">'+
+                           '<p style="margin:0;font-size:.95rem;color:rgba(17,17,17,.82);">'+
+                           '<strong style="color:'+vcolor+'">P'+pct+'</strong> \u2014 '+verdict+'</p></div>';
+                    } else {
+                        h+='</tbody></table></div>';
+                        h+='<p style="font-size:.85rem;color:rgba(17,17,17,.38);margin-top:.75rem;">Введи цену, чтобы получить перцентиль.</p>';
+                    }
+
+                    out.style.display='block';
+                    out.innerHTML=h;
+                    drawHist(prices,userPrice);
+                }
+
+                function init(data){
+                    DATA=data;
+                    populateSelect($('pv-family'),unique(data,'family'),'Любая');
+                    populateSelect($('pv-chip'),unique(data,'chip'),'Любой');
+                    populateSelect($('pv-size'),unique(data,'size'),'Любой');
+                    populateSelect($('pv-ram'),unique(data,'ram_gb'),'Любой');
+                    populateSelect($('pv-ssd'),unique(data,'ssd'),'Любой');
+                    $('pv-btn').addEventListener('click',run);
+                    $('pv-price').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
+                }
+
+                fetch('assets/market_latest.min.json')
+                    .then(function(r){return r.json()})
+                    .then(init)
+                    .catch(function(){
+                        $('pv-result').style.display='block';
+                        $('pv-result').innerHTML='<div class="insight-block"><p>Не удалось загрузить данные. Открой страницу через локальный сервер или на сайте.</p></div>';
+                    });
+            })();
+            </script>
 
 
             <hr class="divider">
@@ -662,11 +857,6 @@
                     <strong>Масштаб до 10k.</strong>
                     Query plan уже готов на 20 запросов &times; 50 страниц.
                     Полный прогон (~8 часов) даст 5–10k уникальных объявлений.
-                </li>
-                <li>
-                    <strong>Интерактивный калькулятор.</strong>
-                    «Вбей свою конфигурацию — получи перцентиль цены».
-                    На клиенте, без бэкенда (CSV в JSON, фильтрация в JS).
                 </li>
                 <li>
                     <strong>Расширение на другие SKU.</strong>
