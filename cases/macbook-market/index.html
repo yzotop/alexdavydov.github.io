@@ -991,6 +991,70 @@
             <hr class="divider">
 
 
+            <!-- ═══ 07d. ГЛУБОКИЙ АНАЛИЗ ═══ -->
+            <h2><span class="section-num">07<small>d</small></span> Глубокий анализ рынка</h2>
+
+            <p style="color:rgba(17,17,17,.58);font-size:.92rem;margin-bottom:1.5rem;">6 графиков, которые отвечают на «сколько стоит» и «от чего зависит цена».</p>
+
+            <div style="display:grid;gap:1.5rem;margin-bottom:2rem;">
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Распределение цен</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Рынок широкий: основная масса &mdash; 15&ndash;100k, но хвост дорогих конфигураций (M4&nbsp;Pro, M4&nbsp;Max) тянется далеко вправо.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: слева &mdash; дешёвые Intel, справа &mdash; топовые Apple&nbsp;Silicon. Красная линия &mdash; медиана.</p>
+                    <img src="assets/deep/price_hist_log.png" alt="Гистограмма цен" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цены по чипам</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Чип &mdash; главный фактор цены. Intel&nbsp;i5 и M1 &mdash; нижняя полка; M4&nbsp;Pro и M4&nbsp;Max &mdash; премиум.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: линия внутри коробки &mdash; медиана; коробка &mdash; P25&ndash;P75 (середина рынка); «усы» &mdash; хвосты распределения.</p>
+                    <img src="assets/deep/price_box_chip.png" alt="Boxplot по чипам" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Экран (13/14/15/16) vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">14&Prime; и 16&Prime; стоят заметно дороже &mdash; это Pro-сегмент с мощными чипами. 13&Prime; &mdash; массовый и доступный.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: сравни медианы (красные линии) и ширину коробок &mdash; узкая = предсказуемая цена.</p>
+                    <img src="assets/deep/price_box_size.png" alt="Boxplot по размеру экрана" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Air vs Pro</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Pro стоит ощутимо дороже Air при тех же поколениях чипов &mdash; премия за экран, охлаждение и порты.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: две коробки рядом &mdash; чем правее медиана, тем дороже линейка.</p>
+                    <img src="assets/deep/price_box_family.png" alt="Boxplot Air vs Pro" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Чип &times; экран: где объём рынка</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Самые массовые комбинации &mdash; M4&nbsp;13&Prime; и Intel&nbsp;13&Prime;. Редкие &mdash; M3&nbsp;Max&nbsp;14&Prime;, M5&nbsp;16&Prime;.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая ячейка &mdash; количество объявлений. Темнее = больше. Число внутри &mdash; точный count.</p>
+                    <img src="assets/deep/heatmap_chip_size_count.png" alt="Heatmap чип × экран" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">RAM vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Больше RAM = дороже, но разброс внутри каждого уровня огромный &mdash; чип и модель важнее.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая точка &mdash; объявление. Красная линия &mdash; медиана на каждом уровне RAM.</p>
+                    <img src="assets/deep/price_scatter_ram_price.png" alt="Scatter RAM vs цена" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+            </div>
+
+            <div style="padding:1rem 1.25rem;border-radius:10px;background:rgba(17,17,17,.015);margin-bottom:1.5rem;">
+                <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.42);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .5rem;">Выводы в 3 строки</p>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Цена сильнее всего объясняется сегментом: чип &times; размер экрана &times; линейка (Air/Pro).</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Intel &mdash; дешёвый хвост рынка. Apple&nbsp;Silicon &mdash; основной ценовой объём.</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);font-size:.9rem;color:rgba(17,17,17,.72);">M4 за 77k на этой выборке &mdash; ниже медианы сегмента M4.</li>
+                </ul>
+            </div>
+
+
+            <hr class="divider">
+
+
             <!-- ═══ 08. ЧТО ДАЛЬШЕ ═══ -->
             <h2><span class="section-num">08</span> Что можно улучшить</h2>
 
