@@ -355,7 +355,7 @@
                         '</tr></thead><tbody>';
                     stats.forEach(function(s){
                         var label=s.key;
-                        if(s.n<30)label+==' <span style="font-size:.72rem;color:rgba(17,17,17,.32);font-weight:400;">(n<30)</span>';
+                        if(s.n<30)label+=' <span style="font-size:.72rem;color:rgba(17,17,17,.32);font-weight:400;">(n&lt;30)</span>';
                         h+='<tr><td><strong>'+label+'</strong></td>'+
                             '<td class="mono">'+fmt(s.min)+'</td>'+
                             '<td class="mono"><strong>'+fmt(s.med)+'</strong></td>'+
@@ -391,8 +391,9 @@
                         renderTable(document.getElementById('seg-size'),bySize,'Диагональ','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
 
                         document.getElementById('seg-tables').style.display='block';
+                        console.log('[seg tables] rows:',rows.length,'clean:',clean.length);
                     })
-                    .catch(function(){});
+                    .catch(function(e){console.warn('[seg tables] error:',e)});
             })();
             </script>
 
