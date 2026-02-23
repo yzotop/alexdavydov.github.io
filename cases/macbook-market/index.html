@@ -367,6 +367,79 @@
                     el.innerHTML=h;
                 }
 
+                function renderHeatmap(clean){
+                    var el=document.getElementById('chip-size-heatmap');
+                    if(!el)return;
+
+                    var sizes=[13,14,15,16];
+                    var chipCount={};
+                    var cells={};
+                    clean.forEach(function(r){
+                        if(r.price==null)return;
+                        var c=r.chip||'Unknown';
+                        var s=r.size;
+                        if(s!=null&&sizes.indexOf(s)===-1)return;
+                        var sk=s!=null?String(s):'?';
+                        chipCount[c]=(chipCount[c]||0)+1;
+                        var key=c+'|'+sk;
+                        if(!cells[key])cells[key]=[];
+                        cells[key].push(r.price);
+                    });
+
+                    var chipList=Object.keys(chipCount).sort(function(a,b){return chipCount[b]-chipCount[a]});
+                    var topChips=chipList.slice(0,12);
+
+                    var allMedians=[];
+                    var cellStats={};
+                    topChips.forEach(function(c){
+                        sizes.forEach(function(s){
+                            var key=c+'|'+s;
+                            var arr=cells[key];
+                            if(!arr||!arr.length)return;
+                            var med=Math.round(median(arr.slice()));
+                            cellStats[key]={n:arr.length,med:med};
+                            allMedians.push(med);
+                        });
+                    });
+
+                    var gMin=allMedians.length?Math.min.apply(null,allMedians):0;
+                    var gMax=allMedians.length?Math.max.apply(null,allMedians):1;
+                    var gRange=gMax-gMin||1;
+
+                    var h='<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><thead><tr>';
+                    h+='<th style="text-align:left;font-weight:600;color:rgba(17,17,17,.48);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;border-bottom:1px solid rgba(17,17,17,.12);">Чип</th>';
+                    sizes.forEach(function(s){
+                        h+='<th style="text-align:center;font-weight:600;color:rgba(17,17,17,.48);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .4rem;border-bottom:1px solid rgba(17,17,17,.12);">'+s+'\u2033</th>';
+                    });
+                    h+='</tr></thead><tbody>';
+
+                    topChips.forEach(function(c){
+                        h+='<tr>';
+                        h+='<td style="padding:.45rem .5rem;border-bottom:1px solid rgba(17,17,17,.05);font-weight:600;color:rgba(17,17,17,.78);white-space:nowrap;">'+c+'</td>';
+                        sizes.forEach(function(s){
+                            var key=c+'|'+s;
+                            var st=cellStats[key];
+                            if(!st){
+                                h+='<td style="padding:.45rem .4rem;border-bottom:1px solid rgba(17,17,17,.05);text-align:center;color:rgba(17,17,17,.15);">\u2014</td>';
+                                return;
+                            }
+                            var alpha=0.04+((st.med-gMin)/gRange)*0.14;
+                            var op=st.n<30?'opacity:.5;':'';
+                            var medK=st.med>=1000?Math.round(st.med/1000)+'k':fmt(st.med);
+                            h+='<td style="padding:.4rem .4rem;border-bottom:1px solid rgba(17,17,17,.05);text-align:center;background:rgba(17,17,17,'+alpha.toFixed(3)+');border-radius:4px;'+op+'">';
+                            h+='<div style="font-weight:700;font-size:.82rem;font-variant-numeric:tabular-nums;color:rgba(17,17,17,.82);">'+fmt(st.med)+' \u20BD</div>';
+                            h+='<div style="font-size:.68rem;color:rgba(17,17,17,.38);margin-top:1px;">n='+st.n+'</div>';
+                            h+='</td>';
+                        });
+                        h+='</tr>';
+                    });
+
+                    h+='</tbody></table>';
+                    h+='<p style="font-size:.72rem;color:rgba(17,17,17,.32);margin:.3rem 0 0;">clean: 5k\u2013500k \u20BD \u00B7 top-12 chips по объёму \u00B7 median по объявлениям</p>';
+                    el.innerHTML=h;
+                    console.log('[heatmap] chips:',topChips.join(', '));
+                }
+
                 fetch('assets/market_latest.min.json?v='+Date.now())
                     .then(function(r){return r.json()})
                     .then(function(payload){
@@ -391,6 +464,9 @@
                         renderTable(document.getElementById('seg-size'),bySize,'Диагональ','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
 
                         document.getElementById('seg-tables').style.display='block';
+
+                        renderHeatmap(clean);
+
                         console.log('[seg tables] rows:',rows.length,'clean:',clean.length);
                     })
                     .catch(function(e){console.warn('[seg tables] error:',e)});
@@ -437,10 +513,10 @@
                 </div>
 
                 <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
-                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Чип &times; экран: где объём рынка</h3>
-                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Самые массовые комбинации &mdash; M4&nbsp;13&Prime; и Intel&nbsp;13&Prime;. Редкие &mdash; M3&nbsp;Max&nbsp;14&Prime;, M5&nbsp;16&Prime;.</p>
-                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая ячейка &mdash; количество объявлений. Темнее = больше. Число внутри &mdash; точный count.</p>
-                    <img src="assets/deep/heatmap_chip_size_count.png" alt="Heatmap чип × экран" style="width:100%;height:auto;border-radius:8px;">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цена по сегменту: chip &times; диагональ</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">В ячейке: медиана цены, ниже&nbsp;&mdash; количество объявлений. Полупрозрачные&nbsp;&mdash; мало данных (n&lt;30).</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: темнее фон&nbsp;&mdash; дороже сегмент. Пустая ячейка&nbsp;&mdash; нет объявлений.</p>
+                    <div id="chip-size-heatmap" style="overflow-x:auto;"></div>
                 </div>
 
                 <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
