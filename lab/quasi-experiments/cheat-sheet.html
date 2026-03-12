@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheat Sheet — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Cheat Sheet
+        </div>
+
+        <h1>Cheat Sheet</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Быстрый выбор метода, ответы на вопросы интервьюера и список красных флагов — всё на одной странице.</p>
+        </div>
+
+        <h3>Decision tree: выбор метода</h3>
+        <div class="decision-tree">
+            <div class="dt-row">
+                <span class="dt-cond">Есть чёткий порог (threshold) для assignment?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">RDD</span>
+            </div>
+            <div class="dt-row">
+                <span class="dt-cond">Есть "до/после" + контрольная группа, parallel trends правдоподобны?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">DiD</span>
+            </div>
+            <div class="dt-row">
+                <span class="dt-cond">Единичный treated unit, много контрольных, длинный pre-period?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">Synthetic Control</span>
+            </div>
+            <div class="dt-row">
+                <span class="dt-cond">Можно подобрать "близнецов" по наблюдаемым ковариатам?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">Matching / PSM</span>
+            </div>
+            <div class="dt-row">
+                <span class="dt-cond">Есть экзогенная вариация (инструмент), которая влияет на treatment?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">IV / 2SLS</span>
+            </div>
+            <div class="dt-row">
+                <span class="dt-cond">Ничего из вышеперечисленного не работает?</span>
+                <span class="dt-arrow">→</span>
+                <span class="dt-method">Не делать каузальных выводов</span>
+            </div>
+        </div>
+
+        <h3>10 вопросов интервьюера</h3>
+        <ol class="qa-list">
+            <li class="qa-item">
+                <div class="qa-q">Чем квазиэксперимент отличается от A/B?</div>
+                <div class="qa-a">Нет рандомизации. Группы формируются не случайно, а по какому-то правилу, порогу или обстоятельству. Все методы — попытки компенсировать отсутствие рандомизации.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Что такое parallel trends и как их проверить?</div>
+                <div class="qa-a">Ключевое допущение DiD: без treatment обе группы двигались бы одинаково. Проверяют визуально (event study plot) и тестом на pre-trends. Доказать нельзя — только не отвергнуть.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Когда DiD не работает?</div>
+                <div class="qa-a">Когда treatment коррелирует с шоком, который по-разному затрагивает группы. Или когда есть anticipation — группа реагирует до treatment.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">В чём разница sharp и fuzzy RDD?</div>
+                <div class="qa-a">Sharp: все выше порога получают treatment, все ниже — нет. Fuzzy: порог увеличивает вероятность treatment, но не гарантирует. Fuzzy RDD ≈ IV с порогом как инструментом.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Почему matching не решает проблему ненаблюдаемых факторов?</div>
+                <div class="qa-a">Matching балансирует только наблюдаемые ковариаты. Если selection обусловлен ненаблюдаемыми факторами — bias остаётся. CIA (conditional independence) — недоказуемое допущение.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Что такое SUTVA и почему это важно?</div>
+                <div class="qa-a">Stable Unit Treatment Value Assumption: потенциальный исход одного юнита не зависит от treatment-статуса других. Нарушается при spillover, сетевых эффектах, каннибализации.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Назовите три условия валидного инструмента.</div>
+                <div class="qa-a">Relevance (инструмент коррелирует с treatment), exclusion restriction (влияет на outcome только через treatment), independence (не коррелирует с ненаблюдаемыми факторами outcome).</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Как проверить, что результат квазиэксперимента не артефакт?</div>
+                <div class="qa-a">Placebo tests (фиктивный treatment/период), falsification (outcome, который не должен реагировать), sensitivity analysis (насколько сильный confounder нужен для объяснения).</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Когда использовать synthetic control вместо DiD?</div>
+                <div class="qa-a">Когда treated unit один (одна страна, один регион, один продукт), контрольных много, и нужен длинный pre-period для калибровки весов.</div>
+            </li>
+            <li class="qa-item">
+                <div class="qa-q">Как "продать" результат квазиэксперимента стейкхолдеру?</div>
+                <div class="qa-a">Объяснить дизайн простым языком, показать предпосылки и их проверки, дать диапазон оценок (sensitivity), чётко назвать ограничения и что не доказано.</div>
+            </li>
+        </ol>
+
+        <h3>Красные флаги</h3>
+        <div class="red-flags">
+            <ul>
+                <li>Parallel trends визуально нарушены, но автор игнорирует</li>
+                <li>RDD с очевидной манипуляцией порогом (bunching)</li>
+                <li>Matching без проверки баланса ковариат</li>
+                <li>IV с F-statistic &lt; 10 (слабый инструмент)</li>
+                <li>Нет ни одного placebo/falsification теста</li>
+                <li>SUTVA нарушена (spillover), но не обсуждается</li>
+                <li>Результат чувствителен к bandwidth/спецификации, но показан один вариант</li>
+                <li>Anticipation effects не проверены</li>
+                <li>Стандартные ошибки не кластеризованы при групповом treatment</li>
+            </ul>
+        </div>
+
+        <nav class="module-nav">
+            <span class="nav-disabled">← Предыдущий</span>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-1-causal.html">Модуль 1 →</a>
+        </nav>
+    </div>
+</body>
+</html>

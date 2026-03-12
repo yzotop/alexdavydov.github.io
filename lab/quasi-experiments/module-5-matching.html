@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 5. Matching и PSM — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 5
+        </div>
+
+        <h1>Модуль 5. Matching и PSM</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Подбираем каждому treated юниту близнеца по наблюдаемым ковариатам. CIA (conditional independence) — ключевое и недоказуемое допущение. Matching не спасает от unobserved confounding.</p>
+        </div>
+
+        <h3>Когда применять</h3>
+        <ul>
+            <li>Богатый набор наблюдаемых ковариат, которые правдоподобно объясняют selection</li>
+            <li>Нет порога (→ не RDD), нет временного шока (→ не DiD), нет инструмента (→ не IV)</li>
+            <li>Нужно "очистить" сравнение от наблюдаемых различий между группами</li>
+            <li>Как дополнение к DiD (matching+DiD) для усиления parallel trends</li>
+        </ul>
+
+        <h3>What you estimate</h3>
+        <p><strong>ATT</strong> (обычно) или <strong>ATE</strong> (зависит от matching scheme). Но: оценка валидна <strong>только</strong> если CIA выполнена (unobserved confounders отсутствуют или несущественны).</p>
+
+        <h3>Assumptions</h3>
+        <ol>
+            <li><strong>CIA (Conditional Independence):</strong> (Y₀, Y₁) ⊥ D | X — selection объясняется только наблюдаемыми X</li>
+            <li><strong>Common support (overlap):</strong> 0 &lt; P(D=1|X) &lt; 1 для всех значений X</li>
+            <li><strong>Correct specification:</strong> модель propensity score правильно специфицирована (для PSM)</li>
+        </ol>
+
+        <h3>Виды matching</h3>
+        <table>
+            <tr><th>Метод</th><th>Суть</th><th>Плюс/минус</th></tr>
+            <tr><td>Exact</td><td>Совпадение по всем ковариатам</td><td>Точный, но curse of dimensionality</td></tr>
+            <tr><td>PSM</td><td>Matching по P(D=1|X) — скаляр</td><td>Сжимает размерность; зависит от модели</td></tr>
+            <tr><td>CEM</td><td>Категоризация + exact</td><td>Монотонно улучшает баланс; теряет precision</td></tr>
+            <tr><td>Nearest-neighbor</td><td>Mahalanobis distance</td><td>Гибкий; зависит от метрики</td></tr>
+        </table>
+
+        <h3>Diagnostics</h3>
+        <table>
+            <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
+            <tr><td>Balance (SMD)</td><td>Standardized Mean Diff по каждой ковариате</td><td>|SMD| &gt; 0.1 после matching</td><td>Перестроить модель / добавить ковариаты</td></tr>
+            <tr><td>Common support</td><td>Overlap распределений propensity score</td><td>Большие регионы без overlap</td><td>Trimming / отказ от оценки для этих юнитов</td></tr>
+            <tr><td>Sensitivity (Rosenbaum)</td><td>Γ — насколько сильный unobserved confounder нужен</td><td>Γ &lt; 1.3 → результат хрупкий</td><td>Честно сообщить, искать дополнительные ковариаты</td></tr>
+            <tr><td>Variance ratio</td><td>Var(X_treat) / Var(X_control) после matching</td><td>Ratio далеко от 1.0</td><td>Matching не выровнял распределения</td></tr>
+        </table>
+
+        <h3>Minimal estimator</h3>
+<pre><code># PSM: propensity score matching
+# Step 1: Estimate P(D=1|X) — logistic regression
+# Step 2: For each treated unit, find nearest control by |p̂_treat − p̂_control|
+# Step 3: ATT = mean(Y_treat − Y_matched_control)
+
+# IPW alternative:
+ATT_ipw = (1/N_treat) · Σ [ Y_i·D_i − Y_i·(1−D_i)·p̂_i/(1−p̂_i) ]</code></pre>
+
+        <h3>Что matching НЕ решает</h3>
+        <div class="red-flags">
+            <ul>
+                <li><strong>Unobserved confounding:</strong> если selection driven by factors not in X — bias остаётся полностью. CIA — недоказуемое допущение.</li>
+                <li><strong>Reverse causality:</strong> matching не разделяет причину и следствие, только уравнивает наблюдаемые характеристики.</li>
+                <li><strong>Model dependence (PSM):</strong> результат PSM чувствителен к спецификации logistic regression — другие ковариаты / functional forms → другой результат.</li>
+                <li>Gary King (2019): "PSM increases imbalance, inefficiency, model dependence, and bias."</li>
+            </ul>
+        </div>
+
+        <h3>Pitfalls</h3>
+        <ul>
+            <li>Matching без проверки balance — бесполезен</li>
+            <li>PSM с плохим overlap → экстраполяция, не matching</li>
+            <li>Matching на post-treatment переменных (bad controls) → bias</li>
+            <li>Малая выборка → большой variance после matching (теряются наблюдения)</li>
+            <li>Caliper слишком узкий → отбрасывается много treated, survivorship bias</li>
+            <li>Не проводить sensitivity analysis → нет понимания, насколько результат хрупок</li>
+        </ul>
+
+        <h3>What to do next</h3>
+        <ul>
+            <li>Всегда показывать balance table (SMD до и после matching)</li>
+            <li>Sensitivity analysis (Rosenbaum bounds или E-value)</li>
+            <li>Doubly robust: AIPW как robustness check</li>
+            <li>Если есть temporal variation → matching+DiD (сильнее, чем matching alone)</li>
+            <li>Если CIA сомнительна → честно признать, искать DiD/IV/RDD дизайн</li>
+        </ul>
+
+        <details>
+            <summary>Глубже: double robustness (AIPW)</summary>
+            <div>
+                <p>Doubly robust estimator комбинирует weighting с outcome regression. Консистентен, если хотя бы одна из двух моделей правильно специфицирована. AIPW (augmented inverse probability weighting) — стандартная реализация. Не решает unobserved confounding, но повышает робастность к misspecification.</p>
+            </div>
+        </details>
+
+        <h3>Toy example: баланс до/после matching</h3>
+        <p>Treated: пользователи, купившие premium-подписку. Control: остальные. Оцениваем эффект на retention.</p>
+        <table>
+            <tr><th>Ковариата</th><th>SMD до matching</th><th>SMD после matching</th><th>Статус</th></tr>
+            <tr><td>Возраст</td><td>0.42</td><td>0.05</td><td>✓ OK</td></tr>
+            <tr><td>Сессии/нед.</td><td>0.68</td><td>0.08</td><td>✓ OK</td></tr>
+            <tr><td>Tenure (мес.)</td><td>0.35</td><td>0.03</td><td>✓ OK</td></tr>
+        </table>
+<pre><code># SMD = (mean_treat − mean_control) / sqrt((var_treat + var_control) / 2)
+
+# До matching: все SMD > 0.1 → группы сильно различаются
+# После matching: все SMD < 0.1 → баланс достигнут по наблюдаемым
+
+# НО: unobserved confounder (например, "мотивация") может
+# объяснять и покупку premium, и retention → CIA нарушена</code></pre>
+        <p><strong>Вывод:</strong> баланс по наблюдаемым достигнут, но каузальность зависит от того, насколько "мотивация" и другие ненаблюдаемые факторы объясняют selection.</p>
+
+        <h3>Упражнения</h3>
+
+        <details>
+            <summary>Задача 1: что не так?</summary>
+            <div>
+                <p>Аналитик оценивает эффект маркетинговой email-рассылки на покупки. Matching по ковариатам: возраст, город, дата регистрации, <em>число открытых писем за месяц</em>. Что не так?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p>"Число открытых писем" — <strong>post-treatment variable</strong> (bad control). Оно определяется после assignment в treatment (рассылка). Matching по post-treatment переменным вводит collider bias. Нужно matching только по pre-treatment ковариатам.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 2: sensitivity</summary>
+            <div>
+                <p>После PSM: ATT = +8% retention (p = 0.02). Rosenbaum bounds: Γ = 1.15 → при Γ = 1.15 p-value = 0.06. Что это означает?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p>Результат <strong>хрупкий</strong>. Даже слабый unobserved confounder (увеличивающий odds of treatment всего в 1.15 раза) может объяснить весь эффект. Нужно искать дополнительные ковариаты, или переключиться на дизайн, который менее чувствителен к unobserved confounding (DiD, IV, RDD).</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 3: выбор</summary>
+            <div>
+                <p>Есть данные до и после treatment + контрольная группа + богатый набор ковариат. Parallel trends сомнительны. Что делать: (a) DiD, (b) matching+DiD, (c) matching alone?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p><strong>(b) Matching+DiD.</strong> Matching выравнивает группы по наблюдаемым → усиливает правдоподобие parallel trends. DiD устраняет time-invariant unobserved confounders. Matching alone (c) не защищает от unobserved confounding. DiD alone (a) проблематичен при нарушенных parallel trends.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./module-4-scm.html">← Модуль 4: SCM</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-6-iv.html">Модуль 6: IV →</a>
+        </nav>
+    </div>
+</body>
+</html>
