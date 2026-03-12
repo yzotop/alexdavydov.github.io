@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 3. RDD — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 3
+        </div>
+
+        <h1>Модуль 3. Regression Discontinuity Design (RDD)</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Если treatment назначается по порогу running variable, юниты рядом с порогом фактически рандомизированы. Оцениваем локальный эффект (LATE) в окрестности cutoff.</p>
+        </div>
+
+        <h3>Когда применять</h3>
+        <ul>
+            <li>Treatment назначается по порогу непрерывной переменной (score, возраст, дата, рейтинг)</li>
+            <li>Порог определён институционально, а не выбором субъекта</li>
+            <li>Субъекты не могут точно манипулировать running variable вокруг порога</li>
+            <li>Достаточно наблюдений в окрестности cutoff</li>
+            <li>Нужен локальный эффект (у порога), а не глобальный</li>
+        </ul>
+
+        <h3>What you estimate</h3>
+        <p><strong>LATE</strong> (Local Average Treatment Effect) — эффект для юнитов в окрестности порога. Не экстраполируется на всю выборку. Fuzzy RDD оценивает LATE для compliers (тех, чей treatment status меняется из-за порога).</p>
+
+        <h3>Assumptions</h3>
+        <ol>
+            <li><strong>Continuity:</strong> E[Y(0)|X=x] и E[Y(1)|X=x] непрерывны в окрестности cutoff</li>
+            <li><strong>No manipulation:</strong> субъекты не могут точно контролировать running variable вокруг порога</li>
+            <li><strong>Local randomization:</strong> у порога assignment фактически случайный</li>
+            <li><strong>Relevance (fuzzy):</strong> порог создаёт значимый скачок в P(D=1)</li>
+        </ol>
+
+        <h3>Sharp vs Fuzzy</h3>
+        <table>
+            <tr><th>Тип</th><th>Правило</th><th>Оценка</th></tr>
+            <tr><td>Sharp</td><td>D = 1 если X ≥ c, иначе D = 0</td><td>lim(x→c⁺) E[Y|X] − lim(x→c⁻) E[Y|X]</td></tr>
+            <tr><td>Fuzzy</td><td>P(D=1) скачкообразно растёт при X = c</td><td>Разрыв в Y / разрыв в D (= IV с порогом как Z)</td></tr>
+        </table>
+
+        <h3>Diagnostics</h3>
+        <table>
+            <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
+            <tr><td>McCrary density</td><td>Плотность X у cutoff</td><td>Скачок / bunching у порога</td><td>Manipulation → RDD невалиден</td></tr>
+            <tr><td>Баланс ковариат</td><td>Средние ковариат слева и справа от c</td><td>Значимый разрыв</td><td>Добавить ковариаты в регрессию / пересмотреть</td></tr>
+            <tr><td>Bandwidth robustness</td><td>Результат при h/2, h, 2h</td><td>Знак/значимость меняются</td><td>Результат нестабилен, нужна осторожность</td></tr>
+            <tr><td>Placebo cutoffs</td><td>Фиктивные пороги (c−50, c+50)</td><td>Значимый "эффект"</td><td>Проблема в спецификации, не в treatment</td></tr>
+            <tr><td>Polynomial order</td><td>Линейный vs квадратичный fit</td><td>Результат сильно зависит от степени</td><td>Использовать local linear (рекомендуется)</td></tr>
+        </table>
+
+        <h3>Minimal estimator</h3>
+<pre><code># Sharp RDD — local linear regression в окне [c−h, c+h]:
+Y_i = α + τ·D_i + β·(X_i − c) + γ·D_i·(X_i − c) + ε_i
+
+# D_i = 1{X_i ≥ c}, τ = LATE
+
+# Fuzzy RDD — IV/2SLS:
+# First stage:  D_i = π₀ + π₁·Z_i + ... (Z_i = 1{X_i ≥ c})
+# Second stage: Y_i = α + τ·D̂_i + ...</code></pre>
+
+        <h3>Pitfalls</h3>
+        <ul>
+            <li>Manipulation: кредитные менеджеры "подтягивают" score до порога → bunching</li>
+            <li>Дискретная running variable (например, возраст в годах) → мало вариации у порога</li>
+            <li>Высокополиномиальный fit (degree 3+) → overfitting, ложный разрыв</li>
+            <li>Маленький bandwidth → мало наблюдений → низкая мощность</li>
+            <li>Экстраполяция эффекта далеко от порога (RDD этого не позволяет)</li>
+            <li>Donut hole RDD (исключение юнитов рядом с порогом) — иногда необходим, но снижает мощность</li>
+        </ul>
+
+        <h3>What to do next</h3>
+        <ul>
+            <li>Всегда показывать scatter plot с fitted lines по обе стороны порога</li>
+            <li>Bandwidth robustness: минимум 3 окна (h/2, h_opt, 2h)</li>
+            <li>Если manipulation → рассмотреть "donut" RDD или другой метод</li>
+            <li>Если fuzzy → проверить first stage (F-stat ≥ 10)</li>
+            <li>Дополнить ковариатами для увеличения precision (не для identification)</li>
+        </ul>
+
+        <h3>Toy example: sharp RDD</h3>
+        <p>Кредит одобряется при score ≥ 650. Оцениваем эффект одобрения на расходы.</p>
+        <table>
+            <tr><th>ID</th><th>Score (X)</th><th>Одобрен (D)</th><th>Расходы (Y)</th></tr>
+            <tr><td>1</td><td>640</td><td>0</td><td>520</td></tr>
+            <tr><td>2</td><td>645</td><td>0</td><td>535</td></tr>
+            <tr><td>3</td><td>648</td><td>0</td><td>540</td></tr>
+            <tr><td>4</td><td>649</td><td>0</td><td>545</td></tr>
+            <tr><td>5</td><td>650</td><td>1</td><td>610</td></tr>
+            <tr><td>6</td><td>651</td><td>1</td><td>620</td></tr>
+            <tr><td>7</td><td>655</td><td>1</td><td>630</td></tr>
+            <tr><td>8</td><td>660</td><td>1</td><td>650</td></tr>
+        </table>
+<pre><code># Step 1: Средние рядом с порогом (±5 баллов)
+Ȳ_left  = mean(520, 535, 540, 545) = 535.0  (score 640–649)
+Ȳ_right = mean(610, 620, 630, 650) = 627.5  (score 650–660)
+
+# Step 2: Наивная оценка разрыва
+τ̂ = Ȳ_right − Ȳ_left = 627.5 − 535.0 = 92.5
+
+# Step 3: Проверить — нет ли bunching у 650?
+# Проверить — ковариаты (доход, возраст) скачут у порога?</code></pre>
+        <p><strong>Ожидаемый результат:</strong> τ̂ ≈ 92.5 (локальный эффект кредита на расходы у порога 650).</p>
+
+        <h3>Упражнения</h3>
+
+        <details>
+            <summary>Задача 1: выбор метода</summary>
+            <div>
+                <p><strong>Q:</strong> Компания даёт бесплатную доставку заказам от 3000₽. Нужно оценить, как бесплатная доставка влияет на повторные покупки. Какой метод?</p>
+                <p><strong>A:</strong> <strong>RDD</strong> с порогом 3000₽ (running variable = сумма заказа). Но: покупатели могут <em>манипулировать</em> суммой (добавить товар до 3000₽) → нужен McCrary test. Если bunching сильный — RDD невалиден, рассмотреть donut RDD или DiD по времени введения policy.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 2: диагностика</summary>
+            <div>
+                <p><strong>Q:</strong> RDD по скорингу: порог 700. McCrary test показывает, что плотность заявок при score 698–702 в 3 раза выше, чем при 690–695. Что это означает?</p>
+                <p><strong>A:</strong> Bunching у порога = manipulation. Скорее всего, менеджеры или алгоритм "подтягивают" score до 700. Юниты у порога не случайны → RDD невалиден. Можно попробовать donut RDD (исключить ±5 от порога) или искать другой дизайн.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 3: интерпретация</summary>
+            <div>
+                <p><strong>Q:</strong> RDD оценивает τ̂ = +15% retention у порога score = 500. Менеджер спрашивает: "Значит, если мы уберём порог и дадим treatment всем, retention вырастет на 15%?" Что ответить?</p>
+                <p><strong>A:</strong> <strong>Нет.</strong> RDD оценивает <em>локальный</em> эффект для юнитов у порога 500. Юниты с score 300 или 800 могут реагировать совершенно иначе. Экстраполяция на всю выборку невалидна. Для оценки глобального эффекта нужен другой дизайн (A/B или DiD).</p>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./module-2-did.html">← Модуль 2: DiD</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-4-scm.html">Модуль 4: SCM →</a>
+        </nav>
+    </div>
+</body>
+</html>

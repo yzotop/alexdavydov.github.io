@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 4. Synthetic Control — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 4
+        </div>
+
+        <h1>Модуль 4. Synthetic Control</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Строим синтетический клон treated юнита из взвешенной комбинации контрольных. Сравниваем реальный post-outcome с синтетическим. Идеален для одного treated юнита с длинным pre-period.</p>
+        </div>
+
+        <h3>Когда применять</h3>
+        <ul>
+            <li>Один treated unit (или очень мало: 1–3)</li>
+            <li>Много потенциальных donor units (≥ 10–20)</li>
+            <li>Длинный pre-period (≥ 10–20 периодов) для калибровки</li>
+            <li>Treatment затрагивает весь unit (нельзя рандомизировать внутри)</li>
+            <li>DiD невозможен (parallel trends не правдоподобны или нет хорошего единого контроля)</li>
+        </ul>
+
+        <h3>What you estimate</h3>
+        <p><strong>ATT для treated unit:</strong> разница между наблюдаемым Y и синтетическим контрфактуалом Ŷ в post-period. Не ATE, не средний эффект — эффект для конкретного treated юнита.</p>
+
+        <h3>Assumptions</h3>
+        <ol>
+            <li><strong>No anticipation:</strong> treated unit не реагирует до treatment</li>
+            <li><strong>No spillover:</strong> treatment не влияет на donor units</li>
+            <li><strong>Convex hull:</strong> treated unit можно аппроксимировать выпуклой комбинацией donors</li>
+            <li><strong>Stable factor model:</strong> скрытые факторы, объясняющие Y, стабильны во времени</li>
+        </ol>
+
+        <h3>Diagnostics — стандартные проверки</h3>
+        <table>
+            <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
+            <tr><td>Pre-period fit (RMSPE)</td><td>Совпадение Y и Ŷ в pre-period</td><td>RMSPE &gt; 5–10% от среднего Y</td><td>Плохой fit → результат ненадёжен</td></tr>
+            <tr><td>In-space placebo</td><td>Применить SCM к каждому donor как "treated"</td><td>Эффект treated unit не выделяется</td><td>Нет статистической значимости</td></tr>
+            <tr><td>In-time placebo</td><td>Фиктивная дата treatment в pre-period</td><td>Значимый "эффект" до реального treatment</td><td>Модель нестабильна</td></tr>
+            <tr><td>Leave-one-out</td><td>Исключать donors по одному</td><td>Результат резко меняется</td><td>Слишком зависим от одного donor</td></tr>
+            <tr><td>Donor pool sanity</td><td>Donors не затронуты treatment / spillover</td><td>Donor получил аналогичный treatment</td><td>Исключить "заражённых" donors</td></tr>
+            <tr><td>Post/pre RMSPE ratio</td><td>Отношение post-RMSPE к pre-RMSPE</td><td>Ratio для treated ≤ ratio placebo</td><td>Эффект не отличается от шума</td></tr>
+        </table>
+
+        <h3>Minimal estimator</h3>
+<pre><code># Найти веса w_j (j = 1..J donors), w_j ≥ 0, Σw_j = 1:
+# min Σ_t (Y_treated_t − Σ_j w_j · Y_j_t)²    для t ∈ pre-period
+
+# Синтетический контрфактуал:
+Ŷ_t = Σ_j w_j · Y_j_t
+
+# Оценка эффекта:
+τ̂_t = Y_treated_t − Ŷ_t    для t ∈ post-period</code></pre>
+
+        <h3>Pitfalls</h3>
+        <ul>
+            <li>Treated unit нетипичен (вне convex hull donors) → плохой fit, ненадёжный результат</li>
+            <li>Мало pre-periods → overfitting весов, хороший fit, но плохой прогноз</li>
+            <li>Donor contamination: donor тоже получил treatment или spillover</li>
+            <li>Один donor получает вес ~1.0 → фактически just comparison, не синтетический контроль</li>
+            <li>Нет стандартных CI → нужны permutation-based p-values</li>
+            <li>Короткий post-period → нельзя отличить шум от эффекта</li>
+        </ul>
+
+        <h3>What to do next</h3>
+        <ul>
+            <li>Всегда показывать graph: treated vs synthetic в pre + post period</li>
+            <li>In-space placebo: визуализировать все permutation trajectories</li>
+            <li>При плохом fit → augmented SCM или DiD с подобранным контролем</li>
+            <li>При сомнениях → дополнить DiD на тех же данных как robustness</li>
+        </ul>
+
+        <details>
+            <summary>Глубже: augmented synthetic control</summary>
+            <div>
+                <p>Augmented SCM (Ben-Michael et al.) добавляет bias correction поверх классических весов, позволяя экстраполировать за пределы convex hull. Также существуют методы с ridge penalty (regularized SCM) для стабилизации весов при многих donor units.</p>
+            </div>
+        </details>
+
+        <h3>Toy example: SCM идея</h3>
+        <p>Регион A (treated: конкурент ушёл в t=7). Donors: регионы B, C, D. Pre-period: t=1..6.</p>
+        <table>
+            <tr><th>t</th><th>A (treated)</th><th>B</th><th>C</th><th>D</th></tr>
+            <tr><td>1</td><td>100</td><td>90</td><td>110</td><td>95</td></tr>
+            <tr><td>2</td><td>102</td><td>91</td><td>112</td><td>97</td></tr>
+            <tr><td>3</td><td>105</td><td>93</td><td>115</td><td>99</td></tr>
+            <tr><td>4</td><td>103</td><td>92</td><td>113</td><td>98</td></tr>
+            <tr><td>5</td><td>107</td><td>95</td><td>117</td><td>101</td></tr>
+            <tr><td>6</td><td>106</td><td>94</td><td>116</td><td>100</td></tr>
+            <tr><td>7</td><td><strong>120</strong></td><td>96</td><td>118</td><td>102</td></tr>
+            <tr><td>8</td><td><strong>125</strong></td><td>97</td><td>120</td><td>103</td></tr>
+        </table>
+<pre><code># Step 1: Подобрать веса (здесь вручную, w_B=0.3, w_C=0.5, w_D=0.2)
+# Step 2: Синтетический контроль в t=7:
+Ŷ_7 = 0.3·96 + 0.5·118 + 0.2·102 = 28.8 + 59.0 + 20.4 = 108.2
+
+# Step 3: Эффект в t=7:
+τ̂_7 = 120 − 108.2 = 11.8
+
+# Step 4: Проверить pre-fit (RMSPE по t=1..6 должен быть низким)</code></pre>
+        <p><strong>Ожидаемый результат:</strong> τ̂ ≈ +12 единиц revenue в период после ухода конкурента.</p>
+
+        <h3>Упражнения</h3>
+
+        <details>
+            <summary>Задача 1: donor pool</summary>
+            <div>
+                <p>Вы оцениваете эффект закрытия конкурента в регионе X. Один из donor-регионов (Y) тоже потерял крупного конкурента за полгода до treatment. Можно ли включать Y в donor pool?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p><strong>Нет.</strong> Регион Y "заражён" аналогичным шоком. Его включение нарушает assumption "no spillover на donors". Включение может затянуть синтетический контроль вверх (donor contamination), занижая оценку эффекта. Исключить Y из donor pool.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 2: интерпретация</summary>
+            <div>
+                <p>SCM: pre-RMSPE = 8.5, post-gap = +12.0. In-space placebo: 3 из 20 donors имеют post/pre RMSPE ratio выше, чем treated. Каков "p-value"?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p>Permutation-based p-value = (3 + 1) / (20 + 1) ≈ 0.19. Результат <strong>не значим</strong> на уровне 0.10. Эффект для treated unit не является "необычным" по сравнению с placebo. Нужно больше donors или более длинный pre-period.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./module-3-rdd.html">← Модуль 3: RDD</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-5-matching.html">Модуль 5: Matching →</a>
+        </nav>
+    </div>
+</body>
+</html>
