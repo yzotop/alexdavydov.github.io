@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="/assets/base.css">
     <link rel="stylesheet" href="../assets/css/links.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -21,10 +17,7 @@
             padding: 3rem 1rem;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
         .back-link {
             display: inline-block;
@@ -34,10 +27,7 @@
             font-size: 0.9rem;
             transition: color 0.2s ease;
         }
-
-        .back-link:hover {
-            color: #1a1a1a;
-        }
+        .back-link:hover { color: #1a1a1a; }
 
         h1 {
             font-size: 2rem;
@@ -50,154 +40,299 @@
             font-size: 1rem;
             font-weight: 400;
             color: #666;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-style: italic;
             max-width: 700px;
         }
 
-        .search-box {
-            margin-bottom: 3rem;
+        /* ── Anchor nav ── */
+        .glossary-nav {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
         }
-
-        .search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 0.75rem 1rem;
+        .glossary-nav a {
+            padding: 0.22rem 0.65rem;
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
             border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            color: #1a1a1a;
-            background: #ffffff;
+            border-radius: 999px;
+            transition: all 0.15s ease;
         }
-
-        .search-input:focus {
-            outline: none;
+        .glossary-nav a:hover {
+            color: #1a1a1a;
+            border-color: #1a1a1a;
+        }
+        .glossary-nav a.active {
+            background: #1a1a1a;
+            color: #fff;
             border-color: #1a1a1a;
         }
 
+        /* ── Search ── */
+        .search-box { margin-bottom: 1.25rem; }
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 0.65rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+        .search-input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(0,113,227,.12); }
+
+        /* ── Section headings ── */
+        .section-heading {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            padding-left: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            scroll-margin-top: 1rem;
+            position: relative;
+        }
+        .section-heading::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.15em;
+            bottom: 0.15em;
+            width: 2px;
+            border-radius: 2px;
+            background: var(--color-accent);
+            opacity: 0.35;
+        }
+        .section-heading:first-of-type { margin-top: 0; }
+        .section-heading.hidden { display: none; }
+
+        /* ── Term cards (dense) ── */
         .term-card {
-            margin-bottom: 3rem;
-            padding: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.6rem 0.9rem;
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 4px;
+            scroll-margin-top: 2rem;
+            transition: border-color var(--t-default), box-shadow var(--t-default);
         }
+        .term-card.hidden { display: none; }
+        .term-card:hover { border-color: #d1d5db; }
 
-        .term-card.hidden {
-            display: none;
-        }
-
-        .term-card h2 {
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 0.6rem;
+        .term-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0;
             color: #1a1a1a;
             scroll-margin-top: 2rem;
+            display: inline;
         }
 
-        .term-badges {
-            display: inline-flex;
-            gap: 8px;
+        .term-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
             flex-wrap: wrap;
-            align-items: center;
-            margin: 0 0 1rem;
+            margin-bottom: 0.25rem;
         }
 
-        .term-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.22rem 0.55rem;
-            border-radius: 999px;
-            font-size: 0.78rem; /* ~12px */
-            line-height: 1.2;
-            border: 1px solid rgba(37, 99, 235, 0.22);
-            background: rgba(37, 99, 235, 0.06);
-            color: rgba(37, 99, 235, 0.92);
+        .term-type {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: #6b7280;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.1rem 0.4rem;
+            border: 1px solid rgba(17, 24, 39, 0.1);
+            border-radius: 3px;
+            background: rgba(17, 24, 39, 0.025);
             white-space: nowrap;
+            line-height: 1.3;
         }
 
-        .term-related {
-            display: inline-flex;
+        .term-def {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #1a1a1a;
+            margin-bottom: 0.15rem;
+        }
+
+        .term-note {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #555;
+            margin-bottom: 0.1rem;
+        }
+        .term-note strong {
+            color: #444;
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .term-links {
+            display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
+            gap: 4px;
             margin-top: 0.25rem;
         }
-
-        .term-related-chip {
+        .term-chip {
             display: inline-flex;
             align-items: center;
-            padding: 0.18rem 0.5rem;
+            padding: 0.1rem 0.4rem;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             line-height: 1.2;
-            border: 1px solid rgba(17, 24, 39, 0.14);
-            background: rgba(17, 24, 39, 0.03);
+            border: 1px solid rgba(17, 24, 39, 0.1);
+            background: rgba(17, 24, 39, 0.02);
             color: #6b7280;
             cursor: pointer;
             user-select: none;
+            transition: all 0.15s ease;
+        }
+        .term-chip:hover {
+            border-color: rgba(0, 113, 227, 0.35);
+            background: rgba(0, 113, 227, 0.06);
+            color: rgba(0, 113, 227, 0.92);
         }
 
-        .term-related-chip:hover {
-            border-color: rgba(37, 99, 235, 0.35);
-            background: rgba(37, 99, 235, 0.06);
-            color: rgba(37, 99, 235, 0.92);
-        }
-
-        .term-section {
-            margin-bottom: 1rem;
-        }
-
-        /* Related terms: chips-only meta block (no title label) */
-        .term-section--related {
-            margin-top: 1rem;
-        }
-
-        .term-section--related .term-section-title {
-            display: none;
-        }
-
-        .term-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .term-section-title {
+        /* ── Anchor link (visible on hover) ── */
+        .term-anchor {
             font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity var(--t-fast), color var(--t-fast);
+            margin-left: auto;
+        }
+        .term-card:hover .term-anchor { opacity: 1; }
+        .term-anchor:hover { color: var(--color-accent); text-decoration: none; }
+
+        /* ── Target / active highlight ── */
+        .term-card:target,
+        .term-card.is-active {
+            border-color: rgba(0,113,227,.22);
+            box-shadow: 0 0 0 3px rgba(0,113,227,.12), var(--shadow-sm);
+            position: relative;
+        }
+        .term-card:target::before,
+        .term-card.is-active::before {
+            content: '';
+            position: absolute;
+            left: -1px;
+            top: -1px;
+            bottom: -1px;
+            width: 2px;
+            background: var(--color-accent);
+            opacity: 0.55;
+            border-radius: 4px 0 0 4px;
+        }
+
+        /* ── Callout blocks ── */
+        .term-callout {
+            position: relative;
+            border: none;
+            background: var(--color-bg-subtle);
+            border-radius: var(--radius-md);
+            padding: 8px 12px 8px 16px;
+            font-size: 0.93rem;
+            line-height: 1.55;
+            color: #555;
+            margin-bottom: 0.25rem;
+        }
+        .term-callout::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            border-radius: 2px;
+            background: rgba(17,17,17,.16);
+        }
+        .term-callout strong {
+            color: #444;
             font-weight: 600;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #666;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+        .term-callout--key::before {
+            background: rgba(0,113,227,.55);
+        }
+        .term-callout--warn {
+            background: rgba(220,38,38,.04);
+        }
+        .term-callout--warn::before {
+            background: rgba(220,38,38,.45);
         }
 
-        .term-section-content {
-            font-size: 0.95rem;
-            line-height: 1.7;
+        /* ── Search highlight ── */
+        mark.term-mark {
+            background: var(--color-bg-subtle);
+            border: 1px solid rgba(17,17,17,.10);
+            border-radius: 6px;
+            padding: 0 4px;
+            color: inherit;
+        }
+
+        /* ── Filter row (search + dropdown) ── */
+        .filter-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+        .filter-row .search-input {
+            flex: 1;
+            min-width: 200px;
+            width: auto;
+            max-width: none;
+        }
+        .filter-label {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.48);
+            white-space: nowrap;
+        }
+        .filter-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: inherit;
             color: #1a1a1a;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color var(--t-default);
         }
-
-        .term-section-content strong {
-            font-weight: 600;
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(0,113,227,.12);
         }
 
         .footer-note {
-            margin-top: 4rem;
-            padding-top: 2rem;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
             border-top: 1px solid #e5e7eb;
             font-size: 0.85rem;
             color: #666;
         }
-
         .footer-note a {
             color: #1a1a1a;
             text-decoration: none;
             border-bottom: 1px solid #1a1a1a;
         }
-
-        .footer-note a:hover {
-            border-color: #666;
-        }
+        .footer-note a:hover { border-color: #666; }
     </style>
 </head>
 <body>
@@ -206,610 +341,805 @@
         <a href="../index.html" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
 
         <h1>Глоссарий аналитики</h1>
-        <p class="subtitle">Единый язык проекта: термины и метрики без дублирования определений</p>
+        <p class="subtitle">Единый язык проекта: термины, метрики, методы — без воды.</p>
 
-        <div class="search-box">
+        <nav class="glossary-nav">
+            <a href="#sec-experiments">Эксперименты и причинность</a>
+            <a href="#sec-statistics">Статистика и распределения</a>
+            <a href="#sec-metrics">Метрики и процессы</a>
+        </nav>
+
+        <div class="filter-row">
             <input type="text" id="search-input" class="search-input" placeholder="Поиск по терминам...">
+            <label class="filter-label" for="type-filter">Тип:</label>
+            <select id="type-filter" class="filter-select">
+                <option value="">Все типы</option>
+            </select>
         </div>
 
         <div id="terms-container">
-            <div class="term-card" data-term="requests" data-tags="Монетизация, Ad Tech, Воронка" data-related-terms="fill-rate,show-rate,revenue-decomposition">
-                <h2 id="requests">Запросы (Requests)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Объём входящего спроса / попыток получить рекламу (в обучающих калькуляторах может быть индексом).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать, что рост Requests автоматически означает рост выручки.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Requests — верх воронки. Деньги появляются только если дальше сохраняются Fill/Show и цена.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда рост Requests сопровождается падением Fill или Show rate.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">fill-rate, show-rate, revenue-decomposition</div>
-                </div>
+
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <h2 class="section-heading" id="sec-experiments">Эксперименты и причинность</h2>
+            <!-- ═══════════════════════════════════════════════════════ -->
+
+            <div class="term-card" data-term="ab-test" data-section="sec-experiments" data-related-terms="aa-test,alpha,beta,statistical-power,guardrail-metrics,control-vs-test">
+                <h3 id="ab-test">A/B Test</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Рандомизированный контролируемый эксперимент: пользователи случайно делятся на группы для измерения каузального эффекта изменения.</div>
+                <div class="term-note"><strong>Ключевое:</strong> рандомизация устраняет confounders и позволяет измерить каузальный эффект.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> подглядывание в результаты до окончания теста (peeking).</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="responses" data-tags="Монетизация, Ad Tech, Воронка" data-related-terms="fill-rate,show-rate,shows">
-                <h2 id="responses">Ответы (Responses)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Успешные ответы на requests (в контексте рекламного запроса/ответа).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Путать responses с показами.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Responses — это «разрешение/готовность» системы продолжить воронку, но не факт показа.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда responses стабильны, но падают показы/монетизируемые показы ниже по воронке.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">fill-rate, show-rate, shows</div>
-                </div>
+            <div class="term-card" data-term="aa-test" data-section="sec-experiments" data-related-terms="ab-test,alpha,p-value">
+                <h3 id="aa-test">A/A Test</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Тест без реального изменения: обе группы идентичны. Проверяет корректность сплитования и метрик.</div>
+                <div class="term-note"><strong>Ключевое:</strong> ожидаемый результат — отсутствие различий. Если различия есть — проблема в системе.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="fill-rate" data-tags="Монетизация, Ad Tech, Delivery" data-related-terms="requests,responses,show-rate">
-                <h2 id="fill-rate">Коэффициент заполнения (Fill rate)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Доля ответов: <strong>fill rate = responses / requests</strong>.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать fill rate «качеством рекламы» или «денежной метрикой».</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Fill rate — это пропускная способность верхней части воронки: насколько спрос реально превращается в возможность показа.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда fill растёт, но show rate падает (эффект «разрешили больше, показали меньше»).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">requests, responses, show-rate</div>
-                </div>
+            <div class="term-card" data-term="alpha" data-section="sec-experiments" data-related-terms="beta,p-value,statistical-power">
+                <h3 id="alpha">Alpha (α)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Допустимая вероятность ложноположительного результата (Type I error). Обычно α = 0.05.</div>
+                <div class="term-note"><strong>Ключевое:</strong> α задаёт порог для p-value: если p &lt; α, отвергаем H₀.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> путать α с вероятностью ошибки конкретного теста.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="shows" data-tags="Монетизация, Ad Tech, Delivery" data-related-terms="monetized-shows,show-rate">
-                <h2 id="shows">Показы (Shows)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Фактические показы (в учебных моделях — промежуточный уровень между responses и monet shows).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Смешивать shows и monet shows.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Shows — это объём экспозиции, но деньги зависят от монетизируемой части и цены.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда растут shows за счёт «плохих» показов, которые не монетизируются.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">monetized-shows, show-rate</div>
-                </div>
+            <div class="term-card" data-term="beta" data-section="sec-experiments" data-related-terms="alpha,statistical-power,mde">
+                <h3 id="beta">Beta (β)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Вероятность ложноотрицательного результата (Type II error). Мощность = 1 − β.</div>
+                <div class="term-note"><strong>Ключевое:</strong> β определяет, заметит ли тест реальный эффект. Обычно β = 0.2 (мощность 80%).</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="monetized-shows" data-tags="Монетизация, Ad Tech, Revenue" data-related-terms="show-rate,pressure,revenue">
-                <h2 id="monetized-shows">Монетизируемые показы (Monetized shows)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Показы, которые считаются монетизируемыми и участвуют в выручке.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать, что любые показы = деньги.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Это главный «объёмный» множитель выручки вместе с CPM.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда рост monet shows вызван ростом давления и ухудшает пользовательские метрики (вне учебной модели).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">show-rate, pressure, revenue</div>
-                </div>
+            <div class="term-card" data-term="statistical-power" data-section="sec-experiments" data-related-terms="alpha,beta,mde,effect-size">
+                <h3 id="statistical-power">Statistical Power</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Вероятность обнаружить эффект, если он реально существует. Power = 1 − β.</div>
+                <div class="term-note"><strong>Ключевое:</strong> зависит от размера выборки, MDE и variance метрики.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> запускать тест без расчёта мощности — рискуете не увидеть реальный эффект.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="show-rate" data-tags="Монетизация, Ad Tech, Delivery" data-related-terms="fill-rate,cpm,revenue-decomposition">
-                <h2 id="show-rate">Коэффициент показа (Show rate)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Доля монетизируемых показов от ответов: <strong>show rate = monetized_shows / responses</strong>.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать show rate «частью fill rate» или путать знаменатель.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Show rate — это эффективность превращения "responses" в монетизацию. Часто именно здесь «съедается» эффект.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда show rate растёт, но CPM падает (можно получить больше показов, но дешевле).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">fill-rate, cpm, revenue-decomposition</div>
-                </div>
+            <div class="term-card" data-term="guardrail-metrics" data-section="sec-experiments" data-related-terms="ab-test,north-star-metric,control-vs-test">
+                <h3 id="guardrail-metrics">Guardrail Metrics</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Метрики-ограничители: не должны деградировать при раскатке. Защищают от побочных эффектов.</div>
+                <div class="term-note"><strong>Ключевое:</strong> guardrails — «красные линии», а не цели оптимизации.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> оценивать только primary KPI без контроля побочных эффектов.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="cpm" data-tags="Монетизация, Pricing" data-related-terms="revenue,price-vs-volume,saturation">
-                <h2 id="cpm">CPM (Cost Per Mille)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Цена за 1000 монетизируемых показов.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Рост CPM = рост выручки.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">CPM — это цена, а не деньги. Выручка = цена × объём. Цена может расти при падении объёма и наоборот.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда CPM растёт на сужении инвентаря и падают monetized shows.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">revenue, price-vs-volume, saturation</div>
-                </div>
+            <div class="term-card" data-term="causal-inference" data-section="sec-experiments" data-related-terms="ab-test,did,matching,synthetic-control">
+                <h3 id="causal-inference">Causal Inference</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Методы установления причинно-следственных связей из данных, когда рандомизированный эксперимент невозможен.</div>
+                <div class="term-note"><strong>Ключевое:</strong> без рандомизации нужна идентификационная стратегия (DiD, matching, IV).</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="revenue" data-tags="Монетизация, Метрики" data-related-terms="revenue-decomposition,control-vs-test,pressure">
-                <h2 id="revenue">Выручка (Revenue)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Деньги, получаемые системой от монетизации.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Читать revenue без декомпозиции и без воронки.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Revenue — итог мультипликативной цепочки. Чтобы понять причину, нужно разложить на множители: объём и цену.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда итог стабилен, но внутри компенсируются противоположные эффекты (одна метрика растёт, другая падает).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">revenue-decomposition, control-vs-test, pressure</div>
-                </div>
+            <div class="term-card" data-term="did" data-section="sec-experiments" data-related-terms="causal-inference,matching,synthetic-control">
+                <h3 id="did">Difference-in-Differences (DiD)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Квазиэкспериментальный метод: сравнение изменения метрики до/после в treatment vs control группе.</div>
+                <div class="term-note"><strong>Предпосылка:</strong> параллельные тренды до вмешательства.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> нарушение предпосылки параллельных трендов без проверки.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="revenue-decomposition" data-tags="Монетизация, Метод" data-related-terms="control-vs-test,revenue,price-vs-volume">
-                <h2 id="revenue-decomposition">Декомпозиция выручки (Revenue decomposition)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Разложение выручки на вклад факторов (объёмные шаги воронки + цена).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать, что "главная метрика" объясняет сама себя.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Если есть итоговый эффект, он обязан быть объясним вкладом шагов. Иначе это шум/ошибка/плохая модель.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда вклад факторов считают на разных базах/окнах или смешивают знаменатели.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">control-vs-test, revenue, price-vs-volume</div>
-                </div>
+            <div class="term-card" data-term="matching" data-section="sec-experiments" data-related-terms="causal-inference,did">
+                <h3 id="matching">Matching</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Подбор пар «похожих» наблюдений из treatment и control для снижения selection bias.</div>
+                <div class="term-note"><strong>Ключевое:</strong> качество matching определяется балансом ковариат, а не outcome.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="control-vs-test" data-tags="Эксперименты, Метод" data-related-terms="revenue-decomposition,rollout,mechanism">
-                <h2 id="control-vs-test">Контроль vs тест (Control vs test)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Сравнение контрольной и тестовой группы как разбор причин эффекта, а не только фиксация "+/-".</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Останавливаться на "значимо/незначимо".</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Нужно разложить итог на вклад шагов и понять механизм: где именно возник эффект.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда в агрегате эффект есть, а в сегментах — конфликт (Симпсон).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">revenue-decomposition, rollout, mechanism</div>
-                </div>
+            <div class="term-card" data-term="synthetic-control" data-section="sec-experiments" data-related-terms="causal-inference,did">
+                <h3 id="synthetic-control">Synthetic Control</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Конструирование «синтетического» контроля из взвешенной комбинации доноров для оценки эффекта на единичном объекте.</div>
+                <div class="term-note"><strong>Ключевое:</strong> применяется, когда нет прямой контрольной группы (один регион, один продукт).</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="rollout" data-tags="Эксперименты, Rollout" data-related-terms="control-vs-test,revenue-decomposition,mechanism">
-                <h2 id="rollout">Раскатка (Rollout)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Раскатка изменения на 100% трафика.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Линейно переносить эффект без учёта доли трафика и механизма.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Проекция на 100% — это масштабирование эффекта с учётом текущей доли и базового уровня.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда сравнивают несколько тестов и "раскатывают всё сразу" (в реальности выбирают один вариант).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">control-vs-test, revenue-decomposition, mechanism</div>
-                </div>
+            <div class="term-card" data-term="control-vs-test" data-section="sec-experiments" data-related-terms="ab-test,rollout,mechanism,revenue-decomposition">
+                <h3 id="control-vs-test">Контроль vs тест (Control vs Test)</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Сравнение контрольной и тестовой группы как разбор причин эффекта, не только фиксация «+/−».</div>
+                <div class="term-note"><strong>Ключевое:</strong> нужно разложить итог на вклад шагов и понять механизм.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> останавливаться на «значимо / незначимо» без декомпозиции.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="pressure" data-tags="Монетизация, Ad Tech, Pressure" data-related-terms="saturation,monetized-shows,revenue">
-                <h2 id="pressure">Давление рекламы (Ad Pressure)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Интенсивность показа рекламы пользователю в единицу времени или на единицу контента. Не количество рекламы, а частота/плотность экспозиции.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать pressure = ad load (количество рекламных блоков на странице).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Pressure — это скорость «насыщения» пользователя рекламой. Высокое pressure может дать краткосрочный рост показов, но снижает CTR и увеличивает усталость.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда pressure растёт, а выручка стабильна: это может означать, что система уже в зоне насыщения и дальнейший рост pressure ухудшит метрики.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">saturation, monetized-shows, revenue</div>
-                </div>
+            <div class="term-card" data-term="rollout" data-section="sec-experiments" data-related-terms="ab-test,control-vs-test,mechanism">
+                <h3 id="rollout">Раскатка (Rollout)</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Применение изменения на 100% трафика после успешного эксперимента.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> линейно экстраполировать эффект без учёта доли трафика в тесте.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="saturation" data-tags="Монетизация, Saturation" data-related-terms="pressure,price-vs-volume,revenue-decomposition">
-                <h2 id="saturation">Насыщение (Saturation)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Состояние системы, когда дальнейшее увеличение входного параметра (pressure, demand, frequency) не даёт пропорционального роста результата или даже снижает его.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать, что «больше всегда лучше» и линейно экстраполировать эффекты.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Saturation — это сигнал, что система достигла предела эффективности по данному каналу. Нужно искать другой механизм роста или оптимизировать существующий.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда saturation скрыта за компенсацией: например, рост pressure даёт рост показов, но падает CTR, и итоговая выручка не меняется — это уже насыщение.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">pressure, price-vs-volume, revenue-decomposition</div>
-                </div>
+            <div class="term-card" data-term="spillover-effect" data-section="sec-experiments" data-related-terms="ab-test,did,causal-inference,cluster-randomization">
+                <h3 id="spillover-effect">Spillover Effect</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Влияние эксперимента на пользователей вне тестовой группы.</div>
+                <div class="term-note"><strong>Ключевое:</strong> нарушает предпосылку независимости наблюдений.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> игнорировать сетевые или кластерные эффекты.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="price-vs-volume" data-tags="Монетизация, Pricing" data-related-terms="cpm,revenue,elasticity,saturation">
-                <h2 id="price-vs-volume">Компромисс цена-объём (Price vs Volume trade-off)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Обратная зависимость между ценой (CPM) и объёмом (monetized shows): рост одного обычно приводит к падению другого.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Оптимизировать только цену или только объём, не видя их взаимосвязи.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Выручка = цена × объём. Оптимальная точка — это баланс, где произведение максимально, а не где один из множителей максимален.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда система в зоне насыщения: рост CPM через floor/constraints может дать краткосрочный рост выручки, но критически снизить объём и долгосрочную устойчивость.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">cpm, revenue, elasticity, saturation</div>
-                </div>
+            <div class="term-card" data-term="cuped" data-section="sec-experiments" data-related-terms="ab-test,mde,statistical-power">
+                <h3 id="cuped">CUPED</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Метод снижения дисперсии метрики за счёт использования предэкспериментальных данных.</div>
+                <div class="term-note"><strong>Ключевое:</strong> снижает variance и уменьшает MDE.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> использовать без проверки корреляции covariate и outcome.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="elasticity" data-tags="Монетизация, Pricing, Sensitivity" data-related-terms="price-vs-volume,cpm,saturation">
-                <h2 id="elasticity">Эластичность (Elasticity)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Чувствительность объёма к изменению цены: на сколько процентов меняется объём при изменении цены на 1%.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать elasticity постоянной величиной или применять одно значение для всех сегментов и режимов.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Elasticity показывает, в какой зоне находится система: эластичная (объём сильно реагирует на цену) или неэластичная (объём стабилен). Это определяет стратегию оптимизации.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда elasticity меняется в зависимости от базового уровня pressure, saturation или market regime, а аналитик использует старое значение.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">price-vs-volume, cpm, saturation</div>
-                </div>
+            <div class="term-card" data-term="cluster-randomization" data-section="sec-experiments" data-related-terms="spillover-effect,icc,unit-of-randomization">
+                <h3 id="cluster-randomization">Cluster Randomization</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Рандомизация на уровне кластеров (город, команда, регион), а не отдельных пользователей.</div>
+                <div class="term-note"><strong>Ключевое:</strong> эффективный размер выборки зависит от числа кластеров, а не от числа наблюдений.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> считать N = сумма наблюдений, а не N = число кластеров.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="risk-contribution" data-tags="Финансы / Риск, Portfolio" data-related-terms="stress-scenario">
-                <h2 id="risk-contribution">Вклад в риск (Risk contribution)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Вклад конкретного актива или фактора в общий риск портфеля или системы. Показывает, какая доля дисперсии результата объясняется этим активом.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать, что риск пропорционален весу: актив с 50% веса не обязательно даёт 50% риска.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Risk contribution показывает реальную концентрацию риска. Если один актив даёт 70% вклада в риск при 40% веса — это сигнал о дисбалансе.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда risk contribution считается без учёта корреляций между активами или когда система меняет режим (market regime change).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">stress-scenario</div>
-                </div>
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <h2 class="section-heading" id="sec-statistics">Статистика и распределения</h2>
+            <!-- ═══════════════════════════════════════════════════════ -->
+
+            <div class="term-card" data-term="mean" data-section="sec-statistics" data-related-terms="median,variance">
+                <h3 id="mean">Mean (Среднее)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Среднее арифметическое: сумма значений / количество наблюдений.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> использовать mean для скошенных распределений (доходы, длительности) — один выброс сдвигает всё.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="stress-scenario" data-tags="Финансы / Риск, Stress-testing" data-related-terms="risk-contribution">
-                <h2 id="stress-scenario">Стресс-сценарий (Stress scenario)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Смоделированный шок на систему: одновременное изменение нескольких параметров, имитирующее реальный кризис или экстремальное событие.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Считать stress scenario «маловероятным событием» и игнорировать его при принятии решений.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Stress scenario показывает уязвимость системы к конкретному типу шока. Если портфель теряет >2.5% в сценарии — это сигнал о концентрации риска.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда stress scenario не покрывает реальные режимы системы или когда система меняется быстрее, чем обновляются сценарии.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">risk-contribution</div>
-                </div>
+            <div class="term-card" data-term="median" data-section="sec-statistics" data-related-terms="mean,variance">
+                <h3 id="median">Median (Медиана)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Значение, делящее упорядоченную выборку пополам. Устойчива к выбросам.</div>
+                <div class="term-note"><strong>Ключевое:</strong> для скошенных данных median информативнее mean.</div>
+                <div class="term-links"></div>
             </div>
 
-            <div class="term-card" data-term="mechanism" data-tags="Метод, Mechanism" data-related-terms="revenue-decomposition,control-vs-test,pressure">
-                <h2 id="mechanism">Механизм (Mechanism)</h2>
-                <div class="term-section">
-                    <div class="term-section-title">Что это</div>
-                    <div class="term-section-content">Причинно-следственная цепочка, объясняющая, почему система ведёт себя определённым образом. Не просто корреляция, а понимание «как работает».</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Типичная ошибка</div>
-                    <div class="term-section-content">Останавливаться на метриках и графиках, не объясняя механизм: «CPM вырос, значит хорошо».</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Как правильно читать</div>
-                    <div class="term-section-content">Механизм — это связка: изменение входного параметра → изменение промежуточных состояний → изменение результата. Без механизма нельзя предсказать эффект в новых условиях.</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Когда вводит в заблуждение</div>
-                    <div class="term-section-content">Когда механизм работает только в определённом режиме (например, при низком pressure), а решение применяется в другом режиме (высокое pressure).</div>
-                </div>
-                <div class="term-section">
-                    <div class="term-section-title">Связанные темы</div>
-                    <div class="term-section-content">revenue-decomposition, control-vs-test, pressure</div>
-                </div>
+            <div class="term-card" data-term="variance" data-section="sec-statistics" data-related-terms="standard-deviation,mean,statistical-power">
+                <h3 id="variance">Variance (Дисперсия)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Средний квадрат отклонений от среднего. Мера разброса данных.</div>
+                <div class="term-note"><strong>Ключевое:</strong> высокая variance → нужна большая выборка для обнаружения эффекта в A/B.</div>
+                <div class="term-links"></div>
             </div>
+
+            <div class="term-card" data-term="standard-deviation" data-section="sec-statistics" data-related-terms="variance,confidence-interval">
+                <h3 id="standard-deviation">Standard Deviation (Стандартное отклонение)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">√variance. Разброс данных в тех же единицах, что и сами данные.</div>
+                <div class="term-note"><strong>Ключевое:</strong> ±1 SD покрывает ~68% данных при нормальном распределении.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="confidence-interval" data-section="sec-statistics" data-related-terms="p-value,alpha,standard-error,standard-deviation">
+                <h3 id="confidence-interval">Confidence Interval (Доверительный интервал)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Диапазон значений, содержащий истинный параметр с заданной вероятностью (обычно 95%).</div>
+                <div class="term-note"><strong>Ключевое:</strong> 95% CI — это свойство процедуры построения интервала, а не вероятность параметра.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> «95% вероятность, что параметр внутри» — неверная частотная интерпретация.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="p-value" data-section="sec-statistics" data-related-terms="alpha,confidence-interval,effect-size,multiple-testing,fdr">
+                <h3 id="p-value">P-value</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Вероятность получить наблюдаемый (или более экстремальный) результат при истинности H₀.</div>
+                <div class="term-note"><strong>Ключевое:</strong> p &lt; α → отвергаем H₀. Но p-value — не вероятность истинности гипотезы.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> p = 0.06 не означает «почти значимо».</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="effect-size" data-section="sec-statistics" data-related-terms="mde,statistical-power,p-value,type-s-type-m">
+                <h3 id="effect-size">Effect Size</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Величина различия между группами в стандартизованных единицах (Cohen's d, относительный lift).</div>
+                <div class="term-note"><strong>Ключевое:</strong> статистическая значимость (p-value) ≠ практическая значимость (effect size).</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="mde" data-section="sec-statistics" data-related-terms="effect-size,statistical-power,beta,variance">
+                <h3 id="mde">MDE (Minimum Detectable Effect)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Минимальный эффект, который тест способен обнаружить при заданных α, β и размере выборки.</div>
+                <div class="term-note"><strong>Ключевое:</strong> MDE определяет, стоит ли запускать тест — если нужный эффект ниже MDE, тест бесполезен.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> задавать MDE как «желаемый», а не как минимально значимый для бизнеса.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="standard-error" data-section="sec-statistics" data-related-terms="variance,confidence-interval,central-limit-theorem">
+                <h3 id="standard-error">Standard Error (Стандартная ошибка)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Оценка разброса выборочной статистики (например, среднего) относительно истинного значения. SE = σ / √n.</div>
+                <div class="term-note"><strong>Ключевое:</strong> чем больше выборка, тем меньше стандартная ошибка.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> путать стандартное отклонение (SD) со стандартной ошибкой (SE).</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="central-limit-theorem" data-section="sec-statistics" data-related-terms="standard-error,variance,standard-deviation">
+                <h3 id="central-limit-theorem">Central Limit Theorem (ЦПТ)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">При достаточно большой выборке распределение среднего стремится к нормальному, независимо от формы исходного распределения.</div>
+                <div class="term-note"><strong>Ключевое:</strong> работает для среднего при достаточном n.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> применять к малым выборкам или heavy-tailed данным без проверки.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="heteroskedasticity" data-section="sec-statistics" data-related-terms="variance,standard-error,confidence-interval,robust-se">
+                <h3 id="heteroskedasticity">Heteroskedasticity (Гетероскедастичность)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Неравномерность дисперсии ошибок в модели.</div>
+                <div class="term-note"><strong>Ключевое:</strong> нарушает предпосылки OLS и искажает стандартные ошибки.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> игнорировать при анализе регрессии.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="multiple-testing" data-section="sec-statistics" data-related-terms="alpha,p-value,ab-test,bonferroni,fdr">
+                <h3 id="multiple-testing">Multiple Testing Problem</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Рост вероятности ложноположительных результатов при множественных гипотезах.</div>
+                <div class="term-note"><strong>Ключевое:</strong> чем больше тестов, тем выше общий Type I error.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> проводить 10+ тестов без корректировки.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="type-s-type-m" data-section="sec-statistics" data-related-terms="effect-size,statistical-power,p-value">
+                <h3 id="type-s-type-m">Type S / Type M Errors</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Ошибки знака (Type S) и масштаба (Type M) при интерпретации значимых результатов. Type S — неверное направление эффекта, Type M — завышение его размера.</div>
+                <div class="term-note"><strong>Ключевое:</strong> при низкой мощности значимые результаты с высокой вероятностью преувеличены или имеют неверный знак.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> фокусироваться только на p-value без оценки Type M exaggeration ratio.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="robust-se" data-section="sec-statistics" data-related-terms="heteroskedasticity,standard-error,cluster-randomization">
+                <h3 id="robust-se">Robust SE (Робастные стандартные ошибки)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Стандартные ошибки, устойчивые к гетероскедастичности (HC) или кластерной корреляции (CR).</div>
+                <div class="term-note"><strong>Ключевое:</strong> не исправляют оценку коэффициента — только корректируют дисперсию оценки.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> использовать кластерные SE без учёта числа кластеров (мало кластеров → занижение SE).</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="bootstrap" data-section="sec-statistics" data-related-terms="confidence-interval,standard-error,central-limit-theorem">
+                <h3 id="bootstrap">Bootstrap</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Метод оценки распределения статистики через многократную ресемплинг-выборку с возвращением из наблюдаемых данных.</div>
+                <div class="term-note"><strong>Ключевое:</strong> не требует предположений о форме распределения.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> применять к зависимым данным без блочного или кластерного bootstrap.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="delta-method" data-section="sec-statistics" data-related-terms="standard-error,linearization,confidence-interval">
+                <h3 id="delta-method">Delta Method (Дельта-метод)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Аппроксимация дисперсии функции случайной величины через разложение Тейлора первого порядка.</div>
+                <div class="term-note"><strong>Ключевое:</strong> позволяет построить CI для ratio-метрик (ARPU, CR) без bootstrap.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> применять при сильной нелинейности или малой выборке, где линейная аппроксимация не работает.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="linearization" data-section="sec-statistics" data-related-terms="delta-method,cuped,standard-error">
+                <h3 id="linearization">Linearization (Линеаризация)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Замена ratio-метрики (Y/X) линеаризованной версией для корректного расчёта дисперсии и сравнения групп.</div>
+                <div class="term-note"><strong>Ключевое:</strong> linearized metric = Y − θ̂·X, где θ̂ — оценка ratio на контроле.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> сравнивать средние ratio напрямую (ratio of means ≠ mean of ratios).</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="unit-of-randomization" data-section="sec-statistics" data-related-terms="cluster-randomization,icc,ab-test">
+                <h3 id="unit-of-randomization">Unit of Randomization</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Уровень, на котором происходит случайное распределение в эксперименте: пользователь, сессия, устройство, кластер.</div>
+                <div class="term-note"><strong>Ключевое:</strong> unit of randomization должен совпадать с unit of analysis, иначе нужны кластерные SE.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> рандомизировать по пользователю, а анализировать по событию — занижение SE.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="icc" data-section="sec-statistics" data-related-terms="cluster-randomization,unit-of-randomization,variance">
+                <h3 id="icc">ICC (Intraclass Correlation)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">Доля общей дисперсии, объясняемая группировкой (кластером). ICC = σ²_between / (σ²_between + σ²_within).</div>
+                <div class="term-note"><strong>Ключевое:</strong> чем выше ICC, тем сильнее кластерный эффект и тем больше нужно кластеров.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> игнорировать ICC при расчёте размера выборки для cluster-randomized экспериментов.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="fdr" data-section="sec-statistics" data-related-terms="multiple-testing,bonferroni,p-value">
+                <h3 id="fdr">FDR (False Discovery Rate)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Ожидаемая доля ложных открытий среди всех отвергнутых гипотез. Контролируется процедурой Benjamini–Hochberg.</div>
+                <div class="term-note"><strong>Ключевое:</strong> FDR менее консервативен, чем FWER (Bonferroni) — допускает больше открытий при контролируемой ошибке.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> путать FDR с FWER — это разные метрики множественного тестирования.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="bonferroni" data-section="sec-statistics" data-related-terms="multiple-testing,fdr,alpha">
+                <h3 id="bonferroni">Bonferroni Correction</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Коррекция уровня значимости при множественном тестировании: α_adj = α / k, где k — число тестов.</div>
+                <div class="term-note"><strong>Ключевое:</strong> контролирует FWER (вероятность хотя бы одного ложноположительного).</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> применять при большом k — метод слишком консервативен, теряется мощность.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════ -->
+            <h2 class="section-heading" id="sec-metrics">Метрики и процессы</h2>
+            <!-- ═══════════════════════════════════════════════════════ -->
+
+            <div class="term-card" data-term="conversion-rate" data-section="sec-metrics" data-related-terms="retention,arpu">
+                <h3 id="conversion-rate">Conversion Rate</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Доля пользователей, совершивших целевое действие. CR = conversions / visitors.</div>
+                <div class="term-note"><strong>Ключевое:</strong> CR — rate, не count. Рост трафика при стабильных конверсиях = падение CR.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="retention" data-section="sec-metrics" data-related-terms="conversion-rate,ltv">
+                <h3 id="retention">Retention</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Доля пользователей, вернувшихся к продукту через N дней после первого визита.</div>
+                <div class="term-note"><strong>Ключевое:</strong> retention показывает product-market fit лучше, чем acquisition.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> сравнивать retention разных когорт без учёта сезонности.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="arpu" data-section="sec-metrics" data-related-terms="ltv,revenue,unit-economics,conversion-rate">
+                <h3 id="arpu">ARPU (Average Revenue Per User)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Средний доход на пользователя за период. ARPU = Revenue / Users.</div>
+                <div class="term-note"><strong>Ключевое:</strong> ARPU = CR × средний чек. Декомпозиция показывает, где рычаг.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="ltv" data-section="sec-metrics" data-related-terms="arpu,retention,unit-economics">
+                <h3 id="ltv">LTV (Lifetime Value)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Совокупный доход от пользователя за всё время жизни в продукте.</div>
+                <div class="term-note"><strong>Ключевое:</strong> LTV &gt; CAC — условие устойчивости бизнеса.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> считать LTV без дисконтирования и без учёта churn.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="north-star-metric" data-section="sec-metrics" data-related-terms="guardrail-metrics,dashboard">
+                <h3 id="north-star-metric">North Star Metric</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Единая ключевая метрика, отражающая ценность продукта для пользователя.</div>
+                <div class="term-note"><strong>Ключевое:</strong> NSM — метрика ценности (WAU, messages sent), не revenue.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> выбирать revenue как North Star — это следствие, не причина.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="unit-economics" data-section="sec-metrics" data-related-terms="arpu,ltv,conversion-rate">
+                <h3 id="unit-economics">Unit Economics</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Экономика одной единицы (пользователя, заказа): доходы и расходы на уровне юнита.</div>
+                <div class="term-note"><strong>Ключевое:</strong> положительная unit economics — необходимое условие масштабирования.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="dashboard" data-section="sec-metrics" data-related-terms="north-star-metric,data-analytics">
+                <h3 id="dashboard">Dashboard</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Визуальное представление ключевых метрик для мониторинга состояния продукта.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> перегрузка дашборда метриками, которые не требуют действий.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="data-analytics" data-section="sec-metrics" data-related-terms="dashboard,mechanism">
+                <h3 id="data-analytics">Data Analytics</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Системный процесс извлечения выводов из данных для принятия решений.</div>
+                <div class="term-note"><strong>Ключевое:</strong> аналитика — не отчётность, а понимание механизмов и их последствий.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="requests" data-section="sec-metrics" data-related-terms="responses,fill-rate,show-rate,revenue-decomposition">
+                <h3 id="requests">Запросы (Requests)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Объём входящего спроса — попыток получить рекламу. Верх воронки.</div>
+                <div class="term-note"><strong>Ключевое:</strong> деньги появляются только если дальше сохраняются Fill/Show и цена.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> рост Requests ≠ рост выручки.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="responses" data-section="sec-metrics" data-related-terms="requests,fill-rate,shows">
+                <h3 id="responses">Ответы (Responses)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Успешные ответы на requests — «разрешение» системы продолжить воронку, но не факт показа.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> путать responses с показами.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="fill-rate" data-section="sec-metrics" data-related-terms="requests,responses,show-rate">
+                <h3 id="fill-rate">Fill Rate (Коэффициент заполнения)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Доля ответов: fill rate = responses / requests. Пропускная способность верхней части воронки.</div>
+                <div class="term-note"><strong>Ключевое:</strong> fill rate — не «качество рекламы», а конверсия верхнего шага.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="shows" data-section="sec-metrics" data-related-terms="monetized-shows,show-rate,responses">
+                <h3 id="shows">Показы (Shows)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Фактические показы рекламы. Промежуточный уровень между responses и monetized shows.</div>
+                <div class="term-note"><strong>Ключевое:</strong> shows — объём экспозиции, деньги зависят от монетизируемой части.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="monetized-shows" data-section="sec-metrics" data-related-terms="shows,show-rate,pressure,revenue,cpm">
+                <h3 id="monetized-shows">Монетизируемые показы (Monetized Shows)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Показы, участвующие в выручке. Главный «объёмный» множитель вместе с CPM.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> любые показы = деньги. Не все shows монетизируются.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="show-rate" data-section="sec-metrics" data-related-terms="fill-rate,cpm,revenue-decomposition,monetized-shows">
+                <h3 id="show-rate">Show Rate (Коэффициент показа)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Доля монетизируемых показов: show rate = monetized_shows / responses.</div>
+                <div class="term-note"><strong>Ключевое:</strong> часто именно на уровне show rate «съедается» эффект.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="cpm" data-section="sec-metrics" data-related-terms="revenue,price-vs-volume,saturation,monetized-shows">
+                <h3 id="cpm">CPM (Cost Per Mille)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Цена за 1000 монетизируемых показов.</div>
+                <div class="term-note"><strong>Ключевое:</strong> CPM — цена, не деньги. Выручка = цена × объём.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> рост CPM на сужении инвентаря может уменьшить revenue.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="revenue" data-section="sec-metrics" data-related-terms="revenue-decomposition,arpu,cpm,pressure">
+                <h3 id="revenue">Выручка (Revenue)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Деньги от монетизации. Итог мультипликативной цепочки: объём × цена.</div>
+                <div class="term-note"><strong>Ключевое:</strong> чтобы понять причину, нужно разложить на множители.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> читать revenue без декомпозиции.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="revenue-decomposition" data-section="sec-metrics" data-related-terms="revenue,control-vs-test,price-vs-volume">
+                <h3 id="revenue-decomposition">Декомпозиция выручки (Revenue Decomposition)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Разложение выручки на вклад факторов (объёмные шаги воронки + цена).</div>
+                <div class="term-note"><strong>Ключевое:</strong> если итоговый эффект не объясним вкладом шагов — это шум или плохая модель.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="pressure" data-section="sec-metrics" data-related-terms="saturation,monetized-shows,revenue">
+                <h3 id="pressure">Давление рекламы (Ad Pressure)</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Интенсивность показа рекламы пользователю: частота/плотность экспозиции.</div>
+                <div class="term-note"><strong>Ключевое:</strong> pressure — скорость «насыщения». Высокое давление даёт краткосрочный рост, но снижает CTR.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="saturation" data-section="sec-metrics" data-related-terms="pressure,price-vs-volume,revenue-decomposition">
+                <h3 id="saturation">Насыщение (Saturation)</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Состояние, когда увеличение входного параметра не даёт пропорционального роста результата или снижает его.</div>
+                <div class="term-note"><strong>Ключевое:</strong> сигнал, что нужно искать другой механизм роста.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="price-vs-volume" data-section="sec-metrics" data-related-terms="cpm,revenue,elasticity,saturation">
+                <h3 id="price-vs-volume">Price vs Volume Trade-off</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Обратная зависимость между ценой (CPM) и объёмом (monetized shows).</div>
+                <div class="term-note"><strong>Ключевое:</strong> оптимум — баланс, где произведение максимально, не один из множителей.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="elasticity" data-section="sec-metrics" data-related-terms="price-vs-volume,cpm,saturation">
+                <h3 id="elasticity">Эластичность (Elasticity)</h3>
+                <div class="term-type">Тип: Статистическая мера</div>
+                <div class="term-def">На сколько % меняется объём при изменении цены на 1%. Определяет стратегию оптимизации.</div>
+                <div class="term-note"><strong>Частая ошибка:</strong> считать elasticity постоянной — она меняется с уровнем pressure и market regime.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="risk-contribution" data-section="sec-metrics" data-related-terms="stress-scenario">
+                <h3 id="risk-contribution">Вклад в риск (Risk Contribution)</h3>
+                <div class="term-type">Тип: Метрика</div>
+                <div class="term-def">Доля дисперсии результата, объяснимая конкретным активом/фактором.</div>
+                <div class="term-note"><strong>Ключевое:</strong> актив с 40% веса может давать 70% риска — это дисбаланс.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="stress-scenario" data-section="sec-metrics" data-related-terms="risk-contribution">
+                <h3 id="stress-scenario">Стресс-сценарий (Stress Scenario)</h3>
+                <div class="term-type">Тип: Метод</div>
+                <div class="term-def">Смоделированный шок: одновременное изменение нескольких параметров, имитирующее кризис.</div>
+                <div class="term-note"><strong>Ключевое:</strong> показывает уязвимость. Потеря &gt;2.5% в сценарии — сигнал концентрации риска.</div>
+                <div class="term-links"></div>
+            </div>
+
+            <div class="term-card" data-term="mechanism" data-section="sec-metrics" data-related-terms="revenue-decomposition,control-vs-test,data-analytics,pressure">
+                <h3 id="mechanism">Механизм (Mechanism)</h3>
+                <div class="term-type">Тип: Концепция</div>
+                <div class="term-def">Причинно-следственная цепочка, объясняющая поведение системы. Не корреляция, а «как работает».</div>
+                <div class="term-note"><strong>Ключевое:</strong> без механизма нельзя предсказать эффект в новых условиях.</div>
+                <div class="term-links"></div>
+            </div>
+
         </div>
 
         <div class="footer-note">
-            Источник: <a href="/GLOSSARY.md">GLOSSARY.md</a>
+            60 терминов · 3 раздела · <a href="/GLOSSARY.md">GLOSSARY.md</a>
         </div>
     </div>
 
     <script>
-        // Simple search functionality
-        const searchInput = document.getElementById('search-input');
-        const termsContainer = document.getElementById('terms-container');
+        var searchInput = document.getElementById('search-input');
+        var container = document.getElementById('terms-container');
+        var cards = container.querySelectorAll('.term-card');
+        var headings = container.querySelectorAll('.section-heading');
 
-        // Sort terms alphabetically by RU title (EN in parentheses ignored).
-        // Latin-leading titles (e.g., CPM) are placed after Cyrillic.
-        if (termsContainer) {
-            const cards = Array.from(termsContainer.querySelectorAll('.term-card'));
-            const norm = (t) => (t || '').split(' (')[0].trim();
-            const latinStart = (s) => /^[A-Za-z]/.test(s || '');
-            cards.sort((a, b) => {
-                const ta = norm(a.querySelector('h2')?.textContent);
-                const tb = norm(b.querySelector('h2')?.textContent);
-                const la = latinStart(ta);
-                const lb = latinStart(tb);
-                if (la !== lb) return la ? 1 : -1;
-                return ta.localeCompare(tb, 'ru', { sensitivity: 'base' });
+        // ── Wrap h3 + type badge in header row; strip "Тип: " prefix ──
+        cards.forEach(function(card) {
+            var h3 = card.querySelector('h3');
+            var typeBadge = card.querySelector('.term-type');
+            if (!h3 || !typeBadge) return;
+            typeBadge.textContent = typeBadge.textContent.replace(/^Тип:\s*/i, '');
+            card._cardType = typeBadge.textContent.replace(/\s+/g, ' ').trim();
+            var header = document.createElement('div');
+            header.className = 'term-header';
+            card.insertBefore(header, h3);
+            header.appendChild(h3);
+            header.appendChild(typeBadge);
+        });
+
+        // ── Populate type filter dynamically ──
+        var typeFilter = document.getElementById('type-filter');
+        if (typeFilter) {
+            var typeSet = {};
+            cards.forEach(function(c) { if (c._cardType) typeSet[c._cardType] = true; });
+            Object.keys(typeSet).sort(function(a, b) {
+                return a.localeCompare(b, 'ru', { sensitivity: 'base' });
+            }).forEach(function(t) {
+                var opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                typeFilter.appendChild(opt);
             });
-            cards.forEach((c) => termsContainer.appendChild(c));
         }
 
-        const termCards = document.querySelectorAll('.term-card');
-
-        // 1) Render tags (badges) under term title (optional)
-        termCards.forEach(card => {
-            const tagsRaw = (card.dataset.tags || '').trim();
-            if (!tagsRaw) return;
-            const h2 = card.querySelector('h2');
-            if (!h2) return;
-            const tags = tagsRaw.split(',').map(s => s.trim()).filter(Boolean);
-            if (!tags.length) return;
-
-            const wrap = document.createElement('div');
-            wrap.className = 'term-badges';
-            tags.forEach(t => {
-                const chip = document.createElement('span');
-                chip.className = 'term-badge';
-                chip.textContent = t;
-                wrap.appendChild(chip);
-            });
-            h2.insertAdjacentElement('afterend', wrap);
-        });
-
-        // 2) Remove "Типичная ошибка" section from UI (title + content)
-        termCards.forEach(card => {
-            const sections = Array.from(card.querySelectorAll('.term-section'));
-            sections.forEach(sec => {
-                const title = sec.querySelector('.term-section-title');
-                if (!title) return;
-                if (title.textContent.trim() === 'Типичная ошибка') {
-                    sec.remove();
-                }
-            });
-        });
-
-        // 3) Related terms: canonical slugs only + validation + click-to-search + scroll
-        const slugToCard = new Map();
-        const slugToTitle = new Map();
-        const slugs = new Set();
-
-        Array.from(termCards).forEach(card => {
-            const slug = (card.dataset.term || '').trim();
-            if (!slug) return;
-            slugs.add(slug);
-            slugToCard.set(slug, card);
-            const title = (card.querySelector('h2')?.textContent || slug).trim();
-            slugToTitle.set(slug, title);
-        });
-
-        // Dev-only validator: warn about broken relations in data
-        Array.from(termCards).forEach(card => {
-            const from = (card.dataset.term || '').trim();
-            const raw = (card.dataset.relatedTerms || '').trim();
-            if (!from || !raw) return;
-            raw.split(',').map(s => s.trim()).filter(Boolean).forEach(to => {
-                if (!slugs.has(to)) {
-                    console.warn(`[Glossary] Missing related term: from=\"${from}\" to=\"${to}\"`);
-                }
-            });
-        });
-
-        // Render related chips from slug list (ignore legacy free text)
-        Array.from(termCards).forEach(card => {
-            const sections = Array.from(card.querySelectorAll('.term-section'));
-            const rel = sections.find(sec => (sec.querySelector('.term-section-title')?.textContent || '').trim() === 'Связанные темы');
-            if (!rel) return;
-            rel.classList.add('term-section--related');
-            const titleEl = rel.querySelector('.term-section-title');
-            if (titleEl) titleEl.remove(); // chips-only UI (no label)
-
-            const content = rel.querySelector('.term-section-content');
-            if (!content) return;
-
-            const raw = (card.dataset.relatedTerms || '').trim();
-            const related = raw ? raw.split(',').map(s => s.trim()).filter(Boolean) : [];
-            const existing = related.filter(slug => slugs.has(slug));
-            if (!existing.length) {
-                rel.remove();
-                return;
+        // ── Move id from h3 to card (for :target); add anchor link ──
+        function highlightCard(card) {
+            card.classList.add('is-active');
+            setTimeout(function() { card.classList.remove('is-active'); }, 2500);
+        }
+        cards.forEach(function(card) {
+            var h3 = card.querySelector('h3');
+            if (h3 && h3.id) {
+                card.id = h3.id;
+                h3.removeAttribute('id');
             }
+            card._origTitle = h3 ? h3.textContent : '';
+            var header = card.querySelector('.term-header');
+            if (header && card.id) {
+                var anchor = document.createElement('a');
+                anchor.className = 'term-anchor';
+                anchor.href = '#' + card.id;
+                anchor.textContent = '#';
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    history.pushState(null, '', '#' + card.id);
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    highlightCard(card);
+                });
+                header.appendChild(anchor);
+            }
+        });
 
-            const wrap = document.createElement('div');
-            wrap.className = 'term-related';
+        // ── Sort terms alphabetically within each section ──
+        var _debugSort = /[?&]debug=1/.test(location.search)
+            || (typeof localStorage !== 'undefined' && localStorage.debugGlossary === '1');
 
-            existing.forEach(slug => {
-                const label = slugToTitle.get(slug);
-                if (!label) return;
+        function sortKey(card) {
+            return (card._origTitle || '')
+                .replace(/\s*\(.*$/, '')   // WHY: strip parenthesized suffix — "Central Limit Theorem (ЦПТ)" → "Central Limit Theorem"
+                .replace(/\u00a0/g, ' ')   // WHY: NBSP → regular space for uniform comparison
+                .replace(/\s{2,}/g, ' ')   // WHY: collapse runs of whitespace
+                .trim()
+                .toLocaleLowerCase('ru');   // WHY: locale-aware lowercase — ё, й, etc. handled correctly
+        }
 
-                const chip = document.createElement('span');
-                chip.className = 'term-related-chip';
-                chip.textContent = label;
-                chip.addEventListener('click', () => {
-                    // 1) Put the term title into search input (so it always matches)
-                    searchInput.value = label;
+        headings.forEach(function(heading) {
+            var sectionId = heading.id;
+            var sectionCards = [];
+            cards.forEach(function(c) {
+                if (c.dataset.section === sectionId) sectionCards.push(c);
+            });
+            sectionCards.sort(function(a, b) {
+                // WHY: localeCompare('ru', {sensitivity:'base'}) ignores case and diacritics,
+                //       sorts Cyrillic after Latin (standard Unicode / CLDR order)
+                var cmp = sortKey(a).localeCompare(sortKey(b), 'ru', { sensitivity: 'base' });
+                if (cmp !== 0) return cmp;
+                // WHY: tie-breaker by slug guarantees deterministic order for identical sortKeys
+                return (a.dataset.term || '').localeCompare(b.dataset.term || '');
+            });
+            // WHY: insertBefore(c, ref.nextSibling) moves c right after ref without cloning;
+            //       the static NodeList `cards` still references the same elements,
+            //       so search/hash/chips keep working — only visual DOM order changes
+            var ref = heading;
+            sectionCards.forEach(function(c) {
+                ref.parentNode.insertBefore(c, ref.nextSibling);
+                ref = c;
+            });
+
+            if (_debugSort) {
+                var preview = sectionCards.slice(0, 10).map(function(c) {
+                    return { slug: c.dataset.term, sortKey: sortKey(c), title: c._origTitle };
+                });
+                console.group('[glossary sort] ' + sectionId + ' (' + sectionCards.length + ' terms)');
+                console.table(preview);
+                console.groupEnd();
+            }
+        });
+
+        // ── Build slug maps ──
+        var slugToCard = {};
+        var slugToTitle = {};
+        cards.forEach(function(c) {
+            var s = c.dataset.term;
+            if (!s) return;
+            slugToCard[s] = c;
+            var h = c.querySelector('h3');
+            slugToTitle[s] = h ? h.textContent.trim() : s;
+        });
+
+        // ── Render related-term chips (max 6) ──
+        var MAX_CHIPS = 6;
+        cards.forEach(function(card) {
+            var raw = (card.dataset.relatedTerms || '').trim();
+            if (!raw) return;
+            var linksEl = card.querySelector('.term-links');
+            if (!linksEl) return;
+            var slugs = raw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+            var rendered = 0;
+            slugs.forEach(function(slug) {
+                if (rendered >= MAX_CHIPS) return;
+                var title = slugToTitle[slug];
+                if (!title) return;
+                rendered++;
+                var chip = document.createElement('span');
+                chip.className = 'term-chip';
+                chip.textContent = title;
+                chip.addEventListener('click', function() {
+                    searchInput.value = title;
                     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    searchInput.focus();
-
-                    // 2) Scroll to the term card (if visible in current filter)
-                    requestAnimationFrame(() => {
-                        const target = slugToCard.get(slug);
-                        if (!target) return;
-                        if (target.classList.contains('hidden')) return;
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    requestAnimationFrame(function() {
+                        var target = slugToCard[slug];
+                        if (target && !target.classList.contains('hidden')) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
                     });
                 });
-                wrap.appendChild(chip);
+                linksEl.appendChild(chip);
             });
-
-            content.textContent = '';
-            content.appendChild(wrap);
+            if (!rendered) linksEl.remove();
         });
 
-        searchInput.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            
-            termCards.forEach(card => {
-                const termText = card.textContent.toLowerCase();
-                if (query === '' || termText.includes(query)) {
+        // ── Upgrade .term-note → .term-callout ──
+        document.querySelectorAll('.term-note').forEach(function(note) {
+            var text = note.textContent;
+            note.classList.remove('term-note');
+            note.classList.add('term-callout');
+            if (/^Ключевое:|^Предпосылка:/.test(text)) {
+                note.classList.add('term-callout--key');
+            } else if (/^Частая ошибка:/.test(text)) {
+                note.classList.add('term-callout--warn');
+            }
+        });
+
+        // ── Combined filter: search + type dropdown ──
+        function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function applyFilters() {
+            var q = searchInput.value.toLowerCase().trim();
+            var re = q ? new RegExp('(' + escapeRe(q) + ')', 'gi') : null;
+            var selectedType = typeFilter ? typeFilter.value : '';
+            cards.forEach(function(card) {
+                var h3 = card.querySelector('h3');
+                if (h3 && card._origTitle) h3.innerHTML = card._origTitle;
+                var matchesSearch = q === '' || card.textContent.toLowerCase().indexOf(q) !== -1;
+                var matchesType = !selectedType || card._cardType === selectedType;
+                if (matchesSearch && matchesType) {
                     card.classList.remove('hidden');
+                    if (re && h3 && card._origTitle && card._origTitle.toLowerCase().indexOf(q) !== -1) {
+                        h3.innerHTML = card._origTitle.replace(re, '<mark class="term-mark">$1</mark>');
+                    }
                 } else {
                     card.classList.add('hidden');
                 }
             });
+            headings.forEach(function(h) {
+                var id = h.id;
+                var hasVisible = false;
+                cards.forEach(function(c) {
+                    if (c.dataset.section === id && !c.classList.contains('hidden')) {
+                        hasVisible = true;
+                    }
+                });
+                h.classList.toggle('hidden', !hasVisible);
+            });
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+        if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+
+        // ── Section nav: active state + scroll ──
+        var navLinks = document.querySelectorAll('.glossary-nav a');
+
+        function setActiveNav(hash) {
+            navLinks.forEach(function(a) {
+                a.classList.toggle('active', a.getAttribute('href') === '#' + hash);
+            });
+        }
+
+        navLinks.forEach(function(a) {
+            a.addEventListener('click', function() {
+                var id = a.getAttribute('href').substring(1);
+                setActiveNav(id);
+            });
         });
 
-        // Handle anchor links (scroll to term when page loads with hash)
-        window.addEventListener('load', function() {
-            if (window.location.hash) {
-                const hash = window.location.hash.substring(1);
-                const target = document.getElementById(hash);
-                if (target) {
-                    setTimeout(() => {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
+        // Track active section on scroll
+        var sectionIds = Array.from(headings).map(function(h) { return h.id; });
+        var scrollTimeout;
+        window.addEventListener('scroll', function() {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function() {
+                var current = '';
+                for (var i = sectionIds.length - 1; i >= 0; i--) {
+                    var el = document.getElementById(sectionIds[i]);
+                    if (el && el.getBoundingClientRect().top <= 80) {
+                        current = sectionIds[i];
+                        break;
+                    }
                 }
+                if (current) setActiveNav(current);
+            }, 60);
+        }, { passive: true });
+
+        // Anchor scroll on load + highlight
+        function handleHash() {
+            var hash = window.location.hash.substring(1);
+            if (!hash) return;
+            var el = document.getElementById(hash);
+            if (el) {
+                setTimeout(function() {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (el.classList.contains('term-card')) highlightCard(el);
+                    // If hash targets a section heading, set nav active
+                    if (el.classList.contains('section-heading')) setActiveNav(hash);
+                }, 100);
             }
-        });
+        }
+        handleHash();
+        window.addEventListener('hashchange', handleHash);
+
     </script>
 </body>
 </html>
-

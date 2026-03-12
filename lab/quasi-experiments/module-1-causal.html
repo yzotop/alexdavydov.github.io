@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 1. Почему causal сложно — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 1
+        </div>
+
+        <h1>Модуль 1. Почему causal сложно</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Корреляция ≠ причинность. Без рандомизации любое сравнение смещено из-за confounders, selection bias и interference. Квазиэксперименты — набор приёмов, каждый со своими допущениями.</p>
+        </div>
+
+        <h3>Фундаментальная проблема</h3>
+        <p>Каузальный эффект = Y₁ − Y₀ для одного юнита, но мы наблюдаем только один потенциальный исход. A/B-тест решает это через рандомизацию: группы в среднем одинаковы. Без рандомизации нужны допущения.</p>
+
+        <h3>Ключевые угрозы идентификации</h3>
+        <table>
+            <tr><th>Угроза</th><th>Суть</th><th>Пример</th></tr>
+            <tr><td>Confounders</td><td>Фактор влияет и на treatment, и на outcome</td><td>Мотивированные пользователи чаще используют фичу и чаще покупают</td></tr>
+            <tr><td>Selection bias</td><td>Группы систематически различаются до treatment</td><td>Регионы с высоким доходом раньше получают новый продукт</td></tr>
+            <tr><td>SUTVA</td><td>Outcome юнита зависит от treatment других</td><td>Промокод для друзей меняет поведение и контрольной группы</td></tr>
+            <tr><td>Interference / spillover</td><td>Treatment "перетекает" между группами</td><td>Маркетплейс: изменение комиссии у продавцов меняет поведение покупателей</td></tr>
+            <tr><td>Anticipation</td><td>Субъекты реагируют до формального treatment</td><td>Объявление о повышении комиссии — продавцы меняют поведение заранее</td></tr>
+        </table>
+
+        <details>
+            <summary>Глубже: потенциальные исходы (Rubin framework)</summary>
+            <div>
+                <p>Для каждого юнита i существуют два потенциальных исхода: Y_i(1) при treatment и Y_i(0) без. Наблюдаем только один. ATE = E[Y(1) − Y(0)]. ATT = E[Y(1) − Y(0) | D=1]. Рандомизация делает {Y(0), Y(1)} ⊥ D. Квазиэксперименты достигают этого условно: ⊥ | X, или ⊥ | Z, или ⊥ в окрестности порога.</p>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./cheat-sheet.html">← Cheat Sheet</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-2-did.html">Модуль 2: DiD →</a>
+        </nav>
+    </div>
+</body>
+</html>

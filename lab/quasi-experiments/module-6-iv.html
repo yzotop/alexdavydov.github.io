@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 6. IV — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 6
+        </div>
+
+        <h1>Модуль 6. Instrumental Variables (IV)</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Находим переменную Z, которая влияет на treatment D, но на outcome Y — только через D. Три условия: relevance, exclusion, independence. Оценивает LATE (для compliers).</p>
+        </div>
+
+        <h3>Когда применять</h3>
+        <ul>
+            <li>Treatment эндогенен (selection on unobservables), matching/DiD невозможны</li>
+            <li>Существует "внешний шок" или "случайная вариация", влияющая на treatment</li>
+            <li>Есть правдоподобный аргумент для exclusion restriction</li>
+            <li>Fuzzy RDD: порог = инструмент для нечёткого treatment</li>
+        </ul>
+
+        <h3>What you estimate</h3>
+        <p><strong>LATE</strong> (Local Average Treatment Effect) — эффект для <em>compliers</em>: тех, чей treatment status меняется из-за инструмента. Не ATE (для всех), не ATT (для treated). Compliers — скрытая подгруппа, её характеристики неизвестны.</p>
+
+        <h3>Assumptions (3 условия)</h3>
+        <table>
+            <tr><th>Условие</th><th>Формально</th><th>Проверяемость</th></tr>
+            <tr><td>1. Relevance</td><td>Cov(Z, D) ≠ 0</td><td>✓ Проверяемо: F-stat first stage ≥ 10</td></tr>
+            <tr><td>2. Exclusion</td><td>Z → Y только через D</td><td>✗ Непроверяемо: нужна теория</td></tr>
+            <tr><td>3. Independence</td><td>Z ⊥ ε</td><td>✗ Непроверяемо: нужна теория</td></tr>
+        </table>
+        <p>Дополнительно (для LATE): <strong>monotonicity</strong> — инструмент сдвигает всех в одну сторону (нет "defiers").</p>
+
+        <h3>Diagnostics</h3>
+        <table>
+            <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
+            <tr><td>First stage F-stat</td><td>F ≥ 10 в регрессии D ~ Z</td><td>F &lt; 10</td><td>Слабый инструмент → LIML, AR CI, или отказ</td></tr>
+            <tr><td>Reduced form</td><td>Регрессия Y ~ Z напрямую</td><td>Нет эффекта Z на Y</td><td>Если Z не влияет на Y → нет эффекта D на Y (через Z)</td></tr>
+            <tr><td>Balance on Z</td><td>Ковариаты не коррелируют с Z</td><td>Корреляция Z с X</td><td>Independence под вопросом</td></tr>
+            <tr><td>Over-id (Sargan/Hansen J)</td><td>Согласованность инструментов (если &gt; 1)</td><td>Отвержение H₀</td><td>Хотя бы один Z невалиден</td></tr>
+        </table>
+
+        <h3>Minimal estimator (2SLS)</h3>
+<pre><code># Two-Stage Least Squares:
+
+# First stage:  D_i = π₀ + π₁·Z_i + v_i
+# → получаем D̂_i (предсказанные значения)
+
+# Second stage: Y_i = β₀ + β₁·D̂_i + ε_i
+# → β₁ = LATE
+
+# Wald estimator (simple IV, 1 instrument):
+β_IV = Cov(Y, Z) / Cov(D, Z)
+     = (Ȳ_z1 − Ȳ_z0) / (D̄_z1 − D̄_z0)</code></pre>
+
+        <h3>Примеры инструментов</h3>
+        <ul>
+            <li><strong>Погода</strong> → посещаемость магазина → покупки</li>
+            <li><strong>Расстояние до объекта</strong> → вероятность посещения → outcome</li>
+            <li><strong>Лотерейный номер</strong> → призыв в армию → доход (Angrist)</li>
+            <li><strong>Policy cutoff</strong> → fuzzy treatment (= fuzzy RDD)</li>
+            <li><strong>Судья / case worker assignment</strong> → строгость решения → outcome (judge leniency)</li>
+        </ul>
+
+        <h3>Слабые инструменты</h3>
+        <p>F &lt; 10: оценка 2SLS смещена к OLS, CI ненадёжны. Решения: Anderson-Rubin CI (robust), LIML estimator, или честно признать, что IV неприменим. Stock &amp; Yogo (2005): F &lt; 10 → "weak instrument problem".</p>
+
+        <h3>Pitfalls</h3>
+        <ul>
+            <li>Exclusion restriction нарушена (Z влияет на Y напрямую) → bias</li>
+            <li>Слабый инструмент → оценка почти = OLS, CI бессмысленны</li>
+            <li>LATE ≠ ATE: эффект для compliers, не для всех</li>
+            <li>Monotonicity нарушена (есть defiers) → LATE не идентифицирован</li>
+            <li>Over-identification: много инструментов + Sargan не отвергает → ложное спокойствие (low power)</li>
+            <li>Narrative: exclusion restriction — чисто теоретический аргумент, легко оспорить</li>
+        </ul>
+
+        <h3>What to do next</h3>
+        <ul>
+            <li>Всегда показывать first stage: коэффициент + F-stat</li>
+            <li>Reduced form (Y ~ Z) как sanity check</li>
+            <li>Если F &lt; 10 → Anderson-Rubin CI или отказ</li>
+            <li>Обсудить exclusion restriction содержательно (не формально)</li>
+            <li>Если возможно → подтвердить результат другим дизайном (DiD, RDD)</li>
+        </ul>
+
+        <details>
+            <summary>Глубже: over-identification и Sargan test</summary>
+            <div>
+                <p>Если инструментов больше, чем эндогенных переменных — over-identified. Тест Sargan (Hansen J): проверяет, согласованы ли инструменты. Отвержение H₀ = хотя бы один невалиден. Но: низкая мощность, не указывает на конкретный инструмент.</p>
+            </div>
+        </details>
+
+        <h3>Toy example: IV / Wald estimator</h3>
+        <p>Оцениваем эффект посещения магазина (D) на покупку (Y). Инструмент (Z): дождь (0/1) — влияет на посещение, но не на покупку напрямую.</p>
+        <table>
+            <tr><th>День</th><th>Дождь (Z)</th><th>Посещение (D)</th><th>Покупка (Y)</th></tr>
+            <tr><td>1</td><td>0</td><td>1</td><td>50</td></tr>
+            <tr><td>2</td><td>0</td><td>1</td><td>45</td></tr>
+            <tr><td>3</td><td>0</td><td>1</td><td>55</td></tr>
+            <tr><td>4</td><td>0</td><td>0</td><td>10</td></tr>
+            <tr><td>5</td><td>1</td><td>0</td><td>5</td></tr>
+            <tr><td>6</td><td>1</td><td>0</td><td>8</td></tr>
+            <tr><td>7</td><td>1</td><td>1</td><td>48</td></tr>
+            <tr><td>8</td><td>1</td><td>0</td><td>12</td></tr>
+        </table>
+<pre><code># Step 1: Reduced form (Y ~ Z)
+Ȳ_z0 = mean(50, 45, 55, 10) = 40.0   (без дождя)
+Ȳ_z1 = mean(5, 8, 48, 12)   = 18.25  (дождь)
+
+# Step 2: First stage (D ~ Z)
+D̄_z0 = mean(1, 1, 1, 0) = 0.75  (без дождя)
+D̄_z1 = mean(0, 0, 1, 0) = 0.25  (дождь)
+
+# Step 3: Wald estimator
+β_IV = (Ȳ_z0 − Ȳ_z1) / (D̄_z0 − D̄_z1)
+     = (40.0 − 18.25) / (0.75 − 0.25)
+     = 21.75 / 0.50 = 43.5
+
+# LATE = 43.5 (эффект посещения на покупку для compliers)</code></pre>
+        <p><strong>Ожидаемый результат:</strong> β_IV = 43.5. Это LATE для compliers — людей, которые посещают магазин в хорошую погоду, но не в дождь.</p>
+
+        <h3>Упражнения</h3>
+
+        <details>
+            <summary>Задача 1: три условия</summary>
+            <div>
+                <p>Инструмент: расстояние от дома до спортзала. Treatment: посещение спортзала. Outcome: здоровье. Проверьте три условия валидности.</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p><strong>Relevance:</strong> ✓ Ближе к залу → чаще ходят (проверяемо, F-stat). <strong>Exclusion:</strong> ⚠ Сомнительно. Расстояние коррелирует с районом → качество воздуха, парки, инфраструктура → напрямую влияет на здоровье. Exclusion restriction скорее всего нарушена. <strong>Independence:</strong> ⚠ Сомнительно. Здоровые люди могут выбирать жильё ближе к залу (selection). Z не случаен. <strong>Вывод:</strong> инструмент, скорее всего, невалиден.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 2: weak instrument</summary>
+            <div>
+                <p>IV regression: first stage F = 4.2, β_IV = +25%, SE = 18%. Что делать?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p>F = 4.2 &lt; 10 → <strong>слабый инструмент</strong>. Оценка β_IV = +25% ненадёжна (смещена к OLS). SE тоже ненадёжны. Действия: (1) построить Anderson-Rubin CI (robust к weak IV), (2) попробовать LIML, (3) если AR CI = [−10%, +60%] — эффект не идентифицирован, нужен другой инструмент или дизайн.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./module-5-matching.html">← Модуль 5: Matching</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-7-validity.html">Модуль 7: Валидность →</a>
+        </nav>
+    </div>
+</body>
+</html>

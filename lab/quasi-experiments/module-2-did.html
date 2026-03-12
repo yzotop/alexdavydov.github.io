@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 2. DiD — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 2
+        </div>
+
+        <h1>Модуль 2. Difference-in-Differences (DiD)</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Сравниваем изменение outcome в treatment-группе vs контрольной. Работает, если без treatment группы двигались бы параллельно. Оценивает ATT.</p>
+        </div>
+
+        <h3>Когда применять</h3>
+        <ul>
+            <li>Есть "до/после" treatment и контрольная группа</li>
+            <li>Treatment назначается на уровне группы (город, регион, сегмент)</li>
+            <li>Parallel trends правдоподобны (визуально и по pre-period данным)</li>
+            <li>Нет spillover между treated и control</li>
+            <li>Достаточно pre-period данных для проверки trends (≥ 4–8 периодов)</li>
+        </ul>
+
+        <h3>What you estimate</h3>
+        <p><strong>ATT</strong> (Average Treatment Effect on the Treated). δ = E[Y(1) − Y(0) | D=1]. DiD не оценивает ATE — только эффект для тех, кто получил treatment.</p>
+
+        <h3>Assumptions</h3>
+        <ol>
+            <li><strong>Parallel trends:</strong> без treatment обе группы двигались бы одинаково (не доказуемо, только не отвергаемо)</li>
+            <li><strong>No anticipation:</strong> treatment-группа не реагирует до формальной даты treatment</li>
+            <li><strong>No spillover:</strong> treatment не влияет на контрольную группу</li>
+            <li><strong>Stable composition:</strong> состав групп не меняется из-за treatment</li>
+            <li><strong>Common shocks:</strong> внешние шоки затрагивают обе группы одинаково</li>
+        </ol>
+
+        <h3>Diagnostics</h3>
+        <table>
+            <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
+            <tr><td>Pre-trends</td><td>Event study: коэфф. для k &lt; 0</td><td>Значимые коэфф. до treatment</td><td>Matching+DiD, SCM, или отказ</td></tr>
+            <tr><td>Anticipation</td><td>Коэфф. за 1–2 периода до treatment</td><td>Реакция до treatment date</td><td>Сдвинуть treatment date назад</td></tr>
+            <tr><td>Placebo outcome</td><td>Outcome, не связанный с treatment</td><td>Значимый эффект на placebo</td><td>Пересмотреть дизайн</td></tr>
+            <tr><td>Placebo treatment date</td><td>Фиктивная дата в pre-period</td><td>Значимый "эффект"</td><td>Trends нестабильны → DiD невалиден</td></tr>
+            <tr><td>SE clustering</td><td>Уровень кластеризации ≥ уровня treatment</td><td>Некластеризованные SE при групповом treatment</td><td>Кластеризовать; при малом N — wild bootstrap</td></tr>
+        </table>
+
+        <h3>Minimal estimator</h3>
+<pre><code>Y_it = α + β₁·Treat_i + β₂·Post_t + δ·(Treat_i × Post_t) + ε_it
+
+δ = (Ȳ_treat_post − Ȳ_treat_pre) − (Ȳ_control_post − Ȳ_control_pre)</code></pre>
+
+        <h3>Pitfalls</h3>
+        <ul>
+            <li>Parallel trends визуально есть, но нарушаются после treatment по другим причинам (confounding shock)</li>
+            <li>Anticipation: объявление за N дней до вступления в силу, группа реагирует заранее</li>
+            <li>Compositional change: treatment заставляет часть юнитов "уйти" из группы</li>
+            <li>SE без кластеризации → ложная значимость (Bertrand, Duflo, Mullainathan 2004)</li>
+            <li>Мало кластеров (N &lt; 20) → стандартная кластеризация невалидна, нужен wild bootstrap</li>
+            <li>Staggered adoption → TWFE смещён при гетерогенном эффекте (см. ниже)</li>
+            <li>Тренд не линейный → визуальная "параллельность" обманчива</li>
+        </ul>
+
+        <h3>What to do next</h3>
+        <ul>
+            <li>Event study: всегда строить, даже если "основная" оценка DiD</li>
+            <li>Placebo tests: минимум 2 (outcome + treatment date)</li>
+            <li>Если parallel trends нарушены → рассмотреть matching+DiD, synthetic DiD, или SCM</li>
+            <li>Если мало кластеров → randomization inference</li>
+            <li>Если staggered → использовать cohort-specific estimators</li>
+        </ul>
+
+        <h3>Event Study — полноценный разбор</h3>
+        <p>Event study — регрессия с отдельными коэффициентами δ_k для каждого периода k относительно treatment (k = −4, −3, …, −1, 0, +1, +2, …). Период k = −1 обычно опорный (δ_{−1} = 0).</p>
+<pre><code>Y_it = α + Σ_k δ_k · 1{t − t* = k} · Treat_i + γ_t + μ_i + ε_it
+
+Ожидание:
+  k &lt; 0: δ_k ≈ 0 (parallel trends подтверждены)
+  k ≥ 0: δ_k ≠ 0 (эффект treatment)
+
+ASCII-визуализация (идеальный случай):
+  δ_k
+   |
+ + |                          * * *
+   |                        *
+   |                      *
+ 0 |----*---*---*---*---|------------------
+   |                    |
+ - |                    |
+   +----+---+---+---+--+--+---+---+---→ k
+       -4  -3  -2  -1  0  +1  +2  +3</code></pre>
+
+        <h4>Красные флаги event study</h4>
+        <table>
+            <tr><th>Флаг</th><th>Что означает</th><th>Действие</th></tr>
+            <tr><td>Pre-trend: δ_{−3}, δ_{−2} значимы</td><td>Parallel trends нарушены</td><td>DiD невалиден без коррекции</td></tr>
+            <tr><td>Монотонный pre-trend (рост/падение)</td><td>Группы расходились и до treatment</td><td>Добавить group-specific trends или отказаться</td></tr>
+            <tr><td>Эффект в k=0, но не в k≥1</td><td>Возможно transient shock, не treatment</td><td>Проверить устойчивость по длине post-period</td></tr>
+        </table>
+
+        <h4>При нарушении pre-trends</h4>
+        <ul>
+            <li>Matching+DiD: сначала подобрать контроль по ковариатам, потом DiD</li>
+            <li>Добавить group-specific time trends (рискованно: может "съесть" эффект)</li>
+            <li>Переключиться на SCM (строит контроль, воспроизводящий pre-period)</li>
+            <li>При staggered: использовать clean comparisons (never-treated / not-yet-treated)</li>
+        </ul>
+
+        <h3>Staggered DiD — предупреждение</h3>
+        <div class="red-flags">
+            <ul>
+                <li><strong>Проблема:</strong> при staggered adoption (города получают treatment в разное время) TWFE использует already-treated как контроль для later-treated. Если эффект гетерогенен по когортам или растёт со временем — оценка TWFE смещена, может иметь неправильный знак.</li>
+                <li><strong>Диагностика:</strong> построить event study по когортам отдельно — если динамика разная, TWFE ненадёжен.</li>
+                <li><strong>Что делать:</strong> (1) Event study с cohort-specific коэффициентами. (2) Сравнивать только treated vs never-treated или not-yet-treated. (3) Использовать специализированные estimators (Callaway &amp; Sant'Anna, Sun &amp; Abraham, de Chaisemartin &amp; D'Haultfoeuille). (4) Как минимум — показать, что результат устойчив к исключению ранних когорт.</li>
+            </ul>
+        </div>
+
+        <h3>Toy example: DiD вручную</h3>
+        <p>Запуск рекламы в городе A (treated), город B — контроль. Outcome: средний revenue/день.</p>
+        <table>
+            <tr><th>Город</th><th>Группа</th><th>Pre (нед. 1–4)</th><th>Post (нед. 5–8)</th></tr>
+            <tr><td>A</td><td>Treated</td><td>100</td><td>130</td></tr>
+            <tr><td>B</td><td>Control</td><td>90</td><td>105</td></tr>
+        </table>
+<pre><code># Step 1: Разности
+ΔY_treat   = 130 − 100 = +30
+ΔY_control = 105 −  90 = +15
+
+# Step 2: DiD-оценка
+δ = ΔY_treat − ΔY_control = 30 − 15 = 15
+
+# Step 3: Проверка parallel trends
+# Pre-period (нед. -8..-5): были ли тренды параллельны?
+# Нужно проверить по дневным/недельным данным.</code></pre>
+<pre><code>-- Pseudo-SQL
+SELECT
+  treat,
+  post,
+  AVG(revenue) AS mean_rev
+FROM daily_revenue
+GROUP BY treat, post;
+
+-- δ = (mean_rev WHERE treat=1 AND post=1)
+--   - (mean_rev WHERE treat=1 AND post=0)
+--   - (mean_rev WHERE treat=0 AND post=1)
+--   + (mean_rev WHERE treat=0 AND post=0)</code></pre>
+        <p><strong>Ожидаемый результат:</strong> δ = 15 (каузальный эффект рекламы при выполнении parallel trends).</p>
+
+        <h3>Упражнения</h3>
+
+        <details>
+            <summary>Задача 1: выбор метода</summary>
+            <div>
+                <p>Компания запускает программу лояльности для клиентов с доходом > 100K. Клиенты с доходом &lt; 100K — контроль. Через 3 месяца сравнивают retention. Какой метод подходит лучше: DiD или RDD?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p><strong>RDD</strong> подходит лучше. Порог 100K — это cutoff по running variable (доход). Юниты рядом с порогом (95K vs 105K) почти идентичны. DiD здесь проблематичен: группы систематически различаются (высокий доход vs низкий), parallel trends маловероятны.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 2: диагностика</summary>
+            <div>
+                <p>Аналитик провёл DiD: δ = +12%, p = 0.003. Но event study показывает δ_{−2} = +5% (p = 0.04), δ_{−1} = +3% (p = 0.15). Валиден ли результат?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p><strong>Нет.</strong> Значимый коэффициент δ_{−2} = +5% указывает на нарушение parallel trends: treated группа росла быстрее ещё до treatment. Часть (или весь) эффект δ = +12% может быть продолжением существующего тренда, а не каузальным эффектом treatment.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details>
+            <summary>Задача 3: интерпретация</summary>
+            <div>
+                <p>DiD по geo-launch (3 treated региона, 9 контрольных). δ = +8%, SE = 2%, p = 0.001. SE не кластеризованы. Что не так?</p>
+                <details>
+                    <summary>Решение</summary>
+                    <div>
+                        <p>SE должны быть кластеризованы на уровне региона (12 кластеров). Без кластеризации SE занижены, p-value ложно мал. При 12 кластерах (и только 3 treated) даже кластеризованные SE ненадёжны — нужен wild cluster bootstrap или randomization inference.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <nav class="module-nav">
+            <a href="./module-1-causal.html">← Модуль 1</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-3-rdd.html">Модуль 3: RDD →</a>
+        </nav>
+    </div>
+</body>
+</html>

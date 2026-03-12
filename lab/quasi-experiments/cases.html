@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-кейсы — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Кейсы
+        </div>
+
+        <h1>Мини-кейсы</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>6 практических ситуаций: для каждой — контекст, выбор метода, что проверять и типичная ошибка.</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 1 · DiD</div>
+            <h4>Маркетинговая кампания: до/после + контроль</h4>
+            <p><strong>Контекст:</strong> Запуск оффлайн-рекламы в 5 городах из 20. Нужно оценить прирост продаж.</p>
+            <p><strong>Unit:</strong> город. <strong>Treatment:</strong> запуск рекламы. <strong>Outcome:</strong> revenue/день.</p>
+            <p><strong>Метод: DiD.</strong> 5 treated городов vs 15 контрольных, 8 недель до и 8 после.</p>
+            <ul>
+                <li>Проверить parallel trends визуально и через event study</li>
+                <li>Кластеризовать SE на уровне города</li>
+                <li>Placebo: подставить фиктивную дату запуска в pre-period</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> не учитывать сезонность (launch совпал с праздниками в treated городах).</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 2 · DiD + anticipation</div>
+            <h4>Изменение комиссии на маркетплейсе</h4>
+            <p><strong>Контекст:</strong> Маркетплейс повышает комиссию для категории "Электроника" с 10% до 15%. Остальные категории — контроль.</p>
+            <p><strong>Unit:</strong> продавец-категория. <strong>Treatment:</strong> повышение комиссии. <strong>Outcome:</strong> GMV, число активных продавцов.</p>
+            <p><strong>Метод: DiD.</strong> Но с нюансом: объявление было за 2 недели до вступления в силу.</p>
+            <ul>
+                <li>Проверить anticipation: продавцы могли начать уходить до формального повышения</li>
+                <li>Определить "treatment date" как дату объявления, а не вступления в силу</li>
+                <li>Проверить selection: крупные продавцы могли уйти первыми (compositional change)</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> использовать дату вступления в силу как treatment date и получить "эффект до treatment".</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 3 · Geo DiD</div>
+            <h4>Выкладка фичи по регионам</h4>
+            <p><strong>Контекст:</strong> Новый UI раскатывается по 3 регионам из 12. A/B невозможен: фича влияет на все показы в регионе.</p>
+            <p><strong>Unit:</strong> регион-день. <strong>Treatment:</strong> новый UI. <strong>Outcome:</strong> CTR, sessions/user.</p>
+            <p><strong>Метод: Geo DiD.</strong> 3 treated региона vs 9 контрольных.</p>
+            <ul>
+                <li>Parallel trends по дневным метрикам (визуально + F-test)</li>
+                <li>Кластеризация SE на уровне региона (мало кластеров → wild bootstrap)</li>
+                <li>Placebo regions: применить "treatment" к каждому контрольному региону</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> мало кластеров (3 treated) → SE занижены, ложная значимость. Решение: randomization inference.</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 4 · RDD</div>
+            <h4>Изменение скоринга в финтехе</h4>
+            <p><strong>Контекст:</strong> Банк одобряет кредит при score ≥ 650. Нужно оценить эффект кредита на потребление.</p>
+            <p><strong>Unit:</strong> заявитель. <strong>Treatment:</strong> получение кредита. <strong>Outcome:</strong> потребительские расходы через 6 месяцев.</p>
+            <p><strong>Метод: Fuzzy RDD.</strong> Порог 650 резко увеличивает вероятность одобрения, но не до 100%.</p>
+            <ul>
+                <li>McCrary test: проверить, нет ли manipulation (bunching у 650)</li>
+                <li>Баланс ковариат (доход, возраст, город) у порога</li>
+                <li>Bandwidth robustness: CCT optimal + ±50, ±100, ±200</li>
+                <li>Placebo cutoffs: 600, 700, 750 — эффекта быть не должно</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> если кредитный менеджер может "подтянуть" score до 650 для знакомых — manipulation invalidates RDD.</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 5 · Synthetic Control</div>
+            <h4>Закрытие магазина конкурента в регионе</h4>
+            <p><strong>Контекст:</strong> Конкурент закрыл сеть в одном регионе. Нужно оценить эффект на продажи ритейлера.</p>
+            <p><strong>Unit:</strong> регион. <strong>Treatment:</strong> уход конкурента. <strong>Outcome:</strong> monthly revenue.</p>
+            <p><strong>Метод: Synthetic Control.</strong> 1 treated регион, 25 donor-регионов, 24 месяца pre-period.</p>
+            <ul>
+                <li>Pre-period fit: RMSPE, visual match</li>
+                <li>Placebo tests: применить к каждому из 25 donor-регионов</li>
+                <li>Ratio of post/pre RMSPE: оценить "необычность" результата</li>
+                <li>Leave-one-out: устойчивость к исключению крупных donors</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> плохой pre-fit (treated регион нетипичен), но автор всё равно интерпретирует разрыв как каузальный.</p>
+        </div>
+
+        <div class="case-card">
+            <div class="case-meta">Кейс 6 · Spillover / Interference</div>
+            <h4>Рекомендации и сетевые эффекты</h4>
+            <p><strong>Контекст:</strong> Платформа тестирует новый рекомендательный алгоритм. Но рекомендации одного пользователя зависят от поведения других (collaborative filtering).</p>
+            <p><strong>Unit:</strong> пользователь. <strong>Treatment:</strong> новый алгоритм. <strong>Outcome:</strong> engagement, time-on-platform.</p>
+            <p><strong>Проблема: SUTVA нарушена.</strong> Treatment-пользователи генерируют сигналы, которые используются для рекомендаций контрольной группы.</p>
+            <ul>
+                <li>Cluster randomization: рандомизация по графу (community detection → кластеры)</li>
+                <li>Оценка spillover: ego-network exposure модель</li>
+                <li>Если A/B невозможен: switchback (чередование алгоритмов во времени) или geo-split</li>
+            </ul>
+            <p><strong>Типичная ошибка:</strong> user-level рандомизация при сетевых эффектах → diluted treatment effect, невалидные CI.</p>
+        </div>
+
+        <section id="glossary">
+            <h2>Связь с глоссарием</h2>
+
+            <p>Термины, которые уже есть в <a href="../glossary/" class="glossary-link">глоссарии</a>:</p>
+            <ul>
+                <li><a href="../glossary/#causal-inference" class="glossary-link">Causal Inference</a></li>
+                <li><a href="../glossary/#did" class="glossary-link">Difference-in-Differences (DiD)</a></li>
+                <li><a href="../glossary/#matching" class="glossary-link">Matching</a></li>
+                <li><a href="../glossary/#synthetic-control" class="glossary-link">Synthetic Control</a></li>
+            </ul>
+
+            <p style="margin-top: 1rem;">Термины для добавления в глоссарий (TODO):</p>
+            <div class="todo-list">
+                <ul>
+                    <li><code>rdd</code> — Regression Discontinuity Design</li>
+                    <li><code>iv</code> — Instrumental Variables</li>
+                    <li><code>sutva</code> — SUTVA (Stable Unit Treatment Value Assumption)</li>
+                    <li><code>parallel-trends</code> — Parallel Trends</li>
+                    <li><code>event-study</code> — Event Study</li>
+                    <li><code>psm</code> — Propensity Score Matching</li>
+                    <li><code>late</code> — LATE (Local Average Treatment Effect)</li>
+                    <li><code>att</code> — ATT (Average Treatment Effect on the Treated)</li>
+                    <li><code>twfe</code> — TWFE (Two-Way Fixed Effects)</li>
+                </ul>
+            </div>
+        </section>
+
+        <nav class="module-nav">
+            <a href="./module-8-narrative.html">← Модуль 8: Narrative</a>
+            <a href="./index.html">К курсу</a>
+            <span class="nav-disabled">Следующий →</span>
+        </nav>
+    </div>
+</body>
+</html>

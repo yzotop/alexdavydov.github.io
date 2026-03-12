@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 7. Практика валидности — Квазиэксперименты</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="../../courses/index.html">Все курсы</a> /
+            <a href="./index.html">Квазиэксперименты</a> / Модуль 7
+        </div>
+
+        <h1>Модуль 7. Практика валидности</h1>
+
+        <div class="tldr">
+            <p><strong>TL;DR</strong></p>
+            <p>Ни один квазиэксперимент не доказывает каузальность "по формуле". Вся сила — в проверках: placebo, falsification, sensitivity. Чем больше тестов выживает — тем сильнее аргумент.</p>
+        </div>
+
+        <h3>Арсенал проверок</h3>
+        <table>
+            <tr><th>Тест</th><th>Идея</th><th>Применимость</th></tr>
+            <tr><td>Placebo treatment</td><td>Подставить фиктивный treatment (другой период/группу) — эффекта быть не должно</td><td>DiD, SCM, RDD</td></tr>
+            <tr><td>Placebo outcome</td><td>Проверить outcome, который не должен реагировать на treatment</td><td>Все методы</td></tr>
+            <tr><td>Falsification test</td><td>Тест на outcome с известным результатом (или отсутствием эффекта)</td><td>Все методы</td></tr>
+            <tr><td>Pre-trend test</td><td>Коэффициенты event study до treatment ≈ 0</td><td>DiD</td></tr>
+            <tr><td>McCrary density test</td><td>Нет скачка плотности running variable у порога</td><td>RDD</td></tr>
+            <tr><td>Balance test</td><td>Ковариаты не имеют разрыва у порога / одинаковы после matching</td><td>RDD, Matching</td></tr>
+            <tr><td>Sensitivity analysis</td><td>Насколько сильный unobserved confounder нужен для объяснения</td><td>Matching, DiD</td></tr>
+            <tr><td>Bandwidth robustness</td><td>Результат устойчив при разных окнах</td><td>RDD</td></tr>
+            <tr><td>Permutation inference</td><td>P-value через перестановки assignment</td><td>SCM, DiD</td></tr>
+        </table>
+
+        <h3>Логика аргументации</h3>
+        <p>Квазиэксперимент — не доказательство, а <strong>аргумент</strong>. Сила аргумента определяется:</p>
+        <ol>
+            <li>Правдоподобностью дизайна (история assignment)</li>
+            <li>Количеством пройденных проверок</li>
+            <li>Прозрачностью ограничений</li>
+            <li>Устойчивостью к альтернативным спецификациям</li>
+        </ol>
+
+        <nav class="module-nav">
+            <a href="./module-6-iv.html">← Модуль 6: IV</a>
+            <a href="./index.html">К курсу</a>
+            <a href="./module-8-narrative.html">Модуль 8: Narrative →</a>
+        </nav>
+    </div>
+</body>
+</html>
