@@ -152,3 +152,13 @@ To allowlist a file, edit the `ALLOWLIST` array in
 
 Internal maintainer notes (deploy checklist, private materials policy, `real_tests/` workflow) are documented in [`INTERNALS.md`](./INTERNALS.md).
 
+## Architecture Navigation (2026)
+
+Current architecture baseline and canonical/legacy decisions are documented in:
+
+- [`docs/site/ARCHITECTURE_MODEL_DAVYDOVMY.md`](./docs/site/ARCHITECTURE_MODEL_DAVYDOVMY.md)
+- [`docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md`](./docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md)
+- [`docs/site/LEGACY_COMPATIBILITY_AUDIT_2026-03.md`](./docs/site/LEGACY_COMPATIBILITY_AUDIT_2026-03.md)
+- [`docs/meta/ROOT_MARKDOWN_GOVERNANCE_INDEX.md`](./docs/meta/ROOT_MARKDOWN_GOVERNANCE_INDEX.md)
+
+These docs are additive and do not change public URLs by themselves.
