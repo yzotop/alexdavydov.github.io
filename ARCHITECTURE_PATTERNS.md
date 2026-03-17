@@ -30,7 +30,7 @@
 
 ### Примеры
 - `GLOSSARY.md` (MVP)
-- будущий `/lab/glossary/index.html`
+- `/lab/glossary/` (active glossary node in publish layer)
 
 ### Характеристики
 - один источник истины
@@ -188,3 +188,14 @@ Decision-блок — это не отчёт.
 
 ---
 
+## IA context (current-state contract)
+
+- `/courses/` = public catalog hub.
+- Canonical course content currently lives in `lab/<course-slug>/*`.
+- `lab/index.html` = tools hub.
+- `lab/calculators/*` и `lab/simulators/*` = legacy/compatibility layers.
+- `lab/_manifest.json` = mixed registry feed (не courses-only manifest).
+
+Этот документ описывает паттерны контента и UI и не переопределяет canonical/legacy ownership по URL.
+
+---

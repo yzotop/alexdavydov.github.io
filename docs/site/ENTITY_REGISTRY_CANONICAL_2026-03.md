@@ -37,14 +37,36 @@ Scope: publish-слой `alexdavydov.github.io`
 | quasi-experiments | course | `/lab/quasi-experiments/` | `lab/quasi-experiments/` | - | active | Course content in lab layer |
 | glossary | knowledge-page | `/lab/glossary/` | `lab/glossary/` | - | active | Domain glossary page |
 | knowledge-main | knowledge-hub | `/knowledge/` | `knowledge/index.html` | - | active | Knowledge section hub |
-| courses-main | catalog-hub | `/courses/` | `courses/index.html` | - | active | Catalog reads from `lab/_manifest.json` |
+| courses-main | catalog-hub | `/courses/` | `courses/index.html` | - | active | Public catalog hub; reads mixed feed from `lab/_manifest.json` |
+
+## Courses-lab IA contract (docs-only alignment)
+
+- `/courses/` = public catalog hub; это не canonical home для course runtime content.
+- Canonical course content currently lives in `lab/<course-slug>/*`.
+- `lab/index.html` = tools hub, не course hub.
+- `lab/glossary` = glossary/knowledge-like node, не course entity.
+- `lab/calculators/*` и `lab/simulators/*` = legacy/compatibility layers, не courses layer.
+- `lab/_manifest.json` = mixed registry feed (not courses-only manifest).
+
+### Manifest governance
+
+- Допустимые entity types в `lab/_manifest.json`: `course`, `glossary`, `simulator`, `calculator`.
+- Для `/courses/` по умолчанию приоритетен type `course`.
+- Types `simulator` и `calculator` в manifest не должны трактоваться как course entities.
+- Для новых manifest entries требуется docs-record: `slug`, `type`, `status`, `entry`, visibility rationale.
+
+### Course navigation policy (фиксируется без runtime changes)
+
+- Desired back-link policy для course pages: возврат в `/courses/`.
+- Текущее несовпадение back-links между курсами зафиксировано как known technical debt.
+- В этом шаге runtime поведение не меняется.
 
 ## Legacy / compatibility layers (non-canonical)
 
 | path | role | status |
 | --- | --- | --- |
 | `/lab/calculators/*` | compatibility redirects to canonical calculators (`/calculators/*`); hub aliases resolve to `/calculators/` | legacy |
-| `/lab/simulators/*` | nested lab hub (non-canonical for simulator entities) | legacy/secondary |
+| `/lab/simulators/*` | legacy compatibility layer; canonical simulator hub is `/simulators/` | legacy/secondary |
 | `/calculators/lab/*` | nested legacy calculator layer | legacy |
 
 Stage-1 note:
@@ -57,6 +79,10 @@ Stage-1 note:
 - Stage-3B update: heavy compatibility pages в `calculators/lab/` (4 main + 4 about) заменены на thin redirect stubs к flat canonical surfaces.
 - `calculators/lab/index.html` на этом шаге намеренно не менялся.
 - Stage-3C update: `calculators/lab/index.html` и hub aliases `/lab/calculators/`, `/lab/calculators/index.html` теперь резолвятся в `/calculators/`.
+- Simulators alignment: `/simulators/` — единственный canonical hub; `lab/simulators/*` трактуется как legacy/compatibility layer.
+- `lab/simulators/scenario-planning/*` закреплён как compatibility bridge к `/calculators/scenario-planning/*`.
+- Варианты `*-live`, `*-mvp`, `*-pressure` рассматриваются как variant branches, не как второй canonical hub.
+- Hub compatibility update: `/lab/simulators/` и `/lab/simulators/index.html` теперь резолвятся в `/simulators/`.
 - `rollout` migration (Stage-2A) остаётся без изменений.
 - `rollout-compare` migration (Stage-2B) остаётся без изменений.
 - `revenue` migration (Stage-2C) остаётся без изменений.
