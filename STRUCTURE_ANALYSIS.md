@@ -1,93 +1,33 @@
-# Анализ структуры курсов
+# Анализ структуры (current-state snapshot)
 
-## ✅ Активные курсы (6)
+Этот файл обновлён как внутренний snapshot и согласован с актуальным IA contract.
 
-### Основные курсы (3):
-1. **Математика монетизации рекламы**
-   - Путь: `/lab/monetization/`
-   - Статус: ✅ Активен на главной странице
+## Current-state: courses vs lab
 
-2. **A/B-тестирование: принятие решений на практике**
-   - Путь: `/lab/ab-decisions/`
-   - Практика: `/lab/ab-decisions/practice/`
-   - Статус: ✅ Активен на главной странице
+- `/courses/` = public catalog hub.
+- Canonical course homes сейчас:  
+  - `/lab/monetization/`  
+  - `/lab/ab-decisions/`  
+  - `/lab/product-analytics/`  
+  - `/lab/ab-stat-os/` (draft)  
+  - `/lab/quasi-experiments/`
+- `lab/index.html` = tools hub.
+- `lab/glossary` = glossary/knowledge-like node (не курс).
 
-3. **Графики в аналитике и принятии решений**
-   - Путь: `/lab/graphs-analytics/`
-   - Статус: ✅ Активен на главной странице
+## Current-state: compatibility layers inside lab
 
-### Мини-курсы (3):
-1. **Математика экспериментов в монетизации**
-   - Путь: `/lab/experiments/`
-   - Статус: ✅ Активен на главной странице
+- `lab/calculators/*` = legacy compatibility layer for calculators domain.
+- `lab/simulators/*` = legacy compatibility layer for simulators domain.
+- Эти слои не являются course homes.
 
-2. **Практика A/B-тестирования на графиках**
-   - Путь: `/lab/ab-decisions/practice/`
-   - Статус: ✅ Активен на главной странице
+## Current-state: manifest semantics
 
-3. **Математика неопределённости**
-   - Путь: `/lab/mathematics-of-uncertainty/`
-   - Статус: ✅ Активен на главной странице
+- `lab/_manifest.json` используется каталогом `/courses/`.
+- Это mixed registry feed, включающий типы: `course`, `glossary`, `simulator`, `calculator`.
+- Не-course типы в manifest не должны интерпретироваться как курсы.
 
----
+## Historical context
 
-## ⚠️ Папки с редиректами
-
-1. **`/lab/ab-practice/`** — удалено (редирект-стаб, ссылок не осталось)
-
-2. **`/lab/graphs-as-argument/`** — удалено (курс объединён с graphs-analytics)
-
----
-
-## ❓ Лишние папки (не упоминаются в курсах)
-
-1. **`/lab/decision/`**
-   - Содержит: exploration-vs-exploitation, irreversibility, regret, value-of-information
-   - Статус: ❓ Не используется в навигации
-
-2. **`/lab/distributions/`**
-   - Содержит: bimodal, divisors-1-100, heavy-tail, uniform-1-100
-   - Статус: ❓ Не используется в навигации
-
-3. **`/lab/equilibrium/`**
-   - Содержит: absorbing-state, convergence, metastability, mixing-time
-   - Статус: ❓ Не используется в навигации
-
-4. **`/lab/geometry/`**
-   - Содержит: curvature-of-decisions, feasible-set, option-space-collapse, reachability-vs-optimality, uncertainty-surface
-   - Статус: ❓ Не используется в навигации
-
-5. **`/lab/pressure/`** — удалено
-
-6. **`/lab/time/`** — удалено
-
-7. **`/lab/transitions/`**
-   - Содержит: markov-matrix, sankey-flows
-   - Статус: ❓ Не используется в навигации
-
-8. **`/lab/markov-lens.html`**
-   - Статус: ❓ Не используется в навигации
-
-9. **`/lab/mathematics-of-uncertainty.html`**
-   - Старый файл (заменён на `/lab/mathematics-of-uncertainty/`)
-   - Статус: ❓ Дубликат, не используется
-
----
-
-## 📋 Рекомендации
-
-### Оставить:
-- ~~/lab/ab-practice/~~ — удалено
-- ~~/lab/graphs-as-argument/~~ — удалено
-
-### Удалить или архивировать:
-- `/lab/decision/` - если не планируется использовать
-- `/lab/distributions/` - если не планируется использовать
-- `/lab/equilibrium/` - если не планируется использовать
-- `/lab/geometry/` - если не планируется использовать
-- ~~/lab/pressure/~~ — удалено
-- ~~/lab/time/~~ — удалено
-- `/lab/transitions/` - если не планируется использовать
-- `/lab/markov-lens.html` - если не планируется использовать
-- `/lab/mathematics-of-uncertainty.html` - дубликат, можно удалить
-
+- Предыдущие ревизии этого файла содержали старые активные paths (`/lab/experiments/`, `/lab/graphs-analytics/`, др.).
+- Эти записи сохраняют историческую ценность, но не отражают текущую каноническую IA-модель.
+- Для migration и compatibility решений ориентироваться на `docs/site/*` и `ENTITY_REGISTRY_DAVYDOVMY.md`.
