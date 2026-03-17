@@ -18,6 +18,7 @@ Scanned sections:
 | cases | `/cases` | Section hub for case studies |
 | simulators | `/simulators` | Section hub for live simulators |
 | calculators | `/calculators` | Section hub for parameter calculators |
+| courses | `/courses` | Public catalog hub for course discovery |
 | lab | `/lab` | Tools/lab hub |
 | knowledge | `/knowledge` | Knowledge hub |
 | career | `/career` | Career hub |
@@ -68,7 +69,7 @@ Scanned sections:
 | rollout-compare (calculator nested surface) | `/calculators/lab/rollout-compare.html` | rollout-compare | compatibility | legacy | Stage-2B: flat canonical `/calculators/rollout-compare` is active |
 | funnel-sensitivity (calculator nested surface) | `/calculators/lab/funnel-sensitivity.html` | funnel-sensitivity | compatibility | legacy | Stage-2D: flat canonical `/calculators/funnel-sensitivity` is active |
 | lab/calculators hub | `/lab/calculators` | calculators | hub | legacy | Nested hub still present |
-| lab/simulators hub | `/lab/simulators` | simulators | hub | legacy | Nested hub still present (compatibility layer) |
+| lab/simulators hub | `/lab/simulators` | simulators | hub | legacy | Legacy compatibility hub; resolves to `/simulators/` |
 | calculators/lab hub | `/calculators/lab` | lab | misplaced | legacy | Nested lab hub under calculators |
 
 ## Removed / Deprecated
@@ -135,6 +136,21 @@ Scanned sections:
   - `/lab/calculators/` and `/lab/calculators/index.html` hub aliases now resolve directly to `/calculators/`.
   - `calculators/lab/` is treated as compatibility/asset-layer entry rather than nested runtime hub.
   - `calculators/lab/assets/*` remains active and unchanged.
+- Simulators alignment status:
+  - `/simulators/` is the single canonical simulator hub.
+  - Canonical runtime surfaces remain `/simulators/<slug>/`.
+  - `lab/simulators/*` remains legacy/compatibility layer only.
+  - `lab/simulators/scenario-planning/*` acts as calculator compatibility bridge.
+  - `*-live`, `*-mvp`, `*-pressure` are variant branches, not second canonical hubs.
+  - `lab/simulators/index.html` now redirects directly to `/simulators/`.
+- Courses-lab IA alignment status:
+  - `/courses/` is the public catalog hub.
+  - Canonical course runtime content currently lives in `lab/<course-slug>/*`.
+  - `lab/index.html` is tools hub (not a course hub).
+  - `lab/glossary` is glossary/knowledge-like node (not a course).
+  - `lab/calculators/*` and `lab/simulators/*` are legacy/compatibility layers (not course homes).
+  - `lab/_manifest.json` is a mixed registry feed, not a courses-only manifest.
+  - Desired course back-link policy is `/courses/`; current inconsistencies are known technical debt.
 
 ## Machine-Readable Block
 
@@ -148,6 +164,7 @@ Scanned sections:
     {"entity":"cases","canonical_path":"/cases","notes":"Section hub for case studies"},
     {"entity":"simulators","canonical_path":"/simulators","notes":"Section hub for live simulators"},
     {"entity":"calculators","canonical_path":"/calculators","notes":"Section hub for parameter calculators"},
+    {"entity":"courses","canonical_path":"/courses","notes":"Public catalog hub for course discovery"},
     {"entity":"lab","canonical_path":"/lab","notes":"Tools/lab hub"},
     {"entity":"knowledge","canonical_path":"/knowledge","notes":"Knowledge hub"},
     {"entity":"career","canonical_path":"/career","notes":"Career hub"},

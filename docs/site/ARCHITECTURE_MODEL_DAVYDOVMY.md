@@ -30,6 +30,13 @@
 - Сейчас `courses/` выполняет роль витрины.
 - Канонические страницы курсов фактически лежат в `lab/*`.
 - Это допустимо как current-state, но требует явной фиксации в правилах добавления новых курсов.
+- Явный IA-contract для current-state:
+  - `/courses/` - public catalog hub.
+  - `lab/<course-slug>/*` - canonical course content surfaces (runtime content currently lives in lab).
+  - `lab/index.html` - tools hub (не course hub).
+  - `lab/glossary` - glossary/knowledge-like node, не курс.
+  - `lab/calculators/*` и `lab/simulators/*` - legacy/compatibility layers.
+  - `lab/_manifest.json` - mixed registry feed, не courses-only manifest.
 
 ### 3.2 `calculators/` vs `lab/calculators/` и `calculators/lab/`
 
@@ -41,6 +48,8 @@
 ### 3.3 `lab/simulators/`
 
 - Существует как nested hub, но не должен конкурировать с `/simulators/` как канонический root.
+- `lab/simulators/scenario-planning/*` уже выполняет роль compatibility bridge в calculator-domain (`/calculators/scenario-planning/*`).
+- Варианты (`*-live`, `*-mvp`, `*-pressure`) не являются вторыми canonical hubs; это variant/legacy branches.
 
 ## 4) Target-state (без автоматического массового переноса)
 
@@ -59,8 +68,33 @@
 - `/lab/calculators/*` -> compatibility redirects/aliases
 - `/lab/simulators/*` -> compatibility or lab-hub, но не второй canonical root
 - `/calculators/lab/*` -> legacy nested layer (кандидат на поэтапное схлопывание)
+- Для simulators policy:
+  - single canonical hub: `/simulators/`
+  - canonical runtime surfaces: `/simulators/<slug>/`
+  - `lab/simulators/*` - legacy compatibility layer
+  - `lab/simulators/scenario-planning/*` - calculator compatibility bridge
+  - `*-live`, `*-mvp`, `*-pressure` - variant branches, не отдельные canonical hubs
 
-### 4.3 Stage-1 calculators migration (2026-03-16)
+### 4.3 Courses-lab manifest governance (docs contract)
+
+- `lab/_manifest.json` допускает mixed entity types:
+  - `course`, `glossary`, `simulator`, `calculator`.
+- `/courses/` по role-модели является course catalog hub и должен показывать:
+  - в первую очередь `course`;
+  - прочие типы (`glossary`, `simulator`, `calculator`) только если это явно документировано как cross-navigation policy.
+- Типы `simulator` и `calculator` из manifest не должны трактоваться как course entities.
+- `lab/glossary` не должен трактоваться как course entity.
+- Для новых записей в `lab/_manifest.json` обязательно фиксировать в docs:
+  - `slug`, `type`, `status`, `entry`, why_in_manifest.
+  - Если `type != course`, дополнительно фиксировать why_visible_in_courses_catalog.
+
+### 4.4 Course navigation policy (current-state)
+
+- Desired policy для course homes: back-link ведёт в `/courses/` (единый возврат в catalog).
+- Текущее расхождение (`/` vs `/courses/` в разных курсах) зафиксировано как known technical debt.
+- В этом шаге runtime-страницы не меняются; фиксируется только policy.
+
+### 4.5 Stage-1 calculators migration (2026-03-16)
 
 - Выполнен behavior-preserving switch в `calculators/index.html`:
   - relative `./lab/*` links -> absolute `/calculators/lab/*` links.
@@ -68,7 +102,7 @@
 - Long-term flattening для волны `revenue`, `rollout`, `rollout-compare`, `funnel-sensitivity` выполнен поэтапно (Stage-2A..2D).
 - `calculators/lab/*` остаётся рабочим nested runtime layer до отдельной migration-задачи.
 
-### 4.4 Stage-2A rollout migration (2026-03-16)
+### 4.6 Stage-2A rollout migration (2026-03-16)
 
 - Выполнен точечный flattening только для `rollout`:
   - canonical surface: `/calculators/rollout/`
@@ -76,7 +110,7 @@
 - Совместимость сохранена через redirects с `/calculators/lab/rollout.html` и `/lab/calculators/rollout.html`.
 - Shared assets осознанно оставлены в `/calculators/lab/assets/*` (без копирования на этом этапе).
 
-### 4.5 Stage-2B rollout-compare migration (2026-03-16)
+### 4.7 Stage-2B rollout-compare migration (2026-03-16)
 
 - Выполнен точечный flattening только для `rollout-compare`:
   - canonical surface: `/calculators/rollout-compare/`
@@ -85,7 +119,7 @@
 - Shared assets осознанно оставлены в `/calculators/lab/assets/*` (без копирования на этом этапе).
 - Stage-2A `rollout` migration остаётся без изменений.
 
-### 4.6 Stage-2C revenue migration (2026-03-16)
+### 4.8 Stage-2C revenue migration (2026-03-16)
 
 - Выполнен точечный flattening только для `revenue`:
   - canonical surface: `/calculators/revenue/`
@@ -96,7 +130,7 @@
 - Glossary anchors `/lab/glossary/#...` сохранены без изменений.
 - Stage-2A `rollout` и Stage-2B `rollout-compare` остаются без изменений.
 
-### 4.7 Stage-2D funnel-sensitivity migration (2026-03-16)
+### 4.9 Stage-2D funnel-sensitivity migration (2026-03-16)
 
 - Выполнен точечный flattening только для `funnel-sensitivity`:
   - canonical surface: `/calculators/funnel-sensitivity/`
@@ -107,14 +141,14 @@
 - Stage-2A `rollout`, Stage-2B `rollout-compare` и Stage-2C `revenue` остаются без изменений.
 - Для calculator-domain не осталось nested-runtime calculators: legacy nested слой используется только как compatibility redirect surface.
 
-### 4.8 Stage-3A lab aliases cleanup (2026-03-16)
+### 4.10 Stage-3A lab aliases cleanup (2026-03-16)
 
 - Обновлён только слой `lab/calculators/*.html` для 4 legacy aliases (`revenue`, `rollout`, `rollout-compare`, `funnel-sensitivity`).
 - Redirect targets в этих alias pages направлены напрямую на `/calculators/<slug>/`.
 - Промежуточный redirect hop через `/calculators/lab/<slug>.html` для этих 4 alias убран.
 - Слой `calculators/lab/*` сохранён без изменений как compatibility + shared-assets layer.
 
-### 4.9 Stage-3B calculators/lab thin stubs (2026-03-16)
+### 4.11 Stage-3B calculators/lab thin stubs (2026-03-16)
 
 - Выполнена замена 8 heavy compatibility pages в `calculators/lab/` на thin redirect stubs (4 main + 4 about).
 - URL-совместимость сохранена: legacy `calculators/lab/*` surfaces остаются доступны как redirect endpoints.
@@ -122,13 +156,23 @@
 - `calculators/lab/assets/*` сохранён как активный dependency layer.
 - `calculators/lab/index.html` намеренно оставлен без изменений.
 
-### 4.10 Stage-3C calculators/lab hub normalization (2026-03-16)
+### 4.12 Stage-3C calculators/lab hub normalization (2026-03-16)
 
 - `calculators/lab/index.html` больше не используется как legacy nested hub и теперь резолвится в `/calculators/`.
 - `lab/calculators/index.html` синхронизирован с тем же target `/calculators/`.
 - Hub-level compatibility для старых входов `/lab/calculators/` и `/lab/calculators/index.html` упрощена до direct target `/calculators/`.
 - Роль `calculators/lab/` теперь честная: compatibility entry + shared asset layer.
 - `calculators/lab/assets/*` сохранён без изменений.
+
+### 4.13 Simulators hub alignment (2026-03-16)
+
+- `/simulators/` зафиксирован как единственный canonical simulator hub.
+- `lab/simulators/index.html` переведён в thin redirect stub с target `/simulators/`.
+- Для hub-level consistency добавлены redirect rules:
+  - `/lab/simulators/` -> `/simulators/`
+  - `/lab/simulators/index.html` -> `/simulators/`
+- `lab/simulators/scenario-planning/*` остаётся compatibility bridge к `/calculators/scenario-planning/*`.
+- Variant pages (`*-live`, `*-mvp`, `*-pressure`) остаются variant branches и не трактуются как canonical hubs.
 
 ## 5) Правила добавления новых сущностей
 
@@ -138,7 +182,8 @@
 4. Для курсов:
    - карточка в `/courses/` (catalog),
    - canonical page в текущем agreed root (сейчас `lab/*`),
-   - запись в registry.
+   - запись в registry,
+   - запись в `lab/_manifest.json` с явным `type` и `status`.
 5. Любой перенос canonical URL делается отдельной migration-задачей с dry-run и совместимостью.
 
 ## 6) Что не делать автоматически
