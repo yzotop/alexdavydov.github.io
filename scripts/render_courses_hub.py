@@ -83,8 +83,10 @@ def nav_html(active: str) -> str:
   <a href="/career/">Карьера</a>
   <a href="/lab/">Инструменты</a>
   <a href="/knowledge/">База знаний</a>
-  <a href="/about/">Обо мне</a>
+  <a href="/simulators/">Симуляторы</a>
+  <a href="/calculators/">Калькуляторы</a>
   <a href="/search/">Поиск</a>
+  <a href="/about/">Обо мне</a>
   <a href="/companies/">Для компаний</a>
   <a href="/career/" class="nav-mentor">Менторство</a>
 </nav>"""
@@ -92,13 +94,23 @@ def nav_html(active: str) -> str:
 
 def footer_html() -> str:
     return """<footer class="site-footer">
-  <nav class="site-footer-links" aria-label="Подвал">
-    <a href="/courses/">Курсы</a>
-    <a href="/cases/">Кейсы</a>
-    <a href="/career/">Карьера</a>
-    <a href="/companies/">Для компаний</a>
-    <a href="https://t.me/Datalake">Telegram</a>
-  </nav>
+  <div class="site-footer-left">
+    <nav class="site-footer-links" aria-label="Подвал">
+      <a href="/courses/">Курсы</a>
+      <a href="/cases/">Кейсы</a>
+      <a href="/career/">Карьера</a>
+      <a href="/companies/">Для компаний</a>
+      <a href="https://t.me/Datalake">Telegram</a>
+    </nav>
+    <nav class="site-footer-links site-footer-links--tools" aria-label="Инструменты и материалы">
+      <a href="/lab/">Инструменты</a>
+      <a href="/knowledge/">База знаний</a>
+      <a href="/simulators/">Симуляторы</a>
+      <a href="/calculators/">Калькуляторы</a>
+      <a href="/search/">Поиск</a>
+      <a href="/about/">Обо мне</a>
+    </nav>
+  </div>
   <span class="footer-copy">© 2026 davydov.my</span>
 </footer>"""
 
@@ -142,7 +154,7 @@ def main() -> int:
     body = f"""{nav_html("courses")}
 <div class="site-wrap">
   <h1 class="page-title">Курсы</h1>
-  <p class="page-lead">Траектория от продукта к экспериментам и причинному выводу. Практика — в <a href="/lab/">/lab/</a>.</p>
+  <p class="page-lead">Траектория от продукта к экспериментам и причинному выводу. <a href="/lab/">Практические инструменты и симуляторы</a> — в разделе Lab.</p>
 
   <div class="learning-path">
     <p class="path-label">С чего начать</p>
