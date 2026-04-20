@@ -91,10 +91,13 @@
       backdrop.addEventListener("click", closeDrawer);
     }
 
+    /* Drawer: primary row + divider + secondary row (markup in HTML). Close on any link. */
     var drawer = document.getElementById("nav-drawer");
     if (drawer) {
-      drawer.querySelectorAll("a").forEach(function (a) {
-        a.addEventListener("click", closeDrawer);
+      drawer.addEventListener("click", function (e) {
+        if (e.target.closest("a")) {
+          closeDrawer();
+        }
       });
     }
 
