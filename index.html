@@ -3,509 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex Davydov — Прикладная аналитика</title>
-    <link rel="stylesheet" href="/assets/base.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.65;
-            color: #111;
-            background-color: #fff;
-            padding: 3.5rem 1.5rem;
-        }
-
-        .container { max-width: 900px; margin: 0 auto; }
-
-        /* ---- Hero ---- */
-        .hero { max-width: 700px; margin-bottom: 3.5rem; }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #111;
-            letter-spacing: -0.03em;
-            line-height: 1.12;
-        }
-
-        .subtitle {
-            font-size: 1.05rem;
-            line-height: 1.65;
-            color: rgba(17,17,17,.68);
-            margin-bottom: 0.4rem;
-        }
-
-        .muted { font-size: 0.9rem; color: rgba(17,17,17,.48); }
-
-        /* ---- Section headings ---- */
-        h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-top: 3.5rem;
-            margin-bottom: 0.5rem;
-            color: #111;
-            letter-spacing: -0.01em;
-        }
-        h2:first-of-type { margin-top: 0; }
-
-        /* ---- Card grids ---- */
-        .cards-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 0; }
-        @media (min-width: 768px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        .courses-grid { grid-template-columns: 1fr; }
-        @media (min-width: 768px) { .courses-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .courses-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        .tools-grid { grid-template-columns: 1fr; }
-        @media (min-width: 768px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        .career-grid { grid-template-columns: 1fr; }
-        @media (min-width: 600px) { .career-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 900px) { .career-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        /* ---- Cards ---- */
-        .card {
-            border: 1px solid rgba(17,17,17,.10);
-            border-radius: 16px;
-            padding: 1.5rem;
-            background: #fff;
-            box-shadow: 0 1px 2px rgba(0,0,0,.04);
-            transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .card:hover {
-            border-color: rgba(17,17,17,.16);
-            box-shadow: 0 8px 24px rgba(0,0,0,.07);
-            transform: translateY(-2px);
-        }
-
-        .card-badge {
-            display: inline-block;
-            padding: 0.15rem 0.5rem;
-            background: rgba(17,17,17,.04);
-            border: 1px solid rgba(17,17,17,.08);
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: rgba(17,17,17,.48);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 0.6rem;
-        }
-        .card-badge.badge-proof {
-            background: rgba(4,120,87,.06);
-            border-color: rgba(4,120,87,.15);
-            color: #047857;
-        }
-
-        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #111; }
-        .card-text {
-            font-size: 0.93rem;
-            line-height: 1.6;
-            color: rgba(17,17,17,.68);
-            margin-bottom: 1rem;
-            flex-grow: 1;
-        }
-
-        .card-list { list-style: none; padding-left: 0; margin-bottom: 1rem; }
-        .card-list li {
-            font-size: 0.88rem; line-height: 1.55;
-            color: rgba(17,17,17,.68);
-            margin-bottom: 0.3rem;
-            padding-left: 1rem;
-            position: relative;
-        }
-        .card-list li:before { content: "•"; position: absolute; left: 0; color: rgba(17,17,17,.28); }
-
-        .career-card--results {
-            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-        }
-        .career-card--results:hover {
-            border-color: rgba(4,120,87,.3);
-            box-shadow: 0 10px 30px rgba(4,120,87,.08);
-            transform: translateY(-2px);
-        }
-
-        /* ---- Buttons ---- */
-        .card-button {
-            display: inline-block;
-            padding: 0.55rem 1.2rem;
-            color: #0071e3;
-            text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 500;
-            border: 1px solid rgba(17,17,17,.12);
-            border-radius: 12px;
-            transition: all 180ms ease;
-            align-self: flex-start;
-        }
-        .card-button:hover {
-            background: #0071e3;
-            color: #fff;
-            border-color: #0071e3;
-            text-decoration: none;
-        }
-
-        /* ---- Companies ---- */
-        .companies-section { max-width: 700px; margin-bottom: 0; }
-        .companies-section p {
-            font-size: 0.95rem; line-height: 1.65;
-            color: rgba(17,17,17,.68); margin-bottom: 1rem;
-        }
-        .companies-button {
-            display: inline-block;
-            padding: 0.65rem 1.4rem;
-            background: #0071e3;
-            color: #fff;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid #0071e3;
-            border-radius: 12px;
-            transition: all 180ms ease;
-            margin-top: 0.25rem;
-        }
-        .companies-button:hover {
-            background: #0062c4;
-            border-color: #0062c4;
-            text-decoration: none;
-        }
-
-        /* ---- About ---- */
-        .about-section { max-width: 700px; margin-bottom: 0; }
-        .about-section p {
-            font-size: 0.95rem; line-height: 1.65;
-            color: rgba(17,17,17,.68); margin-bottom: 0.75rem;
-        }
-        .about-section a { color: rgba(17,17,17,.48); text-decoration: none; transition: color 180ms ease; }
-        .about-section a:hover { color: #111; }
-
-        /* ---- Footer ---- */
-        .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(17,17,17,.08); }
-        .footer-nav { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
-        .footer-link {
-            color: rgba(17,17,17,.38);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 180ms ease;
-        }
-        .footer-link:hover { color: #111; text-decoration: none; }
-
-        /* --- spacing between sections (homepage) --- */
-        .courses-grid,
-        .tools-grid,
-        .knowledge-grid,
-        .cards-grid,
-        .grid {
-            margin-bottom: 28px;
-        }
-
-        .section-title,
-        h2 {
-            margin-top: 36px;
-        }
-
-        .hero + .section-title,
-        .hero + h2 {
-            margin-top: 24px;
-        }
-
-        .hero-title {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .hero-chip {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--color-text-muted);
-            background: var(--color-bg-subtle);
-            border: 1px solid var(--color-border);
-            border-radius: 999px;
-            padding: 6px 10px;
-            line-height: 1;
-        }
-        .card-meta {
-            font-size: 0.75rem;
-            color: rgba(17,17,17,.38);
-            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
-            letter-spacing: 0.01em;
-            margin-bottom: 1rem;
-        }
-    </style>
+    <title>Саша Давыдов — аналитика и курсы</title>
+    <link rel="canonical" href="https://davydov.my/"/>
+    <meta name="description" content="Тимлид аналитики в Дзене, ментор на Solvery и GetMentor. Курсы и заметки про системы, метрики и решения на данных."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="davydov.my"/>
+    <meta property="og:title" content="Саша Давыдов — аналитика и курсы"/>
+    <meta property="og:description" content="Тимлид аналитики в Дзене, ментор на Solvery и GetMentor. Курсы и заметки про системы, метрики и решения на данных."/>
+    <meta property="og:url" content="https://davydov.my/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+    <meta property="og:locale" content="ru_RU"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="Саша Давыдов — аналитика и курсы"/>
+    <meta name="twitter:description" content="Тимлид аналитики в Дзене, ментор на Solvery и GetMentor. Курсы и заметки про системы, метрики и решения на данных."/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
-    <div class="container">
-        <nav class="top-nav">
-            <a href="/" class="active">Главная</a>
-            <a href="/courses/">Курсы</a>
-            <a href="/lab/">Инструменты</a>
-            <a href="/knowledge/">База знаний</a>
-            <a href="/cases/">Кейсы</a>
-            <a href="/career/">Карьера</a>
-            <a href="/about/">Обо мне</a>
-            <a href="/search/">Поиск</a>
-            <a href="/companies/">Для компаний</a>
-        </nav>
-
-        <div class="hero">
-            <h1 class="hero-title">Workplace аналитика <span class="hero-chip">by Alex Davydov</span></h1>
-            <p class="subtitle">Операционная система аналитика: курсы, инструменты и практика для принятия решений на данных.</p>
-            <p class="muted">Монетизация, эксперименты, метрики, графики — от механизма к решению.</p>
-        </div>
-
-        <section>
-            <h2>Курсы</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Структурированные программы по аналитике, экспериментам и системному мышлению.</p>
-            
-            <div class="cards-grid courses-grid">
-                <div class="card">
-                    <div class="micro">Курс</div>
-                    <div class="card-title">Аналитика продукта: как читать систему, а не цифры</div>
-                    <div class="card-text">Система продукта: сигналы, сегменты, решения.</div>
-                    <a href="/lab/product-analytics/" class="card-button">Открыть курс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Курс</div>
-                    <div class="card-title">Математика монетизации рекламы</div>
-                    <div class="card-text">Модели дохода и давление на метрики.</div>
-                    <a href="/lab/monetization/" class="card-button">Открыть курс →</a>
-                </div>
-
-
-                <div class="card">
-                    <div class="micro">Курс</div>
-                    <div class="card-title">A/B-тестирование: принятие решений на практике</div>
-                    <div class="card-text">Как принимать решения по результатам тестов.</div>
-                    <a href="/lab/ab-decisions/" class="card-button">Открыть курс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Курс</div>
-                    <div class="card-title">Статистика A/B-тестирования: операционная система аналитика</div>
-                    <div class="card-text">Метрики, критерии, CUPED и типовые ошибки.</div>
-                    <a href="/lab/ab-stat-os/" class="card-button">Открыть курс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Курс</div>
-                    <div class="card-title">Квазиэксперименты и причинная идентификация</div>
-                    <div class="card-text">DiD, RDD, Synthetic Control, Matching, IV — когда A/B невозможен.</div>
-                    <a href="/lab/quasi-experiments/" class="card-button">Открыть курс →</a>
-                </div>
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section>
-            <h2>Инструменты</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Симуляторы, калькуляторы и чек-листы для принятия решений.</p>
-            
-            <div class="cards-grid courses-grid">
-                <div class="card">
-                    <div class="micro">Инструмент</div>
-                    <div class="card-title">Симуляторы</div>
-                    <div class="card-text">
-                        Интерактивные модели монетизации и экспериментов: покрутить рычаги, увидеть нелинейности и trade-offs.
-                    </div>
-                    <a href="/simulators/" class="card-button">Открыть →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Инструмент</div>
-                    <div class="card-title">Калькуляторы</div>
-                    <div class="card-text">
-                        Интерактивные модели: покрутить рычаги, увидеть нелинейности и trade-offs.
-                    </div>
-                    <a href="/calculators/" class="card-button">Открыть →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Инструмент</div>
-                    <div class="card-title">Глоссарий</div>
-                    <div class="card-text">
-                        Термины и определения проекта: что именно считаем и как читаем.
-                    </div>
-                    <a href="/lab/glossary/" class="card-button">Открыть →</a>
-                </div>
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section>
-            <h2>База знаний</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Отобранные материалы по аналитике и управлению.</p>
-            
-            <div class="cards-grid courses-grid">
-                <div class="card">
-                    <div class="micro">База знаний</div>
-                    <div class="card-title">Аналитика и эксперименты</div>
-                    <div class="card-text">
-                        Статьи и материалы про A/B-тесты, статистику, метрики и аналитическую практику.
-                    </div>
-                    <a href="/knowledge/analytics/" class="card-button">Открыть →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">База знаний</div>
-                    <div class="card-title">Управление аналитикой</div>
-                    <div class="card-text">
-                        Практические заметки о роли лидера аналитики: грейды, команда, ответственность, процессы и рост.
-                    </div>
-                    <a href="/knowledge/management/" class="card-button">Открыть →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">База знаний</div>
-                    <div class="card-title">Карта компетенций</div>
-                    <div class="card-text">
-                        От Junior до Lead: уровни, ответственность, сигналы роста и управление аналитикой.
-                    </div>
-                    <a href="/knowledge/competencies/" class="card-button">Открыть →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">База знаний</div>
-                    <div class="card-title">Тестовые задания</div>
-                    <div class="card-text">
-                        Реальные тестовые из компаний: SQL, Python, A/B, кейсы.
-                    </div>
-                    <a href="/knowledge/test-tasks/" class="card-button">Открыть →</a>
-                </div>
-
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section>
-            <h2>Кейсы</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Разборы реальных аналитических проектов: данные → механизмы → решения.</p>
-
-            <div class="cards-grid courses-grid">
-                <div class="card">
-                    <div class="micro">Case #1</div>
-                    <div class="card-title">Solvery Mentors Marketplace</div>
-                    <div class="card-text">Маркетплейс: диагностика спроса и концентрации.</div>
-                    <a href="/cases/solvery-mentors/" class="card-button">Открыть кейс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Case #2</div>
-                    <div class="card-title">NIKIFILINI</div>
-                    <div class="card-text">D2C fashion: pricing и promo-механики.</div>
-                    <a href="/cases/nikifilini/" class="card-button">Открыть кейс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Case #3</div>
-                    <div class="card-title">National Lottery — Portfolio & Probabilistic Economics</div>
-                    <div class="card-text">Портфель и вероятностная экономика 17 продуктов.</div>
-                    <a href="/cases/nloto-portfolio/" class="card-button">Открыть кейс →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Case #4</div>
-                    <div class="card-title">Рынок б/у MacBook в России (Avito)</div>
-                    <div class="card-text">5k+ объявлений, сегменты, медианы и проверка цены.</div>
-                    <a href="/cases/macbook-market/" class="card-button">Открыть кейс →</a>
-                </div>
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section class="about-section">
-            <h2>Про меня</h2>
-            <p>
-                Я — лид аналитики данных с опытом работы в крупных продуктовых и рекламных системах. Работал в inDrive и Самокате, сейчас — в Дзене: на стыке аналитики, экспериментов и управленческих решений — там, где данные перестают быть отчётами и начинают влиять на систему.
-            </p>
-            <p>
-                За годы работы я видел, как одни и те же метрики приводят к разным решениям — в зависимости от контекста, времени, давления и целей продукта. Поэтому для меня аналитика — это не подсчёт показателей, а понимание механизма: почему система ведёт себя именно так и к чему приведёт следующее решение.
-            </p>
-            <p>
-                Курсы и инструменты на этом сайте — способ зафиксировать и передать этот опыт. Здесь собраны практики работы с экспериментами, монетизацией и графиками, которые помогают принимать решения в условиях неопределённости, конфликтов метрик и неполных данных — без "косметики KPI", а через логику системы.
-            </p>
-            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
-                <a href="/lab/product-analytics/">Аналитика продукта</a> • 
-                <a href="/lab/monetization/">Математика монетизации рекламы</a> • 
-                <a href="/lab/ab-decisions/">A/B-тестирование: принятие решений</a>
-            </p>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                <a href="/about/">Обо мне →</a>
-            </p>
-        </section>
-
-        <hr class="divider">
-
-        <section>
-            <h2>Карьера</h2>
-            <p class="muted" style="margin-bottom: 1.5rem;">Развитие аналитика: от IC до Executive.</p>
-            
-            <div class="cards-grid career-grid">
-                <div class="card">
-                    <div class="micro">Карьера</div>
-                    <div class="card-title">Карьерный разбор (аналитики)</div>
-                    <div class="card-text">
-                        Упаковываем опыт в чёткие аргументы: что вы сделали, почему это сработало, какие были ограничения и как вы принимали решения.
-                    </div>
-                    <a href="/career/index.html" class="card-button">Перейти →</a>
-                </div>
-
-                <div class="card">
-                    <div class="micro">Карьера</div>
-                    <div class="card-title">Executive review (Lead / Head)</div>
-                    <div class="card-text">
-                        Позиционирование уровня системы: зона влияния, границы ответственности, решения про деньги, риски и эксперименты.
-                    </div>
-                    <a href="/career/executive/index.html" class="card-button">Перейти →</a>
-                </div>
-
-                <div class="card career-card--results">
-                    <span class="card-badge badge-proof">Факты</span>
-                    <div class="card-title">Результаты менторства</div>
-                    <div class="card-text">
-                        Факты, кейсы и карьерные переходы аналитиков.<br>
-                        Где работают студенты и каких результатов они достигают.
-                    </div>
-                    <ul class="card-list">
-                        <li>18+ подтверждённых отзывов на Solvery</li>
-                        <li>Рост до Senior / Lead за 3–6 месяцев</li>
-                        <li>Продукт, монетизация, управление</li>
-                    </ul>
-                    <a href="/career/results/" class="card-button">Посмотреть →</a>
-                </div>
-            </div>
-        </section>
-
-        <hr class="divider">
-
-        <section class="companies-section">
-            <h2>Для компаний</h2>
-            <p class="muted" style="margin-bottom: 1rem;">Решение продуктовых и аналитических задач.</p>
-            <p>
-                Диагностика конфликтов продуктовых и монетизационных метрик.
-                Механизмы принятия решений вместо косметики KPI.
-            </p>
-            <a href="/companies/" class="companies-button">Обсудить задачу →</a>
-        </section>
-
-        <footer class="site-footer">
-            <span>&copy; 2026 davydov.my</span>
-            <nav class="site-footer-links">
-                <a href="https://t.me/Datalake">Telegram</a>
-                <a href="/courses/">Курсы</a>
-                <a href="/lab/">Инструменты</a>
-                <a href="/search/">Поиск</a>
-            </nav>
-        </footer>
+<header class="site-nav">
+  <div class="site-nav-inner">
+    <div class="site-nav-left">
+      <a href="/" class="nav-brand">Alex Davydov</a>
+      <nav class="nav-links" aria-label="Основное меню">
+        <a href="/courses/">Курсы</a>
+        <a href="/cases/">Кейсы</a>
+        <a href="/notes/">Заметки</a>
+        <a href="/career/">Карьера</a>
+      </nav>
     </div>
+    <div class="site-nav-right">
+      <a href="/career/" class="nav-mentor">Менторство</a>
+      <button type="button" class="theme-toggle" aria-label="Тёмная тема">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+      </button>
+      <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <a href="/courses/">Курсы</a>
+  <a href="/cases/">Кейсы</a>
+  <a href="/notes/">Заметки</a>
+  <a href="/career/">Карьера</a>
+  <a href="/lab/">Инструменты</a>
+  <a href="/knowledge/">База знаний</a>
+  <a href="/about/">Обо мне</a>
+  <a href="/search/">Поиск</a>
+  <a href="/companies/">Для компаний</a>
+  <a href="/career/" class="nav-mentor">Менторство</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="eyebrow">Тимлид аналитики · Ментор · Преподаватель</p>
+    <h1>Саша Давыдов</h1>
+    <p class="bio">
+      Помогаю аналитикам понимать системы, а не только считать метрики.
+      Тимлид в <strong>Дзене</strong>, ментор на <strong>Solvery</strong> и <strong>GetMentor</strong>,
+      автор курса на <strong>karpov.courses</strong>.
+    </p>
+    <div class="badges">
+      <span>Дзен</span>
+      <span>inDrive</span>
+      <span>Самокат</span>
+      <span>karpov.courses</span>
+    </div>
+    <div class="cta-row">
+      <a href="/courses/" class="btn-primary">Начать с курса →</a>
+      <a href="/career/" class="btn-ghost">Записаться на менторство</a>
+    </div>
+    <div class="socials">
+      <a href="https://t.me/Datalake">Telegram</a>
+      <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+      <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+      <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    </div>
+  </div>
+  <div class="avatar" aria-hidden="true"><span>АД</span></div>
+</section>
+
+<div class="stats-strip">
+  <div class="stat">
+    <div class="stat-n">300+</div>
+    <div class="stat-l">часов менторства</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">18+</div>
+    <div class="stat-l">отзывов на Solvery</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">5 курсов</div>
+    <div class="stat-l">по аналитике и экспериментам</div>
+  </div>
+</div>
+
+<section class="sec" aria-labelledby="sec-courses">
+  <div class="sec-head">
+    <h2 id="sec-courses">Курсы</h2>
+    <a class="sec-link" href="/courses/">Все курсы →</a>
+  </div>
+  <div class="course-grid">
+    <a class="course-card" href="/lab/ab-stat-os/">
+      <span class="course-tag">A/B · Middle→Senior</span>
+      <span class="course-arr">↗</span>
+      <div class="course-title">Статистика A/B-тестирования</div>
+      <div class="course-desc">Метрики, CUPED, типовые ошибки</div>
+    </a>
+    <a class="course-card" href="/lab/monetization/">
+      <span class="course-tag">Монетизация · Middle</span>
+      <span class="course-arr">↗</span>
+      <div class="course-title">Математика монетизации рекламы</div>
+      <div class="course-desc">Модели дохода, давление на метрики</div>
+    </a>
+    <a class="course-card" href="/lab/product-analytics/">
+      <span class="course-tag">Продукт · Junior→Senior</span>
+      <span class="course-arr">↗</span>
+      <div class="course-title">Аналитика продукта</div>
+      <div class="course-desc">Читать систему, а не цифры</div>
+    </a>
+    <a class="course-card" href="/lab/quasi-experiments/">
+      <span class="course-tag">Causal · Senior</span>
+      <span class="course-arr">↗</span>
+      <div class="course-title">Квазиэксперименты</div>
+      <div class="course-desc">DiD, RDD, IV — когда A/B невозможен</div>
+    </a>
+  </div>
+</section>
+
+<div class="karpov-banner">
+  <div class="karpov-dot"></div>
+  <p><strong>Скоро на karpov.courses</strong> — новый курс по аналитике. Следи за анонсом в <a href="https://t.me/Datalake">Telegram</a>.</p>
+</div>
+
+<section class="sec" aria-labelledby="sec-notes">
+  <div class="sec-head">
+    <h2 id="sec-notes">Заметки</h2>
+    <a class="sec-link" href="/notes/">Все заметки →</a>
+  </div>
+  <div>
+    <a class="note-item" href="/notes/ab-results-reading/">
+      <span class="note-date">апр 2026</span>
+      <div>
+        <div class="note-title">Почему 80% аналитиков неправильно читают A/B-результаты</div>
+        <div class="note-desc">Самая частая ошибка из 300+ сессий — и как её исправить за один разговор</div>
+      </div>
+    </a>
+    <a class="note-item" href="/notes/system-not-metrics/">
+      <span class="note-date">мар 2026</span>
+      <div>
+        <div class="note-title">Что значит «думать системой», а не метриками</div>
+        <div class="note-desc">Разбор конфликта retention и revenue на примере рекламной монетизации</div>
+      </div>
+    </a>
+    <a class="note-item" href="/notes/ic-to-lead/">
+      <span class="note-date">фев 2026</span>
+      <div>
+        <div class="note-title">IC → Lead: что реально меняется</div>
+        <div class="note-desc">Не навыки — а зона ответственности и язык разговора с бизнесом</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <nav class="site-footer-links" aria-label="Подвал">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Карьера</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="https://t.me/Datalake">Telegram</a>
+  </nav>
+  <span class="footer-copy">© 2026 davydov.my</span>
+</footer>
+
+<script src="/main.js" defer></script>
 </body>
 </html>

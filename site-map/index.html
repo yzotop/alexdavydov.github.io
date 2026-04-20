@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Map — davydov.my</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-subtle: #010409;
+    --surface: #161b22;
+    --surface-elevated: #21262d;
+    --border: #30363d;
+    --border-subtle: #21262d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-soft: rgba(88, 166, 255, 0.12);
+    --green: #3fb950;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --cyan: #39d353;
+    --pink: #f778ba;
+    --radius: 8px;
+    --radius-sm: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-subtle) 100%);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  header {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+  header .meta { font-size: 11px; color: var(--text-muted); }
+  .filters { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; align-items: center; }
+  .filters label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .search-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    width: 160px;
+  }
+  .search-box:focus { outline: none; border-color: var(--accent); }
+
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    padding: 12px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-elevated);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .stat .num { color: var(--text); font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(100vh - 120px); background: var(--bg); }
+  .panel {
+    overflow-y: auto;
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .panel:last-child { border-right: none; background: var(--bg); border-left: 1px solid var(--border-subtle); }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tree-node { margin-left: 0; user-select: none; }
+  .tree-node .children {
+    margin-left: 20px;
+    border-left: 1px solid var(--border-subtle);
+    padding-left: 12px;
+    margin-top: 2px;
+  }
+  .tree-node .children.collapsed { display: none; }
+  .node-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 28px;
+  }
+  .node-row:hover { background: var(--surface-elevated); }
+  .node-row.selected { background: var(--accent-soft); outline: 1px solid rgba(88, 166, 255, 0.35); }
+  .node-row.dimmed { opacity: 0.35; }
+  .toggle {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .toggle.expandable { cursor: pointer; }
+  .icon { width: 16px; flex-shrink: 0; text-align: center; }
+  .node-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .node-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .badge-active { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-draft { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .badge-legacy { background: rgba(139,148,158,0.15); color: var(--text-muted); }
+  .type-section .icon { color: var(--accent); }
+  .type-calculator .icon { color: var(--cyan); }
+  .type-simulator .icon { color: var(--green); }
+  .type-course .icon { color: var(--purple); }
+  .type-case .icon { color: var(--orange); }
+  .type-legacy .icon { color: var(--text-muted); }
+
+  .detail { padding: 24px 28px; overflow-y: auto; border-bottom: 1px solid var(--border-subtle); }
+  .detail-empty { color: var(--text-muted); font-style: italic; margin-top: 40px; text-align: center; }
+  .detail h2 { font-size: 17px; margin-bottom: 12px; }
+  .detail-section { margin-bottom: 16px; }
+  .detail-section h3 { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .detail-field { display: flex; gap: 12px; padding: 4px 0; font-size: 12px; }
+  .detail-field .label { color: var(--text-muted); min-width: 70px; flex-shrink: 0; }
+  .detail-field .value { color: var(--text); word-break: break-all; }
+  .detail-field .value a { color: var(--accent); text-decoration: none; }
+  .detail-field .value a:hover { text-decoration: underline; }
+  .node-index { flex: 1; padding: 16px 28px; overflow-y: auto; }
+  .node-index-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
+  .node-index-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 2px 4px 2px 0;
+    border: 1px solid transparent;
+  }
+  .node-index-chip:hover { background: var(--surface-elevated); }
+  .node-index-chip.selected { outline: 1px solid var(--accent); background: var(--accent-soft); }
+
+  .breadcrumbs { display: flex; gap: 4px; margin-bottom: 12px; font-size: 11px; }
+  .breadcrumb { color: var(--accent); cursor: pointer; }
+  .breadcrumb:hover { text-decoration: underline; }
+  .breadcrumb.current { color: var(--text); cursor: default; }
+  .breadcrumb-sep { color: var(--text-muted); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel { max-height: 45vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Site Map</h1>
+  <span class="meta" id="meta-line">Loading...</span>
+  <div class="filters">
+    <label>Filter:</label>
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="calculator">Calculators</button>
+    <button class="filter-btn" data-filter="simulator">Simulators</button>
+    <button class="filter-btn" data-filter="course">Courses</button>
+    <button class="filter-btn" data-filter="case">Cases</button>
+    <button class="filter-btn" data-filter="knowledge">Knowledge</button>
+    <button class="filter-btn" data-filter="hub">Hubs</button>
+    <button class="filter-btn" data-filter="legacy">Legacy</button>
+    <input type="text" class="search-box" id="search" placeholder="Search... (⌘K)" />
+  </div>
+</header>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="layout">
+  <div class="panel" id="tree-panel">
+    <div class="panel-title">
+      <span>Structure</span>
+      <span class="count" id="node-count"></span>
+    </div>
+    <div id="site-tree"><div class="detail-empty">Loading site map...</div></div>
+  </div>
+  <div class="panel" style="display:flex;flex-direction:column;">
+    <div class="detail" id="detail-panel">
+      <div class="detail-empty">Select a node to inspect</div>
+    </div>
+    <div class="node-index">
+      <div class="node-index-title">Index by section</div>
+      <div id="node-index-content"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let DATA = null;
+let selectedId = null;
+let activeFilter = 'all';
+let searchTerm = '';
+const nodeRegistry = new Map();
+const parentMap = new Map();
+const domMap = new Map();
+
+const TYPE_COLORS = {
+  section: '#58a6ff',
+  calculator: '#39d353',
+  simulator: '#3fb950',
+  course: '#bc8cff',
+  case: '#d29922',
+  'knowledge-page': '#f778ba',
+  'knowledge-hub': '#f778ba',
+  'catalog-hub': '#58a6ff',
+  legacy: '#8b949e',
+};
+const ICONS = {
+  section: '\u25A0',
+  calculator: '\u2295',
+  simulator: '\u25B7',
+  course: '\u270E',
+  case: '\u25C6',
+  'knowledge-page': '\u2606',
+  'knowledge-hub': '\u2606',
+  'catalog-hub': '\u2318',
+  legacy: '\u2190',
+};
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function shouldShow(type, name) {
+  if (activeFilter === 'all') return true;
+  if (activeFilter === 'calculator') return type === 'calculator';
+  if (activeFilter === 'simulator') return type === 'simulator';
+  if (activeFilter === 'course') return type === 'course';
+  if (activeFilter === 'case') return type === 'case';
+  if (activeFilter === 'knowledge') return type === 'knowledge-page' || type === 'knowledge-hub';
+  if (activeFilter === 'hub') return type === 'catalog-hub' || type === 'section';
+  if (activeFilter === 'legacy') return type === 'legacy';
+  if (searchTerm && !name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+  return true;
+}
+
+function reg(node, parentId) {
+  nodeRegistry.set(node.id, node);
+  if (parentId) parentMap.set(node.id, parentId);
+}
+
+function buildTree() {
+  const rootId = 'root.site';
+  const nodes = [];
+
+  DATA.sections.forEach(section => {
+    const secNode = {
+      id: section.id,
+      name: section.name,
+      type: 'section',
+      description: section.description,
+      children: [],
+      data: section,
+    };
+    reg(secNode, rootId);
+
+    (section.entities || []).forEach(entity => {
+      const entNode = {
+        id: entity.id,
+        name: entity.slug,
+        type: entity.type,
+        url: entity.url,
+        path: entity.path,
+        status: entity.status,
+        legacy_urls: entity.legacy_urls,
+        notes: entity.notes,
+        children: [],
+        data: entity,
+      };
+      reg(entNode, secNode.id);
+      secNode.children.push(entNode);
+    });
+    nodes.push(secNode);
+  });
+
+  const legacyNode = {
+    id: 'section.legacy',
+    name: 'Legacy',
+    type: 'section',
+    description: 'Compatibility layers, redirects',
+    children: [],
+    data: {},
+  };
+  reg(legacyNode, rootId);
+  (DATA.legacy || []).forEach(l => {
+    const ln = {
+      id: 'legacy.' + l.path.replace(/\//g, '-').replace(/\*/g, ''),
+      name: l.path,
+      type: 'legacy',
+      path: l.path,
+      role: l.role,
+      children: [],
+      data: l,
+    };
+    reg(ln, legacyNode.id);
+    legacyNode.children.push(ln);
+  });
+  nodes.push(legacyNode);
+
+  return nodes;
+}
+
+function renderTreeNode(node, container, depth) {
+  const el = document.createElement('div');
+  el.classList.add('tree-node');
+  const hasChildren = node.children && node.children.length > 0;
+  const show = shouldShow(node.type, node.name);
+
+  const row = document.createElement('div');
+  row.classList.add('node-row', `type-${node.type}`, `depth-${depth}`);
+  row.dataset.id = node.id;
+  row.dataset.name = node.name;
+  row.dataset.type = node.type;
+  if (!show && activeFilter !== 'all') row.classList.add('dimmed');
+
+  domMap.set(node.id, row);
+
+  const toggle = document.createElement('span');
+  toggle.classList.add('toggle');
+  if (hasChildren) {
+    toggle.classList.add('expandable');
+    toggle.textContent = depth < 1 ? '\u25BC' : '\u25B6';
+  }
+  row.appendChild(toggle);
+
+  const icon = document.createElement('span');
+  icon.classList.add('icon');
+  icon.textContent = ICONS[node.type] || '\u25B8';
+  row.appendChild(icon);
+
+  const label = document.createElement('span');
+  label.classList.add('node-label');
+  label.textContent = node.name;
+  row.appendChild(label);
+
+  if (node.type !== 'section' && node.data?.status) {
+    const badge = document.createElement('span');
+    badge.classList.add('node-badge', node.data.status === 'active' ? 'badge-active' : 'badge-draft');
+    badge.textContent = node.data.status;
+    row.appendChild(badge);
+  }
+
+  el.appendChild(row);
+
+  if (hasChildren) {
+    const childCont = document.createElement('div');
+    childCont.classList.add('children');
+    if (depth >= 1) childCont.classList.add('collapsed');
+    node.children.forEach(c => renderTreeNode(c, childCont, depth + 1));
+    el.appendChild(childCont);
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      childCont.classList.toggle('collapsed');
+      toggle.textContent = childCont.classList.contains('collapsed') ? '\u25B6' : '\u25BC';
+    });
+  }
+
+  row.addEventListener('click', () => selectNode(node.id));
+  container.appendChild(el);
+}
+
+function renderTree() {
+  const container = document.getElementById('site-tree');
+  container.innerHTML = '';
+
+  const rootNode = { id: 'root.site', name: 'davydov.my', type: 'root', children: [], data: {} };
+  nodeRegistry.set('root.site', rootNode);
+
+  const rootRow = document.createElement('div');
+  rootRow.classList.add('node-row');
+  rootRow.style.marginBottom = '8px';
+  rootRow.innerHTML = '<span class="icon" style="color:var(--accent)">\u25C6</span><span class="node-label" style="font-weight:600">davydov.my</span>';
+  rootRow.addEventListener('click', () => selectNode('root.site'));
+  domMap.set('root.site', rootRow);
+  container.appendChild(rootRow);
+
+  const treeNodes = buildTree();
+  rootNode.children = treeNodes;
+  treeNodes.forEach(n => renderTreeNode(n, container, 0));
+
+  document.getElementById('node-count').textContent = `${nodeRegistry.size} nodes`;
+  renderNodeIndex();
+}
+
+function renderNodeIndex() {
+  const cont = document.getElementById('node-index-content');
+  if (!cont) return;
+
+  let html = '';
+  DATA.sections.forEach(sec => {
+    const entities = (sec.entities || []).filter(e => e.type !== 'legacy');
+    if (!entities.length) return;
+    const color = TYPE_COLORS[entities[0]?.type] || '#8b949e';
+    html += `<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${escapeHtml(sec.name)}</div>`;
+    html += '<div>';
+    entities.forEach(e => {
+      const sel = e.id === selectedId ? ' selected' : '';
+      html += `<span class="node-index-chip${sel}" data-id="${escapeHtml(e.id)}" style="color:${color}">${escapeHtml(e.slug)}</span>`;
+    });
+    html += '</div></div>';
+  });
+  cont.innerHTML = html || '<span style="color:var(--text-muted)">No entities</span>';
+
+  cont.querySelectorAll('.node-index-chip').forEach(chip => {
+    chip.addEventListener('click', () => selectNode(chip.dataset.id));
+  });
+}
+
+function selectNode(id) {
+  const node = nodeRegistry.get(id);
+  if (!node) return;
+
+  document.querySelectorAll('.node-row.selected').forEach(el => el.classList.remove('selected'));
+  const row = domMap.get(id);
+  if (row) {
+    row.classList.add('selected');
+    row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  selectedId = id;
+
+  const expandParent = (nid) => {
+    const p = parentMap.get(nid);
+    if (!p) return;
+    const parentRow = domMap.get(p);
+    if (parentRow) {
+      const treeNode = parentRow.closest('.tree-node');
+      const childrenEl = treeNode?.querySelector(':scope > .children');
+      if (childrenEl?.classList.contains('collapsed')) {
+        childrenEl.classList.remove('collapsed');
+        const tgl = parentRow.querySelector('.toggle');
+        if (tgl) tgl.textContent = '\u25BC';
+      }
+    }
+    expandParent(p);
+  };
+  expandParent(node.id);
+
+  renderDetail(node);
+  renderNodeIndex();
+}
+
+function renderDetail(node) {
+  const panel = document.getElementById('detail-panel');
+  const baseUrl = DATA.site_base || '';
+
+  if (node.id === 'root.site') {
+    panel.innerHTML = `
+      <h2>davydov.my</h2>
+      <div class="detail-section">
+        <div class="detail-field"><span class="label">Site</span><span class="value"><a href="${baseUrl}/" target="_blank" rel="noopener">${baseUrl}</a></span></div>
+        <div class="detail-field"><span class="label">Description</span><span class="value">${DATA.meta?.description || ''}</span></div>
+      </div>`;
+    return;
+  }
+
+  let html = '<div class="breadcrumbs">';
+  const crumbs = [];
+  let cur = node.id;
+  while (cur) {
+    const n = nodeRegistry.get(cur);
+    if (n) crumbs.unshift(n);
+    cur = parentMap.get(cur);
+  }
+  crumbs.forEach((c, i) => {
+    const isLast = i === crumbs.length - 1;
+    html += isLast ? `<span class="breadcrumb current">${escapeHtml(c.name)}</span>` : `<span class="breadcrumb" data-id="${escapeHtml(c.id)}">${escapeHtml(c.name)}</span><span class="breadcrumb-sep">/</span>`;
+  });
+  html += '</div>';
+
+  html += `<h2>${escapeHtml(node.name)}</h2>`;
+  html += `<div class="detail-section"><div class="detail-field"><span class="label">ID</span><span class="value">${escapeHtml(node.id)}</span></div></div>`;
+
+  if (node.type === 'section') {
+    html += `<div class="detail-section"><h3>Description</h3><div class="detail-field"><span class="value">${escapeHtml(node.description || '')}</span></div></div>`;
+    if (node.children?.length) {
+      html += `<div class="detail-section"><h3>Entities (${node.children.length})</h3><ul style="padding-left:20px;font-size:12px">`;
+      node.children.forEach(c => {
+        html += `<li><span style="cursor:pointer;color:var(--accent)" data-id="${c.id}">${escapeHtml(c.name)}</span></li>`;
+      });
+      html += '</ul></div>';
+    }
+  } else if (node.type === 'legacy') {
+    html += `<div class="detail-section"><div class="detail-field"><span class="label">Path</span><span class="value">${escapeHtml(node.path || '')}</span></div>`;
+    html += `<div class="detail-field"><span class="label">Role</span><span class="value">${escapeHtml(node.role || node.data?.role || '')}</span></div></div>`;
+  } else if (node.url || node.path) {
+    if (node.url) {
+      const fullUrl = node.url.startsWith('http') ? node.url : baseUrl + node.url;
+      html += `<div class="detail-section"><div class="detail-field"><span class="label">URL</span><span class="value"><a href="${fullUrl}" target="_blank" rel="noopener">${escapeHtml(node.url)}</a></span></div></div>`;
+    }
+    if (node.path) {
+      html += `<div class="detail-section"><div class="detail-field"><span class="label">Path</span><span class="value">${escapeHtml(node.path)}</span></div></div>`;
+    }
+    if (node.status) {
+      html += `<div class="detail-section"><div class="detail-field"><span class="label">Status</span><span class="value">${escapeHtml(node.status)}</span></div></div>`;
+    }
+    if (node.legacy_urls) {
+      html += `<div class="detail-section"><h3>Legacy URLs</h3><div class="detail-field"><span class="value" style="font-size:11px;color:var(--text-muted)">${escapeHtml(node.legacy_urls)}</span></div></div>`;
+    }
+    if (node.notes) {
+      html += `<div class="detail-section"><h3>Notes</h3><div class="detail-field"><span class="value" style="font-size:11px;color:var(--text-muted)">${escapeHtml(node.notes)}</span></div></div>`;
+    }
+  }
+
+  panel.innerHTML = html;
+
+  panel.querySelectorAll('[data-id]').forEach(el => {
+    el.addEventListener('click', () => selectNode(el.dataset.id));
+  });
+}
+
+function renderStats() {
+  const cont = document.getElementById('stats-bar');
+  if (!cont) return;
+  const secCount = DATA.sections?.length || 0;
+  const entCount = DATA.sections?.reduce((s, sec) => s + (sec.entities?.length || 0), 0) || 0;
+  const legCount = DATA.legacy?.length || 0;
+  cont.innerHTML = `
+    <span class="stat"><span class="num">${secCount}</span> sections</span>
+    <span class="stat"><span class="num">${entCount}</span> entities</span>
+    <span class="stat"><span class="num">${legCount}</span> legacy</span>
+  `;
+}
+
+function applyVisibility() {
+  document.querySelectorAll('.node-row').forEach(row => {
+    const name = row.dataset.name || '';
+    const type = row.dataset.type || '';
+    const show = shouldShow(type, name);
+    if (activeFilter !== 'all') {
+      const matchesSearch = !searchTerm || name.toLowerCase().includes(searchTerm.toLowerCase());
+      row.classList.toggle('dimmed', !show || !matchesSearch);
+    } else {
+      row.classList.toggle('dimmed', !matchesSearch);
+    }
+  });
+}
+
+async function loadData() {
+  const metaEl = document.getElementById('meta-line');
+  try {
+    const resp = await fetch('site-map.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    DATA = await resp.json();
+
+    const gen = DATA.meta?.generated_at?.slice(0, 10) || '—';
+    metaEl.textContent = `v${DATA.meta?.schema_version || '1.0'} · generated ${gen} · read-only · davydov.my`;
+
+    renderStats();
+    renderTree();
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        applyVisibility();
+      });
+    });
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchTerm = e.target.value;
+      applyVisibility();
+    });
+
+    const hash = location.hash.match(/#node=(.+)/);
+    if (hash && nodeRegistry.has(decodeURIComponent(hash[1]))) {
+      selectNode(decodeURIComponent(hash[1]));
+    }
+  } catch (err) {
+    metaEl.textContent = 'Error loading site map';
+    document.getElementById('site-tree').innerHTML = `<div class="detail-empty" style="color:var(--red)">Failed to load site-map.json. Run ./update_site_map.sh</div>`;
+  }
+}
+loadData();
+</script>
+</body>
+</html>

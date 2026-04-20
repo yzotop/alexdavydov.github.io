@@ -17,6 +17,18 @@
             <p class="subtitle">Когда A/B невозможен: как доказать эффект без рандомизации</p>
         </header>
 
+        <section class="course-hero-meta">
+            <div class="course-jtbd">
+                <strong>📌 Когда это нужно:</strong>
+                <ul>
+                    <li>A/B провести нельзя, но нужен обоснованный вывод.</li>
+                    <li>Есть только наблюдательные данные.</li>
+                    <li>Нужно доказать causal-эффект для решения.</li>
+                    <li>Нужно выбрать метод идентификации под ограничения данных.</li>
+                </ul>
+            </div>
+        </section>
+
         <div class="key-terms">
             <span class="key-terms-label">Глоссарий:</span>
             <a href="../glossary/#causal-inference" class="glossary-link">Causal Inference</a>
@@ -28,10 +40,36 @@
             <a href="../glossary/#effect-size" class="glossary-link">Effect Size</a>
         </div>
 
-        <section class="intro">
-            <p>Курс для аналитиков, которые хотят оценивать каузальные эффекты, когда рандомизация невозможна. Пять методов (DiD, RDD, Synthetic Control, Matching, IV) с единой структурой: допущения, диагностики, формулы, ловушки, упражнения.</p>
-            <p>Каждый модуль содержит toy example с ручным расчётом и задачи с решениями. Cheat sheet в начале — для быстрого выбора метода и подготовки к собеседованиям.</p>
-            <p>Никаких библиотек. Только логика, формулы и аргументация.</p>
+                <section class="course-about">
+            <h2>О чем курс</h2>
+            <ul>
+                <li>Как оценивать причинные эффекты без рандомизации.</li>
+                <li>Как выбирать между DiD, RDD, SCM, Matching и IV.</li>
+                <li>Как проверять допущения и защищать результат перед бизнесом.</li>
+            </ul>
+        </section>
+
+                <section class="course-audience">
+            <h2>Для кого курс</h2>
+            <ul>
+                <li>Продуктовые аналитики (junior/middle).</li>
+                <li>Продукт-менеджеры.</li>
+                <li>Маркетинг / growth.</li>
+            </ul>
+        </section>
+
+        <section class="course-flow">
+            <h2>Как проходит курс</h2>
+            <ul>
+                <li>Теория → кейс → практика.</li>
+                <li>Каждый модуль = решение рабочей задачи.</li>
+                <li>Фокус на интерпретации, а не на формулах.</li>
+            </ul>
+        </section>
+
+        <section class="course-structure">
+            <h2>Структура курса</h2>
+            <p class="course-structure-note">Курс состоит из 8 модулей и блока кейсов:</p>
         </section>
 
         <h2>Модули курса</h2>
@@ -123,18 +161,35 @@
             </div>
         </div>
 
-        <div class="related-section">
+        <section class="related-section course-links">
             <h2>Связанные курсы</h2>
             <ul class="related-links">
                 <li><a href="../ab-decisions/index.html">A/B-тестирование: принятие решений на практике</a></li>
                 <li><a href="../ab-stat-os/index.html">Статистика A/B-тестирования: операционная система аналитика</a></li>
                 <li><a href="../product-analytics/index.html">Аналитика продукта: как читать систему, а не цифры</a></li>
             </ul>
-        </div>
+        </section>
 
         <div class="footer-note">
             8 модулей · 6 кейсов · 4 toy examples · 13 упражнений · 10 вопросов интервьюера
         </div>
     </div>
+<script>
+(function(){
+  var cards=document.querySelectorAll('.module-card');
+  cards.forEach(function(card){
+    if(card.querySelector('.module-question')) return;
+    var key=card.querySelector('.module-key-idea');
+    var q=document.createElement('p');
+    q.className='module-question';
+    q.textContent='Вопрос: ' + (key ? key.textContent.trim() : 'Какую causal-задачу решает модуль?');
+    if(key){ key.insertAdjacentElement('afterend', q); }
+    var ul=document.createElement('ul');
+    ul.className='module-outcomes';
+    ul.innerHTML='<li>Поймешь, какой метод применим, какие допущения критичны и как интерпретировать эффект.</li>';
+    card.appendChild(ul);
+  });
+})();
+</script>
 </body>
 </html>
