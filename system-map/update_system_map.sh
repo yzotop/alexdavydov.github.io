@@ -42,6 +42,49 @@ def ls_dirs(path):
     return sorted(d for d in os.listdir(path)
                   if os.path.isdir(os.path.join(path, d)) and not d.startswith('.'))
 
+KEY_EXTS = ('.sh', '.md', '.py')
+
+def scan_key_files(rp, max_depth=2):
+    """Return list of {name, ext, rel_path} for .sh, .md, .py under rp (max_depth levels)."""
+    out = []
+    if not os.path.isdir(rp):
+        return out
+    try:
+        for root, dirs, files in os.walk(rp):
+            depth = root[len(rp):].count(os.sep)
+            if depth >= max_depth:
+                dirs.clear()
+                continue
+            rel_root = os.path.relpath(root, rp) if root != rp else ''
+            for f in files:
+                if f.startswith('.'):
+                    continue
+                ext = os.path.splitext(f)[1].lower()
+                if ext in KEY_EXTS:
+                    rel = os.path.join(rel_root, f) if rel_root else f
+                    out.append({'name': f, 'ext': ext[1:], 'rel_path': rel})
+    except OSError:
+        pass
+    return sorted(out, key=lambda x: (x['ext'], x['rel_path']))
+
+def git_remote(rp):
+    """Return 'github' | 'gitlab' | None for a project path."""
+    gc = os.path.join(rp, '.git', 'config')
+    if not os.path.isfile(gc):
+        return None
+    try:
+        for line in open(gc):
+            if 'url' in line.lower() and '=' in line:
+                url = line.split('=', 1)[1].strip()
+                if 'github.com' in url:
+                    return 'github'
+                if 'gitlab.com' in url:
+                    return 'gitlab'
+                break
+    except Exception:
+        pass
+    return None
+
 def exists(*parts):
     return os.path.isdir(os.path.join(*parts))
 
@@ -70,30 +113,22 @@ def md_title(f):
 
 # ── configuration ────────────────────────────────────────────
 
-DOMAIN_ORDER = ['core', 'cursor', 'lab', 'knowledge', 'public', 'work', 'business']
+# Knowledge base lives at involute/knowledge/involutevault — not on map (Obsidian-only)
+# core/personal-os retired 2026-03
+DOMAIN_ORDER = ['cursor', 'lab', 'public', 'work', 'business']
 
 DOMAIN_DESC = {
-    'core':      'Personal automation, health data, scheduling',
     'cursor':    'Cursor IDE context: prompt agents, playbooks, registry',
     'lab':       'Research and experiments',
-    'knowledge': 'Obsidian vault (markdown knowledge base)',
     'public':    'Personal brand static site',
     'work':      'Employer-specific projects and artifacts',
     'business':  'Commercial side projects',
 }
 
-# Known repos per domain (lab/work/business are discovered dynamically)
-KNOWN_REPOS = {
-    'core':      ['personal-os'],
-    'knowledge': ['involutevault'],
+# Known projects per domain (lab/work/business are discovered dynamically)
+KNOWN_PROJECTS = {
     'public':    ['alexdavydov.github.io'],
 }
-
-# Bin scripts that are always classified as utility (exact stem match)
-UTIL_EXACT = frozenset({
-    'graph', 'pack', 'agent_prepare', 'apply_patch',
-    'changed', 'changed_json', 'weekly', 'run_agent',
-})
 
 # ══════════════════════════════════════════════════════════════
 # DOMAINS
@@ -112,59 +147,67 @@ for dn in DOMAIN_ORDER:
         'description': DOMAIN_DESC.get(dn, dn),
     }
 
-    # ── repos ──
-    if dn in KNOWN_REPOS:
-        rnames = KNOWN_REPOS[dn]
+    # ── projects ──
+    if dn in KNOWN_PROJECTS:
+        pnames = KNOWN_PROJECTS[dn]
     elif dn == 'cursor':
-        rnames = []          # cursor is structured differently (no git subrepos)
+        pnames = []          # cursor is structured differently (no sub-projects)
     else:
-        rnames = ls_dirs(dp)  # lab/work/business: discover first-level dirs
+        pnames = ls_dirs(dp)  # lab/work/business: discover first-level dirs
 
-    repos = []
-    for rn in rnames:
-        rp = os.path.join(dp, rn)
-        if not os.path.isdir(rp):
+    projects = []
+    for pn in pnames:
+        pp = os.path.join(dp, pn)
+        if not os.path.isdir(pp):
             continue
-        repo = {
-            'id': f'repo.{rn}',
-            'name': rn,
-            'path': f'projects/{dn}/{rn}',
+        proj = {
+            'id': f'project.{pn}',
+            'name': pn,
+            'path': f'projects/{dn}/{pn}',
             'role': 'canonical',
             'description': '',
+            'git_remote': git_remote(pp),  # 'github' | 'gitlab' | None
+            'project_kind': 'code',
         }
-        rm = os.path.join(rp, 'README.md')
+        rm = os.path.join(pp, 'README.md')
         if os.path.isfile(rm):
             t = md_title(rm)
             if t:
-                repo['description'] = t
-        # detect symlinks inside repo (known subdirectories)
+                proj['description'] = t
+        # detect symlinks inside project (known subdirectories)
         sls = []
         for sub in ['data', 'data/health', 'data/knowledge', 'runtime/logs']:
-            sp = os.path.join(rp, sub)
+            sp = os.path.join(pp, sub)
             if os.path.islink(sp):
                 tgt = os.readlink(sp)
                 if not os.path.isabs(tgt):
                     tgt = os.path.normpath(os.path.join(os.path.dirname(sp), tgt))
                 sls.append({'from': sub, 'to': tgt})
-        # also check first-level sub-projects (e.g. lab repos with data/ symlinks)
-        for sd in ls_dirs(rp):
+        # also check first-level sub-projects (e.g. lab projects with data/ symlinks)
+        for sd in ls_dirs(pp):
             for subsub in ['data']:
-                sp = os.path.join(rp, sd, subsub)
+                sp = os.path.join(pp, sd, subsub)
                 if os.path.islink(sp):
                     tgt = os.readlink(sp)
                     if not os.path.isabs(tgt):
                         tgt = os.path.normpath(os.path.join(os.path.dirname(sp), tgt))
                     sls.append({'from': f'{sd}/{subsub}', 'to': tgt})
         if sls:
-            repo['symlinks'] = sls
-        repos.append(repo)
+            proj['symlinks'] = sls
+        kf = scan_key_files(pp)
+        if kf:
+            proj['key_files'] = kf[:50]   # cap at 50
+        projects.append(proj)
 
-    dom['repos'] = repos
+    dom['projects'] = projects
     if dn == 'cursor':
         dom['subdirs'] = [
             s for s in ['agents', 'memory', 'playbooks', 'registry', 'rules']
             if s in ls_dirs(dp)
         ]
+        kf = scan_key_files(dp)
+        if kf:
+            dom['key_files'] = kf[:50]
     domains.append(dom)
 
 # ══════════════════════════════════════════════════════════════
@@ -188,123 +231,10 @@ if os.path.isdir(adir):
         })
 
 # ══════════════════════════════════════════════════════════════
-# SCHEDULE INFO (best-effort parse of agents.yaml)
-# ══════════════════════════════════════════════════════════════
-
-schedule_map = {}       # stem -> schedule string
-sensitivity_map = {}    # stem -> sensitivity string
-ayaml = os.path.join(P, 'core/personal-os/config/agents.yaml')
-if os.path.isfile(ayaml):
-    cur = None
-    for line in open(ayaml):
-        m = re.match(r'^  (\w[\w-]*):', line)       # indented key under "agents:"
-        if m:
-            cur = m.group(1)
-            continue
-        m2 = re.match(r'^\s+schedule:\s*(.+)', line)
-        if m2 and cur:
-            schedule_map[cur] = m2.group(1).strip()
-        m3 = re.match(r'^\s+sensitivity:\s*(.+)', line)
-        if m3 and cur:
-            sensitivity_map[cur] = m3.group(1).strip()
-
-# ══════════════════════════════════════════════════════════════
-# JOBS / DAGS / UTILITIES
+# JOBS (personal-os retired — no runtime jobs)
 # ══════════════════════════════════════════════════════════════
 
 jobs = []
-dag_stems = set()
-dag_cmap = {}           # dag stem -> file contents
-
-ddir = os.path.join(P, 'core/personal-os/runtime/dags')
-bdir = os.path.join(P, 'core/personal-os/runtime/bin')
-config_src = 'core/personal-os/config/agents.yaml' if os.path.isfile(ayaml) else None
-
-# ── DAGs ──
-if os.path.isdir(ddir):
-    for f in sorted(glob.glob(os.path.join(ddir, '*.py'))):
-        s = pathlib.Path(f).stem
-        if s.startswith('__'):
-            continue
-        dag_stems.add(s)
-        try:
-            c = open(f).read()
-        except Exception:
-            c = ''
-        dag_cmap[s] = c
-        entry = {
-            'id': f'job.{s}',
-            'name': s,
-            'type': 'dag',
-            'code_path': f'core/personal-os/runtime/dags/{s}.py',
-        }
-        if s in schedule_map:
-            entry['schedule'] = schedule_map[s]
-        if s in sensitivity_map:
-            entry['sensitivity'] = sensitivity_map[s]
-        if config_src:
-            entry['config_source'] = config_src
-        jobs.append(entry)
-
-# ── Bin scripts ──
-all_dag_txt = '\n'.join(dag_cmap.values())
-
-def classify(stem):
-    """Classify a bin script as 'utility' or 'job'."""
-    if stem in UTIL_EXACT:
-        return 'utility'
-    if stem.startswith('launchd_'):
-        return 'utility'
-    if stem.endswith('_console'):
-        return 'utility'
-    if any(kw in stem for kw in ('ask', 'index', 'validate')):
-        return 'utility'
-    if stem in all_dag_txt:
-        return 'job'
-    return 'utility'
-
-btmap = {}   # bin stem -> classified type
-if os.path.isdir(bdir):
-    for f in sorted(glob.glob(os.path.join(bdir, '*.py'))):
-        s = pathlib.Path(f).stem
-        if s.startswith('__') or s in dag_stems:
-            continue
-        t = classify(s)
-        btmap[s] = t
-        jid = f'job.{s}' if t == 'job' else f'util.{s}'
-        entry = {
-            'id': jid,
-            'name': s,
-            'type': t,
-            'code_path': f'core/personal-os/runtime/bin/{s}.py',
-        }
-        # schedule / sensitivity from agents.yaml (some bin scripts are listed there too)
-        if s in schedule_map:
-            entry['schedule'] = schedule_map[s]
-        if s in sensitivity_map:
-            entry['sensitivity'] = sensitivity_map[s]
-        p = docstr(f)
-        if p:
-            entry['purpose'] = p
-        # called_by relation
-        for ds, dc in dag_cmap.items():
-            if s in dc:
-                entry['called_by'] = {'target': f'job.{ds}', 'resolved': True}
-                break
-        jobs.append(entry)
-
-# ── resolve DAG calls ──
-for j in jobs:
-    if j['type'] != 'dag' or j['name'] not in dag_cmap:
-        continue
-    dc = dag_cmap[j['name']]
-    calls = []
-    for bs, bt in btmap.items():
-        if bs in dc:
-            cid = f'job.{bs}' if bt == 'job' else f'util.{bs}'
-            calls.append({'target': cid, 'resolved': True})
-    if calls:
-        j['calls'] = calls
 
 # ══════════════════════════════════════════════════════════════
 # DATA AREAS
@@ -343,24 +273,6 @@ if exists(D, '_tmp'):
         'description': 'Migration backups (timestamped)',
     })
 
-# personal-os health pipeline
-for rp, dt, desc in [
-    ('personal-os/health/garmin/raw',               'raw',      'Garmin API daily fetch results'),
-    ('personal-os/health/garmin/normalized',         'derived',  'Garmin data normalized daily/weekly'),
-    ('personal-os/health/garmin/dashboards',         'artifact', 'Dashboard artifacts and build scripts'),
-    ('personal-os/health/training_sheet/raw',        'raw',      'Training data CSV download'),
-    ('personal-os/health/training_sheet/normalized', 'derived',  'Training sheet normalized'),
-]:
-    if exists(D, rp):
-        add_da(rp, dt, 'runtime', desc, 'personal-os')
-
-if exists(D, 'personal-os/knowledge'):
-    add_da('personal-os/knowledge', 'derived', 'runtime',
-           'FTS DB, context JSON, prompts, graph', 'personal-os')
-if exists(D, 'personal-os/runtime/logs'):
-    add_da('personal-os/runtime/logs', 'logs', 'runtime',
-           'DAG execution logs', 'personal-os')
-
 # lab data (deeper structure: project/data or project/sub-area)
 for proj in (ls_dirs(os.path.join(D, 'lab')) if exists(D, 'lab') else []):
     pp = os.path.join(D, 'lab', proj)
@@ -379,6 +291,14 @@ for proj in (ls_dirs(os.path.join(D, 'work')) if exists(D, 'work') else []):
 for area in ['business', 'knowledge']:
     for proj in (ls_dirs(os.path.join(D, area)) if exists(D, area) else []):
         add_da(f'{area}/{proj}', 'raw', 'runtime', f'{proj} data', area)
+
+# music data (one entry per project)
+for proj in (ls_dirs(os.path.join(D, 'music')) if exists(D, 'music') else []):
+    add_da(f'music/{proj}', 'raw', 'runtime', f'{proj} music data', 'music')
+
+# public data (site builds, test tasks, etc.)
+for proj in (ls_dirs(os.path.join(D, 'public')) if exists(D, 'public') else []):
+    add_da(f'public/{proj}', 'raw', 'runtime', f'{proj} public/site data', 'public')
 
 # ══════════════════════════════════════════════════════════════
 # SYMLINKS
@@ -412,6 +332,43 @@ for root, dirs, _ in os.walk(P, followlinks=False):
             dirs.remove(d)
 
 # ══════════════════════════════════════════════════════════════
+# GLOSSARY (from cursor/registry/glossary.md)
+# ══════════════════════════════════════════════════════════════
+
+def parse_glossary(path):
+    """Parse glossary.md into [{section, term, definition}...]."""
+    if not os.path.isfile(path):
+        return []
+    items = []
+    cur_section = ''
+    cur_term = ''
+    cur_def = []
+    def flush():
+        nonlocal cur_term, cur_def
+        if cur_term:
+            def_text = '\n'.join(cur_def).strip()
+            if def_text:
+                items.append({'section': cur_section, 'term': cur_term, 'definition': def_text})
+        cur_term = ''
+        cur_def = []
+
+    for line in open(path, encoding='utf-8'):
+        line_r = line.rstrip()
+        if line.startswith('## '):
+            flush()
+            cur_section = line[3:].strip()
+        elif line.startswith('### '):
+            flush()
+            cur_term = line[4:].strip()
+        elif cur_term and line.strip() and not line.startswith('#'):
+            cur_def.append(line_r)
+    flush()
+    return items
+
+glossary_path = os.path.join(P, 'cursor', 'registry', 'glossary.md')
+glossary = parse_glossary(glossary_path)
+
+# ══════════════════════════════════════════════════════════════
 # ID CONTRACT
 # ══════════════════════════════════════════════════════════════
 
@@ -421,20 +378,18 @@ id_contract = {
     'virtual_format': 'group.{context}-{name} | root.{name} | virtual.{name}',
     'symlink_format': 'sym.{slugified_from_path}',
     'examples': {
-        'domain.core':  'domain + name',
-        'repo.personal-os': 'repo + dir name',
+        'domain.cursor': 'domain + name',
+        'project.alexdavydov.github.io': 'project + dir name',
         'agent.lab_curator': 'agent + definition filename stem',
-        'job.weekly_health': 'job + dag/script name',
-        'util.overview_console': 'util + utility script name',
-        'data.personal-os-health-garmin-raw': 'data + path slug',
-        'sym.core-personal-os-data-health': 'sym + slugified from-path',
+        'data.lab-project-data': 'data + path slug',
+        'sym.cursor-project-data': 'sym + slugified from-path',
     },
     'virtual_examples': {
         'root.projects': 'synthetic root for projects/ tree',
         'root.data':     'synthetic root for data/ tree',
         'group.cursor-agents':    'virtual grouping for cursor/agents subdir',
         'group.dags':             'virtual grouping for DAG scripts',
-        'group.data-personal-os': 'virtual grouping for personal-os data areas',
+        'group.data-lab': 'virtual grouping for domain data areas',
         'virtual.all_agents': 'UI-only aggregation of all prompt agents',
         'virtual.all_jobs':   'UI-only aggregation of all jobs/DAGs',
     },
@@ -456,7 +411,6 @@ out = {
             'projects/cursor/registry/architecture.md',
             'projects/cursor/registry/agents.md',
             'projects/cursor/registry/glossary.md',
-            'projects/core/personal-os/config/agents.yaml',
         ],
         'id_contract': id_contract,
     },
@@ -469,6 +423,7 @@ out = {
     'jobs': jobs,
     'data_areas': data_areas,
     'symlinks': symlinks,
+    'glossary': glossary,
 }
 
 # atomic write: temp file + rename
@@ -484,7 +439,7 @@ print(f'system.json updated: {OUTPUT}')
 print(f'  schema_version : {out["meta"]["schema_version"]}')
 print(f'  generated_at   : {out["meta"]["generated_at"]}')
 print(f'  domains        : {len(domains)}')
-print(f'  repos          : {sum(len(d.get("repos", [])) for d in domains)}')
+print(f'  projects       : {sum(len(d.get("projects", [])) for d in domains)}')
 print(f'  agents         : {len(agents)}')
 print(f'  jobs (total)   : {len(jobs)}')
 print(f'    dags         : {sum(1 for j in jobs if j["type"] == "dag")}')
@@ -492,12 +447,13 @@ print(f'    pipeline     : {sum(1 for j in jobs if j["type"] == "job")}')
 print(f'    utilities    : {sum(1 for j in jobs if j["type"] == "utility")}')
 print(f'  data_areas     : {len(data_areas)}')
 print(f'  symlinks       : {len(symlinks)}')
+print(f'  glossary terms : {len(glossary)}')
 print()
 # sample IDs
 all_ids = []
 for d in domains:
     all_ids.append(d['id'])
-    for r in d.get('repos', []):
+    for r in d.get('projects', []):
         all_ids.append(r['id'])
 for a in agents:
     all_ids.append(a['id'])

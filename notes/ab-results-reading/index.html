@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Почему 80% аналитиков неправильно читают A/B-результаты — Заметки</title>
+    <link rel="canonical" href="https://davydov.my/notes/ab-results-reading/"/>
+    <meta name="description" content="Самая частая ошибка при чтении A/B: путать статистическую значимость с практической. Заметка с примерами из менторства."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Почему 80% аналитиков неправильно читают A/B-результаты"/>
+    <meta property="og:description" content="Самая частая ошибка при чтении A/B: путать статистическую значимость с практической."/>
+    <meta property="og:url" content="https://davydov.my/notes/ab-results-reading/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<header class="site-nav">
+  <div class="site-nav-inner">
+    <div class="site-nav-left">
+      <a href="/" class="nav-brand">Alex Davydov</a>
+      <nav class="nav-links" aria-label="Основное меню">
+        <a href="/courses/">Курсы</a>
+        <a href="/cases/">Кейсы</a>
+        <a href="/notes/" class="is-active">Заметки</a>
+        <a href="/career/">Карьера</a>
+      </nav>
+    </div>
+    <div class="site-nav-right">
+      <a href="/career/" class="nav-mentor">Менторство</a>
+      <button type="button" class="theme-toggle" aria-label="Тёмная тема">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <a href="/courses/">Курсы</a>
+  <a href="/cases/">Кейсы</a>
+  <a href="/notes/">Заметки</a>
+  <a href="/career/">Карьера</a>
+  <a href="/lab/">Инструменты</a>
+  <a href="/knowledge/">База знаний</a>
+  <a href="/about/">Обо мне</a>
+  <a href="/search/">Поиск</a>
+  <a href="/companies/">Для компаний</a>
+  <a href="/career/" class="nav-mentor">Менторство</a>
+</nav>
+
+<article class="note-article">
+  <header>
+    <p class="note-meta">апр 2026 · 4 мин</p>
+    <h1>Почему 80% аналитиков неправильно читают A/B-результаты</h1>
+  </header>
+  <div class="note-body">
+    <p>На сессиях менторства я снова и снова вижу одну и ту же картину: человек открывает отчёт по тесту, смотрит на <strong>p-value</strong> или доверительный интервал и делает вывод «значит, фича работает» или «не работает». При этом ни слова о том, <strong>что именно измерялось</strong>, как устроена рандомизация и какой trade-off мы принимаем, если выкатываем изменение.</p>
+    <p>Статистика отвечает на узкий вопрос про данные в рамках модели. Решение о продукте требует ещё контекста: чувствительность метрик, задержки эффекта, стоимость поддержки, риск для монетизации. Пока эти слои не названы вслух, «чтение A/B» остаётся гаданием по цифрам.</p>
+    <p>Что помогает за один разговор: явно разделить три вещи — <strong>дизайн эксперимента</strong> (кого сравниваем и почему это честно), <strong>интерпретацию оценки</strong> (что говорит доверительный интервал о величине эффекта) и <strong>решение</strong> (катим / не катим / докручиваем). Если на слайде есть только среднее и звёздочка значимости, начинайте с вопроса «какая здесь целевая метрика и что для нас минимально полезный эффект» — и уже после этого смотрите на p-value.</p>
+  </div>
+  <footer class="note-footer">
+    <a href="/notes/">← Все заметки</a>
+  </footer>
+</article>
+
+<footer class="site-footer">
+  <nav class="site-footer-links" aria-label="Подвал">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Карьера</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="https://t.me/Datalake">Telegram</a>
+  </nav>
+  <span class="footer-copy">© 2026 davydov.my</span>
+</footer>
+
+<script src="/main.js" defer></script>
+</body>
+</html>

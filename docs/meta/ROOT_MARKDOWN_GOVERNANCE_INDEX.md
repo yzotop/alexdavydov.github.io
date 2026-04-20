@@ -10,15 +10,12 @@
 
 - `ARCHITECTURE_PATTERNS.md`
 - `COURSE_EXTRACT.md`
-- `COURSE_STRUCTURE.md`
 - `DESIGN_PATTERNS.md`
-- `ENTITY_REGISTRY_DAVYDOVMY.md`
 - `GLOSSARY.md`
 - `INTERNALS.md`
-- `PAGES_PUBLISH_AUDIT.md`
-- `PROJECT_STRUCTURE.md`
-- `STRUCTURE_ANALYSIS.md`
 - `STYLE_GUIDE_CURSOR.md`
+
+Канонический реестр сущностей и структура: `docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md`, `docs/site/ARCHITECTURE_MODEL_DAVYDOVMY.md`, `docs/site/SITE_MAP_DAVYDOVMY.md`.
 
 Это рабочее состояние, но оно делает root-level менее читаемым как отражение IA сайта.
 
@@ -43,6 +40,6 @@ Mid-term (manual migration, не auto):
 
 ## Почему не переносим автоматически
 
-- `scripts/publish_audit.sh` явно ожидает root-файлы (`COURSE_EXTRACT.md`, `COURSE_STRUCTURE.md`, `PROJECT_STRUCTURE.md`, `STRUCTURE_ANALYSIS.md`).
+- `scripts/publish_audit.sh` упоминает root docs в отчёте; не требует их наличия.
 - В `README.md` есть прямые ссылки на root docs (`ARCHITECTURE_PATTERNS.md`, `STYLE_GUIDE_CURSOR.md`, `DESIGN_PATTERNS.md`).
 - Автоматический перенос без полной compatibility-проверки — unnecessary risk для публичного репозитория.

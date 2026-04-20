@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Результаты менторства — Alex Davydov</title>
     <link rel="stylesheet" href="/assets/base.css">
+    <link rel="stylesheet" href="/style.css"/>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -242,6 +243,42 @@
     </style>
 </head>
 <body>
+<header class="site-nav">
+  <div class="site-nav-inner">
+    <div class="site-nav-left">
+      <a href="/" class="nav-brand">Alex Davydov</a>
+      <nav class="nav-links" aria-label="Основное меню">
+        <a href="/courses/">Курсы</a>
+        <a href="/cases/">Кейсы</a>
+        <a href="/notes/">Заметки</a>
+        <a href="/career/" class="is-active">Карьера</a>
+      </nav>
+    </div>
+    <div class="site-nav-right">
+      <a href="/career/" class="nav-mentor">Менторство</a>
+      <button type="button" class="theme-toggle" aria-label="Тёмная тема">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <a href="/courses/">Курсы</a>
+  <a href="/cases/">Кейсы</a>
+  <a href="/notes/">Заметки</a>
+  <a href="/career/">Карьера</a>
+  <a href="/lab/">Инструменты</a>
+  <a href="/knowledge/">База знаний</a>
+  <a href="/about/">Обо мне</a>
+  <a href="/search/">Поиск</a>
+  <a href="/companies/">Для компаний</a>
+  <a href="/career/" class="nav-mentor">Менторство</a>
+</nav>
     <div class="container">
         <nav class="breadcrumbs">
             <a href="/index.html">Главная</a>
@@ -255,7 +292,7 @@
             <h1>Результаты менторства</h1>
             <p class="hero-subtitle">Агрегированные результаты карьерного менторства аналитиков.<br>Только подтверждённые кейсы, публичные отзывы и обезличенные данные.</p>
             <div class="hero-buttons">
-                <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                <a href="https://t.me/Datalake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
                 <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Профиль Solvery ↗</a>
             </div>
 
@@ -371,18 +408,19 @@
             <section>
                 <h2>Что говорят</h2>
                 <p class="section-subtitle">Цитаты из реальных отзывов студентов (Solvery и личная работа). Без имён, только суть.</p>
+                <img class="solvery-reviews-img" src="/assets/solvery-reviews.png" width="320" height="120" alt="Скриншот отзывов на Solvery о менторстве (плейсхолдер до загрузки реального скриншота)" loading="lazy"/>
                 <div class="quotes-grid">
                     <div class="quote-card">
                         <div class="quote-text">После разбора понял, что продавал навыки, а не решения. Переформулировал кейсы — получил оффер.</div>
-                        <div class="quote-source">Senior Analyst, переход в Tier-1</div>
+                        <div class="quote-source">Senior Analyst → Яндекс</div>
                     </div>
                     <div class="quote-card">
                         <div class="quote-text">Помогло увидеть, где я отвечал за процесс, а где — за результат. Это изменило весь narrative.</div>
-                        <div class="quote-source">Middle → Senior, продуктовая аналитика</div>
+                        <div class="quote-source">Middle → Senior → Авито</div>
                     </div>
                     <div class="quote-card">
                         <div class="quote-text">Разобрали, как объяснять trade-offs и ограничения. На интервью с CPO это сработало.</div>
-                        <div class="quote-source">Lead Analyst, fintech</div>
+                        <div class="quote-source">Lead Analyst → Тинькофф</div>
                     </div>
                 </div>
             </section>
@@ -391,16 +429,23 @@
                 <div class="cta-title">Хотите разобрать свой кейс?</div>
                 <div class="cta-subtitle">Опишите роль, цель и контекст — отвечу, какой формат лучше и с чего начать.</div>
                 <div class="cta-buttons">
-                    <a href="https://t.me/DataLake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
+                    <a href="https://t.me/Datalake" target="_blank" rel="noopener noreferrer" class="btn-primary">Написать в Telegram</a>
                     <a href="https://solvery.io/ru/mentor/alex_davydov" target="_blank" rel="noopener noreferrer" class="btn-secondary">Профиль Solvery ↗</a>
                 </div>
             </div>
         </main>
 
-        <footer class="footer">
-            <a href="/career/" class="footer-link">← Карьерная поддержка</a>
-            <a href="/index.html" class="footer-link">На главную</a>
+        <footer class="site-footer">
+            <nav class="site-footer-links" aria-label="Подвал">
+                <a href="/courses/">Курсы</a>
+                <a href="/cases/">Кейсы</a>
+                <a href="/career/">Карьера</a>
+                <a href="/companies/">Для компаний</a>
+                <a href="https://t.me/Datalake">Telegram</a>
+            </nav>
+            <span class="footer-copy">© 2026 davydov.my</span>
         </footer>
     </div>
+<script src="/main.js" defer></script>
 </body>
 </html>

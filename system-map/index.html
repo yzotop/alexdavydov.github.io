@@ -4,42 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>System Map</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <style>
   :root {
     --bg: #0d1117;
+    --bg-subtle: #010409;
     --surface: #161b22;
+    --surface-elevated: #21262d;
     --border: #30363d;
-    --text: #c9d1d9;
+    --border-subtle: #21262d;
+    --text: #e6edf3;
     --text-muted: #8b949e;
     --accent: #58a6ff;
+    --accent-soft: rgba(88, 166, 255, 0.12);
     --green: #3fb950;
     --orange: #d29922;
     --red: #f85149;
     --purple: #bc8cff;
     --cyan: #39d353;
     --pink: #f778ba;
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.35);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-    background: var(--bg);
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-subtle) 100%);
     color: var(--text);
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
+    min-height: 100vh;
   }
   header {
-    padding: 16px 24px;
+    padding: 18px 28px;
     border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     flex-wrap: wrap;
+    overflow-x: auto;
   }
   header h1 {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--text);
     white-space: nowrap;
+    letter-spacing: -0.02em;
   }
   header .meta {
     font-size: 11px;
@@ -76,21 +90,27 @@
     grid-template-columns: 1fr 1fr;
     gap: 0;
     height: calc(100vh - 60px);
+    background: var(--bg);
   }
   .panel {
     overflow-y: auto;
-    padding: 12px 16px;
+    padding: 20px 24px;
     border-right: 1px solid var(--border);
+    background: var(--surface);
   }
-  .panel:last-child { border-right: none; }
+  .panel:last-child {
+    border-right: none;
+    background: var(--bg);
+    border-left: 1px solid var(--border-subtle);
+  }
   .panel-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    padding-bottom: 6px;
+    letter-spacing: 1.2px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
@@ -109,23 +129,27 @@
   }
   .tree-node .children {
     margin-left: 20px;
-    border-left: 1px solid var(--border);
-    padding-left: 8px;
+    border-left: 1px solid var(--border-subtle);
+    padding-left: 12px;
+    margin-top: 2px;
   }
   .tree-node .children.collapsed { display: none; }
   .node-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 3px 6px;
-    border-radius: 4px;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.1s;
-    min-height: 26px;
+    transition: background 0.15s ease, color 0.15s ease;
+    min-height: 28px;
   }
-  .node-row:hover { background: var(--surface); }
-  .node-row.selected { background: rgba(88, 166, 255, 0.15); }
-  .node-row.dimmed { opacity: 0.3; }
+  .node-row:hover { background: var(--surface-elevated); }
+  .node-row.selected {
+    background: var(--accent-soft);
+    outline: 1px solid rgba(88, 166, 255, 0.35);
+  }
+  .node-row.dimmed { opacity: 0.35; }
   .toggle {
     width: 14px;
     height: 14px;
@@ -153,20 +177,25 @@
     flex: 1;
   }
   .node-badge {
-    font-size: 10px;
-    padding: 1px 5px;
-    border-radius: 3px;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
     white-space: nowrap;
     flex-shrink: 0;
+    font-weight: 500;
+    letter-spacing: 0.3px;
   }
   .badge-canonical { background: rgba(88,166,255,0.15); color: var(--accent); }
   .badge-runtime { background: rgba(210,153,34,0.15); color: var(--orange); }
   .badge-narrative { background: rgba(188,140,255,0.15); color: var(--purple); }
   .badge-artifact { background: rgba(248,81,73,0.15); color: var(--red); }
   .badge-symlink { background: rgba(57,211,83,0.15); color: var(--cyan); }
+  .badge-git-github { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-git-gitlab { background: rgba(252,109,67,0.15); color: #fc6d43; }
+  .badge-git-folder { background: rgba(139,148,158,0.15); color: var(--text-muted); }
 
   .type-domain .icon { color: var(--accent); }
-  .type-repo .icon { color: var(--green); }
+  .type-project .icon { color: var(--green); }
   .type-agent .icon { color: var(--purple); }
   .type-job .icon { color: var(--orange); }
   .type-dag .icon { color: var(--orange); }
@@ -182,32 +211,154 @@
   .type-root .icon { color: var(--accent); }
   .type-virtual_group .icon { color: var(--pink); }
 
-  /* Detail panel */
-  .detail {
-    padding: 16px;
-    overflow-y: auto;
+  /* Right panel: detail + node index */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
     height: calc(100vh - 60px);
+    overflow: hidden;
+    background: var(--bg);
+    border-left: 1px solid var(--border-subtle);
   }
+  .detail {
+    padding: 24px 28px;
+    overflow-y: auto;
+    flex: 0 0 auto;
+    max-height: 50%;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .node-index {
+    flex: 1;
+    min-height: 180px;
+    overflow-y: auto;
+    padding: 16px 28px 24px;
+  }
+  .node-index-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .node-index-root {
+    margin-bottom: 20px;
+  }
+  .node-index-root:last-child { margin-bottom: 0; }
+  .node-index-root-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .node-index-root-label .swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .node-index-root-label .swatch-projects { background: var(--accent); }
+  .node-index-root-label .swatch-data { background: var(--orange); }
+  .node-index-type-group {
+    margin-bottom: 10px;
+  }
+  .node-index-type-group:last-child { margin-bottom: 0; }
+  .node-index-type-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .node-index-type-label .type-swatch {
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  .node-index-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .node-index-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, outline 0.15s;
+    border: 1px solid transparent;
+  }
+  .node-index-chip:hover { background: var(--surface-elevated); }
+  .node-index-chip.selected {
+    outline: 1px solid rgba(88, 166, 255, 0.5);
+    background: var(--accent-soft);
+  }
+  .chip-badge {
+    font-size: 8px;
+    margin-left: 4px;
+    opacity: 0.9;
+  }
+  .chip-github { color: var(--green); }
+  .chip-gitlab { color: #fc6d43; }
+  .chip-folder { opacity: 0.6; }
+  .depth-badge {
+    font-size: 9px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    min-width: 14px;
+  }
+  .keyfiles-badge {
+    font-size: 9px;
+    color: var(--text-muted);
+    background: rgba(139,148,158,0.15);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .key-file-path {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+  .key-file-path:hover { color: var(--accent); }
   .detail-empty {
     color: var(--text-muted);
     font-style: italic;
-    margin-top: 40px;
+    margin-top: 60px;
     text-align: center;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .detail-empty::before {
+    content: '◈';
+    display: block;
+    font-size: 32px;
+    color: var(--border);
+    margin-bottom: 16px;
   }
   .detail h2 {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
   }
   .detail-section {
     margin-bottom: 16px;
   }
   .detail-section h3 {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    font-weight: 600;
   }
   .detail-field {
     display: flex;
@@ -255,20 +406,73 @@
   }
   .search-box:focus { outline: none; border-color: var(--accent); }
   .search-box::placeholder { color: var(--text-muted); }
+  .node-label mark {
+    background: rgba(88, 166, 255, 0.35);
+    color: inherit;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+  .loading-msg {
+    color: var(--text-muted);
+    padding: 24px;
+    text-align: center;
+    font-style: italic;
+  }
+  .error-msg {
+    color: var(--red);
+    padding: 24px;
+    text-align: center;
+    background: rgba(248, 81, 73, 0.1);
+    border-radius: 6px;
+    margin: 16px;
+  }
+  .tree-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .tree-toolbar .small-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    transition: all 0.15s;
+  }
+  .tree-toolbar .small-btn:hover { border-color: var(--accent); color: var(--text); }
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .view-toggle .small-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  #graph-container {
+    width: 100%;
+    height: calc(100vh - 260px);
+    min-height: 360px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .tree-view { display: block; }
+  .tree-view.hidden { display: none; }
 
   /* Stats bar */
   .stats-bar {
     display: flex;
-    gap: 16px;
-    padding: 6px 24px;
+    gap: 24px;
+    padding: 12px 28px;
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    font-size: 11px;
+    background: var(--surface-elevated);
+    font-size: 12px;
     color: var(--text-muted);
     flex-wrap: wrap;
   }
-  .stat { display: flex; gap: 4px; }
-  .stat .num { color: var(--text); font-weight: 600; }
+  .stat { display: flex; gap: 6px; align-items: baseline; }
+  .stat .num { color: var(--text); font-weight: 600; font-size: 14px; }
 
   /* Breadcrumbs */
   .breadcrumbs {
@@ -326,7 +530,25 @@
     transition: all 0.15s;
     white-space: nowrap;
   }
-  .copy-btn:hover { border-color: var(--accent); color: var(--text); }
+  .copy-btn:hover { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+  .type-desc {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .type-desc-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
   /* Relation links */
   .rel-link {
@@ -344,15 +566,17 @@
 
   /* Legend */
   .legend-bar {
-    display: none;
-    padding: 10px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 14px 28px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
-    gap: 24px;
+    gap: 32px;
+    line-height: 1.7;
   }
-  .legend-bar.open { display: flex; flex-wrap: wrap; }
+  .legend-bar.collapsed { display: none; }
   .legend-group {
     display: flex;
     flex-direction: column;
@@ -402,6 +626,68 @@
   .legend-btn:hover { border-color: var(--accent); color: var(--text); }
   .legend-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
+  /* Glossary bar */
+  .glossary-bar {
+    display: none;
+    padding: 20px 28px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-elevated);
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+  .glossary-bar.visible { display: block; }
+  .glossary-bar-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .glossary-bar-title .source {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .glossary-section {
+    margin-bottom: 20px;
+  }
+  .glossary-section:last-child { margin-bottom: 0; }
+  .glossary-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .glossary-term {
+    margin-bottom: 12px;
+  }
+  .glossary-term:last-child { margin-bottom: 0; }
+  .glossary-term-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .glossary-term-def {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .glossary-term-def table { border-collapse: collapse; margin-top: 6px; }
+  .glossary-term-def td, .glossary-term-def th {
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    font-size: 10px;
+    text-align: left;
+  }
+
   /* Toast */
   .toast {
     position: fixed;
@@ -425,7 +711,11 @@
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
     .panel { border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; }
-    .detail { max-height: 50vh; }
+    .right-panel { max-height: 50vh; }
+    .detail { max-height: 40%; }
+    .node-index { min-height: 120px; }
+    .filters { margin-left: 0; margin-top: 8px; width: 100%; }
+    .search-box { flex: 1; min-width: 120px; }
   }
 </style>
 </head>
@@ -433,43 +723,55 @@
 
 <header>
   <h1>System Map</h1>
-  <span class="meta">v2.2 &middot; generated 2026-02-10 &middot; read-only &middot; /Users/involute</span>
+  <span class="meta" id="meta-line">Loading...</span>
   <div class="filters">
     <label>Filter:</label>
     <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="domain">Domains</button>
+    <button class="filter-btn" data-filter="project">Projects</button>
     <button class="filter-btn" data-filter="agent">Agents</button>
     <button class="filter-btn" data-filter="job">Jobs</button>
     <button class="filter-btn" data-filter="data">Data</button>
     <button class="filter-btn" data-filter="canonical">Canonical</button>
     <button class="filter-btn" data-filter="runtime">Runtime</button>
-    <input type="text" class="search-box" id="search" placeholder="Search..." />
+    <input type="text" class="search-box" id="search" placeholder="Search... (⌘K)" />
     <button class="legend-btn" id="legend-toggle" title="Toggle legend">?</button>
+    <button class="legend-btn" id="glossary-toggle" title="Toggle glossary">G</button>
   </div>
 </header>
+
+<div class="glossary-bar" id="glossary-bar">
+  <div class="glossary-bar-title">Glossary <span class="source">cursor/registry/glossary.md</span></div>
+  <div id="glossary-content"></div>
+</div>
 
 <div class="legend-bar" id="legend-bar">
   <div class="legend-group">
     <span class="legend-group-title">Roles</span>
-    <div class="legend-item"><span class="legend-swatch" style="background:rgba(88,166,255,0.4);"></span> canonical &mdash; source of truth (code, config, registry)</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:rgba(210,153,34,0.4);"></span> runtime &mdash; generated at runtime (data, logs, indexes)</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:rgba(188,140,255,0.4);"></span> narrative &mdash; human-written context (memory, notes)</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:rgba(248,81,73,0.4);"></span> artifact &mdash; build output (dashboards, reports)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(88,166,255,0.4);"></span> <b>canonical</b> &mdash; source of truth (code, config, registry). Versioned, authoritative.</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(210,153,34,0.4);"></span> <b>runtime</b> &mdash; generated at runtime (data, logs, indexes). Ephemeral or regenerable.</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(188,140,255,0.4);"></span> <b>narrative</b> &mdash; human-written context (memory, notes). Aids AI reasoning.</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:rgba(248,81,73,0.4);"></span> <b>artifact</b> &mdash; build output (dashboards, reports). Never edited manually.</div>
   </div>
   <div class="legend-group">
     <span class="legend-group-title">Indicators</span>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&rarr;</span> symlink &mdash; real data lives in DATA_ROOT; target shown in details</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--red);">&varr;</span> secrets &mdash; sensitive files (API keys, sessions) in data/_secrets</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x25B8;</span> virtual group &mdash; UI-only grouping node, not a real filesystem path</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&rarr;</span> <b>symlink</b> &mdash; points to real data in DATA_ROOT; target shown in details</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--red);">&varr;</span> <b>secrets</b> &mdash; API keys, sessions; in data/_secrets. Excluded from sync.</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x25B8;</span> <b>virtual group</b> &mdash; UI-only grouping (e.g. All Agents). Not a filesystem path.</div>
   </div>
   <div class="legend-group">
-    <span class="legend-group-title">Node types</span>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--accent);">&#x25A0;</span> domain &mdash; top-level project area</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--green);">&#x25CB;</span> repo &mdash; git repository</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--purple);">&#x2605;</span> agent &mdash; Cursor prompt agent</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--orange);">&#x25B6;</span> dag / job &mdash; scheduled pipeline or script</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x2699;</span> utility &mdash; infrastructure or knowledge tool</div>
-    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&#x25A3;</span> raw / derived &mdash; data area in DATA_ROOT</div>
+    <span class="legend-group-title">Structure</span>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--accent);">&#x25A0;</span> <b>domain</b> &mdash; logical grouping (core, cursor, public, knowledge...)</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--green);">&#x25CB;</span> <b>project</b> &mdash; folder in project layer. Badges: <span class="node-badge badge-git-github">GitHub</span> <span class="node-badge badge-git-gitlab">GitLab</span> <span class="node-badge badge-git-folder">folder</span></div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--purple);">&#x2605;</span> <b>agent</b> &mdash; Cursor prompt agent (LLM persona in agents/*.md)</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--orange);">&#x25B6;</span> <b>dag / job</b> &mdash; scheduled pipeline or script</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x2699;</span> <b>utility</b> &mdash; infrastructure or helper tool</div>
+  </div>
+  <div class="legend-group">
+    <span class="legend-group-title">Data</span>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&#x25A3;</span> <b>raw</b> &mdash; untransformed input in DATA_ROOT</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--cyan);">&#x25A2;</span> <b>derived</b> &mdash; processed data, indexes, normalized outputs</div>
+    <div class="legend-item"><span class="legend-icon" style="color:var(--text-muted);">&#x25A1;</span> <b>logs</b> &mdash; execution records; <b>cache</b> &mdash; fast-lookup structures</div>
   </div>
 </div>
 
@@ -481,11 +783,34 @@
       <span>Structure</span>
       <span class="count" id="node-count"></span>
     </div>
-    <div id="projects-tree"></div>
-    <div id="data-tree" style="margin-top: 16px;"></div>
+    <div class="view-toggle" id="view-toggle" style="display:none;">
+      <button class="small-btn active" id="view-tree-btn" data-view="tree">Tree</button>
+      <button class="small-btn" id="view-graph-btn" data-view="graph">Graph</button>
+    </div>
+    <div class="tree-toolbar" id="tree-toolbar" style="display:none;">
+      <button class="small-btn" id="expand-all-btn">Expand all</button>
+      <button class="small-btn" id="collapse-all-btn">Collapse all</button>
+    </div>
+    <div class="tree-view" id="tree-view">
+      <div id="projects-tree"><div class="loading-msg">Loading system map...</div></div>
+      <div id="data-tree" style="margin-top: 16px;"></div>
+    </div>
+    <div id="graph-wrapper" style="display:none;">
+      <div class="tree-toolbar" id="graph-toolbar" style="margin-bottom:8px;">
+        <button class="small-btn" id="graph-fit-btn" title="Fit graph to view">Fit</button>
+        <button class="small-btn" id="graph-select-btn" title="Focus selected node" style="display:none;">Focus</button>
+      </div>
+      <div id="graph-container"></div>
+    </div>
   </div>
-  <div class="detail" id="detail-panel">
-    <div class="detail-empty">Select a node to inspect</div>
+  <div class="right-panel">
+    <div class="detail" id="detail-panel">
+      <div class="detail-empty">Select a node to inspect</div>
+    </div>
+    <div class="node-index" id="node-index">
+      <div class="node-index-title">Full index by type</div>
+      <div id="node-index-content"></div>
+    </div>
   </div>
 </div>
 
@@ -498,6 +823,28 @@ let selectedId = null;
 let activeFilter = 'all';
 let searchTerm = '';
 
+/* Entity type descriptions — shown in detail panel "What is this?" */
+const ENTITY_DESCRIPTIONS = {
+  domain: 'A logical grouping of related projects and data by purpose (e.g. core, cursor, public, knowledge). Defines the top-level structure of your workspace.',
+  project: 'Folder in the project layer (projects/). Badge: GitHub/GitLab = has git; folder = no git.',
+  agent: 'A Cursor prompt agent — an LLM persona definition in agents/*.md. Not executable; provides specialized AI instructions (e.g. lab_curator, ops_monitor).',
+  dag: 'A Directed Acyclic Graph — multi-step pipeline. Orchestrates jobs in sequence.',
+  job: 'An executable script or task. Fetches data, normalizes, generates reports.',
+  utility: 'Infrastructure or knowledge tool — helper script, CLI, or maintenance task. Not part of the main DAG pipeline.',
+  raw: 'Raw input data in DATA_ROOT. Untransformed files (exports, captures). Regenerable or replaceable from source.',
+  derived: 'Processed or transformed data in DATA_ROOT. Built from raw data or jobs. May include indexes, normalized datasets.',
+  logs: 'Execution records from jobs and pipelines.',
+  cache: 'Derived structures for fast lookup (FTS index, context JSON). Regenerable from source vault.',
+  secrets: 'Sensitive files: API keys, sessions, tokens. Stored in data/_secrets. Excluded from sync and exports.',
+  artifact: 'Generated output — reports, dashboards, HTML, JSON. Under reports/ or public/. Never edited manually; always regenerated.',
+  symlink: 'Points from a path in a project to real data in DATA_ROOT. Keeps large data out of git while making it accessible.',
+  virtual_group: 'UI-only aggregation node. Groups entities (e.g. All Agents) for navigation. Not a real filesystem path.',
+  root: 'Logical root of projects/ or data/. PROJECTS_ROOT and DATA_ROOT define the two main trees.',
+  registry: 'Cursor registry — paths, architecture, agents, glossary. Canonical metadata about the system.',
+  memory: 'Human-written context: notes, long-term memory for agents. Narrative role; aids AI reasoning.',
+  dir: 'A directory or generic grouping in the tree.',
+};
+
 /* Node registry: id → tree node object */
 const nodeRegistry = new Map();
 /* Parent map: id → parent id (for breadcrumbs / ancestor expansion) */
@@ -505,9 +852,18 @@ const parentMap = new Map();
 /* DOM map: id → DOM .node-row element (for scrolling / selection) */
 const domMap = new Map();
 
+/* Type colors for node index swatches */
+const TYPE_COLORS = {
+  root: '#58a6ff', domain: '#58a6ff', project: '#3fb950', agent: '#bc8cff',
+  dag: '#d29922', job: '#d29922', utility: '#8b949e', raw: '#39d353',
+  derived: '#58a6ff', logs: '#8b949e', cache: '#8b949e', secrets: '#f85149',
+  artifact: '#f85149', symlink: '#39d353', virtual_group: '#f778ba',
+  registry: '#58a6ff', memory: '#58a6ff', dir: '#8b949e',
+};
+
 /* ── Icons ── */
 const ICONS = {
-  root: '\u25C6', domain: '\u25A0', repo: '\u25CB', agent: '\u2605',
+  root: '\u25C6', domain: '\u25A0', project: '\u25CB', agent: '\u2605',
   dag: '\u25B6', job: '\u25B7', utility: '\u2699', data: '\u25A3',
   raw: '\u25A3', derived: '\u25A2', logs: '\u25A1', cache: '\u25A1',
   secrets: '\u26A0', artifact: '\u25A2', dir: '\u25B8', symlink: '\u2192',
@@ -523,9 +879,17 @@ function roleBadge(role) {
   return `<span class="node-badge ${cls}">${role}</span>`;
 }
 
+function gitBadge(gitRemote) {
+  if (!gitRemote) return '<span class="node-badge badge-git-folder" title="Project folder (no git)">folder</span>';
+  if (gitRemote === 'github') return '<span class="node-badge badge-git-github" title="Git repo on GitHub">GitHub</span>';
+  if (gitRemote === 'gitlab') return '<span class="node-badge badge-git-gitlab" title="Git repo on GitLab">GitLab</span>';
+  return '';
+}
+
 function matchesFilter(nodeType, nodeRole) {
   if (activeFilter === 'all') return true;
   if (activeFilter === 'domain') return nodeType === 'domain';
+  if (activeFilter === 'project') return nodeType === 'project';
   if (activeFilter === 'agent') return nodeType === 'agent';
   if (activeFilter === 'job') return nodeType === 'job' || nodeType === 'dag' || nodeType === 'utility';
   if (activeFilter === 'data') return ['data','raw','derived','logs','cache','secrets','artifact'].includes(nodeType);
@@ -559,26 +923,26 @@ function buildProjectsTree() {
     };
     reg(domainNode, rootId);
 
-    (domain.repos || []).forEach(repo => {
-      const repoNode = {
-        id: repo.id, name: repo.name, type: 'repo',
-        role: repo.role || 'canonical', path: repo.path,
-        description: repo.description, children: [], data: repo,
+    (domain.projects || []).forEach(proj => {
+      const projectNode = {
+        id: proj.id, name: proj.name, type: 'project',
+        role: proj.role || 'canonical', path: proj.path,
+        description: proj.description, children: [], data: proj,
       };
-      reg(repoNode, domainNode.id);
+      reg(projectNode, domainNode.id);
 
-      (repo.symlinks || []).forEach(sl => {
+      (proj.symlinks || []).forEach(sl => {
         const slNode = {
-          id: `sym-in.${repo.id}.${sl.from.replace(/\//g,'-')}`,
+          id: `sym-in.${proj.id}.${sl.from.replace(/\//g,'-')}`,
           name: `${sl.from} \u2192 \u2026`, type: 'symlink',
           role: 'runtime', path: sl.from,
           description: `Symlink: ${sl.from} \u2192 ${sl.to}`,
           children: [], data: sl,
         };
-        reg(slNode, repoNode.id);
-        repoNode.children.push(slNode);
+        reg(slNode, projectNode.id);
+        projectNode.children.push(slNode);
       });
-      domainNode.children.push(repoNode);
+      domainNode.children.push(projectNode);
     });
 
     /* Cursor special subdirs */
@@ -607,45 +971,6 @@ function buildProjectsTree() {
       });
     }
 
-    /* Jobs in personal-os */
-    if (domain.name === 'core') {
-      const posRepo = domainNode.children.find(c => c.name === 'personal-os');
-      if (posRepo) {
-        const jobsId = 'group.personal-os-runtime';
-        const jobsNode = {
-          id: jobsId, name: 'runtime (jobs & DAGs)', type: 'dir',
-          role: 'canonical', path: 'core/personal-os/runtime',
-          description: 'Automation pipeline scripts and DAGs',
-          children: [], data: {},
-        };
-        reg(jobsNode, posRepo.id);
-
-        const addGroup = (gid, gname, desc, filterFn) => {
-          const group = {
-            id: gid, name: gname, type: 'dir', role: 'canonical',
-            path: '', description: desc, children: [], data: {},
-          };
-          reg(group, jobsId);
-          DATA.jobs.filter(filterFn).forEach(j => {
-            const jNode = {
-              id: j.id, name: j.name, type: j.type,
-              role: 'canonical', path: j.code_path,
-              description: j.schedule ? `schedule: ${j.schedule}` :
-                (j.called_by && j.called_by.target ? `called by: ${j.called_by.target.split('.').pop()}` :
-                (j.purpose || '')),
-              children: [], data: j,
-            };
-            reg(jNode, gid);
-            group.children.push(jNode);
-          });
-          jobsNode.children.push(group);
-        };
-        addGroup('group.dags', 'dags', 'Directed Acyclic Graphs', j => j.type === 'dag');
-        addGroup('group.pipeline', 'pipeline scripts', 'Pipeline scripts called by DAGs', j => j.type === 'job');
-        addGroup('group.util', 'utilities', 'Infrastructure and knowledge utilities', j => j.type === 'utility');
-        posRepo.children.push(jobsNode);
-      }
-    }
     nodes.push(domainNode);
   });
 
@@ -754,6 +1079,24 @@ function buildDataTree() {
   return nodes;
 }
 
+/* ── Highlight search term in text ── */
+function highlightSearch(text) {
+  if (!searchTerm || !text) return text;
+  const lower = text.toLowerCase();
+  const term = searchTerm.toLowerCase();
+  const idx = lower.indexOf(term);
+  if (idx < 0) return text;
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + term.length);
+  const after = text.slice(idx + term.length);
+  return before + '<mark>' + escapeHtml(match) + '</mark>' + after;
+}
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
 /* ── Render tree node to DOM ── */
 function renderTreeNode(node, container, depth) {
   const el = document.createElement('div');
@@ -762,8 +1105,10 @@ function renderTreeNode(node, container, depth) {
   const show = shouldShow(node.type, node.role, node.name);
 
   const row = document.createElement('div');
-  row.classList.add('node-row', `type-${node.type}`);
+  row.classList.add('node-row', `type-${node.type}`, `depth-${Math.min(depth, 4)}`);
   row.dataset.id = node.id;
+  row.dataset.name = node.name;
+  row.dataset.depth = String(depth);
   if (!show && activeFilter !== 'all') row.classList.add('dimmed');
 
   /* Store DOM reference */
@@ -784,7 +1129,7 @@ function renderTreeNode(node, container, depth) {
 
   const labelEl = document.createElement('span');
   labelEl.classList.add('node-label');
-  labelEl.textContent = node.name;
+  labelEl.innerHTML = searchTerm ? highlightSearch(node.name) : escapeHtml(node.name);
   row.appendChild(labelEl);
 
   if (node.size) {
@@ -792,6 +1137,41 @@ function renderTreeNode(node, container, depth) {
     sizeEl.classList.add('node-badge', 'badge-runtime');
     sizeEl.textContent = node.size;
     row.appendChild(sizeEl);
+  }
+  if (node.type === 'project' && node.data) {
+    if (node.data.git_remote !== undefined) {
+      const gb = gitBadge(node.data.git_remote);
+      if (gb) {
+        const tmp = document.createElement('span');
+        tmp.innerHTML = gb;
+        row.appendChild(tmp.firstChild);
+      }
+    }
+    if (node.data.project_kind === 'knowledge') {
+      const kb = document.createElement('span');
+      kb.className = 'node-badge badge-narrative';
+      kb.textContent = 'knowledge';
+      kb.title = 'Knowledge base (Obsidian vault)';
+      row.appendChild(kb);
+    }
+  }
+  if (depth > 0 && depth <= 3) {
+    const depthSpan = document.createElement('span');
+    depthSpan.className = 'depth-badge';
+    depthSpan.textContent = 'L' + depth;
+    depthSpan.title = 'Depth level ' + depth;
+    row.appendChild(depthSpan);
+  }
+  const kf = node.data?.key_files;
+  if (kf && kf.length) {
+    const byExt = {};
+    kf.forEach(f => { byExt[f.ext] = (byExt[f.ext] || 0) + 1; });
+    const parts = ['py','md','sh'].filter(e => byExt[e]).map(e => byExt[e] + e);
+    const kfSpan = document.createElement('span');
+    kfSpan.className = 'keyfiles-badge';
+    kfSpan.textContent = parts.join(' ');
+    kfSpan.title = kf.length + ' key files (.sh .md .py)';
+    row.appendChild(kfSpan);
   }
   const badge = roleBadge(node.role);
   if (badge) {
@@ -837,6 +1217,7 @@ function renderTrees() {
   const projRow = document.createElement('div');
   projRow.classList.add('node-row', 'type-root');
   projRow.dataset.id = projRoot.id;
+  projRow.dataset.name = 'projects/';
   projRow.style.marginBottom = '4px';
   projRow.innerHTML = `<span class="icon" style="color:var(--accent);">\u25C6</span>
     <span class="node-label" style="font-weight:600;">projects/</span>
@@ -856,6 +1237,7 @@ function renderTrees() {
   const dataRow = document.createElement('div');
   dataRow.classList.add('node-row', 'type-root');
   dataRow.dataset.id = dataRoot.id;
+  dataRow.dataset.name = 'data/';
   dataRow.style.marginBottom = '4px';
   dataRow.innerHTML = `<span class="icon" style="color:var(--orange);">\u25C6</span>
     <span class="node-label" style="font-weight:600;">data/</span>
@@ -872,14 +1254,221 @@ function renderTrees() {
   /* Node count */
   let total = nodeRegistry.size;
   document.getElementById('node-count').textContent = `${total} nodes`;
+
+  renderNodeIndex();
+  renderGraph();
+}
+
+/* ── Network graph ── */
+let graphNetwork = null;
+
+function renderGraph() {
+  const container = document.getElementById('graph-container');
+  if (!container || typeof vis === 'undefined') return;
+
+  const nodes = [];
+  const edges = [];
+  const skipVref = (id) => id.startsWith('vref.');
+
+  const SHAPES = { root: 'diamond', domain: 'box', project: 'ellipse', agent: 'star', virtual_group: 'triangle', symlink: 'triangleDown', dir: 'square' };
+  nodeRegistry.forEach((node, id) => {
+    if (skipVref(id)) return;
+    const color = TYPE_COLORS[node.type] || '#8b949e';
+    const size = node.type === 'root' ? 25 : (node.type === 'domain' ? 20 : 14);
+    let tooltip = `${node.name}\n${node.type}`;
+    if (node.type === 'project' && node.data?.git_remote) {
+      tooltip += ` · ${node.data.git_remote === 'github' ? 'GitHub' : node.data.git_remote === 'gitlab' ? 'GitLab' : 'git'}`;
+    }
+    nodes.push({
+      id,
+      label: node.name.length > 20 ? node.name.slice(0, 17) + '…' : node.name,
+      title: tooltip,
+      color: { background: color, border: color, highlight: { background: color, border: '#fff' } },
+      size,
+      shape: SHAPES[node.type] || 'dot',
+      font: { size: 11, color: '#e6edf3' },
+    });
+    const parentId = parentMap.get(id);
+    if (parentId && !skipVref(parentId)) {
+      edges.push({ from: parentId, to: id, arrows: 'to' });
+    }
+  });
+
+  const data = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+  const options = {
+    nodes: { borderWidth: 1, shape: 'dot' },
+    edges: { width: 1, color: { color: '#30363d' } },
+    physics: {
+      enabled: true,
+      barnesHut: {
+        gravitationalConstant: -3000,
+        centralGravity: 0.1,
+        springLength: 120,
+        avoidOverlap: 0.2,
+      },
+    },
+    interaction: { hover: true, tooltipDelay: 100 },
+  };
+
+  if (graphNetwork) graphNetwork.destroy();
+  graphNetwork = new vis.Network(container, data, options);
+
+  graphNetwork.on('click', (params) => {
+    if (params.nodes.length) selectNodeById(params.nodes[0]);
+  });
+}
+
+/* ── Node index: full list by type for projects/ and data/ ── */
+function getRootForNode(id) {
+  if (id === 'root.projects') return 'projects';
+  if (id === 'root.data') return 'data';
+  let cur = parentMap.get(id);
+  while (cur) {
+    if (cur === 'root.projects') return 'projects';
+    if (cur === 'root.data') return 'data';
+    cur = parentMap.get(cur);
+  }
+  return null;
+}
+
+function renderNodeIndex() {
+  const container = document.getElementById('node-index-content');
+  if (!container) return;
+
+  const byRoot = { projects: [], data: [] };
+  const skipIds = new Set(['root.projects', 'root.data']); /* roots shown as headers */
+
+  nodeRegistry.forEach((node, id) => {
+    if (skipIds.has(id)) return;
+    if (id.startsWith('vref.')) return; /* skip virtual refs; real node is listed */
+    const root = getRootForNode(id);
+    if (root && byRoot[root]) {
+      byRoot[root].push(node);
+    }
+  });
+
+  const typeOrder = ['domain', 'project', 'virtual_group', 'registry', 'memory', 'dir', 'agent', 'dag', 'job', 'utility', 'symlink', 'raw', 'derived', 'logs', 'cache', 'secrets', 'artifact'];
+  const typeLabel = { domain: 'domains', project: 'projects', virtual_group: 'virtual', registry: 'registry', memory: 'memory', dir: 'dirs', agent: 'agents', dag: 'dags', job: 'jobs', utility: 'utilities', symlink: 'symlinks', raw: 'raw', derived: 'derived', logs: 'logs', cache: 'cache', secrets: 'secrets', artifact: 'artifacts' };
+
+  function buildRootHtml(rootKey, label, swatchClass) {
+    const nodes = byRoot[rootKey];
+    const byType = {};
+    nodes.forEach(n => {
+      const t = n.type || 'dir';
+      if (!byType[t]) byType[t] = [];
+      byType[t].push(n);
+    });
+
+    let html = `<div class="node-index-root">`;
+    html += `<div class="node-index-root-label"><span class="swatch ${swatchClass}"></span> ${label}/</div>`;
+
+    const order = typeOrder.filter(t => byType[t]?.length);
+    order.forEach(type => {
+      const list = byType[type].sort((a, b) => a.name.localeCompare(b.name));
+      const color = TYPE_COLORS[type] || '#8b949e';
+      html += `<div class="node-index-type-group">`;
+      html += `<div class="node-index-type-label"><span class="type-swatch" style="background:${color}"></span> ${typeLabel[type] || type} (${list.length})</div>`;
+      html += `<div class="node-index-chips">`;
+      list.forEach(n => {
+        const sel = n.id === selectedId ? ' selected' : '';
+        const gr = n.type === 'project' && n.data?.git_remote;
+        const tip = gr ? (gr === 'github' ? 'GitHub' : gr === 'gitlab' ? 'GitLab' : '') : 'no git';
+        const title = n.type === 'project' ? ` title="${tip}"` : '';
+        let badge = '';
+        if (n.type === 'project' && gr) {
+          badge = gr === 'github' ? '<span class="chip-badge chip-github">GH</span>' : '<span class="chip-badge chip-gitlab">GL</span>';
+        } else if (n.type === 'project') {
+          badge = '<span class="chip-badge chip-folder">📁</span>';
+        }
+        html += `<span class="node-index-chip${sel}" data-id="${escapeHtml(n.id)}" style="color:${color}"${title}>${escapeHtml(n.name)}${badge}</span>`;
+      });
+      html += `</div></div>`;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  container.innerHTML = buildRootHtml('projects', 'projects', 'swatch-projects') + buildRootHtml('data', 'data', 'swatch-data');
+
+  container.querySelectorAll('.node-index-chip').forEach(chip => {
+    chip.addEventListener('click', () => selectNodeById(chip.dataset.id));
+  });
+}
+
+/* ── Glossary ── */
+function renderGlossary() {
+  const container = document.getElementById('glossary-content');
+  if (!container) return;
+  const items = DATA?.glossary || [];
+  if (!items.length) {
+    container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No glossary data. Run ./update_system_map.sh</div>';
+    return;
+  }
+  const bySection = {};
+  items.forEach(it => {
+    const s = it.section || 'Other';
+    if (!bySection[s]) bySection[s] = [];
+    bySection[s].push(it);
+  });
+  function formatDef(text) {
+    if (!text) return '';
+    const lines = text.split('\n');
+    const result = [];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.trim().startsWith('|') && i + 1 < lines.length && lines[i + 1].includes('---')) {
+        const tableRows = [];
+        while (i < lines.length && lines[i].trim().startsWith('|')) {
+          tableRows.push(lines[i].split('|').slice(1, -1).map(c => c.trim()));
+          i++;
+        }
+        if (tableRows.length >= 2) {
+          let tbl = '<table><thead><tr>';
+          tableRows[0].forEach(c => { tbl += '<th>' + escapeHtml(c) + '</th>'; });
+          tbl += '</tr></thead><tbody>';
+          tableRows.slice(2).forEach(row => {
+            tbl += '<tr>';
+            row.forEach(c => { tbl += '<td>' + escapeHtml(c) + '</td>'; });
+            tbl += '</tr>';
+          });
+          result.push(tbl + '</tbody></table>');
+        }
+        continue;
+      }
+      result.push(escapeHtml(line).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>') + '<br>');
+      i++;
+    }
+    return result.join('');
+  }
+  let html = '';
+  Object.keys(bySection).forEach(section => {
+    html += `<div class="glossary-section">`;
+    html += `<div class="glossary-section-title">${escapeHtml(section)}</div>`;
+    bySection[section].forEach(it => {
+      html += `<div class="glossary-term">`;
+      html += `<div class="glossary-term-name">${escapeHtml(it.term)}</div>`;
+      html += `<div class="glossary-term-def">${formatDef(it.definition)}</div>`;
+      html += `</div>`;
+    });
+    html += `</div>`;
+  });
+  container.innerHTML = html;
 }
 
 /* ── Stats bar ── */
 function renderStats() {
   const stats = document.getElementById('stats-bar');
   const domainCount = DATA.domains.length;
+  let projectCount = 0;
   let repoCount = 0;
-  DATA.domains.forEach(d => { repoCount += (d.repos || []).length; });
+  DATA.domains.forEach(d => {
+    (d.projects || []).forEach(p => {
+      projectCount++;
+      if (p.git_remote) repoCount++;
+    });
+  });
   const agentCount = DATA.agents.length;
   const jobCount = DATA.jobs.filter(j => j.type === 'job' || j.type === 'dag').length;
   const utilityCount = DATA.jobs.filter(j => j.type === 'utility').length;
@@ -887,7 +1476,8 @@ function renderStats() {
   const symlinkCount = DATA.symlinks.length;
   stats.innerHTML = `
     <span class="stat"><span class="num">${domainCount}</span> domains</span>
-    <span class="stat"><span class="num">${repoCount}</span> repos</span>
+    <span class="stat"><span class="num">${projectCount}</span> projects</span>
+    <span class="stat" title="Projects with git (GitHub/GitLab)"><span class="num">${repoCount}</span> with git</span>
     <span class="stat"><span class="num">${agentCount}</span> agents</span>
     <span class="stat"><span class="num">${jobCount}</span> jobs/DAGs</span>
     <span class="stat"><span class="num">${utilityCount}</span> utilities</span>
@@ -946,6 +1536,16 @@ function selectNodeById(id) {
   selectedId = id;
   history.replaceState(null, '', '#node=' + encodeURIComponent(id));
   renderDetail(node);
+  renderNodeIndex();
+
+  /* Sync selection to graph when visible */
+  const gw = document.getElementById('graph-wrapper');
+  if (graphNetwork && gw?.style.display !== 'none') {
+    graphNetwork.selectNodes([id]);
+    graphNetwork.focus(id, { animation: { duration: 300 } });
+    const fsb = document.getElementById('graph-select-btn');
+    if (fsb) fsb.style.display = 'inline-block';
+  }
 }
 
 /* ── Navigate from URL hash ── */
@@ -990,6 +1590,14 @@ function buildMarkdown(node) {
 
   const d = node.data;
   if (d) {
+    /* Project */
+    if (node.type === 'project') {
+      if (d.git_remote !== undefined) {
+        const gr = d.git_remote || 'folder (no git)';
+        lines.push(`- **Git:** ${gr === 'github' ? 'GitHub' : gr === 'gitlab' ? 'GitLab' : gr}`);
+      }
+      if (d.project_kind) lines.push(`- **Kind:** ${d.project_kind}`);
+    }
     /* Agent */
     if (node.type === 'agent') {
       if (d.scope) lines.push(`- **Scope:** ${Array.isArray(d.scope) ? d.scope.join(', ') : d.scope}`);
@@ -1063,17 +1671,40 @@ function renderDetail(node) {
   html += '</div>';
 
   /* Title + toolbar */
-  html += `<h2>${node.name}</h2>`;
+  html += `<h2>${escapeHtml(node.name)}</h2>`;
   html += `<div class="detail-toolbar">`;
-  html += `<span class="node-id-label">${node.id}</span>`;
+  html += `<span class="node-id-label">${escapeHtml(node.id)}</span>`;
   html += `<button class="copy-btn" id="copy-link-btn" title="Copy deep link">Link</button>`;
+  if (node.path || (node.data && (node.data.from || node.data.to || node.data.definition))) {
+    const pathToCopy = (node.type === 'symlink' && node.data?.to) ? node.data.to
+      : (node.path || node.data?.from || node.data?.to || node.data?.definition || '');
+    if (pathToCopy) {
+      const safePath = String(pathToCopy).replace(/"/g, '&quot;');
+      html += `<button class="copy-btn" id="copy-path-btn" title="Copy path" data-path="${safePath}">Path</button>`;
+    }
+  }
   html += `<button class="copy-btn" id="copy-md-btn" title="Copy Markdown summary">Copy MD</button>`;
   html += `</div>`;
 
   /* Core fields */
+  const depth = getBreadcrumbs(node.id).length - 1;
   html += `<div class="detail-section">`;
   html += `<div class="detail-field"><span class="label">Type</span><span class="value">${node.type}</span></div>`;
   html += `<div class="detail-field"><span class="label">Role</span><span class="value">${node.role || '\u2014'}</span></div>`;
+  if (depth >= 0) {
+    html += `<div class="detail-field"><span class="label">Depth</span><span class="value">${depth} <span style="color:var(--text-muted);font-size:10px;">(granularity level)</span></span></div>`;
+  }
+  if (node.type === 'project' && node.data) {
+    const d = node.data;
+    if (d.git_remote !== undefined) {
+      const gr = d.git_remote;
+      const gitLabel = gr ? (gr === 'github' ? 'GitHub' : gr === 'gitlab' ? 'GitLab' : '—') : 'folder (no git)';
+      html += `<div class="detail-field"><span class="label">Git</span><span class="value">${gitLabel}</span></div>`;
+    }
+    if (d.project_kind) {
+      html += `<div class="detail-field"><span class="label">Kind</span><span class="value">${d.project_kind}</span></div>`;
+    }
+  }
   if (node.path) {
     html += `<div class="detail-field"><span class="label">Path</span><span class="value path">${node.path}</span></div>`;
   }
@@ -1084,6 +1715,15 @@ function renderDetail(node) {
     html += `<div class="detail-field"><span class="label">Size</span><span class="value">${node.size}</span></div>`;
   }
   html += `</div>`;
+
+  /* What is this? — type description */
+  const typeDesc = ENTITY_DESCRIPTIONS[node.type];
+  if (typeDesc) {
+    html += `<div class="type-desc">`;
+    html += `<div class="type-desc-title">What is this?</div>`;
+    html += typeDesc;
+    html += `</div>`;
+  }
 
   const d = node.data;
 
@@ -1150,11 +1790,25 @@ function renderDetail(node) {
   }
 
   /* Repo symlinks */
-  if (node.type === 'repo' && d && d.symlinks && d.symlinks.length) {
+  if (node.type === 'project' && d && d.symlinks && d.symlinks.length) {
     html += `<div class="detail-section"><h3>Data Symlinks</h3>`;
     html += `<ul class="detail-list">`;
     d.symlinks.forEach(sl => {
       html += `<li><span style="color:var(--text)">${sl.from}</span> <span style="color:var(--cyan)">\u2192</span> <span style="color:var(--accent)">${sl.to}</span></li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  /* Key files (.sh .md .py) */
+  if (d && d.key_files && d.key_files.length) {
+    const base = node.path ? node.path + '/' : '';
+    const byExt = { py: 'var(--green)', md: 'var(--purple)', sh: 'var(--orange)' };
+    html += `<div class="detail-section"><h3>Key files (${d.key_files.length})</h3>`;
+    html += `<ul class="detail-list key-files-list">`;
+    d.key_files.forEach(f => {
+      const fullPath = base + f.rel_path;
+      const extColor = byExt[f.ext] || 'var(--text-muted)';
+      html += `<li><span style="color:${extColor};font-size:10px;">.${f.ext}</span> <span class="key-file-path" data-path="${escapeHtml(fullPath)}" title="Click to copy">${escapeHtml(f.rel_path)}</span></li>`;
     });
     html += `</ul></div>`;
   }
@@ -1186,10 +1840,45 @@ function renderDetail(node) {
       navigator.clipboard.writeText(md).then(() => showToast('Markdown copied'));
     });
   }
+  const copyPathBtn = document.getElementById('copy-path-btn');
+  if (copyPathBtn) {
+    copyPathBtn.addEventListener('click', () => {
+      const path = copyPathBtn.dataset.path;
+      if (path) {
+        let toCopy = path;
+        const roots = DATA?.roots || {};
+        if (path.startsWith('/')) {
+          toCopy = path;
+        } else if (path.startsWith('projects/') && roots.PROJECTS_ROOT) {
+          toCopy = roots.PROJECTS_ROOT.replace(/\/?$/, '') + '/' + path.slice(9);
+        } else if (path.startsWith('data/') && roots.DATA_ROOT) {
+          toCopy = roots.DATA_ROOT.replace(/\/?$/, '') + '/' + path.slice(5);
+        } else if (roots.PROJECTS_ROOT) {
+          toCopy = roots.PROJECTS_ROOT.replace(/\/?$/, '') + '/' + path;
+        }
+        navigator.clipboard.writeText(toCopy).then(() => showToast('Path copied'));
+      }
+    });
+  }
 }
 
 /* ── Event delegation for relation links ── */
 document.getElementById('detail-panel').addEventListener('click', (e) => {
+  const keyFile = e.target.closest('.key-file-path[data-path]');
+  if (keyFile) {
+    e.preventDefault();
+    let path = keyFile.dataset.path;
+    const roots = DATA?.roots || {};
+    if (path.startsWith('projects/') && roots.PROJECTS_ROOT) {
+      path = roots.PROJECTS_ROOT.replace(/\/?$/, '') + '/' + path.slice(9);
+    } else if (path.startsWith('data/') && roots.DATA_ROOT) {
+      path = roots.DATA_ROOT.replace(/\/?$/, '') + '/' + path.slice(5);
+    } else if (roots.PROJECTS_ROOT) {
+      path = roots.PROJECTS_ROOT.replace(/\/?$/, '') + '/' + path;
+    }
+    navigator.clipboard.writeText(path).then(() => showToast('Path copied'));
+    return;
+  }
   const navTarget = e.target.closest('[data-navigate]');
   if (navTarget && !navTarget.classList.contains('copy-btn')) {
     selectNodeById(navTarget.dataset.navigate);
@@ -1219,7 +1908,10 @@ function bindSearch() {
 /* ── Visibility ── */
 function applyVisibility() {
   document.querySelectorAll('.node-row').forEach(row => {
-    const name = row.querySelector('.node-label')?.textContent || '';
+    const labelEl = row.querySelector('.node-label');
+    const rawName = (row.dataset.name !== undefined) ? row.dataset.name : (labelEl?.textContent || '').replace(/<[^>]+>/g, '');
+    if (row.dataset.name === undefined && labelEl) row.dataset.name = rawName;
+    const name = rawName;
     const typeCls = [...row.classList].find(c => c.startsWith('type-'));
     const type = typeCls ? typeCls.replace('type-', '') : '';
     const badge = row.querySelector('.node-badge');
@@ -1231,6 +1923,9 @@ function applyVisibility() {
     }
     const show = shouldShow(type, role, name);
     row.classList.toggle('dimmed', !show && activeFilter !== 'all');
+    if (labelEl) {
+      labelEl.innerHTML = searchTerm ? highlightSearch(name) : escapeHtml(name);
+    }
     if (searchTerm && name.toLowerCase().includes(searchTerm.toLowerCase())) {
       let parent = row.parentElement;
       while (parent) {
@@ -1245,31 +1940,171 @@ function applyVisibility() {
   });
 }
 
+/* ── View toggle (Tree / Graph) ── */
+function bindViewToggle() {
+  const treeBtn = document.getElementById('view-tree-btn');
+  const graphBtn = document.getElementById('view-graph-btn');
+  const treeView = document.getElementById('tree-view');
+  const graphWrapper = document.getElementById('graph-wrapper');
+  const graphContainer = document.getElementById('graph-container');
+  const viewToggle = document.getElementById('view-toggle');
+  if (!treeBtn || !graphBtn || !treeView || !graphWrapper) return;
+
+  viewToggle.style.display = 'flex';
+
+  const toolbar = document.getElementById('tree-toolbar');
+  const graphToolbar = document.getElementById('graph-toolbar');
+  const graphFitBtn = document.getElementById('graph-fit-btn');
+  const graphSelectBtn = document.getElementById('graph-select-btn');
+
+  function setView(view) {
+    const isTree = view === 'tree';
+    treeView.classList.toggle('hidden', !isTree);
+    graphWrapper.style.display = isTree ? 'none' : 'block';
+    treeBtn.classList.toggle('active', isTree);
+    graphBtn.classList.toggle('active', !isTree);
+    if (toolbar) toolbar.style.display = isTree ? 'flex' : 'none';
+    if (graphToolbar) graphToolbar.style.display = isTree ? 'none' : 'flex';
+    if (!isTree && graphNetwork) {
+      graphNetwork.fit();
+      if (selectedId) graphNetwork.selectNodes([selectedId]);
+    }
+    if (graphSelectBtn) graphSelectBtn.style.display = selectedId ? 'inline-block' : 'none';
+  }
+
+  treeBtn.addEventListener('click', () => setView('tree'));
+  graphBtn.addEventListener('click', () => setView('graph'));
+  if (graphFitBtn) graphFitBtn.addEventListener('click', () => graphNetwork?.fit());
+  if (graphSelectBtn) graphSelectBtn.addEventListener('click', () => {
+    if (selectedId && graphNetwork) {
+      graphNetwork.selectNodes([selectedId]);
+      graphNetwork.focus(selectedId, { animation: { duration: 300 } });
+    }
+  });
+}
+
 /* ── Legend toggle ── */
 function bindLegend() {
   const btn = document.getElementById('legend-toggle');
   const bar = document.getElementById('legend-bar');
   btn.addEventListener('click', () => {
-    const open = bar.classList.toggle('open');
-    btn.classList.toggle('active', open);
+    const collapsed = bar.classList.toggle('collapsed');
+    btn.classList.toggle('active', !collapsed);
   });
+  btn.classList.add('active'); /* legend visible by default */
+}
+
+/* ── Glossary toggle ── */
+function bindGlossary() {
+  const btn = document.getElementById('glossary-toggle');
+  const bar = document.getElementById('glossary-bar');
+  if (!btn || !bar) return;
+  btn.addEventListener('click', () => {
+    bar.classList.toggle('visible');
+    btn.classList.toggle('active', bar.classList.contains('visible'));
+  });
+}
+
+/* ── Expand / Collapse all ── */
+function expandAll() {
+  document.querySelectorAll('.children.collapsed').forEach(el => {
+    el.classList.remove('collapsed');
+    const row = el.previousElementSibling;
+    if (row) {
+      const toggle = row.querySelector('.toggle');
+      if (toggle) toggle.textContent = '\u25BC';
+    }
+  });
+}
+function collapseAll() {
+  document.querySelectorAll('.children:not(.collapsed)').forEach(el => {
+    el.classList.add('collapsed');
+    const row = el.previousElementSibling;
+    if (row) {
+      const toggle = row.querySelector('.toggle');
+      if (toggle) toggle.textContent = '\u25B6';
+    }
+  });
+}
+function bindExpandCollapse() {
+  const expandBtn = document.getElementById('expand-all-btn');
+  const collapseBtn = document.getElementById('collapse-all-btn');
+  if (expandBtn) expandBtn.addEventListener('click', expandAll);
+  if (collapseBtn) collapseBtn.addEventListener('click', collapseAll);
 }
 
 /* ── Hash change listener ── */
 window.addEventListener('hashchange', navigateToHash);
 
+/* ── Keyboard shortcuts ── */
+function bindKeyboard() {
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      const searchEl = document.getElementById('search');
+      if (searchEl) {
+        searchEl.focus();
+        searchEl.select();
+      }
+      return;
+    }
+    if (e.key === 'Escape') {
+      const searchEl = document.getElementById('search');
+      if (searchEl && document.activeElement === searchEl) {
+        searchEl.value = '';
+        searchTerm = '';
+        applyVisibility();
+        searchEl.blur();
+      } else if (selectedId) {
+        document.querySelectorAll('.node-row.selected').forEach(el => el.classList.remove('selected'));
+        selectedId = null;
+        history.replaceState(null, '', location.pathname);
+        document.getElementById('detail-panel').innerHTML = '<div class="detail-empty">Select a node to inspect</div>';
+        renderNodeIndex();
+      }
+    }
+  });
+}
+
 /* ── Init ── */
 async function loadData() {
-  const resp = await fetch('system.json');
-  DATA = await resp.json();
-  renderStats();
-  renderTrees();
-  bindFilters();
-  bindSearch();
-  bindLegend();
-  /* Navigate to hash if present */
-  if (location.hash) {
-    navigateToHash();
+  const metaEl = document.getElementById('meta-line');
+  const treePanel = document.getElementById('tree-panel');
+  const projectsTree = document.getElementById('projects-tree');
+  const dataTree = document.getElementById('data-tree');
+  const toolbar = document.getElementById('tree-toolbar');
+
+  try {
+    const resp = await fetch('system.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    DATA = await resp.json();
+
+    const ver = DATA.meta?.schema_version || '?';
+    const gen = DATA.meta?.generated_at ? DATA.meta.generated_at.slice(0, 10) : '—';
+    const root = DATA.roots?.PROJECTS_ROOT ? DATA.roots.PROJECTS_ROOT.replace(/\/[^/]+$/, '') : '/Users/involute';
+    metaEl.textContent = `v${ver} · generated ${gen} · read-only · ${root}`;
+
+    projectsTree.innerHTML = '';
+    dataTree.innerHTML = '';
+    if (toolbar) toolbar.style.display = 'flex';
+
+    renderStats();
+    renderTrees();
+    renderGlossary();
+    bindFilters();
+    bindSearch();
+    bindViewToggle();
+    bindLegend();
+    bindGlossary();
+    bindExpandCollapse();
+    bindKeyboard();
+
+    if (location.hash) navigateToHash();
+  } catch (err) {
+    metaEl.textContent = 'Error loading system map';
+    projectsTree.innerHTML = `<div class="error-msg">Failed to load system.json: ${escapeHtml(err.message)}<br><br>Run <code>./update_system_map.sh</code> in this directory.</div>`;
+    dataTree.innerHTML = '';
+    if (toolbar) toolbar.style.display = 'none';
   }
 }
 loadData();

@@ -17,18 +17,44 @@
             <p class="subtitle">Прикладной курс о статистике экспериментов — от классификации метрик до кластерных тестов. Упор на решения, а не формулы.</p>
         </header>
 
+            <section class="course-hero-meta">
+                <div class="course-jtbd">
+                    <strong>📌 Когда это нужно:</strong>
+                    <ul>
+                        <li>Неясно, какой статкритерий выбрать.</li>
+                        <li>Есть сомнения в валидности результатов теста.</li>
+                        <li>Путаешься в типах метрик и дизайне эксперимента.</li>
+                        <li>Нужно объяснить, почему статистически значимо ≠ бизнес-решение.</li>
+                    </ul>
+                </div>
+            </section>
+
         <main>
-            <section class="intro">
-                <h2>О чём курс</h2>
-                <p>
-                    Большинство курсов по A/B-тестированию учат формулам: p-value, z-test, power analysis.
-                    Этот курс — про другое. Про то, как принимать решения в условиях неопределённости:
-                    какую метрику выбрать, какой тест использовать, когда CUPED поможет, а когда навредит,
-                    и почему статистическая значимость — не гарантия правильного решения.
-                </p>
-                <p>
-                    Prerequisite: <a href="../product-analytics/index.html">Курс №4 — Аналитика продукта</a>.
-                </p>
+                        <section class="course-about">
+                <h2>О чем курс</h2>
+                <ul>
+                    <li>Как выбрать корректный статистический подход под тип метрики и дизайн теста.</li>
+                    <li>Как проверять устойчивость эффекта и выявлять типовые ошибки.</li>
+                    <li>Как связывать статистический вывод с управленческим решением.</li>
+                </ul>
+            </section>
+
+                        <section class="course-audience">
+                <h2>Для кого курс</h2>
+                <ul>
+                    <li>Продуктовые аналитики (junior/middle).</li>
+                    <li>Продукт-менеджеры.</li>
+                    <li>Маркетинг / growth.</li>
+                </ul>
+            </section>
+
+            <section class="course-flow">
+                <h2>Как проходит курс</h2>
+                <ul>
+                    <li>Теория → кейс → практика.</li>
+                    <li>Каждый модуль = решение рабочей задачи.</li>
+                    <li>Фокус на интерпретации, а не на формулах.</li>
+                </ul>
             </section>
 
             <div class="how-to">
@@ -44,6 +70,7 @@
 
             <section>
                 <h2>Структура курса</h2>
+                <p class="course-structure-note">Курс состоит из 8 модулей:</p>
                 <div class="modules-grid">
 
                     <div class="module-card">
@@ -137,18 +164,35 @@
                 </div>
             </section>
 
-            <div class="related-section">
+            <section class="related-section course-links">
                 <h2>Связанные курсы</h2>
                 <ul class="related-links">
                     <li><a href="../product-analytics/index.html">Аналитика продукта: как читать систему, а не цифры</a></li>
                     <li><a href="../ab-decisions/index.html">A/B-тестирование: принятие решений на практике</a></li>
                 </ul>
-            </div>
+            </section>
         </main>
 
         <footer class="footer">
             <p>Статистическая значимость отвечает на вопрос «есть ли эффект?» — а не «стоит ли это запускать?».</p>
         </footer>
     </div>
+<script>
+(function(){
+  var cards=document.querySelectorAll('.module-card');
+  cards.forEach(function(card){
+    if(card.querySelector('.module-question')) return;
+    var key=card.querySelector('.module-key-idea');
+    var q=document.createElement('p');
+    q.className='module-question';
+    q.textContent='Вопрос: ' + (key ? key.textContent.trim() : 'Какую статистическую задачу решает модуль?');
+    if(key){ key.insertAdjacentElement('afterend', q); }
+    var ul=document.createElement('ul');
+    ul.className='module-outcomes';
+    ul.innerHTML='<li>Поймешь, какой метод применять и какие проверки обязательны перед выводом.</li>';
+    card.appendChild(ul);
+  });
+})();
+</script>
 </body>
 </html>
