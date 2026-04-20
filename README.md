@@ -156,6 +156,8 @@ Internal maintainer notes (deploy checklist, private materials policy, `real_tes
 
 Current architecture baseline and canonical/legacy decisions are documented in:
 
+- [`docs/site/SITE_MAP_DAVYDOVMY.md`](./docs/site/SITE_MAP_DAVYDOVMY.md) — краткий справочник (calculators vs simulators vs courses vs cases)
+- [`site-map/`](./site-map/) — **интерактивная карта сайта** (аналог System Map для davydov.my)
 - [`docs/site/ARCHITECTURE_MODEL_DAVYDOVMY.md`](./docs/site/ARCHITECTURE_MODEL_DAVYDOVMY.md)
 - [`docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md`](./docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md)
 - [`docs/site/LEGACY_COMPATIBILITY_AUDIT_2026-03.md`](./docs/site/LEGACY_COMPATIBILITY_AUDIT_2026-03.md)

@@ -79,18 +79,8 @@ REPORT="${REPORT}\n"
 
 # E) Dev-only markdown files
 REPORT="${REPORT}E) Dev-only markdown files (not used by site):\n"
-REPORT="${REPORT}   Known dev documentation (can be kept as docs):\n"
-for file in "COURSE_EXTRACT.md" "COURSE_STRUCTURE.md" "PROJECT_STRUCTURE.md" "STRUCTURE_ANALYSIS.md"; do
-    if [ -f "$file" ]; then
-        REPORT="${REPORT}     - $file (root - can keep as documentation)\n"
-    fi
-done
-REPORT="${REPORT}   Known dev-only files (consider removing):\n"
-for file in "lab/ab-decisions/ARCHITECTURE_PROPOSAL.md" "lab/graphs-as-argument/CHECK_REPORT.md" "lab/ab-practice/ПРАКТИКА_AB_ТЕСТИРОВАНИЯ.md"; do
-    if [ -f "$file" ]; then
-        REPORT="${REPORT}     - $file\n"
-    fi
-done
+REPORT="${REPORT}   Root docs: ARCHITECTURE_PATTERNS, COURSE_EXTRACT, DESIGN_PATTERNS, GLOSSARY, INTERNALS, STYLE_GUIDE_CURSOR\n"
+REPORT="${REPORT}   Canonical registry/structure: docs/site/*\n"
 REPORT="${REPORT}\n"
 
 # Print report

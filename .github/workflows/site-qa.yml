@@ -1,0 +1,51 @@
+name: Site QA
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"
+
+jobs:
+  seo-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regenerate sitemap and courses hub
+        run: |
+          python3 scripts/generate_sitemap.py
+          python3 scripts/render_courses_hub.py
+      - name: Ensure sitemap and courses hub match generators
+        run: git diff --exit-code sitemap.xml courses/index.html
+
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link check (HTML)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --exclude '^https://t\.me'
+            --exclude '^mailto:'
+            './**/*.html'
+        continue-on-error: true
+
+  lighthouse-sample:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lighthouse (production sample)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://davydov.my/
+            https://davydov.my/courses/
+            https://davydov.my/lab/
+          uploadArtifacts: true
+        continue-on-error: true

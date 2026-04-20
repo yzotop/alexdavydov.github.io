@@ -4,334 +4,124 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Курсы — davydov.my</title>
-<link rel="stylesheet" href="/assets/base.css">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
-    font-size:15px;
-    color:#111;
-    background:#fff;
-    line-height:1.65
-}
-.container{max-width:980px;margin:0 auto;padding:3rem 1.5rem}
-h1{
-    font-size:2.1rem;
-    font-weight:700;
-    letter-spacing:-0.03em;
-    margin-bottom:0.45rem;
-    color:#111
-}
-.intro{
-    font-size:0.95rem;
-    color:rgba(17,17,17,.48);
-    margin-bottom:0.45rem;
-    line-height:1.65
-}
-.intro-2{
-    font-size:0.9rem;
-    color:rgba(17,17,17,.42);
-    margin-bottom:2rem;
-    line-height:1.65
-}
-.summary-bar{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem}
-.pill{
-    display:inline-flex;
-    align-items:center;
-    font-size:0.72rem;
-    font-weight:600;
-    padding:0.2rem 0.58rem;
-    border:1px solid rgba(17,17,17,.12);
-    border-radius:999px;
-    color:rgba(17,17,17,.62);
-    background:#fff
-}
-.filter-bar{
-    margin-bottom:1.8rem;
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    font-size:0.88rem;
-    color:rgba(17,17,17,.48)
-}
-.filter-bar select{
-    font-family:inherit;
-    font-size:0.88rem;
-    padding:0.35rem 0.75rem;
-    border:1px solid rgba(17,17,17,.12);
-    border-radius:8px;
-    background:#fff;
-    color:#111;
-    cursor:pointer;
-    transition:border-color 180ms ease
-}
-.filter-bar select:hover{border-color:rgba(17,17,17,.24)}
-.sections{display:flex;flex-direction:column;gap:1.9rem}
-.section-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:0.65rem;
-    gap:1rem
-}
-.section-title{
-    font-size:1.05rem;
-    font-weight:650;
-    color:#111;
-    letter-spacing:-0.01em
-}
-.section-meta{font-size:0.78rem;color:rgba(17,17,17,.42)}
-.cards{display:grid;grid-template-columns:1fr;gap:0.75rem}
-.card{
-    display:block;
-    text-decoration:none;
-    color:inherit;
-    background:#fff;
-    border:1px solid rgba(17,17,17,.10);
-    border-radius:16px;
-    padding:1.2rem 1.35rem;
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-    transition:box-shadow 180ms ease,transform 180ms ease,border-color 180ms ease
-}
-.card:hover{
-    border-color:rgba(17,17,17,.16);
-    box-shadow:0 8px 24px rgba(0,0,0,.07);
-    transform:translateY(-2px);
-    text-decoration:none
-}
-.card-num{
-    font-size:0.72rem;
-    font-weight:700;
-    color:rgba(17,17,17,.28);
-    font-family:ui-monospace,'SF Mono','Cascadia Code',monospace;
-    margin-bottom:0.35rem;
-    letter-spacing:0.02em
-}
-.card-title{font-size:1.04rem;font-weight:600;margin-bottom:0.25rem;color:#111}
-.card-desc{font-size:0.9rem;color:rgba(17,17,17,.58);margin-bottom:0.5rem;line-height:1.55}
-.card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.badge{
-    font-size:0.68rem;
-    font-weight:600;
-    padding:0.15rem 0.55rem;
-    border-radius:6px;
-    letter-spacing:0.02em
-}
-.badge--draft{background:rgba(180,83,9,.08);color:#b45309}
-.badge--ready{background:rgba(4,120,87,.08);color:#047857}
-.badge--soft{background:rgba(17,17,17,.06);color:rgba(17,17,17,.66)}
-.empty-section{
-    border:1px dashed rgba(17,17,17,.16);
-    border-radius:12px;
-    padding:0.85rem 1rem;
-    color:rgba(17,17,17,.45);
-    font-size:0.88rem
-}
-</style>
+<link rel="canonical" href="https://davydov.my/courses/"/>
+<meta name="description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам. Рекомендованный путь и материалы на davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Курсы — davydov.my"/>
+<meta property="og:description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам."/>
+<meta property="og:url" content="https://davydov.my/courses/"/>
+<meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
-<div class="container">
-  <nav class="top-nav">
-      <a href="/">Главная</a>
-      <a href="/courses/" class="active">Курсы</a>
-      <a href="/lab/">Инструменты</a>
-      <a href="/knowledge/">База знаний</a>
-      <a href="/cases/">Кейсы</a>
-      <a href="/career/">Карьера</a>
-      <a href="/about/">Обо мне</a>
-      <a href="/search/">Поиск</a>
-      <a href="/companies/">Для компаний</a>
-  </nav>
-
-  <h1>Курсы</h1>
-  <p class="intro">Канонический course hub: отсюда начинается выбор направления и сюда ведут все возвраты из курсов.</p>
-  <p class="intro-2">Курсы формируют траекторию обучения. Практика и инструменты в <a href="/lab/" style="color:rgba(17,17,17,.55);text-decoration:none;border-bottom:1px solid rgba(17,17,17,.12);">/lab/</a> дополняют обучение, но навигационный центр по курсам — эта страница.</p>
-
-  <div class="summary-bar" id="summary-bar">
-    <span class="pill">Всего курсов: 0</span>
-    <span class="pill">Ready: 0</span>
-    <span class="pill">Draft: 0</span>
-  </div>
-
-  <div class="filter-bar">
-    <label for="status-filter">Показывать:</label>
-    <select id="status-filter">
-      <option value="all">Все</option>
-      <option value="ready">Только ready</option>
-      <option value="draft">Только draft</option>
-    </select>
-  </div>
-
-  <div class="sections" id="sections-container">
-    <noscript>
-      <section>
-        <div class="section-head">
-          <h2 class="section-title">Monetization</h2>
-          <div class="section-meta">1 курс</div>
-        </div>
-        <div class="cards">
-          <a class="card" href="/lab/monetization/index.html"><div class="card-title">Математика монетизации рекламы</div></a>
-        </div>
-      </section>
-      <section>
-        <div class="section-head">
-          <h2 class="section-title">A/B Testing</h2>
-          <div class="section-meta">2 курса</div>
-        </div>
-        <div class="cards">
-          <a class="card" href="/lab/ab-decisions/index.html"><div class="card-title">A/B-тестирование: принятие решений на практике</div></a>
-          <a class="card" href="/lab/ab-stat-os/index.html"><div class="card-title">Статистика A/B-тестирования: операционная система аналитика</div></a>
-        </div>
-      </section>
-      <section>
-        <div class="section-head">
-          <h2 class="section-title">Product Analytics</h2>
-          <div class="section-meta">1 курс</div>
-        </div>
-        <div class="cards">
-          <a class="card" href="/lab/product-analytics/index.html"><div class="card-title">Аналитика продукта: как читать систему, а не цифры</div></a>
-        </div>
-      </section>
-      <section>
-        <div class="section-head">
-          <h2 class="section-title">Causal Inference</h2>
-          <div class="section-meta">1 курс</div>
-        </div>
-        <div class="cards">
-          <a class="card" href="/lab/quasi-experiments/index.html"><div class="card-title">Квазиэксперименты и причинная идентификация</div></a>
-        </div>
-      </section>
-    </noscript>
-  </div>
-
-  <script>
-  (function() {
-    var container = document.getElementById('sections-container');
-    var filter = document.getElementById('status-filter');
-    var summary = document.getElementById('summary-bar');
-    var items = [];
-
-    var categories = [
-      'A/B Testing',
-      'Product Analytics',
-      'Monetization',
-      'Causal Inference',
-      'System / Frameworks'
-    ];
-
-    function normalizeStatus(status) {
-      return status === 'draft' ? 'draft' : 'ready';
-    }
-
-    function normalizeRegistryCourses(source) {
-      return source
-        .filter(function(item) {
-          return item && item.slug && item.title && item.entry;
-        })
-        .map(function(item) {
-          return {
-            slug: item.slug,
-            title: item.title,
-            description: item.description || '',
-            href: '/' + item.entry,
-            status: normalizeStatus(item.status),
-            category: item.category || 'System / Frameworks',
-            type: item.type || 'course',
-            modules: item.modules || ''
-          };
-        });
-    }
-
-    function renderSummary(list) {
-      var total = list.length;
-      var draft = list.filter(function(x) { return x.status === 'draft'; }).length;
-      var ready = total - draft;
-      summary.innerHTML =
-        '<span class="pill">Всего курсов: ' + total + '</span>' +
-        '<span class="pill">Ready: ' + ready + '</span>' +
-        '<span class="pill">Draft: ' + draft + '</span>';
-    }
-
-    function statusBadge(status) {
-      return status === 'draft'
-        ? '<span class="badge badge--draft">Draft</span>'
-        : '<span class="badge badge--ready">Ready</span>';
-    }
-
-    function renderSections(statusFilter) {
-      var html = '';
-      var index = 0;
-
-      categories.forEach(function(category) {
-        var sectionItems = items.filter(function(item) {
-          if (item.category !== category) return false;
-          if (statusFilter === 'ready' && item.status !== 'ready') return false;
-          if (statusFilter === 'draft' && item.status !== 'draft') return false;
-          return true;
-        });
-
-        html += '<section><div class="section-head"><h2 class="section-title">' + category + '</h2><div class="section-meta">' + sectionItems.length + ' курс' + (sectionItems.length === 1 ? '' : 'а') + '</div></div>';
-
-        if (!sectionItems.length) {
-          html += '<div class="empty-section">Нет курсов для выбранного фильтра.</div></section>';
-          return;
-        }
-
-        html += '<div class="cards">';
-        sectionItems.forEach(function(item) {
-          index += 1;
-          html += '<a class="card" href="' + item.href + '">' +
-            '<div class="card-num">' + String(index).padStart(2, '0') + '</div>' +
-            '<div class="card-title">' + item.title + '</div>' +
-            '<div class="card-desc">' + item.description + '</div>' +
-            '<div class="card-meta">' +
-              statusBadge(item.status) +
-              '<span class="badge badge--soft">' + item.type + '</span>' +
-              (item.modules ? '<span class="badge badge--soft">' + item.modules + '</span>' : '') +
-            '</div>' +
-            '</a>';
-        });
-        html += '</div></section>';
-      });
-
-      container.innerHTML = html;
-    }
-
-    function fallbackData() {
-      return [
-        { slug: 'ab-decisions', title: 'A/B-тестирование: принятие решений на практике', description: 'Практические кейсы принятия решений по результатам A/B-тестов.', entry: 'lab/ab-decisions/index.html', status: 'ready', category: 'A/B Testing', type: 'decision', modules: '5 lessons' },
-        { slug: 'ab-stat-os', title: 'Статистика A/B-тестирования: операционная система аналитика', description: 'Типы метрик, выбор статкритерия, variance reduction, кластерные эксперименты.', entry: 'lab/ab-stat-os/index.html', status: 'draft', category: 'A/B Testing', type: 'theory+simulators', modules: '8 modules' },
-        { slug: 'product-analytics', title: 'Аналитика продукта: как читать систему, а не цифры', description: 'Механизмы продукта, потоки, задержки и неоднородность до интерпретации метрик.', entry: 'lab/product-analytics/index.html', status: 'ready', category: 'Product Analytics', type: 'system reading', modules: '7 modules' },
-        { slug: 'monetization', title: 'Математика монетизации рекламы', description: 'Модели, метрики и операционные паттерны рекламной монетизации.', entry: 'lab/monetization/index.html', status: 'ready', category: 'Monetization', type: 'system course', modules: '7 sections' },
-        { slug: 'quasi-experiments', title: 'Квазиэксперименты и причинная идентификация', description: 'DiD, RDD, Synthetic Control, Matching, IV — когда A/B невозможен.', entry: 'lab/quasi-experiments/index.html', status: 'ready', category: 'Causal Inference', type: 'causal methods', modules: '8 modules' }
-      ];
-    }
-
-    function boot(data) {
-      items = normalizeRegistryCourses(data);
-      renderSummary(items);
-      renderSections(filter.value);
-      filter.addEventListener('change', function() { renderSections(this.value); });
-    }
-
-    fetch('/courses/courses-registry.json')
-      .then(function(r) { return r.json(); })
-      .then(function(data) { boot(Array.isArray(data) ? data : fallbackData()); })
-      .catch(function() { boot(fallbackData()); });
-  })();
-  </script>
-
-  <p style="margin-top:2.5rem;font-size:0.88rem;color:rgba(17,17,17,.38);">Инструменты и симуляции для практики доступны в <a href="/lab/" style="color:rgba(17,17,17,.48);text-decoration:none;border-bottom:1px solid rgba(17,17,17,.12);">/lab/</a>.</p>
-
-  <footer class="site-footer">
-      <span>&copy; 2026 davydov.my</span>
-      <nav class="site-footer-links">
-          <a href="https://t.me/Datalake">Telegram</a>
-          <a href="/courses/">Курсы</a>
-          <a href="/lab/">Инструменты</a>
-          <a href="/search/">Поиск</a>
+<header class="site-nav">
+  <div class="site-nav-inner">
+    <div class="site-nav-left">
+      <a href="/" class="nav-brand">Alex Davydov</a>
+      <nav class="nav-links" aria-label="Основное меню">
+        <a href="/courses/" class="is-active">Курсы</a>
+        <a href="/cases/">Кейсы</a>
+        <a href="/notes/">Заметки</a>
+        <a href="/career/">Карьера</a>
       </nav>
-  </footer>
+    </div>
+    <div class="site-nav-right">
+      <a href="/career/" class="nav-mentor">Менторство</a>
+      <button type="button" class="theme-toggle" aria-label="Тёмная тема">
+<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+</svg>
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+</svg>
+</button>
+      <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
+    </div>
+  </div>
+</header>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <a href="/courses/">Курсы</a>
+  <a href="/cases/">Кейсы</a>
+  <a href="/notes/">Заметки</a>
+  <a href="/career/">Карьера</a>
+  <a href="/lab/">Инструменты</a>
+  <a href="/knowledge/">База знаний</a>
+  <a href="/about/">Обо мне</a>
+  <a href="/search/">Поиск</a>
+  <a href="/companies/">Для компаний</a>
+  <a href="/career/" class="nav-mentor">Менторство</a>
+</nav>
+<div class="site-wrap">
+  <h1 class="page-title">Курсы</h1>
+  <p class="page-lead">Траектория от продукта к экспериментам и причинному выводу. Практика — в <a href="/lab/">/lab/</a>.</p>
+
+  <div class="learning-path">
+    <p class="path-label">С чего начать</p>
+    <div class="path-steps">
+      <a href="/lab/product-analytics/">Аналитика продукта</a>
+      <span>→</span>
+      <a href="/lab/ab-decisions/">A/B-решения</a>
+      <span>→</span>
+      <a href="/lab/ab-stat-os/">Статистика A/B</a>
+      <span>→</span>
+      <a href="/lab/quasi-experiments/">Квазиэксперименты</a>
+    </div>
+  </div>
+
+  <div class="karpov-banner">
+    <div class="karpov-dot"></div>
+    <p><strong>Скоро на karpov.courses</strong> — новый курс по аналитике. Следи за анонсом в <a href="https://t.me/Datalake">Telegram</a>.</p>
+  </div>
+
+  <div class="course-grid">
+    <a class="course-card" href="/lab/product-analytics/">
+  <span class="course-tag">Продукт · Junior→Senior</span>
+  <span class="course-arr">↗</span>
+  <div class="course-title">Аналитика продукта: как читать систему, а не цифры</div>
+  <div class="course-desc">Механизмы продукта, потоки, задержки и неоднородность до интерпретации метрик.</div>
+</a>
+    <a class="course-card" href="/lab/ab-decisions/">
+  <span class="course-tag">A/B · Middle</span>
+  <span class="course-arr">↗</span>
+  <div class="course-title">A/B-тестирование: принятие решений на практике</div>
+  <div class="course-desc">Практические кейсы принятия решений по результатам A/B-тестов.</div>
+</a>
+    <a class="course-card" href="/lab/ab-stat-os/">
+  <span class="course-tag">A/B · Middle→Senior</span>
+  <span class="course-arr">↗</span>
+  <div class="course-title">Статистика A/B-тестирования: операционная система аналитика</div>
+  <div class="course-desc">Типы метрик, выбор статкритерия, variance reduction, кластерные эксперименты.</div>
+</a>
+    <a class="course-card" href="/lab/monetization/">
+  <span class="course-tag">Монетизация · Middle</span>
+  <span class="course-arr">↗</span>
+  <div class="course-title">Математика монетизации рекламы</div>
+  <div class="course-desc">Модели, метрики и операционные паттерны рекламной монетизации.</div>
+</a>
+    <a class="course-card" href="/lab/quasi-experiments/">
+  <span class="course-tag">Causal · Senior</span>
+  <span class="course-arr">↗</span>
+  <div class="course-title">Квазиэксперименты и причинная идентификация</div>
+  <div class="course-desc">DiD, RDD, Synthetic Control, Matching, IV — когда A/B невозможен.</div>
+</a>
+  </div>
 </div>
+<footer class="site-footer">
+  <nav class="site-footer-links" aria-label="Подвал">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Карьера</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="https://t.me/Datalake">Telegram</a>
+  </nav>
+  <span class="footer-copy">© 2026 davydov.my</span>
+</footer>
+<script src="/main.js" defer></script>
 </body>
 </html>
