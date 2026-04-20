@@ -161,6 +161,7 @@ a {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .theme-toggle {
@@ -199,29 +200,48 @@ a {
   display: block;
 }
 
-.nav-burger {
-  display: flex;
+/* Burger: scoped to .site-nav so legacy page <style> / base.css never hides it */
+.site-nav button.nav-burger#nav-burger {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   padding: 0;
+  margin: 0;
+  line-height: 0;
   border: 0.5px solid var(--br);
   border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--tx2);
   cursor: pointer;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  z-index: 5;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.nav-burger:hover {
+.site-nav button.nav-burger#nav-burger:hover {
   border-color: var(--br2);
   color: var(--tx);
 }
 
-.nav-burger svg {
+.site-nav button.nav-burger#nav-burger svg {
+  display: block;
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
   color: var(--tx2);
+}
+
+.site-nav button.nav-burger#nav-burger svg path {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
 }
 
 .nav-drawer-backdrop {
