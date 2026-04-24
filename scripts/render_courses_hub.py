@@ -31,18 +31,7 @@ DISPLAY_ORDER = [
     "quasi-experiments",
 ]
 
-THEME_BTN = """<button type="button" class="theme-toggle" aria-label="Тёмная тема">
-<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-</svg>
-<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-</svg>
-</button>"""
-
-BURGER_BTN = """<button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-</button>"""
+BURGER_BTN = '<button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>'
 
 
 def esc(s: str) -> str:
@@ -55,26 +44,24 @@ def esc(s: str) -> str:
 
 
 def nav_html(active: str) -> str:
-    ac = lambda key: ' class="is-active"' if active == key else ""
+    def _a(href: str, label: str, key: str) -> str:
+        style = ' style="color:var(--ink)"' if active == key else ""
+        return f'<a href="{href}"{style}>{label}</a>'
 
-    return f"""<header class="site-nav">
-  <div class="site-nav-inner">
-    <div class="site-nav-left">
-      <a href="/" class="nav-brand">Alex Davydov</a>
-      <nav class="nav-links" aria-label="Основное меню">
-        <a href="/courses/"{ac("courses")}>Курсы</a>
-        <a href="/cases/">Кейсы</a>
-        <a href="/notes/">Заметки</a>
-        <a href="/career/">Карьера</a>
-      </nav>
-    </div>
-    <div class="site-nav-right">
-      <a href="/career/" class="nav-mentor">Менторство</a>
-      {THEME_BTN}
-      {BURGER_BTN}
-    </div>
+    return f"""<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>АД</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    {_a("/courses/", "Курсы", "courses")}
+    {_a("/cases/", "Кейсы", "cases")}
+    {_a("/notes/", "Заметки", "notes")}
+    {_a("/career/", "Карьера", "career")}
   </div>
-</header>
+  <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
+  {BURGER_BTN}
+</nav>
 <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
 <nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
   <div class="nav-drawer-section nav-drawer-section--primary">
@@ -84,29 +71,30 @@ def nav_html(active: str) -> str:
     <a href="/career/">Карьера</a>
     <a href="/career/">Менторство</a>
   </div>
-  <hr class="nav-drawer-divider" aria-hidden="true" />
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
   <div class="nav-drawer-section nav-drawer-section--secondary">
     <a href="/lab/">Инструменты</a>
     <a href="/knowledge/">База знаний</a>
     <a href="/simulators/">Симуляторы</a>
     <a href="/calculators/">Калькуляторы</a>
-    <a href="/search/">Поиск</a>
     <a href="/about/">Обо мне</a>
     <a href="/companies/">Для компаний</a>
+    <a href="/search/">Поиск</a>
   </div>
 </nav>"""
 
 
 def footer_html() -> str:
-    return """<footer class="site-footer">
-  <nav class="site-footer-links site-footer-links--row" aria-label="Подвал">
-    <a href="/courses/">Курсы</a><span class="sep" aria-hidden="true">·</span>
-    <a href="/cases/">Кейсы</a><span class="sep" aria-hidden="true">·</span>
-    <a href="/career/">Карьера</a><span class="sep" aria-hidden="true">·</span>
-    <a href="/companies/">Для компаний</a><span class="sep" aria-hidden="true">·</span>
+    return """<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
     <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
   </nav>
-  <span class="footer-copy">© 2026 davydov.my</span>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
 </footer>"""
 
 
