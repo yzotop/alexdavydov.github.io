@@ -98,14 +98,15 @@ def footer_html() -> str:
 </footer>"""
 
 
-def course_card(slug: str, title: str, desc: str) -> str:
+def course_card(slug: str, title: str, desc: str, num: int) -> str:
     label = COURSE_LABELS.get(slug, "")
     href = f"/lab/{slug}/"
-    return f"""<a class="course-card" href="{href}">
-  <span class="course-tag">{esc(label)}</span>
-  <span class="course-arr">↗</span>
-  <div class="course-title">{esc(title)}</div>
-  <div class="course-desc">{esc(desc)}</div>
+    num_str = f"{num:02d}"
+    return f"""<a class="course" href="{href}">
+  <div class="course-meta"><span class="course-num">{num_str}</span><span>{esc(label)}</span></div>
+  <h3>{esc(title)}</h3>
+  <p>{esc(desc)}</p>
+  <span class="course-arrow">↗</span>
 </a>"""
 
 
@@ -118,46 +119,38 @@ def main() -> int:
     by_slug = {item["slug"]: item for item in raw if isinstance(item, dict) and item.get("slug")}
 
     cards_html = []
+    counter = 1
     for slug in DISPLAY_ORDER:
         item = by_slug.get(slug)
         if not item:
             continue
         cards_html.append(
-            course_card(slug, item.get("title") or "", item.get("description") or "")
+            course_card(slug, item.get("title") or "", item.get("description") or "", counter)
         )
+        counter += 1
     for item in raw:
         slug = item.get("slug")
         if slug in DISPLAY_ORDER:
             continue
         if slug:
             cards_html.append(
-                course_card(slug, item.get("title") or "", item.get("description") or "")
+                course_card(slug, item.get("title") or "", item.get("description") or "", counter)
             )
+            counter += 1
 
     body = f"""{nav_html("courses")}
-<div class="site-wrap">
-  <h1 class="page-title">Курсы</h1>
+<div class="page">
+  <h1 class="page-title">Курсы<span class="accent-dot">.</span></h1>
   <p class="page-lead">Траектория от продукта к экспериментам и причинному выводу. <a href="/lab/">Практические инструменты и симуляторы</a> — в разделе Lab.</p>
 
-  <div class="learning-path">
-    <p class="path-label">С чего начать</p>
-    <div class="path-steps">
-      <a href="/lab/product-analytics/">Аналитика продукта</a>
-      <span>→</span>
-      <a href="/lab/ab-decisions/">A/B-решения</a>
-      <span>→</span>
-      <a href="/lab/ab-stat-os/">Статистика A/B</a>
-      <span>→</span>
-      <a href="/lab/quasi-experiments/">Квазиэксперименты</a>
+  <div class="banner" style="margin:32px 0">
+    <div class="banner-left">
+      <span class="banner-tag">COMING SOON</span>
+      <span>Новый курс на <strong>karpov.courses</strong> — следи за анонсом в <a href="https://t.me/Datalake">Telegram</a></span>
     </div>
   </div>
 
-  <div class="karpov-banner">
-    <div class="karpov-dot"></div>
-    <p><strong>Скоро на karpov.courses</strong> — новый курс по аналитике. Следи за анонсом в <a href="https://t.me/Datalake">Telegram</a>.</p>
-  </div>
-
-  <div class="course-grid">
+  <div class="courses-grid">
 {chr(10).join("    " + c for c in cards_html)}
   </div>
 </div>
