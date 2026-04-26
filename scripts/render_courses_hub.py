@@ -57,6 +57,7 @@ def nav_html(active: str) -> str:
     {_a("/courses/", "Курсы", "courses")}
     {_a("/cases/", "Кейсы", "cases")}
     {_a("/notes/", "Заметки", "notes")}
+    {_a("/approach/", "Подход", "approach")}
     {_a("/career/", "Карьера", "career")}
   </div>
   <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
@@ -68,6 +69,7 @@ def nav_html(active: str) -> str:
     <a href="/courses/">Курсы</a>
     <a href="/cases/">Кейсы</a>
     <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
     <a href="/career/">Карьера</a>
     <a href="/career/">Менторство</a>
   </div>
