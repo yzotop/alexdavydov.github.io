@@ -1,4 +1,13 @@
-# REDESIGN.md — davydov.my
+> **АРХИВНЫЙ ДОКУМЕНТ.**
+> Это изначальный план редизайна сайта от апреля 2026.
+> Сайт пошёл другим путём: swiss-стиль с красным акцентом, без
+> тёмной темы, шрифт Space Grotesk + Geist Mono.
+> Актуальная дизайн-документация — /DESIGN.md в корне.
+> Этот документ сохранён как исторический след принятых решений.
+>
+> ---
+>
+> # REDESIGN.md — davydov.my (исходный план)
 
 Это техническое задание для редизайна сайта davydov.my.
 Сайт публикуется через GitHub Pages. Реализуй изменения строго по этому документу.
@@ -413,8 +422,6 @@ footer a:hover { color: var(--tx2); }
   <p class="path-label">С чего начать:</p>
   <div class="path-steps">
     <a href="/lab/product-analytics/">Аналитика продукта</a>
-    <span>→</span>
-    <a href="/lab/ab-decisions/">A/B-решения</a>
     <span>→</span>
     <a href="/lab/ab-stat-os/">Статистика A/B</a>
     <span>→</span>
