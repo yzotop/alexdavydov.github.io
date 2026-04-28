@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сценарий 010: Больше показов — меньше денег — A/B-решения</title>
+  <link rel="canonical" href="https://davydov.my/lab/ab-decisions/practice/scenarios/010-more-shows-less-revenue/"/>
+  <meta name="description" content="Показы выросли на 10%, CPM упал на 13%, выручка снизилась на 4%. Когда расширение инвентаря вредит монетизации."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Сценарий 010: Больше показов — меньше денег — A/B-решения"/>
+  <meta property="og:description" content="Показы выросли на 10%, CPM упал на 13%, выручка снизилась на 4%. Когда расширение инвентаря вредит монетизации."/>
+  <meta property="og:url" content="https://davydov.my/lab/ab-decisions/practice/scenarios/010-more-shows-less-revenue/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+
+<!-- ═══ NAV ═══════════════════════════════════════════════════════════ -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>АД</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/" style="color:var(--ink)">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+  </div>
+  <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/lab/">Инструменты</a>
+    <a href="/knowledge/">База знаний</a>
+    <a href="/simulators/">Симуляторы</a>
+    <a href="/calculators/">Калькуляторы</a>
+    <a href="/about/">Обо мне</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<!-- ═══ ARTICLE ════════════════════════════════════════════════════════ -->
+<article class="lesson">
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="/courses/">Курсы</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="/lab/ab-decisions/">A/B-решения</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="/lab/ab-decisions/practice/">Практика</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Сценарий 010</span>
+  </nav>
+
+  <!-- LESSON HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-meta lesson-meta--scenario">
+      <span class="lesson-num">010</span>
+      <span class="lesson-module">Сценарий · A/B-решения</span>
+      <span class="lesson-type">Тип: что именно дало эффект</span>
+    </div>
+    <h1 class="lesson-title">Больше показов — меньше денег</h1>
+    <p class="lesson-lede">
+      14 дней эксперимента. В тестовой группе показы выросли на 10%, но выручка упала на 4%. Нужно понять, почему рост объёма дал отрицательную отдачу.
+    </p>
+  </header>
+
+  <!-- LESSON BODY -->
+  <div class="prose">
+
+    <!-- 1. CONTEXT CASE BLOCK -->
+    <div class="case-block">
+      <div class="case-block-tag">Сценарий · контекст</div>
+      <p>Команда добавила новые рекламные размещения в тестовой группе: расширила инвентарь за счёт дополнительных позиций для рекламы в контенте. Цель — рост выручки за счёт увеличения объёма показов.</p>
+      <p>Эксперимент длился 14 дней. Трафик стабилен, сезонных эффектов нет. Контрольная группа без изменений.</p>
+      <p>По итогу: показы в тестовой группе выросли на 10%, CPM снизился на 13%, выручка упала на 4%.</p>
+    </div>
+
+    <!-- 2. FIGURE: clean chart -->
+    <figure>
+      <img
+        src="../assets/graphs/010-more-shows-less-revenue.clean.svg"
+        alt="График динамики выручки и количества показов за 14 дней. Тестовая группа: показы (зелёная линия) поднимаются с индекса 1,0 до ~1,10. Выручка (чёрная линия) опускается с 1,0 до ~0,96. Контрольная группа (серые пунктиры) горизонтальна вблизи 1,0 на обеих полосах."
+        width="800"
+        height="400"
+      />
+      <figcaption>Рис. 1. Динамика показов и выручки, тест vs. контроль. Каждая метрика — на своей полосе с базой 1,0.</figcaption>
+    </figure>
+
+    <!-- 3. THINK BLOCK -->
+    <div class="think-block">
+      <span class="think-block-tag">Подумай перед разбором</span>
+      <ol>
+        <li>Если показов стало больше, а выручки меньше — какая третья переменная связывает их и в какую сторону она должна была измениться?</li>
+        <li>В какой момент эксперимента эффект становится виден и почему он не проявляется с первого дня?</li>
+        <li>Какие метрики нужно проверить, чтобы отличить «новые показы дешевле старых» от «старые показы стали дешевле»?</li>
+      </ol>
+    </div>
+
+    <!-- 4. DISCLOSURE: разбор -->
+    <details class="disclosure">
+      <summary class="disclosure-trigger">Показать разбор</summary>
+      <div class="disclosure-content">
+
+        <p>На графике видно: показы в тесте растут с первых дней, выручка начинает снижаться примерно с третьего дня и к концу эксперимента устойчиво ниже контроля. Чтобы объяснить парадокс, нужна третья метрика — CPM.</p>
+
+        <figure>
+          <img
+            src="../assets/graphs/010-more-shows-less-revenue.annotated.svg"
+            alt="Тот же график, расширенный третьей полосой. Показы (зелёная) +10%, выручка (чёрная) −4%, CPM (красная) −13%. Дополнительная метка у выручки около середины: «Mix shift: новые показы дешевле старых»."
+            width="800"
+            height="450"
+          />
+          <figcaption>Рис. 2. Тот же график с добавлением CPM и аннотациями. Падение CPM на 13% объясняет парадокс.</figcaption>
+        </figure>
+
+        <p><strong>Почему так бывает.</strong> Выручка — это CPM × объём показов. Если объём вырос на 10%, а выручка упала на 4%, значит CPM упал сильнее, чем вырос объём. Так и есть: CPM в тесте снизился на 13%. Новые рекламные размещения привлекли низкоценный спрос — они менее заметны, в худшем контексте, ниже в иерархии инвентаря. Цена показа в среднем по тесту опустилась, и рост объёма не смог это компенсировать.</p>
+
+        <p><strong>Где глаз обманывается.</strong> Рост показов выглядит как успех — больше рекламы, больше трафика, больше монетизации. Но если новый инвентарь отличается по качеству от существующего, он не складывается со старым, а разбавляет его. Аналитик должен смотреть не на объём в отрыве, а на произведение — Revenue = CPM × Shows.</p>
+
+        <p><strong>Что проверить.</strong></p>
+        <ul>
+          <li><strong>Mix shift по размещениям</strong> — какая доля показов пришла из новых позиций, какой у них CPM, как он сравнивается со старыми.</li>
+          <li><strong>CPM по сегментам инвентаря</strong> — упал ли CPM на старых размещениях (каннибализация спроса) или новые просто дешёвые сами по себе.</li>
+          <li><strong>Viewability и CTR новых размещений</strong> — качество показов: видны ли они вообще, кликают ли по ним.</li>
+          <li><strong>Guardrails по пользовательскому опыту</strong> — время в контенте, глубина сессии, ad fatigue. Расширение инвентаря может ухудшать долгосрочную монетизацию через пользовательское поведение.</li>
+        </ul>
+
+      </div>
+    </details>
+
+    <!-- 5. ANSWER CASE BLOCK -->
+    <div class="case-block case-block--return">
+      <div class="case-block-tag">Сценарий · ответ</div>
+      <p><strong>Неверный вывод:</strong> «Показы выросли на 10% — значит расширение инвентаря работает. Выручка упала из-за внешних факторов или подтянется позже. Катим в прод.»</p>
+      <p><strong>Верный вывод:</strong> Расширение инвентаря подняло объём показов, но новые размещения оказались дешевле старых — CPM упал на 13%, и падение цены превысило выигрыш по объёму. Чистый эффект на выручку — −4%. В прод не катить: новый инвентарь разбавляет качественный, а не дополняет его. Нужно либо убрать новые размещения, либо повышать их ценность для рекламодателей.</p>
+      <p><strong>Чего нельзя утверждать:</strong> «Расширение инвентаря всегда плохо» — зависит от качества новых размещений. «Эффект проявится позже» — 14 дней достаточно для оценки расширения инвентаря. «Старый инвентарь не пострадал» — без проверки CPM по сегментам это предположение, а не вывод.</p>
+    </div>
+
+    <!-- 6. LINK TO LESSON -->
+    <p>Механика, которая объясняет этот сценарий, разобрана в уроке <a href="/lab/ab-decisions/lessons/01-price-vs-money/">01. Цена и объём</a>.</p>
+
+  </div><!-- /prose -->
+
+</article><!-- /lesson -->
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+</body>
+</html>
