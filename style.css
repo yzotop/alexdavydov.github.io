@@ -247,9 +247,7 @@
 .page-lead .highlight{background:var(--accent);color:#fff;padding:0 6px;}
 .page-sub{font-size:14px;color:var(--muted);margin-top:14px;line-height:1.55;max-width:620px;}
 
-.breadcrumb{display:flex;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px;}
-.breadcrumb a{color:var(--muted);transition:color .15s;}
-.breadcrumb a:hover{color:var(--accent);}
+
 
 /* course detail card list */
 .course-list{margin-top:48px;border-top:1px solid var(--ink);}
@@ -274,6 +272,97 @@
 .prose p strong{font-weight:600;}
 .prose ul{font-size:16px;line-height:1.7;color:var(--ink);padding-left:20px;margin:0 0 16px;}
 .prose ul li{margin-bottom:6px;}
+.prose h2{font-size:32px;font-weight:500;letter-spacing:-.02em;margin:48px 0 14px;}
+.prose h3{font-size:20px;font-weight:600;margin:32px 0 10px;}
+.prose--narrow{max-width:680px;}
+
+/* prose table */
+.prose table{width:100%;border-collapse:collapse;font-size:14px;margin:0 0 24px;}
+.prose th{text-align:left;padding:8px 12px;border-bottom:2px solid var(--ink);color:var(--muted);font-weight:600;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;}
+.prose th:first-child{width:40%;}
+.prose td{padding:12px;border-bottom:1px solid var(--line);}
+.prose tbody tr:last-child td{border-bottom:none;}
+
+/* prose code / figure */
+.prose pre{font-family:var(--mono);font-size:13px;background:var(--soft);border:1px solid var(--line);padding:20px 24px;overflow-x:auto;margin:0 0 24px;line-height:1.6;}
+.prose figure{margin:32px 0;}
+.prose figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-top:8px;}
+
+/* lesson */
+.lesson{padding:64px 48px 0;max-width:800px;margin:0 auto;}
+.lesson-header{margin-bottom:56px;padding-bottom:32px;border-bottom:1px solid var(--ink);}
+.lesson-meta{display:flex;gap:16px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px;flex-wrap:wrap;}
+.lesson-num{color:var(--accent);font-weight:600;}
+.lesson-module{color:var(--muted);}
+.lesson-title{font-size:clamp(36px,5vw,56px);font-weight:500;letter-spacing:-.035em;margin:0 0 16px;line-height:1.05;}
+.lesson-lede{font-size:22px;line-height:1.45;color:var(--ink);max-width:640px;}
+
+/* case-block */
+.case-block{border:1px solid var(--line);padding:24px 28px;margin:32px 0;}
+.case-block-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.case-block--return{border-color:var(--accent);}
+
+/* stop-question */
+.stop-question{border-left:3px solid var(--accent);padding:16px 20px;margin:32px 0;background:var(--soft2);}
+
+/* formula-box */
+.formula-box{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:32px 24px;margin:32px 0;text-align:center;}
+.formula-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.formula-expr{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ink);line-height:1.4;}
+
+/* protocol-list */
+.protocol-list{counter-reset:protocol;list-style:none;padding:0;margin:0 0 24px;}
+.protocol-list li{counter-increment:protocol;padding:14px 0 14px 52px;border-bottom:1px solid var(--line);position:relative;font-size:16px;line-height:1.6;}
+.protocol-list li::before{content:counter(protocol,"decimal-leading-zero");position:absolute;left:0;top:14px;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.06em;}
+
+/* takeaway */
+.takeaway{background:var(--ink);color:#fff;padding:24px 28px;margin:40px 0;}
+.takeaway-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+/* explicit color overrides needed: .prose p sets color:var(--ink) directly,
+   inheritance from .takeaway is not enough — must beat it via source order */
+.takeaway p{color:#fff;}
+.takeaway p strong{color:#fff;}
+.takeaway p+p{margin-top:10px;}
+/* links on dark bg: accent red is visible and on-brand; hover → white
+   (same logic as .footer-links a:hover → accent, but inverted because bg is dark) */
+.takeaway a{color:var(--accent);}
+.takeaway a:hover{color:#fff;text-decoration:underline;}
+
+/* lesson footer nav */
+.lesson-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--ink);}
+.breadcrumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:32px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
+.breadcrumb a:hover{color:var(--ink);}
+.breadcrumb-sep{color:var(--mute2);user-select:none;}
+.breadcrumb-current{color:var(--ink);}
+.lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.lesson-nav--prev{text-align:left;}
+.lesson-nav--next{text-align:right;}
+.lesson-nav-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.lesson-nav-title{font-size:18px;font-weight:500;letter-spacing:-.01em;color:var(--ink);transition:color .15s;}
+.lesson-nav-title:hover{color:var(--accent);}
+
+/* think-block — вопрос для самостоятельного осмысления (сценарии практики) */
+.think-block{margin:40px 0;padding:28px 32px;border-left:4px solid var(--accent);background:var(--soft);}
+.think-block-tag{display:block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.think-block ol{padding-left:20px;margin:0;}
+.think-block li{font-size:17px;line-height:1.6;margin-bottom:10px;}
+.think-block li:last-child{margin-bottom:0;}
+
+/* disclosure — скрытый разбор на базе <details>/<summary>
+   Класс .reveal занят scroll-animation (строка ~237); используем .disclosure. */
+.disclosure{margin:32px 0;}
+.disclosure-trigger{display:inline-block;padding:14px 24px;border:1px solid var(--ink);background:var(--bg);font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);cursor:pointer;user-select:none;list-style:none;}
+.disclosure-trigger::-webkit-details-marker{display:none;}
+.disclosure-trigger::marker{content:"";}
+.disclosure-trigger:hover{background:var(--ink);color:#fff;}
+.disclosure[open] .disclosure-trigger{background:var(--ink);color:#fff;}
+.disclosure-content{margin-top:24px;padding-top:24px;border-top:1px solid var(--line);}
+.disclosure-content>*:first-child{margin-top:0;}
+.disclosure-content>*:last-child{margin-bottom:0;}
+
+/* lesson-meta--scenario: модификатор для страниц сценариев */
+.lesson-type{color:var(--accent);}
 
 /* mentorship pricing */
 .pricing{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:48px;
@@ -373,4 +462,7 @@
   .tl-body{grid-column:1 / -1;}
   .note{grid-template-columns:70px 1fr 40px;}
   .note-cat,.note-read{display:none;}
+  .lesson{padding-left:24px;padding-right:24px;}
+  .lesson-nav{grid-template-columns:1fr;}
+  .lesson-nav--next{text-align:left;}
 }
