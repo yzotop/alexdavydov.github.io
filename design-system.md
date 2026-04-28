@@ -1,8 +1,10 @@
 # Design System — davydov.my Swiss Grid
 
+> **Перед началом работы над любым уроком, сценарием или компонентом дизайн-системы — прочитай `/working-protocol.md`. Этот документ описывает правила распределения ответственности между Claude Code и автором. Не пропускай его, даже если кажется, что задача рутинная.**
+
 > Зеркало того, что сейчас есть в коде. Не рекомендации — факты.  
 > Источник правды: `style.css` + реальные HTML-файлы переехавших страниц.  
-> Дата: 2026-04-26
+> Дата: 2026-04-26 · Обновлено: 2026-04-26 (Phase 4: lesson components + inconsistencies #3, #5, #6 closed)
 
 ---
 
@@ -156,7 +158,7 @@ Geist Mono: wght@400;500;600
 
 **Max-width контента:**
 - На переехавших страницах — нет явного `max-width` на уровне `.page`; контент растягивается на всю ширину с `padding: 0 48px`
-- На approach/index.html: `max-width: 680px` применён инлайном к `.prose` (единственный случай явного ограничения ширины текста)
+- На approach/index.html: класс `.prose--narrow { max-width: 680px }` — единственный случай явного ограничения ширины контейнера (ранее был инлайн, закрыто несоответствие №5)
 - На hub-страницах: `.container { max-width: 900px; margin: 0 auto }` — кастомный (не из `style.css`)
 
 **Компонентные сетки (двухколоночные):**
@@ -565,13 +567,26 @@ Hub-страницы добавляют свой breakpoint:
 ```
 
 **CSS `.prose`:**
-- `p`: `font-size: 16px; line-height: 1.65; margin: 0 0 16px`
+- `p`: `font-size: 16px; line-height: 1.65; margin: 0 0 16px; max-width: 620px`
 - `ul`: `font-size: 16px; line-height: 1.7; padding-left: 20px`
 - `li`: `margin-bottom: 6px`
-- `h2`: `font-size: 32px; font-weight: 500; margin: 48px 0 14px` (инлайн-вариант: `22px` на career и companies — **несоответствие №3**)
+- `h2`: `font-size: 32px; font-weight: 500; letter-spacing: -.02em; margin: 48px 0 14px` (закрыто несоответствие №3)
+- `h3`: `font-size: 20px; font-weight: 600; margin: 32px 0 10px`
+- `table`: `width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 24px`
+- `th`: `--mono; 11px; text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--ink); uppercase`
+- `th:first-child`: `width: 40%`
+- `td`: `padding: 12px; border-bottom: 1px solid var(--line)`
+- `tbody tr:last-child td`: `border-bottom: none`
+- `pre`: `--mono; 13px; background: var(--soft); border: 1px solid var(--line); padding: 20px 24px; overflow-x: auto`
+- `figure`: `margin: 32px 0`
+- `figcaption`: `--mono; 11px; color: var(--muted); letter-spacing: .06em; margin-top: 8px`
 - `blockquote`: `border-left: 3px solid var(--accent); padding: 4px 0 4px 20px`
-- `code`: `font-family: var(--mono); background: var(--soft); padding: 1px 5px`
+- `code`: `font-family: var(--mono); background: var(--soft); padding: 1px 6px`
 - `a`: цвет `var(--ink)`, подчёркивание `1px solid`
+
+**Модификатор `.prose--narrow`:**
+- `max-width: 680px` — ограничивает ширину контейнера (не параграфов)
+- Используется на approach/index.html
 
 ---
 
@@ -698,6 +713,309 @@ Hub-страницы добавляют свой breakpoint:
 
 ---
 
+### 3.20 Урок (`.lesson`, `.lesson-header`)
+
+**Где:** страницы уроков (`/lab/*/lessons/`). Шаблон: `_template.html`.
+
+**HTML:**
+```html
+<article class="lesson">
+  <nav class="breadcrumb">...</nav>
+  <header class="lesson-header">
+    <div class="lesson-meta">
+      <span class="lesson-num">01</span>
+      <span class="lesson-module">A/B-решения · Модуль 1</span>
+      <span>8 мин</span>
+    </div>
+    <h1 class="lesson-title">Название урока</h1>
+    <p class="lesson-lede">Лид урока</p>
+  </header>
+  <div class="prose">...</div>
+  <footer class="lesson-footer">...</footer>
+</article>
+```
+
+**CSS `.lesson`:**
+- `padding: 64px 48px 0; max-width: 800px; margin: 0 auto`
+
+**CSS `.lesson-header`:**
+- `margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--ink)` (жирная секционная линия, аналог `.sec-head.tight`)
+
+**CSS `.lesson-meta`:**
+- `display: flex; gap: 16px; --mono; 11px; uppercase; color: var(--muted); flex-wrap: wrap`
+
+**CSS `.lesson-num`:** `color: var(--accent); font-weight: 600`
+
+**CSS `.lesson-title`:** `font-size: clamp(36px, 5vw, 56px); font-weight: 500; letter-spacing: -.035em; line-height: 1.05`
+
+**CSS `.lesson-lede`:** `font-size: 22px; line-height: 1.45; color: var(--ink); max-width: 640px` — крупный тёмный тезис, аналог `.page-lead`
+
+**Правило:** в `.lesson-lede` ссылок не используем. Лид — это сильный тезис; подчёркивание ссылок ослабляет фразу. Первое упоминание терминов со ссылкой на словарь делается в первом абзаце `.prose`, не в лиде.
+
+---
+
+### 3.21 Блок-кейс (`.case-block`)
+
+**Где:** уроки курса A/B-решения.
+
+**HTML:**
+```html
+<div class="case-block">
+  <div class="case-block-tag">Кейс · контекст</div>
+  <p>Описание ситуации...</p>
+</div>
+
+<!-- Вариант: возврат к кейсу -->
+<div class="case-block case-block--return">
+  <div class="case-block-tag">Кейс · разбор</div>
+  <p>Разбор ситуации...</p>
+</div>
+```
+
+**CSS `.case-block`:** `border: 1px solid var(--line); padding: 24px 28px; margin: 32px 0`  
+**CSS `.case-block-tag`:** `--mono; 10px; color: var(--accent); uppercase; letter-spacing: .12em; margin-bottom: 12px`  
+**CSS `.case-block--return`:** `border-color: var(--accent)` (красная рамка для финального разбора)
+
+---
+
+### 3.22 Стоп-вопрос (`.stop-question`)
+
+**Где:** уроки — пауза для самостоятельного размышления.
+
+**HTML:**
+```html
+<div class="stop-question">
+  <strong>Стоп-вопрос.</strong> Текст вопроса...
+</div>
+```
+
+**CSS:** `border-left: 3px solid var(--accent); padding: 16px 20px; margin: 32px 0; background: var(--soft2)`
+
+---
+
+### 3.23 Формульный блок (`.formula-box`)
+
+**Где:** уроки — отображение формул в псевдокоде.
+
+**Визуальная концепция:** типографический акцент — формула «выходит» из текста между двумя жирными горизонталями. Без боковых рамок и заливки, в отличие от `.case-block`. Центрированная, крупная.
+
+**HTML:**
+```html
+<div class="formula-box">
+  <div class="formula-label">Формула · название</div>
+  <div class="formula-expr">Метрика = Числитель / Знаменатель</div>
+</div>
+```
+
+**CSS `.formula-box`:** `border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 32px 24px; margin: 32px 0; text-align: center`  
+**CSS `.formula-label`:** `--mono; 10px; color: var(--muted); uppercase; letter-spacing: .1em; margin-bottom: 10px`  
+**CSS `.formula-expr`:** `--mono; 22px; font-weight: 500; line-height: 1.4`
+
+**Правило:** ссылок внутри `.formula-expr` не используем. Формула читается как формула, а не как текст. Если нужно сослаться на словарь по терминам из формулы — делается в абзаце-расшифровке после `.formula-box`.
+
+**Отличие от `.case-block`:** `.case-block` — врезка с рамкой и лейблом; `.formula-box` — чистый типографический акцент без фона и боковых границ.
+
+---
+
+### 3.24 Протокольный список (`.protocol-list`)
+
+**Где:** уроки — нумерованный список шагов с CSS-счётчиком.
+
+**HTML:**
+```html
+<ol class="protocol-list">
+  <li>Шаг первый</li>
+  <li>Шаг второй</li>
+</ol>
+```
+
+**CSS:**
+- `counter-reset: protocol; list-style: none; padding: 0`
+- `li`: `counter-increment: protocol; padding: 14px 0 14px 52px; border-bottom: 1px solid var(--line)`
+- `li::before`: `content: counter(protocol, "decimal-leading-zero")` — двузначный номер `01`, `02`
+- Номер: `--mono; 11px; color: var(--accent); font-weight: 600; position: absolute; left: 0`
+
+---
+
+### 3.25 Вывод-итог (`.takeaway`)
+
+**Где:** уроки — финальный блок с главным инсайтом.
+
+**HTML:**
+```html
+<div class="takeaway">
+  <div class="takeaway-tag">Главное из урока</div>
+  <p>Ключевой вывод...</p>
+</div>
+```
+
+**CSS `.takeaway`:** `background: var(--ink); color: #fff; padding: 24px 28px; margin: 40px 0`  
+**CSS `.takeaway-tag`:** `--mono; 10px; color: var(--accent); uppercase; letter-spacing: .12em; margin-bottom: 12px`  
+**CSS `.takeaway p`:** `color: #fff` — явный override, необходим потому что `.prose p { color: var(--ink) }` имеет ту же специфичность `(0,1,1)` и без явного правила бьёт наследование от контейнера  
+**CSS `.takeaway p strong`:** `color: #fff`  
+**CSS `.takeaway p+p`:** `margin-top: 10px`  
+**CSS `.takeaway a`:** `color: var(--accent)` — красный виден на тёмном фоне и соответствует акцентному цвету системы  
+**CSS `.takeaway a:hover`:** `color: #fff; text-decoration: underline`
+
+**Важно:** `.takeaway` всегда живёт внутри `.prose`. Все текстовые элементы внутри белые (`#fff`); красным остаётся только `.takeaway-tag`. Явные `color: #fff` на `.takeaway p` и `.takeaway p strong` необходимы — наследование от контейнера перебивается конкретными правилами `.prose`.
+
+---
+
+### 3.26 Навигация по урокам (`.lesson-footer`, `.lesson-nav`)
+
+**Где:** нижняя часть каждого урока.
+
+**HTML:**
+```html
+<footer class="lesson-footer">
+  <nav class="lesson-nav">
+    <a class="lesson-nav--prev" href="../prev-slug/">
+      <div class="lesson-nav-label">← Предыдущий</div>
+      <div class="lesson-nav-title">Название урока</div>
+    </a>
+    <a class="lesson-nav--next" href="../next-slug/">
+      <div class="lesson-nav-label">Следующий →</div>
+      <div class="lesson-nav-title">Название урока</div>
+    </a>
+  </nav>
+</footer>
+```
+
+**CSS `.lesson-footer`:** `margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--ink)` (жирная секционная линия)  
+**CSS `.lesson-nav`:** `display: grid; grid-template-columns: 1fr 1fr; gap: 16px`  
+**CSS `.lesson-nav--prev`:** `text-align: left`  
+**CSS `.lesson-nav--next`:** `text-align: right`  
+**CSS `.lesson-nav-label`:** `--mono; 10px; color: var(--muted); uppercase; letter-spacing: .1em; margin-bottom: 6px`  
+**CSS `.lesson-nav-title`:** `18px; font-weight: 500; letter-spacing: -.01em; transition: color .15s` → hover: `var(--accent)`
+
+**Мобильный адаптив (< 900px):**  
+- `.lesson`: `padding-left: 24px; padding-right: 24px`
+- `.lesson-nav`: `grid-template-columns: 1fr`
+- `.lesson-nav--next`: `text-align: left`
+
+---
+
+### 3.27 Breadcrumb (`.breadcrumb`)
+
+**Где:** страницы уроков — над `.lesson-header`, связывает урок → курс → каталог. На главных разделах сайта не используется.
+
+**HTML:**
+```html
+<nav class="breadcrumb" aria-label="Хлебные крошки">
+  <a href="/">Главная</a>
+  <span class="breadcrumb-sep">/</span>
+  <a href="/courses/">Курсы</a>
+  <span class="breadcrumb-sep">/</span>
+  <a href="/lab/quasi-experiments/">Квазиэксперименты</a>
+  <span class="breadcrumb-sep">/</span>
+  <span class="breadcrumb-current">Урок 1</span>
+</nav>
+```
+
+**CSS `.breadcrumb`:**
+- `display: flex; flex-wrap: wrap; gap: 8px; align-items: center`
+- `margin-bottom: 32px`
+- `--mono; 11px; font-weight: 500; uppercase; letter-spacing: .12em`
+- `color: var(--muted)`
+
+**CSS `.breadcrumb a`:** `color: var(--muted); transition: color .15s` → hover: `color: var(--ink)`  
+**CSS `.breadcrumb-sep`:** `color: var(--mute2); user-select: none`  
+**CSS `.breadcrumb-current`:** `color: var(--ink)` (текущий пункт, без ссылки)
+
+---
+
+### 3.28 Блок вопроса (`.think-block`)
+
+**Где:** страницы сценариев практики — между чистым графиком и кнопкой «Показать разбор».
+
+**Назначение:** побудить читателя сформулировать собственный ответ до открытия разбора. Задаёт 2–3 конкретных вопроса. Не является стоп-вопросом урока (`.stop-question`): тот — однострочный, для пауз внутри лекционного текста; `.think-block` — структурированный, с нумерованным списком, для практических сценариев.
+
+**HTML:**
+```html
+<div class="think-block">
+  <div class="think-block-tag">Подумай</div>
+  <ol>
+    <li>Что здесь произошло?</li>
+    <li>Можно ли катить в прод?</li>
+    <li>Какие метрики проверить дополнительно?</li>
+  </ol>
+</div>
+```
+
+**CSS:**
+- `.think-block`: `margin: 40px 0; padding: 28px 32px; border-left: 4px solid var(--accent); background: var(--soft)`
+- `.think-block-tag`: `display: block; --mono; 11px; font-weight: 600; uppercase; letter-spacing: .12em; color: var(--accent); margin-bottom: 16px`
+- `.think-block ol`: `padding-left: 20px; margin: 0`
+- `.think-block li`: `font-size: 17px; line-height: 1.6; margin-bottom: 10px`
+- `.think-block li:last-child`: `margin-bottom: 0`
+
+**Отличие от `.stop-question`:** `.stop-question` — акцент с красной левой полосой на `var(--soft2)`, однострочный, без внутренней структуры. `.think-block` — более широкий, `var(--soft)` фон, содержит нумерованный список, полоса жирнее (`4px` vs `3px`).
+
+---
+
+### 3.29 Раскрываемый разбор (`.disclosure`)
+
+**Где:** страницы сценариев практики — скрывает текст разбора и аннотированный SVG.
+
+**Назначение:** читатель сначала видит только задачу (контекст + чистый график + `think-block`), затем сам нажимает кнопку и открывает разбор. После открытия кнопка заливается тёмным, сигнализируя, что режим «разбор активен».
+
+> **Конфликт имён:** класс `.reveal` в `style.css` уже используется для scroll-анимации (IntersectionObserver добавляет `.in`; применяется на index.html). Новый компонент называется `.disclosure`, чтобы избежать конфликта. Переименование `.reveal` (анимации) в `js-reveal` — открытый вопрос (7.12).
+
+**HTML:**
+```html
+<details class="disclosure">
+  <summary class="disclosure-trigger">Показать разбор</summary>
+  <div class="disclosure-content">
+    <p>Текст разбора...</p>
+    <figure>
+      <img src="/path/to/your/chart.svg" alt="Аннотированный график"/>
+      <figcaption>График с аннотациями: CPM растёт, выручка падает.</figcaption>
+    </figure>
+  </div>
+</details>
+```
+
+**CSS:**
+- `.disclosure`: `margin: 32px 0`
+- `.disclosure-trigger`: `display: inline-block; padding: 14px 24px; border: 1px solid var(--ink); background: var(--bg); --mono; 12px; font-weight: 500; uppercase; letter-spacing: .08em; color: var(--ink); cursor: pointer; user-select: none; list-style: none`
+- `.disclosure-trigger::-webkit-details-marker`: `display: none` — убирает стрелку в Chrome/Safari
+- `.disclosure-trigger::marker`: `content: ""` — убирает стрелку в Firefox
+- `.disclosure-trigger:hover`: `background: var(--ink); color: #fff`
+- `.disclosure[open] .disclosure-trigger`: `background: var(--ink); color: #fff` — после раскрытия кнопка остаётся тёмной
+- `.disclosure-content`: `margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line)`
+- `.disclosure-content > *:first-child`: `margin-top: 0`
+- `.disclosure-content > *:last-child`: `margin-bottom: 0`
+
+**Кросс-браузерность:**
+- Chrome/Edge: работает штатно; `::-webkit-details-marker { display: none }` скрывает треугольник
+- Safari: то же; `list-style: none` на `.disclosure-trigger` как запасной вариант
+- Firefox 78+: `::marker { content: "" }` скрывает треугольник
+
+---
+
+### 3.30 Мета-строка сценария (`.lesson-meta--scenario`, `.lesson-type`)
+
+**Где:** страницы сценариев практики. Расширяет существующий компонент `.lesson-meta` (раздел 3.20).
+
+**Назначение:** в уроке третий span показывает время чтения (`5 мин`, цвет `var(--muted)`). В сценарии третий span показывает тип решения — с акцентным красным, чтобы читатель сразу видел, какой навык тренируется.
+
+**HTML:**
+```html
+<div class="lesson-meta lesson-meta--scenario">
+  <span class="lesson-num">001</span>
+  <span class="lesson-module">Сценарий · A/B-решения</span>
+  <span class="lesson-type">Что именно дало эффект</span>
+</div>
+```
+
+**CSS:**
+- `.lesson-type`: `color: var(--accent)` — акцентный красный вместо `var(--muted)`
+- Все остальные стили наследуются от `.lesson-meta` (--mono, 11px, uppercase, flex, gap)
+
+**Правило:** `.lesson-meta--scenario` не добавляет новых CSS-правил на контейнер — весь визуальный эффект достигается классом `.lesson-type` на конкретном `<span>`. Модификатор-класс нужен только как семантический маркер для будущих нужд (JS, фильтрация).
+
+---
+
 ## 4. Паттерны вёрстки
 
 ### 4.1 Первый экран (hero)
@@ -780,7 +1098,7 @@ Hub-страницы добавляют свой breakpoint:
 | Progress bars, badges с color-fill | ❌ Нет |
 | Tooltips / popovers | ❌ Нет |
 | Sticky sidebar | ❌ Нет |
-| Breadcrumbs | ❌ Нет на swiss-страницах (есть на hub-страницах — **несоответствие**) |
+| Breadcrumbs | ✅ Есть на страницах уроков (`.breadcrumb`, раздел 3.27); на главных разделах сайта не используются |
 
 ---
 
@@ -796,10 +1114,10 @@ Hub-страницы добавляют свой breakpoint:
 - Нет класса `.active` или `.is-current` в `style.css`
 - Пронизывает все 12 страниц с активным nav-элементом
 
-### №3: H2 в `.prose` — два размера
-- В `style.css`: `.prose h2 { font-size: 32px; font-weight: 500; margin: 48px 0 14px }`
-- На career/companies: `<h2 style="font-size:22px;font-weight:600;margin-bottom:12px">` — инлайн-оверрайд
-- Т.е. в `style.css` определён один размер, но реально использован другой
+### ~~№3: H2 в `.prose` — два размера~~ ✅ Закрыто
+- Добавлено `.prose h2 { font-size: 32px; font-weight: 500; letter-spacing: -.02em; margin: 48px 0 14px }` в `style.css`
+- Инлайн-оверрайды `style="font-size:22px..."` удалены с career/index.html
+- Теперь все `.prose h2` используют одно правило из CSS
 
 ### №4: Hub-страницы (lab, knowledge, simulators, calculators, search) — другая система
 - Используют `font-family: -apple-system, BlinkMacSystemFont, ...` вместо `var(--sans)`
@@ -808,18 +1126,18 @@ Hub-страницы добавляют свой breakpoint:
 - Отдельный breakpoint `640px` вместо `900px`
 - Синий цвет ссылок `#2563eb` вместо красного `var(--accent)`
 
-### №5: `max-width` текстового блока не унифицирован
-- `approach/index.html`: `.prose` с `style="max-width:680px"` — инлайн
-- Все остальные prose-блоки: нет `max-width`, текст идёт полной шириной
-- Нет переменной `--text-width` или класса `.prose--narrow`
+### ~~№5: `max-width` текстового блока не унифицирован~~ ✅ Закрыто
+- Добавлен класс `.prose--narrow { max-width: 680px }` в `style.css`
+- `approach/index.html` обновлён: `<div class="prose prose--narrow">` (инлайн убран)
+- Остальные prose-блоки остаются без `max-width` на контейнере (параграфы внутри `.prose p` имеют `max-width: 620px`)
 
-### №6: Таблицы — нет компонента в style.css
-- `career/index.html`: `<table>` целиком на инлайн-стилях (padding, border-bottom, font-family)
-- В `style.css` нет `.table`, `.th`, `.td` или `.prose table` правил
+### ~~№6: Таблицы — нет компонента в style.css~~ ✅ Закрыто
+- Добавлены `.prose table`, `.prose th`, `.prose th:first-child`, `.prose td`, `.prose tbody tr:last-child td` в `style.css`
+- `career/index.html`: все инлайн-стили с `<table>`, `<th>`, `<td>` убраны; оставлены только `style="color:var(--muted);font-style:italic"` на контентно-специфичных ячейках «До»
 
-### №7: `<details>/<summary>` — без стилизации
-- `companies/index.html`: нативные `<details><summary>` без CSS в `style.css`
-- Браузерный стиль по умолчанию
+### ~~№7: `<details>/<summary>` — без стилизации~~ ✅ Закрыто
+- Добавлен компонент `.disclosure` (раздел 3.29) в `style.css`
+- `companies/index.html`: нативные `<details><summary>` остаются без стилизации — они не используют класс `.disclosure`; закрытие касается нового компонента для сценариев практики
 
 ### №8: Стат-число "4+ года в аналитике" на index.html расходится с about (9 лет)
 - `index.html`: `4+` лет (стат-блок)
@@ -830,39 +1148,45 @@ Hub-страницы добавляют свой breakpoint:
 
 ## 7. Открытые вопросы
 
-**7.1 Кодовые блоки**  
-В `style.css` определён `.prose code` (inline), но нет `.prose pre` (multiline). Как отображать многострочный код в уроках — не определено.
+**~~7.1 Кодовые блоки~~** ✅ Закрыто  
+Добавлено `.prose pre { --mono; 13px; background: var(--soft); border: 1px solid var(--line); padding: 20px 24px; overflow-x: auto }` в `style.css`.
 
 **7.2 Hub-страницы (lab, knowledge, simulators, calculators)**  
 Эти страницы сейчас используют swiss nav/footer, но тело страницы — совсем другая система. Нужно ли их переписывать полностью, или оставить гибридными?
 
-**7.3 Страницы уроков**  
-Главный вопрос: какой шаблон использовать для урока с текстом, формулами, кодом, интерактивными виджетами? В `style.css` есть `.article` + `.prose`, но:
-- Нет правил для `<figure>` / `<figcaption>`
-- Нет правил для `<math>` или LaTeX-рендеринга
-- Нет правил для `<pre><code>`
-- Нет решения для интерактивных embed-блоков
+**~~7.3 Страницы уроков~~** ✅ Частично закрыто  
+Создан шаблон `_template.html` в `/lab/ab-decisions/lessons/`. Добавлены компоненты: `.lesson`, `.lesson-header`, `.lesson-meta`, `.case-block`, `.stop-question`, `.formula-box`, `.protocol-list`, `.takeaway`, `.lesson-footer`, `.lesson-nav`, `.prose pre`, `.prose figure`, `.prose figcaption`.  
+Остаётся открытым: рендеринг `<math>` / LaTeX, интерактивные embed-блоки, Sidebar/ToC.
 
 **7.4 Sidebar / Table of Contents**  
 Для длинных уроков нужна ли боковая колонка с оглавлением? В `style.css` нет ничего похожего.
 
-**7.5 Изображения и подписи**  
-Нет компонента `<figure>` с `<figcaption>`. Нет правил для выравнивания, максимальной ширины, отступов.
+**~~7.5 Изображения и подписи~~** ✅ Закрыто  
+Добавлены `.prose figure { margin: 32px 0 }` и `.prose figcaption { --mono; 11px; color: var(--muted); margin-top: 8px }` в `style.css`.
 
 **7.6 Формы**  
 `.news-form` (newsletter) — единственная форма, стилизованная в `style.css`. Нет универсальных правил для `input`, `select`, `textarea`, `label`.
 
-**7.7 Пагинация**  
-Нет компонента для навигации между уроками (предыдущий / следующий). Нет примера в существующих страницах.
+**~~7.7 Пагинация~~** ✅ Закрыто  
+Добавлены `.lesson-footer`, `.lesson-nav`, `.lesson-nav--prev`, `.lesson-nav--next`, `.lesson-nav-label`, `.lesson-nav-title` в `style.css`. Шаблон показывает использование.
 
 **7.8 Прогресс по курсу**  
-Нет визуального маркера «урок X из Y», «пройдено/не пройдено». Нет `.progress` компонента.
+Нет визуального маркера «урок X из Y», «пройдено/не пройдено». Нет `.progress` компонента. В шаблоне в `.lesson-meta` есть поле модуля и номер урока — можно использовать как ориентир без JS-трекинга.
 
 **7.9 Spacing scale**  
 Используемые отступы (`12px`, `16px`, `24px`, `28px`, `32px`, `40px`, `48px`, `64px`, `72px`, `80px`) похожи на неформальную 8px-сетку, но нигде не задокументированы как токены. Не ясно, можно ли использовать `20px` или только кратные 8.
 
 **7.10 Цвета для hover на чёрном фоне**  
 В `.plan.feat` (чёрная карточка) ссылки получают `color: #fff` инлайном. Нет токена `--on-dark` или аналогичного.
+
+**7.12 Конфликт имён `.reveal`** — Открыт  
+Класс `.reveal` используется в двух значениях: (1) scroll-анимация на index.html (`opacity: 0 → 1` через IntersectionObserver); (2) имя, запланированное для details/summary компонента. Конфликт разрешён переименованием нового компонента в `.disclosure`. Вопрос: переименовать анимационный класс в `.js-reveal` или `.scroll-reveal`, чтобы освободить `.reveal` для семантического использования?
+
+**7.13 Scroll-анимация `.reveal` — плановая задача на удаление**  
+Анимация «контент материализуется при появлении в viewport» (`.reveal { opacity:0; transform:translateY(24px) }` + IntersectionObserver в `main.js`) противоречит swiss-принципам: контент должен существовать как статичный объект, не возникать по триггеру прокрутки. Плановая задача — удалить компонент из `style.css` и связанный JS в IntersectionObserver, заменить поведение на статичное (контент виден сразу). Не блокирует текущую работу.
+
+**7.11 Ссылки внутри `.takeaway`** ✅ Решено  
+Принято правило: ссылки в `.takeaway a` — `color: var(--accent)` (красный виден на тёмном `var(--ink)` фоне и соответствует акцентной системе). Hover: `color: #fff; text-decoration: underline` — белый с подчёркиванием, без неожиданных цветовых переходов. Логика инвертирована по сравнению со светлым фоном (там acc → hover ink), на тёмном — acc → hover white.
 
 ---
 

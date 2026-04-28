@@ -10,8 +10,7 @@ Current canonical course homes:
 ```text
 lab/
 ├── monetization/        # 01 — Математика монетизации рекламы
-├── ab-decisions/        # 02 — A/B-тестирование: принятие решений
-├── product-analytics/   # 03 — Аналитика продукта
+├── product-analytics/   # 02 — Аналитика продукта
 ├── ab-stat-os/          # 04 — Статистика A/B-тестирования
 └── quasi-experiments/   # 05 — Квазиэксперименты и причинная идентификация
 ```
