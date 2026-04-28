@@ -13,19 +13,17 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 REGISTRY = os.path.join(ROOT, "courses", "courses-registry.json")
 OUT = os.path.join(ROOT, "courses", "index.html")
 
-# REDESIGN §3.3 tags + ab-decisions
+# REDESIGN §3.3 tags
 COURSE_LABELS: dict[str, str] = {
     "ab-stat-os": "A/B · Middle→Senior",
     "monetization": "Монетизация · Middle",
     "product-analytics": "Продукт · Junior→Senior",
     "quasi-experiments": "Causal · Senior",
-    "ab-decisions": "A/B · Middle",
 }
 
 # Display order: learning path narrative
 DISPLAY_ORDER = [
     "product-analytics",
-    "ab-decisions",
     "ab-stat-os",
     "monetization",
     "quasi-experiments",
@@ -175,6 +173,9 @@ def main() -> int:
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
