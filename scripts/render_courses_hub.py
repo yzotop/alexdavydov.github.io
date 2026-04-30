@@ -55,10 +55,9 @@ def nav_html(active: str) -> str:
     {_a("/courses/", "Курсы", "courses")}
     {_a("/cases/", "Кейсы", "cases")}
     {_a("/notes/", "Заметки", "notes")}
-    {_a("/approach/", "Подход", "approach")}
-    {_a("/career/", "Карьера", "career")}
+    {_a("/career/", "Менторство", "career")}
   </div>
-  <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
+  <a href="/companies/" class="nav-cta"><span class="dot"></span>Для компаний</a>
   {BURGER_BTN}
 </nav>
 <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
