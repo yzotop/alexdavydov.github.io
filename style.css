@@ -175,6 +175,18 @@
   .banner-right{font-size:13px;opacity:.85;cursor:pointer;transition:opacity .15s;}
   .banner-right:hover{opacity:1;}
 
+  /* learning path (courses page) */
+  .learning-path{display:flex;align-items:center;gap:24px;padding:20px 24px;
+    border:1px solid var(--line);background:var(--bg);margin:0 0 24px 0;}
+  .learning-path-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--muted);white-space:nowrap;}
+  .learning-path-chain{display:flex;align-items:center;flex-wrap:wrap;gap:12px;
+    font-size:15px;color:var(--ink);}
+  .learning-path-chain a{color:var(--ink);text-decoration:none;
+    border-bottom:1px solid transparent;transition:border-color .15s;}
+  .learning-path-chain a:hover{border-bottom-color:var(--ink);}
+  .learning-path-arrow{color:var(--mute2);}
+
   /* notes */
   .notes-wrap{padding:96px 48px 0;}
   .note{display:grid;grid-template-columns:90px 90px 1fr 80px 40px;gap:20px;align-items:center;
@@ -465,4 +477,8 @@
   .lesson{padding-left:24px;padding-right:24px;}
   .lesson-nav{grid-template-columns:1fr;}
   .lesson-nav--next{text-align:left;}
+}
+@media (max-width:768px){
+  .learning-path{flex-direction:column;align-items:flex-start;gap:12px;padding:16px 20px;}
+  .learning-path-chain{font-size:14px;}
 }
