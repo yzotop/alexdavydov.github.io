@@ -28,11 +28,7 @@ jobs:
       - name: Link check (HTML)
         uses: lycheeverse/lychee-action@v2
         with:
-          args: >-
-            --no-progress
-            --exclude '^https://t\.me'
-            --exclude '^mailto:'
-            './**/*.html'
+          args: --config lychee.toml './**/*.html'
         continue-on-error: true
 
   lighthouse-sample:
