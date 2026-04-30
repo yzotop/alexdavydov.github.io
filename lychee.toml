@@ -1,0 +1,47 @@
+#############################  Display  #############################
+
+# CI-friendly: no interactive progress bar
+no_progress = true
+
+#############################  Cache  ###############################
+
+# Cache results to avoid rechecking unchanged links on reruns
+cache = true
+max_cache_age = "7d"
+
+#############################  Runtime  #############################
+
+# Limit concurrency — don't hammer servers
+max_concurrency = 4
+
+#############################  Requests  ############################
+
+# Timeout per request (seconds)
+timeout = 20
+
+# Resolve root-relative links (/about/) against repo root
+base_url = "."
+
+# Accept standard codes + redirects + 999 (LinkedIn bot-block)
+accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
+
+#############################  Exclusions  ##########################
+
+# Exclude URLs from checking (values are regular expressions)
+exclude = [
+  "^https?://t\\.me",                 # Telegram (bot-blocked)
+  "^mailto:",                          # mailto links
+  "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)
+]
+
+# Exclude paths from checking (values are regular expressions)
+exclude_path = [
+  "_archive",
+  "_staging",
+  "\\.claude",       # escaped dot — matches ".claude"
+  "node_modules",
+  "lab/monetization",
+  "lab/product-analytics",
+  "lab/quasi-experiments",
+  "lab/ab-stat-os",
+]
