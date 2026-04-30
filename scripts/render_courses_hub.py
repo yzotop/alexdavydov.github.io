@@ -145,6 +145,21 @@ def main() -> int:
 
   <div class="banner" style="margin:32px 0">
     <div class="banner-left">
+      <span class="banner-tag">С чего начать</span>
+      <span>
+        <a href="/lab/product-analytics/">Аналитика продукта</a>
+        →
+        <a href="/lab/ab-stat-os/">Статистика A/B</a>
+        →
+        <a href="/lab/monetization/">Монетизация</a>
+        →
+        <a href="/lab/quasi-experiments/">Квазиэксперименты</a>
+      </span>
+    </div>
+  </div>
+
+  <div class="banner" style="margin:32px 0">
+    <div class="banner-left">
       <span class="banner-tag">COMING SOON</span>
       <span>Новый курс на <strong>karpov.courses</strong> — следи за анонсом в <a href="https://t.me/Datalake">Telegram</a></span>
     </div>
