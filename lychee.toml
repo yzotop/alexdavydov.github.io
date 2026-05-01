@@ -19,8 +19,11 @@ max_concurrency = 4
 # Timeout per request (seconds)
 timeout = 20
 
-# Resolve root-relative links (/about/) against repo root
+# Resolve root-relative links so lychee can build URLs without errors
 base_url = "https://davydov.my"
+
+# Check only external https URLs — skip relative internal links (CSS, images, nav)
+scheme = ["https"]
 
 # Accept standard codes + redirects + 999 (LinkedIn bot-block)
 accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
@@ -29,6 +32,8 @@ accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
 
 # Exclude URLs from checking (values are regular expressions)
 exclude = [
+  "^https://davydov\\.my",            # skip all self-referential URLs (internal links
+                                       # resolved via base_url — always false-positives)
   "^https?://t\\.me",                 # Telegram (bot-blocked)
   "^mailto:",                          # mailto links
   "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)
