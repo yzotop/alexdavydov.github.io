@@ -12,6 +12,7 @@ SITE_ORIGIN = "https://davydov.my"
 # Paths not guaranteed to appear in search-index (add when new hubs ship).
 EXTRA_PATHS = (
     "/",
+    "/approach/",
     "/cases/",
     "/cases/macbook-market/",
     "/lab/glossary/",
