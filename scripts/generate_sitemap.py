@@ -21,6 +21,7 @@ EXTRA_PATHS = (
     "/calculators/",
     "/site-map/",
     "/system-map/",
+    "/workspace/",
 )
 
 
