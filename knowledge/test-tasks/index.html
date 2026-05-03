@@ -1,66 +1,227 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестовые задания — Alex Davydov</title>
-    <link rel="stylesheet" href="/assets/base.css">
-    <link rel="stylesheet" href="/assets/test-tasks.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #fff;
-            padding: 3rem 1rem;
-        }
-        .container { max-width: 900px; margin: 0 auto; }
-        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
-        .breadcrumb a { color: #2563eb; text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover { color: #1a1a1a; }
-        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
-        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6; }
-        .footer-link {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e0e0e0;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        .footer-link a { color: #666; text-decoration: none; }
-        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Тестовые задания — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/knowledge/test-tasks/"/>
+<meta name="description" content="100 реальных тестовых заданий по продуктовой и дата-аналитике. Junior, Middle, Senior — Python, SQL, Excel, Dashboard, A/B."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Тестовые задания — davydov.my"/>
+<meta property="og:description" content="100 реальных тестовых заданий по продуктовой и дата-аналитике."/>
+<meta property="og:url" content="https://davydov.my/knowledge/test-tasks/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="/">Главная</a> → <a href="/knowledge/">База знаний</a> → Тестовые задания
-        </div>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" style="color:var(--ink)">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/knowledge/">База знаний</a>
+    <a href="/simulators/">Симуляторы</a>
+    <a href="/calculators/">Калькуляторы</a>
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Тестовые задания</span>
+  </nav>
+  <h1 class="page-title">Тестовые задания<span class="accent-dot">.</span></h1>
+  <p class="page-lead">100 реальных тестовых заданий по продуктовой и дата-аналитике. Ведут на исходные папки и файлы.</p>
 
-        <a href="/knowledge/" class="back-link">← Назад к базе знаний</a>
-
-        <h1>Тестовые задания</h1>
-        <p class="subtitle">Подборка реальных тестовых для продуктовой/дата-аналитики. Ведут на исходные папки/файлы.</p>
-
-        <main id="tt-app">
-            <noscript><p style="color:#999;">Для отображения списка включите JavaScript.</p></noscript>
-        </main>
-
-        <div class="footer-link">
-            <a href="/knowledge/">← Назад к базе знаний</a>
-        </div>
+  <div class="km-controls">
+    <input type="text" id="km-search" class="km-search"
+           placeholder="Компания или позиция…" autocomplete="off"/>
+    <div class="km-filters km-filters--two">
+      <label class="km-filter">
+        <span class="km-filter-label">Грейд</span>
+        <select id="km-filter-grade">
+          <option value="">Все</option>
+        </select>
+      </label>
+      <label class="km-filter">
+        <span class="km-filter-label">Тэг</span>
+        <select id="km-filter-tag">
+          <option value="">Все</option>
+        </select>
+      </label>
     </div>
+    <div class="km-checkboxes">
+      <label class="km-checkbox">
+        <input type="checkbox" id="km-with-dataset"/>
+        <span>С датасетом</span>
+      </label>
+      <label class="km-checkbox">
+        <input type="checkbox" id="km-new-only"/>
+        <span>Только новые</span>
+      </label>
+    </div>
+    <div class="km-count" id="km-count"></div>
+  </div>
 
-    <script src="/assets/test-tasks.js"></script>
+  <div class="km-list" id="km-list"></div>
+
+  <p style="margin-top:2rem;font-size:.88rem;color:var(--muted)">
+    <a href="/knowledge/" style="color:var(--accent)">← База знаний</a>
+  </p>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script>
+(function () {
+  'use strict';
+
+  var GRADE_ORDER = ['Intern', 'Junior', 'Middle', 'Senior', 'Unknown'];
+
+  var DATA = [];
+  var searchTimer;
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function buildFilters(dictionaries) {
+    // Grades — canonical order from dictionaries, only present ones
+    var grades = (dictionaries && dictionaries.grades) ? dictionaries.grades : GRADE_ORDER;
+    var presentGrades = {};
+    DATA.forEach(function (d) { presentGrades[d.grade] = true; });
+    var gradeSel = document.getElementById('km-filter-grade');
+    grades.forEach(function (g) {
+      if (!presentGrades[g]) return;
+      var o = document.createElement('option');
+      o.value = g;
+      o.textContent = g;
+      gradeSel.appendChild(o);
+    });
+
+    // Tags — sorted by frequency descending
+    var tagCount = {};
+    DATA.forEach(function (d) {
+      (d.tags || []).forEach(function (t) {
+        tagCount[t] = (tagCount[t] || 0) + 1;
+      });
+    });
+    var tags = Object.keys(tagCount);
+    tags.sort(function (a, b) { return tagCount[b] - tagCount[a]; });
+    var tagSel = document.getElementById('km-filter-tag');
+    tags.forEach(function (t) {
+      var o = document.createElement('option');
+      o.value = t;
+      o.textContent = t;
+      tagSel.appendChild(o);
+    });
+  }
+
+  function render() {
+    var q       = document.getElementById('km-search').value.toLowerCase().trim();
+    var grade   = document.getElementById('km-filter-grade').value;
+    var tag     = document.getElementById('km-filter-tag').value;
+    var withDs  = document.getElementById('km-with-dataset').checked;
+    var newOnly = document.getElementById('km-new-only').checked;
+
+    var filtered = DATA.filter(function (d) {
+      if (q       && d.title.toLowerCase().indexOf(q) === -1) return false;
+      if (grade   && d.grade !== grade)                        return false;
+      if (tag     && (d.tags || []).indexOf(tag) === -1)       return false;
+      if (withDs  && !d.dataset)                               return false;
+      if (newOnly && !d.is_new)                                return false;
+      return true;
+    });
+
+    document.getElementById('km-count').textContent = 'Найдено: ' + filtered.length;
+
+    var list = document.getElementById('km-list');
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="km-empty">Ничего не найдено</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(function (d) {
+      var firstTag = d.tags && d.tags.length ? d.tags[0] : '';
+      var tagText = firstTag
+        ? esc(d.grade) + ' · ' + esc(firstTag)
+        : esc(d.grade);
+      return '<a class="km-row" href="' + esc(d.url) + '" target="_blank" rel="noopener noreferrer">'
+        + '<span class="km-tags">' + tagText + '</span>'
+        + '<h3 class="km-title">' + esc(d.title) + '</h3>'
+        + '<span class="km-arrow">↗</span>'
+        + '</a>';
+    }).join('');
+  }
+
+  function onSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(render, 300);
+  }
+
+  fetch('/data/test-tasks.v1.json')
+    .then(function (r) { return r.json(); })
+    .then(function (raw) {
+      DATA = raw.items;
+      buildFilters(raw.dictionaries);
+      render();
+      document.getElementById('km-search').addEventListener('input', onSearch);
+      document.getElementById('km-filter-grade').addEventListener('change', render);
+      document.getElementById('km-filter-tag').addEventListener('change', render);
+      document.getElementById('km-with-dataset').addEventListener('change', render);
+      document.getElementById('km-new-only').addEventListener('change', render);
+    })
+    .catch(function () {
+      document.getElementById('km-list').innerHTML =
+        '<div class="km-empty">Не удалось загрузить данные.</div>';
+    });
+})();
+</script>
+<script src="/main.js" defer></script>
 </body>
 </html>
