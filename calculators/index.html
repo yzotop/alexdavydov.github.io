@@ -1,204 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькуляторы — Alex Davydov</title>
-    <link rel="canonical" href="https://davydov.my/calculators/"/>
-    <meta name="description" content="Параметрические калькуляторы для монетизации и экспериментов: rollout, revenue, сценарии — davydov.my."/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:title" content="Калькуляторы — Alex Davydov"/>
-    <meta property="og:description" content="Параметрические калькуляторы для монетизации и экспериментов."/>
-    <meta property="og:url" content="https://davydov.my/calculators/"/>
-    <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
-    <meta name="twitter:card" content="summary_large_image"/>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-    <link rel="icon" href="/favicon.ico" sizes="any"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="/style.css"/>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background-color: #ffffff;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        .breadcrumb {
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .breadcrumb a {
-            color: #2563eb;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumb span {
-            margin: 0 0.5rem;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 1rem;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 3rem;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-            align-items: stretch;
-        }
-
-        .card {
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
-            font-weight: 500;
-        }
-
-        .card-badges {
-            display: inline-flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin: -0.25rem 0 0.75rem;
-        }
-
-        .card-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.22rem 0.55rem;
-            border-radius: 999px;
-            font-size: 0.78rem; /* ~12px */
-            line-height: 1.2;
-            border: 1px solid rgba(37, 99, 235, 0.22);
-            background: rgba(37, 99, 235, 0.06);
-            color: rgba(37, 99, 235, 0.92);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .card-text {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .card-keyq {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 10px;
-            margin-bottom: 14px;
-            line-height: 1.35;
-            overflow-wrap: anywhere;
-        }
-
-        .card-keyq strong {
-            color: #333;
-            font-weight: 600;
-        }
-
-        /* Alias for reliability per spec */
-        .calc-card__keyq { }
-
-        .card-button {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border: 1px solid #2563eb;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-
-        .card-button:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .calc-card__actions {
-            margin-top: auto;
-            padding-top: 12px;
-        }
-
-        .btn-secondary {
-            background: #fff;
-            color: #2563eb;
-            border: 1px solid #2563eb;
-        }
-
-        .btn-secondary:hover {
-            background: #eff6ff;
-        }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Калькуляторы — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/calculators/"/>
+<meta name="description" content="Параметрические калькуляторы для монетизации и экспериментов: rollout, revenue, сценарии — davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Калькуляторы — davydov.my"/>
+<meta property="og:description" content="Параметрические калькуляторы для монетизации и экспериментов."/>
+<meta property="og:url" content="https://davydov.my/calculators/"/>
+<meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
 <nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
-    <div class="logo-mark"><span>АД</span></div>
+    <div class="logo-mark"><span>Δ</span></div>
     <span>davydov.my</span>
   </a>
   <div class="nav-links">
     <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
     <a href="/cases/">Кейсы</a>
     <a href="/notes/">Заметки</a>
     <a href="/career/">Менторство</a>
   </div>
-  <a href="/companies/" class="nav-cta"><span class="dot"></span>Для компаний</a>
-  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-  </button>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
 </nav>
 <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
 <nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
   <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
     <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
     <a href="/cases/">Кейсы</a>
     <a href="/notes/">Заметки</a>
     <a href="/approach/">Подход</a>
@@ -207,148 +48,60 @@
   </div>
   <hr class="nav-drawer-divider" aria-hidden="true"/>
   <div class="nav-drawer-section nav-drawer-section--secondary">
-    <a href="/lab/">Инструменты</a>
     <a href="/knowledge/">База знаний</a>
     <a href="/simulators/">Симуляторы</a>
     <a href="/calculators/">Калькуляторы</a>
     <a href="/about/">Обо мне</a>
-    <a href="/companies/">Для компаний</a>
     <a href="/search/">Поиск</a>
   </div>
 </nav>
+<div class="page">
+  <h1 class="page-title">Калькуляторы<span class="accent-dot">.</span></h1>
+  <p class="page-lead">Параметрические модели: покрутить рычаги и увидеть нелинейности. Живые симуляции — в <a href="/simulators/">Симуляторах</a>.</p>
 
-    <div class="container">
-        <h1>Калькуляторы</h1>
-        <p class="subtitle">Параметрические модели и интерактивные калькуляторы: «покрутить рычаги» и увидеть нелинейности.</p>
+  <div class="courses-grid">
+    <a class="course" href="/calculators/ad-monetization/">
+      <div class="course-meta"><span class="course-num">01</span><span>Монетизация</span></div>
+      <h3>Pressure → Revenue</h3>
+      <p>Параметрическая модель рекламной монетизации: как Ad Pressure меняет delivery и приводит к saturation. Где рост давления перестаёт увеличивать выручку?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+    <a class="course" href="/calculators/revenue/">
+      <div class="course-meta"><span class="course-num">02</span><span>Монетизация</span></div>
+      <h3>Цена × объём</h3>
+      <p>Trade-off цена × объём: как elasticity превращает рост цены в падение объёма. При какой цене рост начинает снижать общую выручку?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+    <a class="course" href="/calculators/rollout/">
+      <div class="course-meta"><span class="course-num">03</span><span>Эксперименты</span></div>
+      <h3>A/B: прогноз раскатки на 100%</h3>
+      <p>Прогноз полного rollout: как эффекты теста (ΔCPM, ΔShowRate, ΔRequests) пересоберут итоговые метрики. Что реально произойдёт после масштабирования?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+    <a class="course" href="/calculators/rollout-compare/">
+      <div class="course-meta"><span class="course-num">04</span><span>Эксперименты</span></div>
+      <h3>A/B: лучший тест из 3</h3>
+      <p>Сравнение трёх A/B: проекция на 100% rollout по текущим результатам. Какой тест даёт максимальный эффект при масштабировании?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+    <a class="course" href="/calculators/funnel-sensitivity/">
+      <div class="course-meta"><span class="course-num">05</span><span>Маркетплейс</span></div>
+      <h3>Воронка: цена +1 п.п. конверсии</h3>
+      <p>Чувствительность воронки: стоимость +1 п.п. на каждом шаге и вклад в итоговый revenue. Какой шаг даёт самый дешёвый рост выручки?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+    <a class="course" href="/calculators/scenario-planning/">
+      <div class="course-meta"><span class="course-num">06</span><span>FP&amp;A</span></div>
+      <h3>Scenario Planning &amp; P&amp;L Forecast</h3>
+      <p>Сценарный калькулятор для executive FP&amp;A: шоки demand, price, FX и freight → Revenue → EBITDA → Net Profit. Как меняется диапазон исходов при шоках?</p>
+      <span class="course-arrow">↗</span>
+    </a>
+  </div>
 
-        <div class="cards-grid">
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">Монетизация рекламы: Pressure → Revenue</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">Монетизация</span>
-                    </div>
-                    <p class="card-text">
-                        Параметрическая модель рекламной монетизации: как Pressure меняет delivery и приводит к saturation по revenue.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Где рост ad pressure перестаёт увеличивать выручку?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="./ad-monetization/" class="card-button">Калькулятор →</a>
-                        <a href="./ad-monetization/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">Цена vs объём: эластичность выручки</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">Монетизация</span>
-                    </div>
-                    <p class="card-text">
-                        Trade-off цена × объём: как elasticity превращает рост цены в падение объёма — и где находится оптимум по revenue.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> При какой цене рост начинает снижать общую выручку?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="/calculators/revenue/" class="card-button">Калькулятор →</a>
-                        <a href="/calculators/revenue/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">A/B: прогноз раскатки на 100%</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">Эксперименты</span>
-                    </div>
-                    <p class="card-text">
-                        Прогноз полного rollout: как эффекты теста (ΔCPM, ΔShowRate, ΔRequests) пересоберут итоговые метрики.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Что реально произойдёт с метриками после полного rollout?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="/calculators/rollout/" class="card-button">Калькулятор →</a>
-                        <a href="/calculators/rollout/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">A/B: выбрать лучший тест из 3</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">Эксперименты</span>
-                    </div>
-                    <p class="card-text">
-                        Сравнение трёх A/B: проекция на 100% rollout по текущим результатам, чтобы выбрать лучший вариант для масштабирования.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Какой тест даёт максимальный эффект при масштабировании?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="/calculators/rollout-compare/" class="card-button">Калькулятор →</a>
-                        <a href="/calculators/rollout-compare/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">Воронка: цена +1 п.п. конверсии</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">Маркетплейс</span>
-                    </div>
-                    <p class="card-text">
-                        Чувствительность воронки: стоимость +1 п.п. на каждом шаге и вклад в итоговый revenue — где ROI лучше всего.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Какой шаг воронки даёт самый дешёвый рост выручки?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="/calculators/funnel-sensitivity/" class="card-button">Калькулятор →</a>
-                        <a href="/calculators/funnel-sensitivity/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="card">
-                <div class="calc-card__content">
-                    <h2 class="card-title">Scenario Planning &amp; P&amp;L Forecast</h2>
-                    <div class="card-badges">
-                        <span class="card-badge">FP&amp;A</span>
-                        <span class="card-badge">Planning</span>
-                        <span class="card-badge">P&amp;L</span>
-                    </div>
-                    <p class="card-text">
-                        Сценарный калькулятор для executive FP&amp;A: как шоки спроса, цены, FX и логистики влияют на Revenue → EBITDA → Net Profit.
-                    </p>
-                    <div class="card-keyq calc-card__keyq"><strong>Key question:</strong> Как меняются годовые KPI и диапазон исходов при шоках demand/price/FX/freight?</div>
-                </div>
-                <div class="calc-card__actions">
-                    <div class="btn-row">
-                        <a href="/calculators/scenario-planning/" class="card-button">Калькулятор →</a>
-                        <a href="/calculators/scenario-planning/about/" class="card-button btn-secondary">Описание</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top:1rem; padding-top:1.5rem; border-top:1px solid rgba(17,17,17,.08); font-size:0.88rem; color:rgba(17,17,17,.48);">
-            См. также:
-            <a href="/simulators/" style="color:#0071e3; text-decoration:none; margin-left:0.4rem;">Симуляторы</a>
-            <span style="margin:0 0.3rem;">·</span>
-            <a href="/lab/glossary/" style="color:#0071e3; text-decoration:none;">Глоссарий</a>
-        </div>
-    </div>
-
+  <p style="margin-top:2rem;font-size:0.88rem;color:var(--muted)">
+    См. также: <a href="/simulators/" style="color:var(--accent)">Симуляторы</a> · <a href="/lab/glossary/" style="color:var(--accent)">Глоссарий</a>
+  </p>
+</div>
 <div class="footer-spacer"></div>
 <footer class="footer">
   <nav class="footer-links" aria-label="Подвал">
