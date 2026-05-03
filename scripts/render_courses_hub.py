@@ -48,22 +48,24 @@ def nav_html(active: str) -> str:
 
     return f"""<nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
-    <div class="logo-mark"><span>АД</span></div>
+    <div class="logo-mark"><span>Δ</span></div>
     <span>davydov.my</span>
   </a>
   <div class="nav-links">
     {_a("/courses/", "Курсы", "courses")}
+    {_a("/workspace/", "Workspace", "workspace")}
     {_a("/cases/", "Кейсы", "cases")}
     {_a("/notes/", "Заметки", "notes")}
     {_a("/career/", "Менторство", "career")}
   </div>
-  <a href="/companies/" class="nav-cta"><span class="dot"></span>Для компаний</a>
   {BURGER_BTN}
 </nav>
 <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
 <nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
   <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
     <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
     <a href="/cases/">Кейсы</a>
     <a href="/notes/">Заметки</a>
     <a href="/approach/">Подход</a>
@@ -72,12 +74,10 @@ def nav_html(active: str) -> str:
   </div>
   <hr class="nav-drawer-divider" aria-hidden="true"/>
   <div class="nav-drawer-section nav-drawer-section--secondary">
-    <a href="/lab/">Инструменты</a>
     <a href="/knowledge/">База знаний</a>
     <a href="/simulators/">Симуляторы</a>
     <a href="/calculators/">Калькуляторы</a>
     <a href="/about/">Обо мне</a>
-    <a href="/companies/">Для компаний</a>
     <a href="/search/">Поиск</a>
   </div>
 </nav>"""
@@ -181,7 +181,7 @@ def main() -> int:
 <meta property="og:title" content="Курсы — davydov.my"/>
 <meta property="og:description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам."/>
 <meta property="og:url" content="https://davydov.my/courses/"/>
-<meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+<meta property="og:image" content="https://davydov.my/assets/og/courses.png"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.ico" sizes="any"/>
