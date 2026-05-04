@@ -1,141 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Выручка = цена × объём</title>
-    <script src="/calculators/lab/assets/vendor/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="/lab/assets/css/links.css">
-    <link rel="stylesheet" href="/calculators/lab/assets/css/calculators.css">
-    <link rel="stylesheet" href="/calculators/lab/assets/css/calculators_charts.css">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Moved</title>
+  <link rel="canonical" href="https://davydov.my/workspace/calculators/revenue/"/>
+  <meta http-equiv="refresh" content="0; url=/workspace/calculators/revenue/"/>
+  <script>window.location.replace('/workspace/calculators/revenue/');</script>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="back-link">← На главную</a>
-        <a href="/calculators/" class="back-link" style="margin-left: 1rem;">← К каталогу</a>
-
-        <!-- Правило использования терминов: определения НЕ пишем на страницах, если термин влияет на интерпретацию или решение → ставим ссылку на GLOSSARY.md -->
-        <h1>Выручка = цена × объём</h1>
-        <p class="subtitle">Trade-off <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> и показов. Почему рост цены может снизить деньги.</p>
-
-        <p style="max-width: 700px; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6; color: #1a1a1a;">
-            Калькулятор показывает, как <a class="term-link" href="/workspace/glossary/#revenue">выручка</a> зависит от цены (<a class="term-link" href="/workspace/glossary/#cpm">CPM</a>) и объёма показов.
-            Изменяя параметры, можно увидеть чувствительность результата к каждой метрике и найти оптимальную точку.
-        </p>
-
-        <div class="calculator-layout">
-            <div class="controls-panel">
-                <div class="control-group">
-                    <label class="control-label">
-                        <span><a class="term-link" href="/workspace/glossary/#cpm">CPM</a> (цена за 1000 показов)</span>
-                        <span class="control-value" id="cpm-value">100</span>
-                    </label>
-                    <input type="range" id="cpm" min="40" max="240" step="1" value="100">
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label">
-                        <span>Показы (индекс, базовое значение)</span>
-                        <span class="control-value" id="shows-value">100</span>
-                    </label>
-                    <input type="range" id="shows" min="50" max="150" step="1" value="100">
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label">
-                        <span>Эластичность объёма к цене</span>
-                        <span class="control-value" id="elasticity-value">-1.0</span>
-                    </label>
-                    <input type="range" id="elasticity" min="-40" max="0" step="1" value="-20">
-                    <p class="control-note">Отрицательное значение: при росте цены объём падает по степени</p>
-                </div>
-            </div>
-
-            <div class="output-panel">
-                <div class="kpi-block">
-                    <div class="kpi-item">
-                        <span class="kpi-label"><a class="term-link" href="/workspace/glossary/#revenue">Выручка</a> (индекс)</span>
-                        <span class="kpi-value" id="revenue-index">100.0</span>
-                    </div>
-                    <div class="kpi-item">
-                        <span class="kpi-label"><a class="term-link" href="/workspace/glossary/#cpm">CPM</a> (индекс)</span>
-                        <span class="kpi-value" id="cpm-index">100.0</span>
-                    </div>
-                    <div class="kpi-item">
-                        <span class="kpi-label">Показы (индекс)</span>
-                        <span class="kpi-value" id="shows-index">100.0</span>
-                    </div>
-                </div>
-
-                <div class="chart-card single">
-                    <h3 class="chart-title"><a class="term-link" href="/workspace/glossary/#revenue">Выручка</a> vs <a class="term-link" href="/workspace/glossary/#cpm">CPM</a></h3>
-                    
-                    <p class="chart-hint">
-                        По оси X — <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> (цена), по оси Y — итоговая <a class="term-link" href="/workspace/glossary/#revenue">выручка</a> системы.
-                        Кривая показывает trade-off цены и объёма при текущей эластичности.
-                    </p>
-                    
-                    <p class="chart-context" id="chart-context"></p>
-                    <p class="chart-warning" id="chart-warning"></p>
-                    
-                    <div id="rev-vs-price-chart" class="chart big"></div>
-                    <div class="chart-footer">
-                        <div class="chart-sensitivity">
-                            Локальная чувствительность: ΔRevenue/ΔCPM ≈ <span id="sensitivity-value">0.0</span>
-                        </div>
-                        <div class="chart-plateau" id="plateau-info" style="display: none;"></div>
-                        <div class="chart-verdict" id="chart-verdict">Вы находитесь рядом с оптимумом.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <section class="decision-block">
-            <h2>🧠 Решение</h2>
-
-            <div class="decision-block-section">
-                <h3>🔍 Наблюдение</h3>
-                <p>
-                    При изменении <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> и объёма показов <a class="term-link" href="/workspace/glossary/#revenue">выручка</a> меняется нелинейно.
-                    График показывает точку максимума, где дальнейший рост цены снижает итоговую выручку.
-                </p>
-            </div>
-
-            <div class="decision-block-section">
-                <h3>🧠 Механизм</h3>
-                <p>
-                    <a class="term-link" href="/workspace/glossary/#revenue">Выручка</a> = <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> × Показы. При росте цены объём показов падает из-за эластичности спроса.
-                    Потеря объёма может перекрыть выигрыш от роста цены, поэтому итоговая <a class="term-link" href="/workspace/glossary/#revenue">выручка</a> снижается.
-                </p>
-            </div>
-
-            <div class="decision-block-section">
-                <h3>❌ Неправильный вывод</h3>
-                <p>
-                    «<a class="term-link" href="/workspace/glossary/#cpm">CPM</a> вырос — значит оптимизация работает».
-                    Фокус на одной метрике скрывает потерю объёма и итоговое падение <a class="term-link" href="/workspace/glossary/#revenue">выручки</a>.
-                </p>
-            </div>
-
-            <div class="decision-block-section">
-                <h3>✅ Корректная интерпретация</h3>
-                <p>
-                    <a class="term-link" href="/workspace/glossary/#revenue">Выручка</a> — это функция цены и объёма.
-                    Рост цены без удержания объёма ухудшает результат. Оптимум находится там, где компенсируются противоположные эффекты.
-                </p>
-            </div>
-
-            <div class="decision-block-section">
-                <h3>▶️ Решение</h3>
-                <p>
-                    Не максимизировать <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> в отрыве от объёма.
-                    Проверить чувствительность <a class="term-link" href="/workspace/glossary/#revenue">выручки</a> к <a class="term-link" href="/workspace/glossary/#cpm">CPM</a> в диапазоне ±10% от текущего значения.
-                    Использовать калькулятор для поиска оптимальной точки перед изменением стратегии ценообразования.
-                </p>
-            </div>
-        </section>
-    </div>
-
-    <script src="/calculators/lab/assets/js/revenue_calculator.js"></script>
+  <p>Страница переехала. <a href="/workspace/calculators/revenue/">Перейти на /workspace/calculators/revenue/</a></p>
 </body>
 </html>
