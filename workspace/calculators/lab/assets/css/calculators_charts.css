@@ -1,0 +1,262 @@
+/* Calculator Charts - Canonical light style */
+
+:root {
+    --chart-bg: #ffffff;
+    --axis: #9ca3af;
+    --axis-label: #6b7280;
+    --grid: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --line-control: #9ca3af;
+    --line-test: #111827;
+    --dash: 4 4;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --neutral: #6b7280;
+}
+
+.calc-chart {
+    width: 100%;
+    height: 400px;
+    background: var(--chart-bg);
+    margin: 2rem 0;
+}
+
+.chart {
+    width: 100%;
+    height: 100%;
+    background: var(--chart-bg);
+}
+
+.chart svg,
+.calc-chart svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--chart-bg);
+}
+
+.calc-chart .axis path,
+.calc-chart .axis line,
+.chart .axis path,
+.chart .axis line {
+    stroke: var(--axis);
+    stroke-width: 1;
+    fill: none;
+}
+
+.calc-chart .axis path.domain,
+.chart .axis path.domain {
+    display: none;
+}
+
+.calc-chart .axis .tick line,
+.chart .axis .tick line {
+    stroke: var(--axis);
+    stroke-width: 1;
+    opacity: 0.5;
+}
+
+.calc-chart .axis .tick text,
+.chart .axis .tick text {
+    fill: var(--axis-label);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.calc-chart .grid line,
+.chart .grid line {
+    stroke: var(--grid);
+    stroke-width: 1;
+    stroke-dasharray: var(--dash);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.calc-chart .line,
+.chart .line {
+    fill: none;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.calc-chart .line-control,
+.chart .line-control {
+    stroke: var(--line-control);
+    stroke-dasharray: var(--dash);
+    opacity: 0.8;
+}
+
+.calc-chart .line-test,
+.chart .line-test {
+    stroke: var(--line-test);
+}
+
+.calc-chart .point,
+.chart .point {
+    fill: var(--line-test);
+    stroke: var(--chart-bg);
+    stroke-width: 2;
+}
+
+.calc-chart .point-control,
+.chart .point-control {
+    fill: var(--line-control);
+}
+
+.calc-chart .label,
+.chart .label {
+    font-size: 12px;
+    font-weight: 400;
+    fill: var(--muted);
+    pointer-events: none;
+}
+
+.calc-chart .bar,
+.chart .bar {
+    fill: var(--line-test);
+    opacity: 0.7;
+}
+
+.calc-chart .bar-label,
+.chart .bar-label {
+    font-size: 11px;
+    fill: var(--muted);
+    font-weight: 400;
+}
+
+/* Isolines */
+.calc-chart .isolines,
+.chart .isolines {
+    pointer-events: none;
+}
+
+.calc-chart .isoline,
+.chart .isoline {
+    fill: none;
+    stroke: var(--grid);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+    opacity: 0.4;
+}
+
+.calc-chart .isoline-label,
+.chart .isoline-label {
+    font-size: 10px;
+    fill: var(--muted);
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* Vertical line */
+.calc-chart .vline,
+.chart .vline {
+    stroke: var(--axis);
+    stroke-width: 1;
+    stroke-dasharray: var(--dash);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.calc-chart .vline-optimal,
+.chart .vline-optimal {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* Optimal point */
+.calc-chart .point-optimal,
+.chart .point-optimal {
+    fill: var(--muted);
+    stroke: var(--chart-bg);
+    stroke-width: 2;
+}
+
+/* Background zones */
+.calc-chart .zone-before,
+.chart .zone-before {
+    fill: #f9fafb;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.calc-chart .zone-after,
+.chart .zone-after {
+    fill: #f3f4f6;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.calc-chart .zone-plateau,
+.chart .zone-plateau {
+    fill: #f3f4f6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Ghost point and line */
+.calc-chart .ghost-line,
+.chart .ghost-line {
+    stroke: #9ca3af;
+    stroke-width: 1;
+    stroke-dasharray: 2, 2;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.calc-chart .ghost-point,
+.chart .ghost-point {
+    fill: none;
+    stroke: #9ca3af;
+    stroke-width: 1;
+    stroke-dasharray: 2, 2;
+    pointer-events: none;
+}
+
+/* Drop lines (projections to axes) */
+.calc-chart .drop-line,
+.chart .drop-line {
+    stroke: #9ca3af;
+    stroke-width: 1;
+    stroke-dasharray: 1.5, 3;
+    pointer-events: none;
+}
+
+.calc-chart .drop-line-current,
+.chart .drop-line-current {
+    opacity: 0.9;
+}
+
+.calc-chart .drop-line-100,
+.chart .drop-line-100 {
+    opacity: 0.6;
+}
+
+/* Axis markers (small ticks on axes) */
+.calc-chart .axis-marker,
+.chart .axis-marker {
+    stroke: #9ca3af;
+    stroke-width: 2;
+    pointer-events: none;
+}
+
+.calc-chart .axis-marker-current,
+.chart .axis-marker-current {
+    opacity: 0.7;
+}
+
+.calc-chart .axis-marker-100,
+.chart .axis-marker-100 {
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .calc-chart,
+    .chart {
+        height: 320px;
+    }
+}
+
