@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Глоссарий аналитики — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/glossary/"/>
+<meta name="description" content="60 терминов по аналитике, экспериментам и статистике. Единый язык проекта — davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Глоссарий аналитики — davydov.my"/>
+<meta property="og:description" content="60 терминов по аналитике, экспериментам и статистике."/>
+<meta property="og:url" content="https://davydov.my/workspace/glossary/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" style="color:var(--ink)">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Глоссарий</span>
+  </nav>
+  <h1 class="page-title">Глоссарий<span class="accent-dot">.</span></h1>
+  <p class="page-lead">60 терминов по экспериментам, статистике и метрикам — без воды.</p>
+
+  <div class="gl-controls">
+    <input type="text" id="gl-search" class="gl-search" placeholder="Поиск по терминам…" autocomplete="off"/>
+    <div class="gl-filter-wrap">
+      <span class="gl-filter-label">Тип</span>
+      <select id="gl-filter-type" class="gl-filter">
+        <option value="">Все типы</option>
+      </select>
+    </div>
+    <div class="gl-count" id="gl-count"></div>
+  </div>
+
+  <nav class="gl-nav" aria-label="Разделы глоссария">
+    <a href="#sec-experiments">Эксперименты и причинность</a>
+    <a href="#sec-statistics">Статистика и распределения</a>
+    <a href="#sec-metrics">Метрики и процессы</a>
+  </nav>
+
+  <div class="gl-list" id="gl-list">
+
+    <!-- ─────────────────────────────────────────── -->
+    <section class="gl-section" id="sec-experiments">
+    <!-- ─────────────────────────────────────────── -->
+      <h2 class="gl-section-title">Эксперименты и причинность</h2>
+
+      <article id="ab-test" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="aa-test,alpha,beta,statistical-power,guardrail-metrics,control-vs-test">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">A/B Test</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#ab-test" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Рандомизированный контролируемый эксперимент: пользователи случайно делятся на группы для измерения каузального эффекта изменения.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> рандомизация устраняет confounders и позволяет измерить каузальный эффект.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> подглядывание в результаты до окончания теста (peeking).</p>
+      </article>
+
+      <article id="aa-test" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="ab-test,alpha,p-value">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">A/A Test</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#aa-test" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Тест без реального изменения: обе группы идентичны. Проверяет корректность сплитования и метрик.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> ожидаемый результат — отсутствие различий. Если различия есть — проблема в системе.</p>
+      </article>
+
+      <article id="alpha" class="gl-card" data-section="sec-experiments" data-type="Статистическая мера"
+               data-related-terms="beta,p-value,statistical-power">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Alpha (α)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#alpha" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Допустимая вероятность ложноположительного результата (Type I error). Обычно α = 0.05.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> α задаёт порог для p-value: если p &lt; α, отвергаем H₀.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> путать α с вероятностью ошибки конкретного теста.</p>
+      </article>
+
+      <article id="beta" class="gl-card" data-section="sec-experiments" data-type="Статистическая мера"
+               data-related-terms="alpha,statistical-power,mde">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Beta (β)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#beta" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Вероятность ложноотрицательного результата (Type II error). Мощность = 1 − β.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> β определяет, заметит ли тест реальный эффект. Обычно β = 0.2 (мощность 80%).</p>
+      </article>
+
+      <article id="causal-inference" class="gl-card" data-section="sec-experiments" data-type="Концепция"
+               data-related-terms="ab-test,did,matching,synthetic-control">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Causal Inference</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#causal-inference" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Методы установления причинно-следственных связей из данных, когда рандомизированный эксперимент невозможен.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> без рандомизации нужна идентификационная стратегия (DiD, matching, IV).</p>
+      </article>
+
+      <article id="cluster-randomization" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="spillover-effect,icc,unit-of-randomization">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Cluster Randomization</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#cluster-randomization" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Рандомизация на уровне кластеров (город, команда, регион), а не отдельных пользователей.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> эффективный размер выборки зависит от числа кластеров, а не от числа наблюдений.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> считать N = сумма наблюдений, а не N = число кластеров.</p>
+      </article>
+
+      <article id="control-vs-test" class="gl-card" data-section="sec-experiments" data-type="Концепция"
+               data-related-terms="ab-test,rollout,mechanism,revenue-decomposition">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Контроль vs тест (Control vs Test)</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#control-vs-test" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Сравнение контрольной и тестовой группы как разбор причин эффекта, не только фиксация «+/−».</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> нужно разложить итог на вклад шагов и понять механизм.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> останавливаться на «значимо / незначимо» без декомпозиции.</p>
+      </article>
+
+      <article id="cuped" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="ab-test,mde,statistical-power">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">CUPED</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#cuped" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Метод снижения дисперсии метрики за счёт использования предэкспериментальных данных.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> снижает variance и уменьшает MDE.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> использовать без проверки корреляции covariate и outcome.</p>
+      </article>
+
+      <article id="did" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="causal-inference,matching,synthetic-control">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Difference-in-Differences (DiD)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#did" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Квазиэкспериментальный метод: сравнение изменения метрики до/после в treatment vs control группе.</p>
+        <p class="gl-term-note gl-term-note--prereq"><strong>Предпосылка:</strong> параллельные тренды до вмешательства.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> нарушение предпосылки параллельных трендов без проверки.</p>
+      </article>
+
+      <article id="guardrail-metrics" class="gl-card" data-section="sec-experiments" data-type="Концепция"
+               data-related-terms="ab-test,north-star-metric,control-vs-test">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Guardrail Metrics</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#guardrail-metrics" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Метрики-ограничители: не должны деградировать при раскатке. Защищают от побочных эффектов.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> guardrails — «красные линии», а не цели оптимизации.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> оценивать только primary KPI без контроля побочных эффектов.</p>
+      </article>
+
+      <article id="matching" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="causal-inference,did">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Matching</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#matching" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Подбор пар «похожих» наблюдений из treatment и control для снижения selection bias.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> качество matching определяется балансом ковариат, а не outcome.</p>
+      </article>
+
+      <article id="rollout" class="gl-card" data-section="sec-experiments" data-type="Концепция"
+               data-related-terms="ab-test,control-vs-test,mechanism">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Раскатка (Rollout)</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#rollout" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Применение изменения на 100% трафика после успешного эксперимента.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> линейно экстраполировать эффект без учёта доли трафика в тесте.</p>
+      </article>
+
+      <article id="spillover-effect" class="gl-card" data-section="sec-experiments" data-type="Концепция"
+               data-related-terms="ab-test,did,causal-inference,cluster-randomization">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Spillover Effect</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#spillover-effect" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Влияние эксперимента на пользователей вне тестовой группы.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> нарушает предпосылку независимости наблюдений.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> игнорировать сетевые или кластерные эффекты.</p>
+      </article>
+
+      <article id="statistical-power" class="gl-card" data-section="sec-experiments" data-type="Статистическая мера"
+               data-related-terms="alpha,beta,mde,effect-size">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Statistical Power</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#statistical-power" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Вероятность обнаружить эффект, если он реально существует. Power = 1 − β.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> зависит от размера выборки, MDE и variance метрики.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> запускать тест без расчёта мощности — рискуете не увидеть реальный эффект.</p>
+      </article>
+
+      <article id="synthetic-control" class="gl-card" data-section="sec-experiments" data-type="Метод"
+               data-related-terms="causal-inference,did">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Synthetic Control</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#synthetic-control" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Конструирование «синтетического» контроля из взвешенной комбинации доноров для оценки эффекта на единичном объекте.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> применяется, когда нет прямой контрольной группы (один регион, один продукт).</p>
+      </article>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────── -->
+    <section class="gl-section" id="sec-statistics">
+    <!-- ─────────────────────────────────────────── -->
+      <h2 class="gl-section-title">Статистика и распределения</h2>
+
+      <article id="bonferroni" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="multiple-testing,fdr,alpha">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Bonferroni Correction</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#bonferroni" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Коррекция уровня значимости при множественном тестировании: α_adj = α / k, где k — число тестов.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> контролирует FWER (вероятность хотя бы одного ложноположительного).</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> применять при большом k — метод слишком консервативен, теряется мощность.</p>
+      </article>
+
+      <article id="bootstrap" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="confidence-interval,standard-error,central-limit-theorem">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Bootstrap</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#bootstrap" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Метод оценки распределения статистики через многократную ресемплинг-выборку с возвращением из наблюдаемых данных.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> не требует предположений о форме распределения.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> применять к зависимым данным без блочного или кластерного bootstrap.</p>
+      </article>
+
+      <article id="central-limit-theorem" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="standard-error,variance,standard-deviation">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Central Limit Theorem (ЦПТ)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#central-limit-theorem" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">При достаточно большой выборке распределение среднего стремится к нормальному, независимо от формы исходного распределения.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> работает для среднего при достаточном n.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> применять к малым выборкам или heavy-tailed данным без проверки.</p>
+      </article>
+
+      <article id="confidence-interval" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="p-value,alpha,standard-error,standard-deviation">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Confidence Interval (Доверительный интервал)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#confidence-interval" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Диапазон значений, содержащий истинный параметр с заданной вероятностью (обычно 95%).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> 95% CI — это свойство процедуры построения интервала, а не вероятность параметра.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> «95% вероятность, что параметр внутри» — неверная частотная интерпретация.</p>
+      </article>
+
+      <article id="delta-method" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="standard-error,linearization,confidence-interval">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Delta Method (Дельта-метод)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#delta-method" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Аппроксимация дисперсии функции случайной величины через разложение Тейлора первого порядка.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> позволяет построить CI для ratio-метрик (ARPU, CR) без bootstrap.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> применять при сильной нелинейности или малой выборке, где линейная аппроксимация не работает.</p>
+      </article>
+
+      <article id="effect-size" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="mde,statistical-power,p-value,type-s-type-m">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Effect Size</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#effect-size" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Величина различия между группами в стандартизованных единицах (Cohen's d, относительный lift).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> статистическая значимость (p-value) ≠ практическая значимость (effect size).</p>
+      </article>
+
+      <article id="fdr" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="multiple-testing,bonferroni,p-value">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">FDR (False Discovery Rate)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#fdr" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Ожидаемая доля ложных открытий среди всех отвергнутых гипотез. Контролируется процедурой Benjamini–Hochberg.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> FDR менее консервативен, чем FWER (Bonferroni) — допускает больше открытий при контролируемой ошибке.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> путать FDR с FWER — это разные метрики множественного тестирования.</p>
+      </article>
+
+      <article id="heteroskedasticity" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="variance,standard-error,confidence-interval,robust-se">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Heteroskedasticity (Гетероскедастичность)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#heteroskedasticity" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Неравномерность дисперсии ошибок в модели.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> нарушает предпосылки OLS и искажает стандартные ошибки.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> игнорировать при анализе регрессии.</p>
+      </article>
+
+      <article id="icc" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="cluster-randomization,unit-of-randomization,variance">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">ICC (Intraclass Correlation)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#icc" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля общей дисперсии, объясняемая группировкой (кластером). ICC = σ²_between / (σ²_between + σ²_within).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> чем выше ICC, тем сильнее кластерный эффект и тем больше нужно кластеров.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> игнорировать ICC при расчёте размера выборки для cluster-randomized экспериментов.</p>
+      </article>
+
+      <article id="linearization" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="delta-method,cuped,standard-error">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Linearization (Линеаризация)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#linearization" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Замена ratio-метрики (Y/X) линеаризованной версией для корректного расчёта дисперсии и сравнения групп.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> linearized metric = Y − θ̂·X, где θ̂ — оценка ratio на контроле.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> сравнивать средние ratio напрямую (ratio of means ≠ mean of ratios).</p>
+      </article>
+
+      <article id="mde" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="effect-size,statistical-power,beta,variance">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">MDE (Minimum Detectable Effect)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#mde" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Минимальный эффект, который тест способен обнаружить при заданных α, β и размере выборки.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> MDE определяет, стоит ли запускать тест — если нужный эффект ниже MDE, тест бесполезен.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> задавать MDE как «желаемый», а не как минимально значимый для бизнеса.</p>
+      </article>
+
+      <article id="mean" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="median,variance">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Mean (Среднее)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#mean" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Среднее арифметическое: сумма значений / количество наблюдений.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> использовать mean для скошенных распределений (доходы, длительности) — один выброс сдвигает всё.</p>
+      </article>
+
+      <article id="median" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="mean,variance">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Median (Медиана)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#median" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Значение, делящее упорядоченную выборку пополам. Устойчива к выбросам.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> для скошенных данных median информативнее mean.</p>
+      </article>
+
+      <article id="multiple-testing" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="alpha,p-value,ab-test,bonferroni,fdr">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Multiple Testing Problem</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#multiple-testing" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Рост вероятности ложноположительных результатов при множественных гипотезах.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> чем больше тестов, тем выше общий Type I error.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> проводить 10+ тестов без корректировки.</p>
+      </article>
+
+      <article id="p-value" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="alpha,confidence-interval,effect-size,multiple-testing,fdr">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">P-value</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#p-value" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Вероятность получить наблюдаемый (или более экстремальный) результат при истинности H₀.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> p &lt; α → отвергаем H₀. Но p-value — не вероятность истинности гипотезы.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> p = 0.06 не означает «почти значимо».</p>
+      </article>
+
+      <article id="robust-se" class="gl-card" data-section="sec-statistics" data-type="Метод"
+               data-related-terms="heteroskedasticity,standard-error,cluster-randomization">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Robust SE (Робастные стандартные ошибки)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#robust-se" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Стандартные ошибки, устойчивые к гетероскедастичности (HC) или кластерной корреляции (CR).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> не исправляют оценку коэффициента — только корректируют дисперсию оценки.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> использовать кластерные SE без учёта числа кластеров (мало кластеров → занижение SE).</p>
+      </article>
+
+      <article id="standard-deviation" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="variance,confidence-interval">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Standard Deviation (Стандартное отклонение)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#standard-deviation" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">√variance. Разброс данных в тех же единицах, что и сами данные.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> ±1 SD покрывает ~68% данных при нормальном распределении.</p>
+      </article>
+
+      <article id="standard-error" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="variance,confidence-interval,central-limit-theorem">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Standard Error (Стандартная ошибка)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#standard-error" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Оценка разброса выборочной статистики (например, среднего) относительно истинного значения. SE = σ / √n.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> чем больше выборка, тем меньше стандартная ошибка.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> путать стандартное отклонение (SD) со стандартной ошибкой (SE).</p>
+      </article>
+
+      <article id="type-s-type-m" class="gl-card" data-section="sec-statistics" data-type="Концепция"
+               data-related-terms="effect-size,statistical-power,p-value">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Type S / Type M Errors</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#type-s-type-m" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Ошибки знака (Type S) и масштаба (Type M) при интерпретации значимых результатов. Type S — неверное направление эффекта, Type M — завышение его размера.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> при низкой мощности значимые результаты с высокой вероятностью преувеличены или имеют неверный знак.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> фокусироваться только на p-value без оценки Type M exaggeration ratio.</p>
+      </article>
+
+      <article id="unit-of-randomization" class="gl-card" data-section="sec-statistics" data-type="Концепция"
+               data-related-terms="cluster-randomization,icc,ab-test">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Unit of Randomization</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#unit-of-randomization" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Уровень, на котором происходит случайное распределение в эксперименте: пользователь, сессия, устройство, кластер.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> unit of randomization должен совпадать с unit of analysis, иначе нужны кластерные SE.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> рандомизировать по пользователю, а анализировать по событию — занижение SE.</p>
+      </article>
+
+      <article id="variance" class="gl-card" data-section="sec-statistics" data-type="Статистическая мера"
+               data-related-terms="standard-deviation,mean,statistical-power">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Variance (Дисперсия)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#variance" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Средний квадрат отклонений от среднего. Мера разброса данных.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> высокая variance → нужна большая выборка для обнаружения эффекта в A/B.</p>
+      </article>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────── -->
+    <section class="gl-section" id="sec-metrics">
+    <!-- ─────────────────────────────────────────── -->
+      <h2 class="gl-section-title">Метрики и процессы</h2>
+
+      <article id="arpu" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="ltv,revenue,unit-economics,conversion-rate">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">ARPU (Average Revenue Per User)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#arpu" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Средний доход на пользователя за период. ARPU = Revenue / Users.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> ARPU = CR × средний чек. Декомпозиция показывает, где рычаг.</p>
+      </article>
+
+      <article id="conversion-rate" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="retention,arpu">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Conversion Rate</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#conversion-rate" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля пользователей, совершивших целевое действие. CR = conversions / visitors.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> CR — rate, не count. Рост трафика при стабильных конверсиях = падение CR.</p>
+      </article>
+
+      <article id="cpm" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="revenue,price-vs-volume,saturation,monetized-shows">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">CPM (Cost Per Mille)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#cpm" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Цена за 1000 монетизируемых показов.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> CPM — цена, не деньги. Выручка = цена × объём.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> рост CPM на сужении инвентаря может уменьшить revenue.</p>
+      </article>
+
+      <article id="dashboard" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="north-star-metric,data-analytics">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Dashboard</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#dashboard" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Визуальное представление ключевых метрик для мониторинга состояния продукта.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> перегрузка дашборда метриками, которые не требуют действий.</p>
+      </article>
+
+      <article id="data-analytics" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="dashboard,mechanism">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Data Analytics</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#data-analytics" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Системный процесс извлечения выводов из данных для принятия решений.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> аналитика — не отчётность, а понимание механизмов и их последствий.</p>
+      </article>
+
+      <article id="elasticity" class="gl-card" data-section="sec-metrics" data-type="Статистическая мера"
+               data-related-terms="price-vs-volume,cpm,saturation">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Эластичность (Elasticity)</h3>
+          <span class="gl-term-type">Статистическая мера</span>
+          <a href="#elasticity" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">На сколько % меняется объём при изменении цены на 1%. Определяет стратегию оптимизации.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> считать elasticity постоянной — она меняется с уровнем pressure и market regime.</p>
+      </article>
+
+      <article id="fill-rate" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="requests,responses,show-rate">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Fill Rate (Коэффициент заполнения)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#fill-rate" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля ответов: fill rate = responses / requests. Пропускная способность верхней части воронки.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> fill rate — не «качество рекламы», а конверсия верхнего шага.</p>
+      </article>
+
+      <article id="ltv" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="arpu,retention,unit-economics">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">LTV (Lifetime Value)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#ltv" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Совокупный доход от пользователя за всё время жизни в продукте.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> LTV &gt; CAC — условие устойчивости бизнеса.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> считать LTV без дисконтирования и без учёта churn.</p>
+      </article>
+
+      <article id="mechanism" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="revenue-decomposition,control-vs-test,data-analytics,pressure">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Механизм (Mechanism)</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#mechanism" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Причинно-следственная цепочка, объясняющая поведение системы. Не корреляция, а «как работает».</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> без механизма нельзя предсказать эффект в новых условиях.</p>
+      </article>
+
+      <article id="monetized-shows" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="shows,show-rate,pressure,revenue,cpm">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Монетизируемые показы (Monetized Shows)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#monetized-shows" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Показы, участвующие в выручке. Главный «объёмный» множитель вместе с CPM.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> любые показы = деньги. Не все shows монетизируются.</p>
+      </article>
+
+      <article id="north-star-metric" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="guardrail-metrics,dashboard">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">North Star Metric</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#north-star-metric" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Единая ключевая метрика, отражающая ценность продукта для пользователя.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> NSM — метрика ценности (WAU, messages sent), не revenue.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> выбирать revenue как North Star — это следствие, не причина.</p>
+      </article>
+
+      <article id="pressure" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="saturation,monetized-shows,revenue">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Давление рекламы (Ad Pressure)</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#pressure" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Интенсивность показа рекламы пользователю: частота/плотность экспозиции.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> pressure — скорость «насыщения». Высокое давление даёт краткосрочный рост, но снижает CTR.</p>
+      </article>
+
+      <article id="price-vs-volume" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="cpm,revenue,elasticity,saturation">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Price vs Volume Trade-off</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#price-vs-volume" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Обратная зависимость между ценой (CPM) и объёмом (monetized shows).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> оптимум — баланс, где произведение максимально, не один из множителей.</p>
+      </article>
+
+      <article id="requests" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="responses,fill-rate,show-rate,revenue-decomposition">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Запросы (Requests)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#requests" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Объём входящего спроса — попыток получить рекламу. Верх воронки.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> деньги появляются только если дальше сохраняются Fill/Show и цена.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> рост Requests ≠ рост выручки.</p>
+      </article>
+
+      <article id="responses" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="requests,fill-rate,shows">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Ответы (Responses)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#responses" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Успешные ответы на requests — «разрешение» системы продолжить воронку, но не факт показа.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> путать responses с показами.</p>
+      </article>
+
+      <article id="retention" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="conversion-rate,ltv">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Retention</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#retention" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля пользователей, вернувшихся к продукту через N дней после первого визита.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> retention показывает product-market fit лучше, чем acquisition.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> сравнивать retention разных когорт без учёта сезонности.</p>
+      </article>
+
+      <article id="revenue" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="revenue-decomposition,arpu,cpm,pressure">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Выручка (Revenue)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#revenue" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Деньги от монетизации. Итог мультипликативной цепочки: объём × цена.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> чтобы понять причину, нужно разложить на множители.</p>
+        <p class="gl-term-note gl-term-note--warn"><strong>Частая ошибка:</strong> читать revenue без декомпозиции.</p>
+      </article>
+
+      <article id="revenue-decomposition" class="gl-card" data-section="sec-metrics" data-type="Метод"
+               data-related-terms="revenue,control-vs-test,price-vs-volume">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Декомпозиция выручки (Revenue Decomposition)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#revenue-decomposition" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Разложение выручки на вклад факторов (объёмные шаги воронки + цена).</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> если итоговый эффект не объясним вкладом шагов — это шум или плохая модель.</p>
+      </article>
+
+      <article id="risk-contribution" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="stress-scenario">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Вклад в риск (Risk Contribution)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#risk-contribution" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля дисперсии результата, объяснимая конкретным активом/фактором.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> актив с 40% веса может давать 70% риска — это дисбаланс.</p>
+      </article>
+
+      <article id="saturation" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="pressure,price-vs-volume,revenue-decomposition">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Насыщение (Saturation)</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#saturation" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Состояние, когда увеличение входного параметра не даёт пропорционального роста результата или снижает его.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> сигнал, что нужно искать другой механизм роста.</p>
+      </article>
+
+      <article id="show-rate" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="fill-rate,cpm,revenue-decomposition,monetized-shows">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Show Rate (Коэффициент показа)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#show-rate" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Доля монетизируемых показов: show rate = monetized_shows / responses.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> часто именно на уровне show rate «съедается» эффект.</p>
+      </article>
+
+      <article id="shows" class="gl-card" data-section="sec-metrics" data-type="Метрика"
+               data-related-terms="monetized-shows,show-rate,responses">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Показы (Shows)</h3>
+          <span class="gl-term-type">Метрика</span>
+          <a href="#shows" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Фактические показы рекламы. Промежуточный уровень между responses и monetized shows.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> shows — объём экспозиции, деньги зависят от монетизируемой части.</p>
+      </article>
+
+      <article id="stress-scenario" class="gl-card" data-section="sec-metrics" data-type="Метод"
+               data-related-terms="risk-contribution">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Стресс-сценарий (Stress Scenario)</h3>
+          <span class="gl-term-type">Метод</span>
+          <a href="#stress-scenario" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Смоделированный шок: одновременное изменение нескольких параметров, имитирующее кризис.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> показывает уязвимость. Потеря &gt;2.5% в сценарии — сигнал концентрации риска.</p>
+      </article>
+
+      <article id="unit-economics" class="gl-card" data-section="sec-metrics" data-type="Концепция"
+               data-related-terms="arpu,ltv,conversion-rate">
+        <div class="gl-card-header">
+          <h3 class="gl-term-name">Unit Economics</h3>
+          <span class="gl-term-type">Концепция</span>
+          <a href="#unit-economics" class="gl-term-anchor">#</a>
+        </div>
+        <p class="gl-term-def">Экономика одной единицы (пользователя, заказа): доходы и расходы на уровне юнита.</p>
+        <p class="gl-term-note gl-term-note--key"><strong>Ключевое:</strong> положительная unit economics — необходимое условие масштабирования.</p>
+      </article>
+
+    </section>
+
+  </div><!-- /gl-list -->
+
+  <p style="margin-top:2rem;font-size:.88rem;color:var(--muted)">
+    <a href="/workspace/" style="color:var(--accent)">← Workspace</a>
+  </p>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script>
+(function () {
+  'use strict';
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var articles = document.querySelectorAll('.gl-card');
+  var sections = document.querySelectorAll('.gl-section');
+
+  // ── Build slug → title map ──
+  var slugToTitle = {};
+  articles.forEach(function (a) {
+    var h3 = a.querySelector('.gl-term-name');
+    if (a.id && h3) slugToTitle[a.id] = h3.textContent.trim();
+  });
+
+  // ── Render related-terms as <p class="gl-term-related"> ──
+  articles.forEach(function (article) {
+    var raw = (article.dataset.relatedTerms || '').trim();
+    if (!raw) return;
+    var slugs = raw.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    var parts = [];
+    slugs.forEach(function (slug) {
+      var title = slugToTitle[slug];
+      if (!title) return;
+      parts.push('<a href="#' + esc(slug) + '">' + esc(title) + '</a>');
+    });
+    if (!parts.length) return;
+    var p = document.createElement('p');
+    p.className = 'gl-term-related';
+    p.innerHTML = parts.join('<span class="gl-term-related-sep"> · </span>');
+    article.appendChild(p);
+  });
+
+  // ── Populate type filter ──
+  var typeSelect = document.getElementById('gl-filter-type');
+  var typeCounts = {};
+  articles.forEach(function (a) {
+    var t = a.dataset.type || '';
+    if (t) typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+  Object.keys(typeCounts)
+    .sort(function (a, b) { return typeCounts[b] - typeCounts[a]; })
+    .forEach(function (t) {
+      var o = document.createElement('option');
+      o.value = t;
+      o.textContent = t;
+      typeSelect.appendChild(o);
+    });
+
+  // ── Filter + search ──
+  var searchInput = document.getElementById('gl-search');
+  var countEl = document.getElementById('gl-count');
+  var searchTimer;
+
+  function render() {
+    var q    = searchInput.value.toLowerCase().trim();
+    var type = typeSelect.value;
+    var visible = 0;
+
+    articles.forEach(function (article) {
+      var matchQ    = !q    || article.textContent.toLowerCase().indexOf(q) !== -1;
+      var matchType = !type || article.dataset.type === type;
+      if (matchQ && matchType) {
+        article.classList.remove('hidden');
+        visible++;
+      } else {
+        article.classList.add('hidden');
+      }
+    });
+
+    countEl.textContent = 'Найдено: ' + visible;
+
+    sections.forEach(function (section) {
+      var hasVisible = section.querySelector('.gl-card:not(.hidden)') !== null;
+      section.classList.toggle('hidden', !hasVisible);
+    });
+  }
+
+  function onSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(render, 250);
+  }
+
+  searchInput.addEventListener('input', onSearch);
+  typeSelect.addEventListener('change', render);
+  render();
+
+  // ── Section nav active state ──
+  var navLinks = document.querySelectorAll('.gl-nav a');
+  var sectionIds = Array.from(sections).map(function (s) { return s.id; });
+
+  function setActiveNav(id) {
+    navLinks.forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  var scrollTimer;
+  window.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+      var current = '';
+      for (var i = sectionIds.length - 1; i >= 0; i--) {
+        var el = document.getElementById(sectionIds[i]);
+        if (el && el.getBoundingClientRect().top <= 120) {
+          current = sectionIds[i];
+          break;
+        }
+      }
+      if (current) setActiveNav(current);
+    }, 60);
+  }, { passive: true });
+
+  navLinks.forEach(function (a) {
+    a.addEventListener('click', function () {
+      setActiveNav(a.getAttribute('href').slice(1));
+    });
+  });
+
+  // ── Hash scroll + highlight ──
+  function highlightCard(card) {
+    card.classList.add('is-active');
+    setTimeout(function () { card.classList.remove('is-active'); }, 2000);
+  }
+
+  function handleHash() {
+    var hash = location.hash.slice(1);
+    if (!hash) return;
+    var el = document.getElementById(hash);
+    if (!el) return;
+    setTimeout(function () {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el.classList.contains('gl-card')) highlightCard(el);
+      if (el.classList.contains('gl-section')) setActiveNav(hash);
+    }, 100);
+  }
+
+  handleHash();
+  window.addEventListener('hashchange', handleHash);
+
+})();
+</script>
+<script src="/main.js" defer></script>
+</body>
+</html>
