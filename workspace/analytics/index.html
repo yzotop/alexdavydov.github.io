@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Аналитика и эксперименты — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/analytics/"/>
+<meta name="description" content="98 материалов про A/B-тесты, статистику, метрики и аналитическую практику. Курированный сборник внешних источников — davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Аналитика и эксперименты — davydov.my"/>
+<meta property="og:description" content="98 материалов про A/B-тесты, статистику, метрики и аналитическую практику."/>
+<meta property="og:url" content="https://davydov.my/workspace/analytics/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" style="color:var(--ink)">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Аналитика и эксперименты</span>
+  </nav>
+  <h1 class="page-title">Аналитика и эксперименты<span class="accent-dot">.</span></h1>
+  <p class="page-lead">Курированный сборник статей и материалов по A/B-тестам, статистике, метрикам и аналитической практике. 98 материалов.</p>
+
+  <div class="km-controls">
+    <input type="text" id="km-search" class="km-search" placeholder="Поиск по названию…" autocomplete="off"/>
+    <div class="km-filters">
+      <label class="km-filter">
+        <span class="km-filter-label">Тема</span>
+        <select id="km-filter-topic">
+          <option value="">Все темы</option>
+        </select>
+      </label>
+      <label class="km-filter">
+        <span class="km-filter-label">Источник</span>
+        <select id="km-filter-source">
+          <option value="">Все источники</option>
+        </select>
+      </label>
+      <label class="km-filter">
+        <span class="km-filter-label">Компания</span>
+        <select id="km-filter-company">
+          <option value="">Все компании</option>
+        </select>
+      </label>
+    </div>
+    <div class="km-count" id="km-count"></div>
+  </div>
+
+  <div class="km-list" id="km-list"></div>
+
+  <p style="margin-top:2rem;font-size:.88rem;color:var(--muted)">
+    <a href="/workspace/" style="color:var(--accent)">← Workspace</a>
+  </p>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script>
+(function () {
+  'use strict';
+
+  var THEME_LABELS = {
+    'experiments':        'Эксперименты',
+    'analytics-core':     'Аналитика',
+    'statistics':         'Статистика',
+    'anti-patterns':      'Антипаттерны',
+    'metrics':            'Метрики',
+    'variance-reduction': 'Variance Reduction',
+    'causality':          'Causality',
+    'multiple-testing':   'Multiple Testing'
+  };
+
+  var SOURCE_LABELS = {
+    'habr':       'Habr',
+    'medium':     'Medium',
+    'telegram':   'Telegram',
+    'youtube':    'YouTube',
+    'gopractice': 'GoPractice',
+    'vc':         'VC.ru',
+    'vk':         'VK',
+    'other':      'Другое'
+  };
+
+  var DATA = [];
+  var searchTimer;
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function themeLabel(slug)  { return THEME_LABELS[slug]  || slug; }
+  function sourceLabel(slug) { return SOURCE_LABELS[slug] || slug; }
+
+  function buildFilters() {
+    // Themes — sorted by frequency descending
+    var themeCount = {};
+    DATA.forEach(function (d) {
+      d.themes.forEach(function (t) {
+        themeCount[t] = (themeCount[t] || 0) + 1;
+      });
+    });
+    var themes = Object.keys(themeCount);
+    themes.sort(function (a, b) { return themeCount[b] - themeCount[a]; });
+    var topicSel = document.getElementById('km-filter-topic');
+    themes.forEach(function (t) {
+      var o = document.createElement('option');
+      o.value = t;
+      o.textContent = themeLabel(t);
+      topicSel.appendChild(o);
+    });
+
+    // Sources — sorted by frequency descending
+    var sourceCount = {};
+    DATA.forEach(function (d) {
+      sourceCount[d.source] = (sourceCount[d.source] || 0) + 1;
+    });
+    var sources = Object.keys(sourceCount);
+    sources.sort(function (a, b) { return sourceCount[b] - sourceCount[a]; });
+    var sourceSel = document.getElementById('km-filter-source');
+    sources.forEach(function (s) {
+      var o = document.createElement('option');
+      o.value = s;
+      o.textContent = sourceLabel(s);
+      sourceSel.appendChild(o);
+    });
+
+    // Companies — alphabetical, 'independent' last as "Независимые"
+    var companies = [];
+    DATA.forEach(function (d) {
+      if (d.company && companies.indexOf(d.company) === -1) companies.push(d.company);
+    });
+    var regular = companies.filter(function (c) { return c !== 'independent'; }).sort();
+    var hasIndependent = companies.indexOf('independent') !== -1;
+    var companySel = document.getElementById('km-filter-company');
+    regular.forEach(function (c) {
+      var o = document.createElement('option');
+      o.value = c;
+      o.textContent = c;
+      companySel.appendChild(o);
+    });
+    if (hasIndependent) {
+      var o = document.createElement('option');
+      o.value = 'independent';
+      o.textContent = 'Независимые';
+      companySel.appendChild(o);
+    }
+  }
+
+  function render() {
+    var q       = document.getElementById('km-search').value.toLowerCase().trim();
+    var topic   = document.getElementById('km-filter-topic').value;
+    var source  = document.getElementById('km-filter-source').value;
+    var company = document.getElementById('km-filter-company').value;
+
+    var filtered = DATA.filter(function (d) {
+      if (q       && d.title.toLowerCase().indexOf(q) === -1) return false;
+      if (topic   && d.themes.indexOf(topic) === -1)          return false;
+      if (source  && d.source !== source)                     return false;
+      if (company && d.company !== company)                   return false;
+      return true;
+    });
+
+    document.getElementById('km-count').textContent = 'Найдено: ' + filtered.length;
+
+    var list = document.getElementById('km-list');
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="km-empty">Ничего не найдено</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(function (d) {
+      var tag = esc(themeLabel(d.themes[0])) + ' · ' + esc(sourceLabel(d.source));
+      return '<a class="km-row" href="' + esc(d.link) + '" target="_blank" rel="noopener noreferrer">'
+        + '<span class="km-tags">' + tag + '</span>'
+        + '<h3 class="km-title">' + esc(d.title) + '</h3>'
+        + '<span class="km-arrow">↗</span>'
+        + '</a>';
+    }).join('');
+  }
+
+  function onSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(render, 300);
+  }
+
+  fetch('./index.json')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      DATA = data;
+      buildFilters();
+      render();
+      document.getElementById('km-search').addEventListener('input', onSearch);
+      document.getElementById('km-filter-topic').addEventListener('change', render);
+      document.getElementById('km-filter-source').addEventListener('change', render);
+      document.getElementById('km-filter-company').addEventListener('change', render);
+    })
+    .catch(function () {
+      document.getElementById('km-list').innerHTML =
+        '<div class="km-empty">Не удалось загрузить данные.</div>';
+    });
+})();
+</script>
+<script src="/main.js" defer></script>
+</body>
+</html>
