@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Индустрия: математика игры как доказательство тезиса о режимах мышления — Alex Davydov</title>
+    <link rel="canonical" href="https://davydov.my/cases/industriya/"/>
+    <meta name="description" content="Математический разбор настольной игры «Индустрия» (Furnace) Ивана Лашина: симуляция 10 000 партий, аукцион, ресурсы, режимы мышления."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Индустрия: математика игры — Alex Davydov"/>
+    <meta property="og:description" content="47.5% побед у «жадной» стратегии против 5.9% у «интуитивной» в симуляции 10 000 партий."/>
+    <meta property="og:url" content="https://davydov.my/cases/industriya/"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/style.css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        .crumbs {
+            font-size: 0.78rem;
+            color: rgba(17,17,17,.38);
+            margin-bottom: 1.25rem;
+            font-family: ui-monospace, 'SF Mono', monospace;
+            letter-spacing: 0.01em;
+        }
+        .crumbs a { color: rgba(17,17,17,.48); text-decoration: none; }
+        .crumbs a:hover { color: #111; }
+        .crumbs .sep { color: rgba(17,17,17,.22); margin: 0 0.4rem; }
+
+        .page-header { margin-bottom: 2rem; max-width: 740px; }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.6rem;
+        }
+        .page-header .subtitle {
+            font-size: 1.05rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.6;
+        }
+        .page-header .meta-line {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.38);
+            margin-bottom: 0.75rem;
+            font-family: ui-monospace, 'SF Mono', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-metric {
+            display: flex;
+            align-items: baseline;
+            gap: 1.25rem;
+            padding: 1.5rem 0;
+            margin: 1.5rem 0 2rem;
+            border-top: 1px solid rgba(17,17,17,.08);
+            border-bottom: 1px solid rgba(17,17,17,.08);
+            flex-wrap: wrap;
+        }
+        .hero-metric .num {
+            font-size: 3.4rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .hero-metric .lbl {
+            font-size: 0.92rem;
+            color: rgba(17,17,17,.58);
+            line-height: 1.5;
+            max-width: 460px;
+        }
+
+        .content { max-width: 740px; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.72;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+        .content a { color: #111; text-decoration: underline; text-decoration-color: rgba(17,17,17,.25); text-underline-offset: 3px; }
+        .content a:hover { text-decoration-color: #111; }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            color: #111;
+        }
+        .section-num {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-right: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(17,17,17,.08);
+            margin: 3rem 0;
+        }
+
+        .table-wrap { margin: 1.25rem 0 1.5rem; overflow-x: auto; }
+        .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .table-wrap th {
+            text-align: left;
+            font-weight: 600;
+            color: rgba(17,17,17,.48);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.12);
+        }
+        .table-wrap th.num, .table-wrap td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .table-wrap td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            color: rgba(17,17,17,.78);
+        }
+        .table-wrap tr:hover td { background: rgba(17,17,17,.02); }
+
+        blockquote {
+            border-left: 3px solid rgba(17,17,17,.12);
+            padding: 0.4rem 1.25rem;
+            margin: 1.25rem 0;
+            color: rgba(17,17,17,.68);
+            font-size: 0.92rem;
+            font-style: italic;
+        }
+        blockquote p { margin-bottom: 0.5rem; }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        ul.plain {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        ul.plain li {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.78);
+            padding: 0.55rem 0 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            position: relative;
+        }
+        ul.plain li::before {
+            content: "\2192";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.24);
+            font-weight: 600;
+        }
+        ul.plain li:last-child { border-bottom: none; }
+
+        /* Figures (visuals) */
+        .case-figure {
+            margin: 1.75rem 0 2rem;
+            padding: 1.25rem;
+            border: 1px solid rgba(17,17,17,.06);
+            border-radius: 14px;
+            background: rgba(17,17,17,.012);
+        }
+        .case-figure figcaption {
+            margin-top: 0.85rem;
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.5);
+            line-height: 1.55;
+        }
+
+        /* Interactive (round slider) */
+        .case-control input[type=range] {
+            -webkit-appearance: none; appearance: none;
+            height: 4px; border-radius: 2px; background: rgba(17,17,17,.1);
+            outline: none;
+        }
+        .case-control input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #111; cursor: pointer;
+            border: 3px solid #fff; box-shadow: 0 0 0 1px rgba(17,17,17,.2);
+        }
+        .case-control input[type=range]::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #111; cursor: pointer;
+            border: 3px solid #fff; box-shadow: 0 0 0 1px rgba(17,17,17,.2);
+        }
+        .case-metric {
+            text-align: center;
+            padding: 0.65rem 0.5rem;
+            border-radius: 10px;
+            background: rgba(17,17,17,.025);
+        }
+        .case-metric-label {
+            font-size: 0.7rem;
+            color: rgba(17,17,17,.42);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .case-metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+
+        @media (max-width: 560px) {
+            .page-header h1 { font-size: 1.7rem; }
+            .hero-metric .num { font-size: 2.6rem; }
+            .case-metrics { grid-template-columns: 1fr !important; }
+            .case-legend { font-size: 11px !important; gap: 8px !important; }
+        }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/" style="color:var(--ink)">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="container">
+
+    <nav class="crumbs" aria-label="Хлебные крошки">
+        <a href="/">Главная</a><span class="sep">/</span><a href="/cases/">Кейсы</a><span class="sep">/</span>Индустрия
+    </nav>
+
+    <header class="page-header">
+        <p class="meta-line">case study &middot; may 2026</p>
+        <h1>Индустрия</h1>
+        <p class="subtitle">Математика игры как доказательство тезиса о режимах мышления</p>
+    </header>
+
+    <div class="hero-metric">
+        <div class="num">47.5%</div>
+        <div class="lbl">доля побед «жадной» стратегии в симуляции 10 000 партий — против 5.9% у «интуитивной» компенсаторной</div>
+    </div>
+
+    <div class="content">
+
+        <!-- ═══ Контекст ═══ -->
+        <h2><span class="section-num">00</span> Контекст</h2>
+
+        <p>Несколько лет назад я написал <a href="/notes/thinking-modes/">короткую заметку</a> про то, как тренирую мышление. Там есть абзац про настольные игры — в частности, про «Индустрию» Ивана Лашина. Я писал, что эта игра требует постоянно держать в голове связь нескольких измерений: заводы, ресурсы, варианты обмена, варианты продажи, условия модернизации. И что у неё настолько динамично сбалансированы измерения, что её почти не приходится переделывать самим — в отличие от других настолок в нашем доме, которые мы регулярно превращаем в свои варианты.</p>
+
+        <p>Это утверждение я сделал на интуиции — после десятка партий. Захотелось проверить математически. Действительно ли в правилах игры заложены те самые сдвиги между режимами мышления, которые я там вижу? Или это я их туда дочитываю?</p>
+
+        <p>Этот текст — попытка препарировать «Индустрию» теми же инструментами, которыми я обычно препарирую продуктовые системы. Тут нет менеджмента, не нужно принимать решений за бизнес. Зато можно проверить, как именно в правилах игры заложен тот самый «динамичный баланс» — и что он делает с поведением рационального игрока.</p>
+
+        <p>Спойлер: режимы мышления заложены. Причём измеримо.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Данные и методика ═══ -->
+        <h2><span class="section-num">01</span> Данные и методика</h2>
+
+        <p>В качестве источников использовал три вещи. Первое — официальные правила Furnace 2021 в английской версии (русское издание называется «Индустрия»; правила идентичны базовому Furnace). Второе — фотографии своего экземпляра игры: 36 двухсторонних карт предприятий, 5 стартовых, компоненты ресурсов. Третье — наблюдаемые курсы продажи на 15 разных картах, которые я успел прочитать чётко.</p>
+
+        <p>Главное упрощение, которое сделал заранее: не учитываю карты промышленников. В базовой игре их можно отключить — это рекомендуется для первой партии — и при этом игра остаётся полноценной. Но математика без промышленников получается чище, и выводы не теряют силы.</p>
+
+        <p>Все симуляции, расчёты и графики — на Python. Код опубликую отдельно.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Блок 1: Структура ресурсов ═══ -->
+        <h2><span class="section-num">02</span> Структура ресурсов</h2>
+
+        <p>В коробке четыре типа ресурсов: уголь, металл, нефть и жетоны модернизации. Первое наблюдение, которое я сделал, ещё не открывая правила, — соотношение их количества в коробке.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Ресурс</th><th class="num">Количество в коробке</th><th class="num">Доля от общего</th></tr></thead>
+                <tbody>
+                    <tr><td>Уголь</td><td class="num">40</td><td class="num">46%</td></tr>
+                    <tr><td>Нефть</td><td class="num">20</td><td class="num">23%</td></tr>
+                    <tr><td>Металл</td><td class="num">15</td><td class="num">17%</td></tr>
+                    <tr><td>Жетоны модернизации</td><td class="num">12</td><td class="num">14%</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Это пропорции дизайнера. Уголь — массовый ресурс, его в три раза больше, чем металла. Жетонов модернизации меньше всего, хотя они одновременно работают как ресурс (можно продавать, тратить, накапливать).</p>
+
+        <p>Дальше я пробежался по всем картам продажи, которые видны на моих фото, и собрал таблицу «сколько монет даёт одна единица ресурса». Получилось вот что:</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Ресурс</th><th class="num">Минимум $/ед</th><th class="num">Медиана</th><th class="num">Максимум</th><th class="num">Разброс</th></tr></thead>
+                <tbody>
+                    <tr><td>Уголь</td><td class="num">0.50</td><td class="num">0.50</td><td class="num">0.50</td><td class="num">1.0×</td></tr>
+                    <tr><td>Нефть</td><td class="num">2.00</td><td class="num">2.75</td><td class="num">4.00</td><td class="num">2.0×</td></tr>
+                    <tr><td>Металл</td><td class="num">1.00</td><td class="num">3.50</td><td class="num">5.00</td><td class="num"><strong>5.0×</strong></td></tr>
+                    <tr><td>Жетон модернизации</td><td class="num">1.33</td><td class="num">3.50</td><td class="num">5.00</td><td class="num">3.8×</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Любопытная закономерность. Чем меньше ресурса в коробке — тем больше разброс его цены. Уголь продаётся всегда одинаково дёшево: 4 единицы за 2 монеты. Это половина монеты за единицу — буквально мусор.</p>
+
+        <!-- ВИЗУАЛ 1 -->
+        <figure class="case-figure" id="fig-resources">
+            <div style="position: relative; width: 100%; height: 360px;">
+                <canvas id="resScatter" role="img"
+                        aria-label="Scatter plot. Уголь 40 шт, разброс 1×. Нефть 20 шт, разброс 2×. Металл 15 шт, разброс 5×. Жетон модернизации 12 шт, разброс 3.8×."></canvas>
+            </div>
+            <figcaption>
+                Чем меньше ресурса в коробке — тем выше разброс его цены.
+                Дизайн через дефицит, а не средние значения.
+            </figcaption>
+        </figure>
+
+        <p>А вот металл, которого в коробке всего 15 штук, варьируется от 1 монеты за единицу (плохая карта продажи) до 5 монет (отличная). Пятикратный разброс. И это не случайность.</p>
+
+        <p><strong>Что это значит как дизайнерское решение.</strong> Лашин балансирует игру не через средние значения, а через распределения. Если ресурса много, его цена должна быть низкой и стабильной — иначе игра скатывается в монотонную добычу. Если ресурса мало, его цена может быть высокой, но это компенсируется риском «не встретить нужную карту» среди случайно открытых в раунде.</p>
+
+        <p>Это важное наблюдение, к которому я ещё вернусь в финале. Дизайнер рассуждает не «у этого ресурса средняя цена два с половиной» — а «у этого ресурса диапазон цен такой, что игрок принимает решение с риском».</p>
+
+        <p>Уголь — детерминированный ресурс. Поведение «качаю уголь и продаю» не работает. Зато его всегда хватает для апгрейдов. Металл — рискованный ресурс. Стратегия «качаю металл» — это казино: повезёт встретить карту продажи 1М→5$, и ты выигрываешь партию. Не повезёт, и металл превращается в обузу. Жетоны модернизации — особый случай: их мало, цена высокая, но они выполняют двойную функцию (продажа или апгрейд), что увеличивает их полезность.</p>
+
+        <p>И это всё — <strong>только из распределения курсов продажи</strong>, без учёта аукциона и динамики раундов. Уже здесь видно, что игра устроена многослойно.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Блок 2: Механика аукциона ═══ -->
+        <h2><span class="section-num">03</span> Механика аукциона</h2>
+
+        <p>Каждый раунд начинается с аукциона. На стол выкладывается 6, 7 или 8 карт (в зависимости от числа игроков). У каждого игрока 4 диска со значениями 1, 2, 3 и 4. По очереди игроки кладут диски на карты с двумя ограничениями: нельзя класть свой второй диск на ту же карту, и нельзя класть диск того же значения, что уже стоит. Когда все диски размещены, карты обрабатываются слева направо. У кого на карте самый высокий диск — тот её забирает. Все остальные, кто ставил диск на эту карту, получают компенсацию, указанную сверху, помноженную на номинал своего диска.</p>
+
+        <p>Эта механика — главная фишка игры. Все обзорщики о ней пишут одинаково: «иногда выгоднее проиграть аукцион, чем выиграть, — потому что компенсация бывает ценнее самой карты». Дальше типично следует совет: «ставьте диск 3 ради максимальной компенсации, оставляя диск 4 на главную цель раунда».</p>
+
+        <p>Я решил проверить это утверждение симуляцией. Написал простой движок аукциона: 4 игрока, 8 карт, у каждого по 4 диска. Каждая карта имеет случайную ценность V (от 8 до 25 монет, зависит от игрока — потому что у каждого свой движок) и случайную компенсацию C (от 0.5 до 5 монет за единицу диска). Размещение дисков по часовой стрелке, четыре круга, правила выкладки соблюдаются.</p>
+
+        <p>И четыре стратегии для игроков:</p>
+
+        <ul class="plain">
+            <li><strong>Greedy</strong> — ставлю свой максимальный диск на карту с максимальной ценностью для меня. Игнорирую компенсацию.</li>
+            <li><strong>Compensation</strong> — ставлю свой максимальный диск на карту, где C×k максимально. Игнорирую ценность карты.</li>
+            <li><strong>EV (баланс)</strong> — на каждый ход вычисляю ожидаемый доход для всех допустимых пар (карта, диск), беру максимум. Учитываю и V, и C.</li>
+            <li><strong>Random</strong> — случайный допустимый ход. Базовая линия.</li>
+        </ul>
+
+        <p>Запустил 10 000 партий. Каждый игрок играет своей стратегией.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Стратегия</th><th class="num">Средний доход</th><th class="num">Побед в партии</th></tr></thead>
+                <tbody>
+                    <tr><td>Greedy</td><td class="num">60.3 $</td><td class="num"><strong>47.5%</strong></td></tr>
+                    <tr><td>EV (баланс)</td><td class="num">58.4 $</td><td class="num">38.4%</td></tr>
+                    <tr><td>Random</td><td class="num">41.8 $</td><td class="num">8.2%</td></tr>
+                    <tr><td>Compensation</td><td class="num">41.7 $</td><td class="num"><strong>5.9%</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ВИЗУАЛ 2 -->
+        <figure class="case-figure" id="fig-strategies">
+            <div style="position: relative; width: 100%; height: 320px;">
+                <canvas id="winrateChart" role="img"
+                        aria-label="Bar chart. Жадная стратегия 47.5% побед, EV 38.4%, случайная 8.2%, компенсаторная 5.9%."></canvas>
+            </div>
+            <div class="case-legend" style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 12px; justify-content: center; color: rgba(17,17,17,.62);">
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #444441;"></span>жадная (Greedy) 47.5%</span>
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #888780;"></span>балансированная (EV) 38.4%</span>
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #B4B2A9;"></span>случайная 8.2%</span>
+                <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #e63946;"></span>компенсаторная 5.9%</span>
+            </div>
+            <figcaption>10 000 партий, 4 игрока за столом, у каждого своя стратегия.</figcaption>
+        </figure>
+
+        <p>Compensation — стратегия, которой учат обзорщики, — проигрывает буквально всё. 5.9% побед, на уровне случайной игры. И средний доход такой же, как у случайного бот-игрока.</p>
+
+        <p>Greedy — простая «жадная» стратегия — побеждает в 47.5% партий. EV — балансированная — в 38.4%.</p>
+
+        <p>Что произошло. Стратегия «всегда ставлю 3 ради максимальной компенсации» не работает, потому что компенсация — это разовый эффект, а сама карта — это движок, который работает несколько раундов. Пока соперник максимизирует разовые бонусы по 3-9 монет за раунд, ты строишь производственную цепочку, которая даёт 15-30 монет за партию.</p>
+
+        <p>Однако в симуляции есть тонкость, которую интересно выделить отдельно. Если посмотреть на парные дуэли (за столом два игрока стратегии A и два игрока стратегии B), картина меняется.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Дуэль</th><th class="num">A</th><th class="num">B</th><th class="num">Разница</th></tr></thead>
+                <tbody>
+                    <tr><td>Greedy vs EV</td><td class="num">51.4</td><td class="num">57.2</td><td class="num">EV +5.8</td></tr>
+                    <tr><td>EV vs Compensation</td><td class="num">65.9</td><td class="num">38.6</td><td class="num">EV +27.3</td></tr>
+                    <tr><td>Greedy vs Compensation</td><td class="num">60.5</td><td class="num">41.3</td><td class="num">Greedy +19.2</td></tr>
+                    <tr><td>Greedy vs Random</td><td class="num">55.4</td><td class="num">40.7</td><td class="num">Greedy +14.7</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>В смешанной партии выигрывает Greedy, но в честной дуэли 2v2 <strong>Greedy проигрывает EV.</strong> Это важно. Greedy выигрывает в смешанной партии потому, что часто оказывается единственным, кто борется за конкретную карту. Когда за столом двое жадных, они начинают бороться за одни и те же карты, и тут проигрывает тот, кто не умеет ценить компенсации. EV умеет. Greedy — нет.</p>
+
+        <p>Перевод этого на язык режимов мышления. Аукцион требует «быстрого мышления»: за один ход надо оценить и V, и C, и состояние ряда, и поведение соперников, и принять решение, на какую карту положить какой диск. Это не «холодный расчёт» в духе классической теории игр, это интуитивная оценка нескольких параметров в моменте. Что заметка называет «быстрым мышлением» — здесь работает буквально.</p>
+
+        <p>И при этом в аукционе нет единой выигрышной стратегии. Ни Greedy, ни EV не побеждают всегда. Они лучше других, но проигрывают в специфичных столах. Игра принуждает к гибкости.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Блок 3: Динамика по раундам ═══ -->
+        <h2><span class="section-num">04</span> Динамика по раундам</h2>
+
+        <p>Игра длится 4 раунда. Каждый раунд = аукцион + производство. Карта, выигранная в раунде r, успеет сработать в раундах r..4 включительно, то есть (5 − r) раз. Карта, купленная в первом раунде, отрабатывает 4 раза. Карта, купленная в четвёртом, — один раз.</p>
+
+        <p>Это меняет всё.</p>
+
+        <p>Возьмём типичную карту, которая даёт около 5 монет за одно срабатывание. Это средняя карта продажи: продаёт пару единиц ресурса по 2-3 монеты за единицу. С апгрейдом такая карта даёт 80% больше — пусть будет 9 монет за срабатывание. Стоимость апгрейда — один уголь и один жетон модернизации, в сумме около 4 монет (по нашим оценкам из Блока 1).</p>
+
+        <p>Двигай слайдер раунда — и увидишь, как ценность карты меняется относительно компенсации. Между третьим и четвёртым раундом происходит математический сдвиг режима: то, что было верным правилом для первых трёх четвертей партии, становится неверным.</p>
+
+        <!-- ВИЗУАЛ 3: ИНТЕРАКТИВ -->
+        <figure class="case-figure case-interactive" id="fig-rounds">
+            <div class="case-control" style="display: flex; align-items: center; gap: 16px; margin: 0 0 1.25rem;">
+                <label for="round-slider" style="font-size: 14px; color: #444441; min-width: 56px;">Раунд</label>
+                <input type="range" min="1" max="4" value="1" step="1" id="round-slider" style="flex: 1;" />
+                <span id="round-out" style="font-size: 22px; font-weight: 500; min-width: 24px; text-align: right;">1</span>
+            </div>
+
+            <div class="case-metrics" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 1.5rem;">
+                <div class="case-metric">
+                    <div class="case-metric-label">Карта без апгрейда</div>
+                    <div class="case-metric-value" id="metric-basic">20 $</div>
+                </div>
+                <div class="case-metric">
+                    <div class="case-metric-label">Карта с апгрейдом</div>
+                    <div class="case-metric-value" id="metric-upgraded">32 $</div>
+                </div>
+                <div class="case-metric">
+                    <div class="case-metric-label">Точка безразличия</div>
+                    <div class="case-metric-value" id="metric-indifference">5.00 $</div>
+                </div>
+            </div>
+
+            <div style="position: relative; width: 100%; height: 280px;">
+                <canvas id="round-chart" role="img"
+                        aria-label="График: при разных значениях C сравниваются ценность карты и компенсация диском 4 и 3."></canvas>
+            </div>
+
+            <figcaption id="round-note">
+                В раунде 1 только редкая компенсация (C ≥ 5 $) бьёт владение картой. К раунду 4 граница падает почти в 4 раза.
+            </figcaption>
+        </figure>
+
+        <p>В раундах 1-3 любая карта выгоднее компенсации. В раунде 4 — наоборот: почти любая компенсация выгоднее карты.</p>
+
+        <p>Это и есть «быстрое-медленное» в чистом виде, прошитое в игре. Раунды 1-2 — зона стратегического планирования. Думаешь о синергиях, о цепочках производства, об апгрейдах. Готов уступить компенсацию, потому что держишь горизонт на 3-4 раунда вперёд. Раунд 3 — переходная зона, старые правила перестают работать. Раунд 4 — зона тактической жадности. Никакого планирования. Просто оптимизация «здесь и сейчас»: что лучше — взять карту или взять компенсацию.</p>
+
+        <p>Это не интерпретация. Это математическое следствие того, что игра длится ровно 4 раунда и апгрейд тратит ресурсы вперёд. Если бы Лашин сделал игру на 3 раунда, переход случался бы между 2-м и 3-м, и движок не успевал бы полноценно проявиться. Если бы на 5 раундов — раунд 5 терял бы своё напряжение, потому что был бы дальним эхом стратегического планирования.</p>
+
+        <p>Четыре раунда — это точная настройка. Достаточно времени для того, чтобы движок имел смысл (3 раунда инвестиций). И обязательный финальный раунд, который ломает стратегию и заставляет переключиться в другой режим мышления.</p>
+
+        <p>Кстати, это объясняет наблюдение, которое часто встречается в обзорах «Индустрии»: «ситуации, в которых игрок выигрывает в последнем раунде, — норма для этой игры». Не случайность, а свойство дизайна. Обзорщики заметили эффект, не заметили причины.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Блок 4: Невидимый слой ═══ -->
+        <h2><span class="section-num">05</span> Невидимый слой: микро-движок аукциона</h2>
+
+        <p>Это самая тонкая находка из всего разбора. Её нет ни в одном обзоре «Индустрии» или Furnace, которые я прочитал — а я перебрал около пятнадцати на трёх языках.</p>
+
+        <p>В правилах есть такая фраза:</p>
+
+        <blockquote>
+            <p>Карты в аукционном ряду обрабатываются по одной слева направо. Игрок может получить ресурсы по одной компенсации, а затем потратить их по другой. Для этого карта добычи должна стоять левее карты переработки.</p>
+        </blockquote>
+
+        <p>Большинство обзоров проходит мимо этого пункта. А он значит вот что: <strong>компенсации внутри одного аукциона — не независимы</strong>. Если у тебя диски на двух картах в правильном порядке, ты получаешь не только сами компенсации, но и эффект их связи. Левая карта добывает тебе ресурсы, правая их перерабатывает в более ценные. Ещё до того, как начнётся Production Phase.</p>
+
+        <p>Возьмём конкретный пример. Аукцион, в нём две интересующие тебя карты:</p>
+
+        <ul class="plain">
+            <li><strong>L</strong> (слева): компенсация — добыча 1 угля</li>
+            <li><strong>R</strong> (справа): компенсация — обмен 1 угля на 1 нефть</li>
+        </ul>
+
+        <!-- ВИЗУАЛ 4: SVG-схема -->
+        <figure class="case-figure" id="fig-microengine">
+            <svg viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg"
+                 style="width: 100%; height: auto; max-width: 680px; margin: 0 auto; display: block;"
+                 role="img"
+                 aria-label="Схема micro-engine: карта L (добыча угля) кормит карту R (обмен угля на нефть). Цепочка дисков L4 + R3 даёт 9.5 $, жадный диск 4 на R без угля — 0 $.">
+                <defs>
+                    <marker id="arrow-coal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#444441"/>
+                    </marker>
+                    <marker id="arrow-thin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#888780"/>
+                    </marker>
+                </defs>
+
+                <text x="340" y="32" text-anchor="middle" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">Аукционный ряд (resolve слева направо)</text>
+
+                <rect x="80" y="60" width="200" height="140" fill="#FFFFFF" stroke="#2C2C2A" stroke-width="1.5"/>
+                <text x="180" y="84" text-anchor="middle" fill="#2C2C2A" style="font-size: 12px; font-weight: 500;">Карта L (позиция 2)</text>
+                <line x1="100" y1="92" x2="260" y2="92" stroke="#444441" stroke-width="0.5"/>
+                <text x="180" y="118" text-anchor="middle" fill="#444441" style="font-size: 13px;">компенсация</text>
+                <text x="180" y="142" text-anchor="middle" fill="#2C2C2A" style="font-size: 16px; font-weight: 500;">+ 1 уголь</text>
+                <text x="180" y="170" text-anchor="middle" fill="#888780" style="font-size: 11px;">extraction</text>
+                <text x="180" y="190" text-anchor="middle" fill="#888780" style="font-size: 11px;">за 1 единицу диска</text>
+
+                <line x1="285" y1="130" x2="395" y2="130" stroke="#444441" stroke-width="2" marker-end="url(#arrow-coal)"/>
+                <text x="340" y="120" text-anchor="middle" fill="#444441" style="font-size: 12px; font-weight: 500;">уголь</text>
+                <text x="340" y="150" text-anchor="middle" fill="#888780" style="font-size: 11px;">поток ресурса</text>
+
+                <rect x="400" y="60" width="200" height="140" fill="#FFFFFF" stroke="#2C2C2A" stroke-width="1.5"/>
+                <text x="500" y="84" text-anchor="middle" fill="#2C2C2A" style="font-size: 12px; font-weight: 500;">Карта R (позиция 5)</text>
+                <line x1="420" y1="92" x2="580" y2="92" stroke="#444441" stroke-width="0.5"/>
+                <text x="500" y="118" text-anchor="middle" fill="#444441" style="font-size: 13px;">компенсация</text>
+                <text x="500" y="142" text-anchor="middle" fill="#2C2C2A" style="font-size: 16px; font-weight: 500;">1 уголь → 1 нефть</text>
+                <text x="500" y="170" text-anchor="middle" fill="#888780" style="font-size: 11px;">processing</text>
+                <text x="500" y="190" text-anchor="middle" fill="#888780" style="font-size: 11px;">до k раз (k = диск)</text>
+
+                <line x1="40" y1="230" x2="640" y2="230" stroke="#444441" stroke-width="1"/>
+                <text x="40" y="252" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">Сценарии (без угля на руках)</text>
+
+                <text x="40" y="285" fill="#2C2C2A" style="font-size: 12px; font-weight: 500;">A. Жадно</text>
+                <text x="40" y="304" fill="#888780" style="font-size: 11px;">диск 4 на R</text>
+                <rect x="180" y="270" width="40" height="40" fill="none" stroke="#888780" stroke-width="0.5"/>
+                <text x="200" y="295" text-anchor="middle" fill="#888780" style="font-size: 14px;">—</text>
+                <text x="245" y="295" fill="#888780" style="font-size: 12px;">L пуста</text>
+                <line x1="305" y1="290" x2="395" y2="290" stroke="#888780" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrow-thin)"/>
+                <rect x="400" y="270" width="40" height="40" fill="#FFFFFF" stroke="#2C2C2A" stroke-width="1"/>
+                <text x="420" y="295" text-anchor="middle" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">4</text>
+                <text x="465" y="289" fill="#888780" style="font-size: 11px;">нет входного</text>
+                <text x="465" y="302" fill="#888780" style="font-size: 11px;">ресурса для обмена</text>
+                <text x="635" y="295" text-anchor="end" fill="#e63946" style="font-size: 18px; font-weight: 500;">0 $</text>
+
+                <text x="40" y="345" fill="#2C2C2A" style="font-size: 12px; font-weight: 500;">B. Цепочка</text>
+                <text x="40" y="364" fill="#888780" style="font-size: 11px;">диск 4 на L,</text>
+                <text x="40" y="378" fill="#888780" style="font-size: 11px;">диск 3 на R</text>
+                <rect x="180" y="335" width="40" height="40" fill="#FFFFFF" stroke="#2C2C2A" stroke-width="1"/>
+                <text x="200" y="360" text-anchor="middle" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">4</text>
+                <text x="245" y="354" fill="#444441" style="font-size: 11px;">+ 4 угля</text>
+                <text x="245" y="367" fill="#888780" style="font-size: 11px;">(1 × 4)</text>
+                <line x1="305" y1="355" x2="395" y2="355" stroke="#444441" stroke-width="2" marker-end="url(#arrow-coal)"/>
+                <text x="350" y="346" text-anchor="middle" fill="#444441" style="font-size: 11px; font-weight: 500;">3 угля →</text>
+                <rect x="400" y="335" width="40" height="40" fill="#FFFFFF" stroke="#2C2C2A" stroke-width="1"/>
+                <text x="420" y="360" text-anchor="middle" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">3</text>
+                <text x="465" y="354" fill="#444441" style="font-size: 11px;">→ 3 нефти</text>
+                <text x="465" y="367" fill="#888780" style="font-size: 11px;">+ 1 уголь остаток</text>
+                <text x="635" y="360" text-anchor="end" fill="#2C2C2A" style="font-size: 18px; font-weight: 500;">9.5 $</text>
+
+                <text x="340" y="425" text-anchor="middle" fill="#888780" style="font-size: 12px;">Прирост от учёта порядка карт в ряду:</text>
+                <text x="340" y="445" text-anchor="middle" fill="#2C2C2A" style="font-size: 14px; font-weight: 500;">+ 9.5 $ относительно жадной стратегии</text>
+            </svg>
+            <figcaption>
+                Цепочка дисков L → R создаёт мини-производство ещё до Production Phase.
+                Уголь, добытый на левой карте, тут же тратится на правой.
+            </figcaption>
+        </figure>
+
+        <p>Угля у тебя на руках нет. Ты — игрок, который не собирается побеждать в этом аукционе, тебе важна только компенсация. Что лучше сделать?</p>
+
+        <p>Разберу пять сценариев и посчитаю выручку каждого. Уголь по нашим расчётам стоит 0.5 $ за единицу, нефть — 3 $ (медианная цена).</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Сценарий</th><th>Размещение</th><th class="num">Доход</th></tr></thead>
+                <tbody>
+                    <tr><td>A1. Жадно</td><td>Диск 4 на R (выгодная компенсация-обмен)</td><td class="num"><strong>0 $</strong></td></tr>
+                    <tr><td>A2. Жадно с углём в кармане</td><td>Диск 4 на R, на руках 2 угля</td><td class="num">5 $</td></tr>
+                    <tr><td>B. Цепочка</td><td>Диск 4 на L + диск 3 на R</td><td class="num"><strong>9.5 $</strong></td></tr>
+                    <tr><td>C. Лёгкая цепочка</td><td>Диск 4 на L + диск 2 на R</td><td class="num">7 $</td></tr>
+                    <tr><td>D. Только добыча</td><td>Диск 4 на L, без участия в R</td><td class="num">2 $</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Жадная стратегия «вижу самую выгодную компенсацию, кладу свой максимальный диск» — даёт ноль. Потому что нет угля, который надо обменять. Компенсация-обмен требует входного ресурса, а его нет.</p>
+
+        <p>Цепочечная стратегия «сначала добываю на левой карте, потом перерабатываю на правой» — даёт 9.5 монет. <strong>В пять раз больше</strong>, чем жадная одиночная добыча. И почти бесконечно больше, чем жадный обмен без угля.</p>
+
+        <p>Это и есть «связывание разных фактов в структуру», о котором я писал в исходной заметке. В Furnace оно работает буквально — на уровне правил. Игрок, который видит аукционный ряд как граф потоков ресурсов (L кормит R, R превращает уголь в нефть, нефть продаётся в Production Phase), — получает в разы больше за тот же набор дисков.</p>
+
+        <p>Этот слой стратегии не описан в обзорах, потому что обзорщики смотрят на игру через призму отдельных решений: «куда положить диск 4». А правильный вопрос — «как расставить мои четыре диска по аукционному ряду, чтобы компенсации работали как мини-движок до начала Production Phase».</p>
+
+        <p>Этот слой требует «структурного мышления». Не быстрого, не стратегического — именно структурного, способного увидеть связи между карточками и посчитать совокупный эффект, а не сумму отдельных компенсаций.</p>
+
+        <p>Я считаю, что это лучшая дизайнерская находка в правилах «Индустрии». И именно она делает игру тренажёром того режима мышления, который заметка называет «связыванием воедино самых разных фактов в структуры».</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Дизайнерская оценка ═══ -->
+        <h2><span class="section-num">06</span> Дизайнерская оценка</h2>
+
+        <p>Если коротко резюмировать всё, что я насчитал:</p>
+
+        <p><strong>Лашин балансирует игру не средними значениями, а распределениями.</strong> Дешёвый ресурс детерминирован, дефицитный — волатилен. Это не «средняя цена 2 монеты», это «риск 1 ↔ 5 монет в зависимости от карты, которая выпадет». Игроку приходится принимать решения в условиях неопределённости — и это та же логика, что в продуктовой аналитике, когда работаешь с А/B-тестами на маленьких выборках.</p>
+
+        <p><strong>Длительность в 4 раунда — это точная настройка.</strong> Не три (нет места для движка), не пять (раунд 5 терял бы напряжение). Четыре — минимально необходимое, чтобы стратегическое планирование имело смысл, и обязательно содержащее финальный раунд, который ломает стратегию.</p>
+
+        <p><strong>Структура аукциона — слоёная.</strong> Поверхностный слой: «выиграй карту дороже соперника, иначе компенсация». Средний слой: «выбирай между картой и компенсацией по EV». Глубинный слой: «расставь диски по ряду так, чтобы компенсации образовали мини-движок». Каждый слой требует своего режима мышления. Хорошо сделанная игра — это та, в которой все слои работают одновременно и игрок переключается между ними естественно.</p>
+
+        <p>С аналитической точки зрения «Индустрия» — это компактный пример того, как авторы хороших экономических систем устроены изнутри. Они не пишут правила, чтобы было «честно». Они пишут правила, чтобы поведение рационального игрока было сложным.</p>
+
+        <p>И это, кстати, ровно то, что мы пытаемся делать в продукте, когда проектируем системы вознаграждения, рекомендаций или ценообразования. Простые правила → сложное поведение → разные режимы мышления у пользователя. Лашин решил эту задачу для четырёх человек на час игры. Хороший продакт решает её для миллиона пользователей на год.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Возврат к режимам мышления ═══ -->
+        <h2><span class="section-num">07</span> Возврат к режимам мышления</h2>
+
+        <p>В исходной <a href="/notes/thinking-modes/">заметке</a> я писал так:</p>
+
+        <blockquote>
+            <p>У этой игры настолько качественно и динамично сбалансированы измерения, что мы почти её не переделывали. Она классно тренирует и скорость решений, и понимание причинно-следственных связей, и стратегическое планирование. Иногда лучше двигаться по заранее выбранной тактике, а иногда — проще расслабиться и погрузиться в хаос несвязанных решений.</p>
+        </blockquote>
+
+        <p>Я писал это после десяти партий, на интуиции. После того, как я разобрал её математически, могу сказать конкретнее.</p>
+
+        <p>«Скорость решений» — это аукцион. EV-калькуляция в моменте, без долгого обдумывания, потому что соперники не ждут.</p>
+
+        <p>«Причинно-следственные связи» — это микро-движок аукциона. Левая карта кормит правую, ресурс перетекает по цепочке. Игрок, видящий эту связь, получает в пять раз больше.</p>
+
+        <p>«Стратегическое планирование» — это раунды 1-2. Когда ты выбираешь карты ради будущей синергии, готов уступить компенсации ради движка.</p>
+
+        <p>«Иногда лучше двигаться по тактике, а иногда — погрузиться в хаос» — это сдвиг между раундом 3 и раундом 4. В раунде 4 стратегия буквально становится вредной, и ты переключаешься в режим жадной оптимизации.</p>
+
+        <p>Все эти переключения — не моя интерпретация. Они математически прошиты в правилах. Если бы Лашин изменил один параметр (число раундов, базовый доход карты, стоимость апгрейда) — переключения сдвинулись бы или исчезли. Игра балансирует по краю.</p>
+
+        <p>Теперь я понимаю, почему мы её почти не переделывали. Не потому, что другие наши настолки плохие, а эта хорошая. А потому, что у этой игры правила настолько плотно зашиты в психологию игры — каждый параметр связан с каждым — что переделывать её = ломать. В наших переделках других настолок мы добавляем правила, чтобы вдохнуть в них жизнь. В «Индустрии» жизнь уже встроена в каждое число.</p>
+
+        <p>Настольная игра как тренажёр режимов мышления — это не метафора. Это конструкция, которую можно посчитать и доказать, что она работает.</p>
+
+
+        <hr class="divider">
+
+
+        <!-- ═══ Оговорки ═══ -->
+        <h2><span class="section-num">08</span> Оговорки и ограничения</h2>
+
+        <p>Несколько вещей, которые сознательно не учитывал, чтобы не размывать выводы:</p>
+
+        <ul class="plain">
+            <li><strong>Карты промышленников.</strong> В базовой игре их можно отключить. С ними математика усложняется, но качественные выводы остаются. Если интересно — отдельным материалом.</li>
+            <li><strong>Production chain (advanced variant).</strong> Правило, при котором новые карты вставляются только в конец цепочки, а не между. Это резко усложняет стратегию, но работает поверх той же логики аукциона.</li>
+            <li><strong>Цены ресурсов</strong> оценил по фотовыборке из ~15 карт продажи. Полная картина из 36 карт может сместить цифры на 10-20%. Качественные выводы это не меняет: уголь дешёвый, металл волатильный, нефть стабильная.</li>
+            <li><strong>Симуляция аукциона</strong> упрощает Production Phase: предполагается, что выигранная карта даёт абстрактный доход V монет за партию. На практике выигранная карта без синергии с движком даёт меньше. Это означает, что цифра 47.5% побед у Greedy скорее завышена, чем занижена. EV в реальной игре, вероятно, ещё сильнее.</li>
+        </ul>
+
+        <p>Если хочется проверить какой-то из выводов на своей игре или в более строгой модели — пишите, <a href="https://t.me/Datalake">@Datalake</a>.</p>
+
+
+        <hr class="divider">
+
+        <a href="/cases/" class="back-link">← Все кейсы</a>
+
+    </div>
+
+</div>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script>
+/* ───── ВИЗУАЛ 1: scatter ресурсов ───── */
+(function() {
+  if (!window.Chart) return;
+  const points = [
+    { x: 40, y: 1.0, label: 'Уголь', desc: 'детерминированная цена 0.5 $/ед' },
+    { x: 20, y: 2.0, label: 'Нефть', desc: 'разброс 2–4 $/ед' },
+    { x: 15, y: 5.0, label: 'Металл', desc: 'разброс 1–5 $/ед' },
+    { x: 12, y: 3.8, label: 'Жетон модернизации', desc: 'разброс 1.33–5 $/жетон' },
+  ];
+
+  const labelPlugin = {
+    id: 'labels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = '500 13px sans-serif';
+      ctx.fillStyle = '#2C2C2A';
+      chart.data.datasets[0].data.forEach((pt, i) => {
+        const meta = chart.getDatasetMeta(0).data[i];
+        const dx = (pt.label === 'Уголь' || pt.label === 'Нефть') ? 14 : -14;
+        const align = dx > 0 ? 'left' : 'right';
+        ctx.textAlign = align;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pt.label, meta.x + dx, meta.y);
+      });
+      ctx.restore();
+    }
+  };
+
+  new Chart(document.getElementById('resScatter'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: points,
+        backgroundColor: '#444441',
+        borderColor: '#444441',
+        pointRadius: 7,
+        pointHoverRadius: 9,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { left: 30, right: 30, top: 20, bottom: 10 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].raw.label,
+            label: (ctx) => [
+              'количество в коробке: ' + ctx.raw.x,
+              'разброс цен: ' + ctx.raw.y.toFixed(1) + '×',
+              ctx.raw.desc
+            ]
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'количество ресурса в коробке', font: { size: 12 }, color: 'rgba(0,0,0,0.55)' },
+          min: 5, max: 45,
+          ticks: { font: { size: 11 } },
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          border: { color: 'rgba(0,0,0,0.2)' }
+        },
+        y: {
+          title: { display: true, text: 'разброс цен (макс / мин)', font: { size: 12 }, color: 'rgba(0,0,0,0.55)' },
+          min: 0, max: 6,
+          ticks: { font: { size: 11 }, callback: (v) => v + '×' },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          border: { display: false }
+        }
+      }
+    },
+    plugins: [labelPlugin]
+  });
+})();
+
+/* ───── ВИЗУАЛ 2: bar chart стратегий ───── */
+(function() {
+  if (!window.Chart) return;
+  new Chart(document.getElementById('winrateChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Жадная', 'Балансированная', 'Случайная', 'Компенсаторная'],
+      datasets: [{
+        data: [47.5, 38.4, 8.2, 5.9],
+        backgroundColor: ['#444441', '#888780', '#B4B2A9', '#e63946'],
+        borderWidth: 0,
+        barPercentage: 0.65,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => ctx.parsed.y.toFixed(1) + '% побед' } }
+      },
+      scales: {
+        y: {
+          beginAtZero: true, max: 50,
+          ticks: { callback: (v) => v + '%', font: { size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          border: { display: false }
+        },
+        x: {
+          ticks: { font: { size: 13 } },
+          grid: { display: false },
+          border: { color: 'rgba(0,0,0,0.2)' }
+        }
+      }
+    }
+  });
+})();
+
+/* ───── ВИЗУАЛ 3: интерактив раундов ───── */
+(function() {
+  if (!window.Chart) return;
+  const m_basic = 5.0;
+  const m_upgraded = 9.0;
+  const upgrade_cost = 4.0;
+
+  function valueOfCard(round, upgraded) {
+    const runs = 5 - round;
+    if (!upgraded) return m_basic * runs;
+    return m_upgraded * runs - upgrade_cost;
+  }
+
+  const C_axis = [];
+  for (let c = 0; c <= 6; c += 0.25) C_axis.push(c);
+
+  const slider = document.getElementById('round-slider');
+  const out = document.getElementById('round-out');
+  const mBasic = document.getElementById('metric-basic');
+  const mUpgraded = document.getElementById('metric-upgraded');
+  const mIndiff = document.getElementById('metric-indifference');
+  const note = document.getElementById('round-note');
+
+  const chart = new Chart(document.getElementById('round-chart'), {
+    type: 'line',
+    data: {
+      labels: C_axis.map(c => c.toFixed(2)),
+      datasets: [
+        { label: 'Карта без апгр. (V)', data: C_axis.map(() => 0),
+          borderColor: '#444441', borderWidth: 2, pointRadius: 0, fill: false },
+        { label: 'Компенсация диском 4 (C×4)', data: C_axis.map(c => c * 4),
+          borderColor: '#e63946', borderWidth: 2, pointRadius: 0, borderDash: [6, 4], fill: false },
+        { label: 'Компенсация диском 3 (C×3)', data: C_axis.map(c => c * 3),
+          borderColor: '#888780', borderWidth: 1.5, pointRadius: 0, borderDash: [3, 3], fill: false }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 250 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => 'C = ' + items[0].label + ' $/ед.',
+            label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' $'
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'компенсация C, $/единицу диска', font: { size: 12 }, color: 'rgba(0,0,0,0.55)' },
+          ticks: { font: { size: 11 }, maxTicksLimit: 7 },
+          grid: { display: false },
+          border: { color: 'rgba(0,0,0,0.2)' }
+        },
+        y: {
+          beginAtZero: true, max: 35,
+          title: { display: true, text: 'доход, $', font: { size: 12 }, color: 'rgba(0,0,0,0.55)' },
+          ticks: { font: { size: 11 } },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+
+  function update() {
+    const r = parseInt(slider.value);
+    const vBasic = valueOfCard(r, false);
+    const vUpgraded = valueOfCard(r, true);
+    out.textContent = r;
+    mBasic.textContent = vBasic.toFixed(0) + ' $';
+    mUpgraded.textContent = vUpgraded > 0 ? vUpgraded.toFixed(0) + ' $' : '−' + Math.abs(vUpgraded).toFixed(0) + ' $';
+    mIndiff.textContent = (vBasic / 4).toFixed(2) + ' $';
+
+    chart.data.datasets[0].data = C_axis.map(() => vBasic);
+    chart.data.datasets[0].label = 'Карта без апгр. (' + vBasic.toFixed(0) + ' $)';
+    chart.update();
+
+    if (r === 1) note.textContent = 'Раунд 1: ценность карты — 20 $. Только компенсация C ≥ 5 $ бьёт карту диском 4. Стратегия: думать о цепочках, инвестировать в апгрейды.';
+    else if (r === 2) note.textContent = 'Раунд 2: ценность карты падает до 15 $. Граница безразличия сместилась к 3.75 $. Карта пока выгоднее, но компенсация уже близко.';
+    else if (r === 3) note.textContent = 'Раунд 3: ценность карты — 10 $. Граница 2.50 $. Большинство компенсаций бьют карту. Переходная зона: старые правила перестают работать.';
+    else note.textContent = 'Раунд 4: ценность карты — 5 $, апгрейд = убыток в 4 $. Граница 1.25 $: почти любая компенсация выгоднее карты. Стратегия исчезла, осталась жадная оптимизация.';
+  }
+
+  slider.addEventListener('input', update);
+  update();
+})();
+</script>
+
+</body>
+</html>
