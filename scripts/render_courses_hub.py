@@ -74,9 +74,6 @@ def nav_html(active: str) -> str:
   </div>
   <hr class="nav-drawer-divider" aria-hidden="true"/>
   <div class="nav-drawer-section nav-drawer-section--secondary">
-    <a href="/knowledge/">База знаний</a>
-    <a href="/simulators/">Симуляторы</a>
-    <a href="/calculators/">Калькуляторы</a>
     <a href="/about/">Обо мне</a>
     <a href="/search/">Поиск</a>
   </div>
