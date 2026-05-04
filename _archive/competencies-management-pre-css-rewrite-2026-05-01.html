@@ -20,199 +20,213 @@
 <link rel="stylesheet" href="/style.css"/>
 <link rel="stylesheet" href="../assets/diagnostic.css"/>
     <style>
-        /* ── Page typography (JS renders h1 + .subtitle inside #app) ── */
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin: 0 0 .5rem 0;
-            line-height: 1.2;
-        }
-        .subtitle {
-            color: var(--muted);
-            font-size: .95rem;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            margin-bottom: 2.5rem;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 3rem 1rem;
         }
+        .container { max-width: 900px; margin: 0 auto; }
 
-        /* ── Section headers ─────────────────────────────────── */
+        /* Breadcrumb */
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: #1a1a1a; }
+
+        /* Header */
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.6; }
+
+        /* Section headers */
         h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin: 2.5rem 0 1rem 0;
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            margin-top: 2.5rem;
+            color: #1a1a1a;
         }
         h2:first-of-type { margin-top: 0; }
 
         .section-text {
-            font-size: .9rem;
-            color: var(--muted);
-            line-height: 1.55;
+            font-size: 0.9rem;
+            color: #666;
             margin-bottom: 1rem;
         }
 
-        /* ── Callout bullets ─────────────────────────────────── */
+        /* Bullet lists */
         .content-bullets {
             list-style: none;
-            padding: 0;
-            margin: 0 0 2.5rem 0;
+            padding-left: 0;
+            margin-bottom: 2rem;
         }
         .content-bullets li {
-            font-size: .9rem;
+            font-size: 0.9rem;
             line-height: 1.6;
-            color: var(--ink);
-            padding: 14px 0 14px 16px;
-            border-bottom: 1px solid var(--line);
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            padding-left: 1.25rem;
             position: relative;
         }
-        .content-bullets li:last-child { border-bottom: none; }
-        .content-bullets li::before {
-            content: '·';
+        .content-bullets li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            top: 14px;
-            color: var(--muted);
+            color: #888;
         }
 
-        /* ── Responsibility table ────────────────────────────── */
+        /* Responsibility table */
         .responsibility-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 0 0 2.5rem 0;
+            margin-bottom: 2rem;
+            font-size: 0.88rem;
         }
         .responsibility-table th {
             text-align: left;
-            font-family: var(--mono);
-            font-size: 10px;
-            font-weight: 500;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            padding: 10px 14px;
-            border-bottom: 2px solid var(--ink);
-            background: transparent;
+            letter-spacing: 0.04em;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #e8e8e8;
+            background: #fafafa;
         }
         .responsibility-table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--line);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e8e8e8;
             vertical-align: top;
-            font-size: .875rem;
             line-height: 1.5;
-            color: var(--ink);
         }
         .responsibility-table tr:last-child td { border-bottom: none; }
-        .responsibility-table td:first-child { font-weight: 500; }
-        .responsibility-table td:nth-child(3) { color: var(--muted); }
+        .responsibility-table td:first-child { font-weight: 500; white-space: nowrap; }
+        .responsibility-table td:nth-child(2) { color: #555; }
+        .responsibility-table td:nth-child(3) { color: #888; font-size: 0.82rem; }
 
-        /* ── Antipatterns ────────────────────────────────────── */
+        @media (max-width: 639px) {
+            .responsibility-table { font-size: 0.82rem; }
+            .responsibility-table th,
+            .responsibility-table td { padding: 0.6rem 0.5rem; }
+            .responsibility-table td:first-child { white-space: normal; }
+        }
+
+        /* Anti-patterns */
         .antipattern-list {
             list-style: none;
-            padding: 0;
-            margin: 0 0 2.5rem 0;
+            padding-left: 0;
+            margin-bottom: 2rem;
         }
         .antipattern-list li {
-            font-size: .9rem;
+            font-size: 0.9rem;
             line-height: 1.6;
-            color: var(--ink);
-            padding: 14px 0 14px 24px;
-            border-bottom: 1px solid var(--line);
+            color: #1a1a1a;
+            margin-bottom: 0.6rem;
+            padding-left: 1.5rem;
             position: relative;
         }
-        .antipattern-list li:last-child { border-bottom: none; }
-        .antipattern-list li::before {
-            content: '✕';
+        .antipattern-list li:before {
+            content: "✕";
             position: absolute;
             left: 0;
-            top: 15px;
-            color: var(--accent);
-            font-size: .8rem;
+            color: #c97a7a;
+            font-size: 0.8rem;
             font-weight: 600;
         }
-        .antipattern-list li strong { font-weight: 600; }
 
-        /* ── CTA block ───────────────────────────────────────── */
+        /* CTA block */
         .cta-block {
-            margin: 2.5rem 0;
-            padding: 28px 32px;
-            background: var(--soft);
-            border-left: 3px solid var(--ink);
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
         }
         .cta-block h3 {
             font-size: 1rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin: 0 0 10px 0;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
         }
         .cta-block p {
-            font-size: .9rem;
-            color: var(--ink);
-            line-height: 1.55;
-            margin: 0 0 16px 0;
+            font-size: 0.88rem;
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
         }
         .cta-button {
             display: inline-block;
-            font-family: var(--mono);
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            color: var(--ink);
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            text-decoration-color: var(--line);
-            border: none;
-            background: none;
-            padding: 0;
+            padding: 0.6rem 1.25rem;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.88rem;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
         }
-        .cta-button:hover { text-decoration-color: var(--ink); }
+        .cta-button:hover { background-color: #f0f0f0; border-color: #666; }
 
-        /* ── Sources ─────────────────────────────────────────── */
+        /* Sources */
         .sources {
             margin-bottom: 3rem;
-            padding: 20px;
-            border: 1px solid var(--line);
+            padding: 1.25rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
         }
         .sources h2 {
-            font-family: var(--mono);
-            font-size: 11px;
+            font-size: 1rem;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            margin: 0 0 12px 0;
+            margin-bottom: 0.75rem;
+            margin-top: 0;
         }
         .sources ul {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding-left: 0;
         }
         .sources li {
-            font-size: .875rem;
-            color: var(--ink);
-            margin-bottom: 6px;
-            padding-left: 14px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+            padding-left: 0.9rem;
             position: relative;
         }
-        .sources li::before {
-            content: '·';
+        .sources li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            color: var(--muted);
+            color: #bbb;
         }
         .sources a {
-            color: var(--ink);
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            text-decoration-color: var(--line);
+            color: #2563eb;
+            text-decoration: none;
         }
-        .sources a:hover { text-decoration-color: var(--ink); }
+        .sources a:hover { text-decoration: underline; }
 
-        /* ── Mobile ──────────────────────────────────────────── */
-        @media (max-width: 639px) {
-            .responsibility-table th,
-            .responsibility-table td { padding: 10px 8px; }
-            .cta-block { padding: 20px 24px; }
+        /* Footer */
+        .footer-link {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 0.9rem;
         }
+        .footer-link a {
+            color: #666;
+            text-decoration: none;
+        }
+        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
     </style>
 </head>
 <body>
