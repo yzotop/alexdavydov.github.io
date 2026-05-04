@@ -20,26 +20,41 @@
 <link rel="stylesheet" href="/style.css"/>
 <link rel="stylesheet" href="../assets/diagnostic.css"/>
     <style>
-        /* ── Page typography (JS renders h1 + .subtitle inside #app) ── */
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin: 0 0 .5rem 0;
-            line-height: 1.2;
-        }
-        .subtitle {
-            color: var(--muted);
-            font-size: .95rem;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            margin-bottom: 2.5rem;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 3rem 1rem;
         }
+        .container { max-width: 900px; margin: 0 auto; }
 
-        /* ── Level cards grid ────────────────────────────────── */
+        /* Breadcrumb */
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: #1a1a1a; }
+
+        /* Header */
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.6; }
+
+        /* Level cards grid */
         .levels-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 1.5rem;
             margin-bottom: 3rem;
         }
         @media (min-width: 640px) {
@@ -47,176 +62,188 @@
         }
 
         .level-card {
-            border: 1px solid var(--line);
-            padding: 28px;
-            background: transparent;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+            background: #fafafa;
+            position: relative;
             display: flex;
             flex-direction: column;
         }
+        .level-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 8px 0 0 8px;
+        }
+        .level-card.level-junior::before { background: #d8e0d8; }
+        .level-card.level-middle::before { background: #d0d8e8; }
+        .level-card.level-senior::before { background: #e8d8c8; }
+        .level-card.level-lead::before { background: #d8d0e8; }
 
-        /* ── Badge (JUNIOR / MIDDLE / …) ─────────────────────── */
         .level-badge {
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            border: 1px solid var(--line);
-            padding: 3px 8px;
             display: inline-block;
-            align-self: flex-start;
-            margin-bottom: 14px;
-        }
-
-        /* ── Card title ──────────────────────────────────────── */
-        .level-title {
-            font-size: 1.05rem;
+            padding: 0.15rem 0.5rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.68rem;
             font-weight: 600;
-            color: var(--ink);
-            margin: 0 0 20px 0;
-            line-height: 1.3;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
         }
 
-        /* ── Section labels ──────────────────────────────────── */
-        .level-section-label {
-            font-family: var(--mono);
-            font-size: 10px;
+        .level-title {
+            font-size: 1.15rem;
             font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .level-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #999;
             text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            margin-top: 18px;
-            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+            margin-top: 0.9rem;
         }
         .level-section-label:first-of-type { margin-top: 0; }
 
-        /* "Что НЕ ожидается" — единственный красный акцент */
-        .level-section-label.label-error   { color: var(--accent); }
-        /* warning, growth → просто muted (без orange/green) */
-        .level-section-label.label-warning { color: var(--muted); }
-        .level-section-label.label-growth  { color: var(--muted); }
-
-        /* ── Bullet lists ────────────────────────────────────── */
         .level-bullets {
             list-style: none;
-            padding: 0;
+            padding-left: 0;
             margin: 0;
         }
         .level-bullets li {
-            font-size: .875rem;
+            font-size: 0.85rem;
             line-height: 1.55;
-            color: var(--ink);
-            padding-left: 14px;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+            padding-left: 0.9rem;
             position: relative;
-            margin-bottom: 4px;
         }
-        .level-bullets li::before {
-            content: '·';
+        .level-bullets li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            color: var(--muted);
+            color: #bbb;
         }
 
-        /* ── Quick-check ─────────────────────────────────────── */
-        .quick-check {
-            margin-top: 20px;
-            padding: 16px 20px;
-            background: var(--soft);
-            border-left: 2px solid var(--line);
-        }
-        .quick-check-label {
-            font-family: var(--mono);
-            font-size: 10px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-        .quick-check-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .quick-check-list li {
-            font-size: .85rem;
-            line-height: 1.5;
-            color: var(--ink);
-            padding-left: 16px;
-            position: relative;
-            margin-bottom: 3px;
-        }
-        .quick-check-list li::before {
-            content: '☐';
-            position: absolute;
-            left: 0;
-            color: var(--muted);
-            font-size: .75rem;
-        }
+        .level-section-label.label-warning { color: #c9872a; }
+        .level-section-label.label-growth { color: #5a8a5a; }
+        .level-section-label.label-error { color: #b85c5c; }
 
-        /* ── Transition note (Lead card) ─────────────────────── */
+        /* Transition card */
         .transition-note {
-            font-size: .85rem;
-            color: var(--muted);
+            font-size: 0.85rem;
+            color: #666;
             line-height: 1.55;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #eee;
         }
-        .transition-note a {
-            color: var(--ink);
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            text-decoration-color: var(--line);
-        }
-        .transition-note a:hover { text-decoration-color: var(--ink); }
+        .transition-note a { color: #2563eb; text-decoration: none; }
+        .transition-note a:hover { text-decoration: underline; }
 
-        /* ── Sources ─────────────────────────────────────────── */
+        /* Sources */
         .sources {
             margin-bottom: 3rem;
-            padding: 20px;
-            border: 1px solid var(--line);
+            padding: 1.25rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
         }
         .sources h2 {
-            font-family: var(--mono);
-            font-size: 11px;
+            font-size: 1rem;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--muted);
-            margin-bottom: 12px;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
         }
         .sources ul {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding-left: 0;
         }
         .sources li {
-            font-size: .875rem;
-            color: var(--ink);
-            margin-bottom: 6px;
-            padding-left: 14px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+            padding-left: 0.9rem;
             position: relative;
         }
-        .sources li::before {
-            content: '·';
+        .sources li:before {
+            content: "•";
             position: absolute;
             left: 0;
-            color: var(--muted);
+            color: #bbb;
         }
         .sources a {
-            color: var(--ink);
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            text-decoration-color: var(--line);
+            color: #2563eb;
+            text-decoration: none;
         }
-        .sources a:hover { text-decoration-color: var(--ink); }
+        .sources a:hover { text-decoration: underline; }
 
-        /* ── Mobile ──────────────────────────────────────────── */
+        /* Footer */
+        .footer-link {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .footer-link a {
+            color: #666;
+            text-decoration: none;
+        }
+        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
+
+        /* Quick-check box */
+        .quick-check {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        .quick-check-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+        .quick-check-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .quick-check-list li {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 0.2rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .quick-check-list li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #ccc;
+            font-size: 0.75rem;
+        }
+
         @media (max-width: 639px) {
-            .level-card  { padding: 20px; }
-            .quick-check { padding: 14px 16px; }
+            .level-card { padding: 1.25rem 1.25rem 1.25rem 1.5rem; }
+            .quick-check { padding: 0.75rem; }
         }
     </style>
 </head>
