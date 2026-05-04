@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Уровни аналитика — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/competencies/levels/"/>
+<meta name="description" content="Уровни аналитика IC: Junior, Middle, Senior, Lead. Тип задач, тип решений, зона ответственности — davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Уровни аналитика — davydov.my"/>
+<meta property="og:description" content="Уровни аналитика IC: Junior, Middle, Senior, Lead. Тип задач, тип решений, зона ответственности."/>
+<meta property="og:url" content="https://davydov.my/workspace/competencies/levels/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/style.css"/>
+<link rel="stylesheet" href="../assets/diagnostic.css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 3rem 1rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* Breadcrumb */
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.9rem; color: #666; }
+        .breadcrumb a { color: #2563eb; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: #1a1a1a; }
+
+        /* Header */
+        h1 { font-size: 2rem; font-weight: 400; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.6; }
+
+        /* Level cards grid */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        @media (min-width: 640px) {
+            .levels-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .level-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+            background: #fafafa;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .level-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 8px 0 0 8px;
+        }
+        .level-card.level-junior::before { background: #d8e0d8; }
+        .level-card.level-middle::before { background: #d0d8e8; }
+        .level-card.level-senior::before { background: #e8d8c8; }
+        .level-card.level-lead::before { background: #d8d0e8; }
+
+        .level-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
+
+        .level-title {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .level-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+            margin-top: 0.9rem;
+        }
+        .level-section-label:first-of-type { margin-top: 0; }
+
+        .level-bullets {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .level-bullets li {
+            font-size: 0.85rem;
+            line-height: 1.55;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+            padding-left: 0.9rem;
+            position: relative;
+        }
+        .level-bullets li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #bbb;
+        }
+
+        .level-section-label.label-warning { color: #c9872a; }
+        .level-section-label.label-growth { color: #5a8a5a; }
+        .level-section-label.label-error { color: #b85c5c; }
+
+        /* Transition card */
+        .transition-note {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.55;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #eee;
+        }
+        .transition-note a { color: #2563eb; text-decoration: none; }
+        .transition-note a:hover { text-decoration: underline; }
+
+        /* Sources */
+        .sources {
+            margin-bottom: 3rem;
+            padding: 1.25rem;
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+        }
+        .sources h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #1a1a1a;
+        }
+        .sources ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .sources li {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+            padding-left: 0.9rem;
+            position: relative;
+        }
+        .sources li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #bbb;
+        }
+        .sources a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .sources a:hover { text-decoration: underline; }
+
+        /* Footer */
+        .footer-link {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .footer-link a {
+            color: #666;
+            text-decoration: none;
+        }
+        .footer-link a:hover { color: #2563eb; text-decoration: underline; }
+
+        /* Quick-check box */
+        .quick-check {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        .quick-check-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.4rem;
+        }
+        .quick-check-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .quick-check-list li {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 0.2rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .quick-check-list li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #ccc;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 639px) {
+            .level-card { padding: 1.25rem 1.25rem 1.25rem 1.5rem; }
+            .quick-check { padding: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" style="color:var(--ink)">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/competencies/">Карта компетенций</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Уровни</span>
+  </nav>
+
+  <main id="app"></main>
+
+  <p style="margin-top:2rem;font-size:.88rem;color:var(--muted)">
+    <a href="/workspace/competencies/" style="color:var(--accent)">← Карта компетенций</a>
+  </p>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="../assets/competencies.js"></script>
+<script src="/main.js" defer></script>
+</body>
+</html>
