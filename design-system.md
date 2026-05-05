@@ -32,6 +32,7 @@
 | `simulators/index.html` | ⚠️ Аналогично lab + своя цветовая схема (`#2563eb`) |
 | `calculators/index.html` | ⚠️ Аналогично simulators |
 | `search/index.html` | ⚠️ Nav/footer swiss; тело — custom styles, inline JS-стили |
+| `cases/industriya/index.html` | ⚠️ Nav/footer swiss; тело — editorial тёплая палитра (`#444441`, `#2C2C2A`) + Chart.js 4.4.1 (CDN); намеренное исключение → см. раздел 8 |
 
 ### Не переехавшие
 
@@ -1187,6 +1188,36 @@ Hub-страницы добавляют свой breakpoint:
 
 **7.11 Ссылки внутри `.takeaway`** ✅ Решено  
 Принято правило: ссылки в `.takeaway a` — `color: var(--accent)` (красный виден на тёмном `var(--ink)` фоне и соответствует акцентной системе). Hover: `color: #fff; text-decoration: underline` — белый с подчёркиванием, без неожиданных цветовых переходов. Логика инвертирована по сравнению со светлым фоном (там acc → hover ink), на тёмном — acc → hover white.
+
+---
+
+---
+
+## 8. Намеренные исключения из swiss-системы
+
+### /cases/industriya/ — editorial серый
+
+Кейс намеренно использует тёплую серую палитру (`#444441`, `#2C2C2A`, `#888780`, `#B4B2A9`) и editorial-типографику вместо стандартной swiss (`var(--ink)`, `var(--muted)`, `var(--line)`). Это сознательное стилистическое решение: математический разбор настольной игры читается естественнее в редакционном тоне, чем в технологичной чёрно-белой swiss-палитре.
+
+**Что в кейсе уже swiss:**
+- nav и footer (стандартные `.nav`, `.nav-drawer`, `.footer`)
+- `/style.css` подключён
+- breadcrumb работает (`.crumbs`)
+- акцент-красный совпадает (`#e63946`)
+
+**Что НЕ swiss — не трогать:**
+- `inline <style>` (228 строк) с тёплой палитрой и `border-radius`
+- 3 интерактивных компонента на Chart.js 4.4.1 (CDN) с hardcoded цветами в JS
+- SVG-схема L→R (68 строк) с hardcoded `fill=` в attributes
+- range-slider калькулятор раундов
+- `.container` max-width 900px (vs `.article` 880px)
+- back-link в legacy-стиле (`.back-link` класс)
+
+Глубокая переверстка под swiss требует синхронных правок в 4 местах (CSS + 3 JS-блока + SVG attributes) и угрожает интерактиву. Соотношение риск/выигрыш — отрицательное.
+
+**Решение:** оставить как есть. Каталог `/cases/` становится богаче, имея два жанра: классические продуктовые разборы (nloto, nikifilini, solvery, macbook — все в swiss) и математический editorial (industriya — в своём тоне).
+
+Зафиксировано: 2026-05-05.
 
 ---
 
