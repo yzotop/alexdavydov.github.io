@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Квазиэксперименты и причинная идентификация</title>
+    <title>Квазиэксперименты и причинная идентификация — davydov.my</title>
     <link rel="canonical" href="https://davydov.my/lab/quasi-experiments/"/>
-    <meta name="description" content="Квазиэксперименты: DiD, RDD, IV — когда A/B невозможен. Курс уровня Senior — davydov.my."/>
+    <meta name="description" content="Каузальный анализ для платформ и двусторонних рынков. DiD, RDD, SCM, Matching, IV — когда A/B невозможен. Курс уровня Senior — davydov.my."/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="Квазиэксперименты — davydov.my"/>
-    <meta property="og:description" content="Квазиэксперименты: DiD, RDD, IV — когда A/B невозможен. Курс уровня Senior."/>
+    <meta property="og:description" content="Каузальный анализ для платформ и двусторонних рынков. DiD, RDD, SCM, Matching, IV — когда A/B невозможен."/>
     <meta property="og:url" content="https://davydov.my/lab/quasi-experiments/"/>
     <meta property="og:image" content="https://davydov.my/assets/og/courses-quasi-experiments.png"/>
     <meta name="twitter:card" content="summary_large_image"/>
@@ -17,192 +17,147 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="/assets/base.css">
-    <link rel="stylesheet" href="./assets/style.css">
     <link rel="stylesheet" href="/style.css"/>
 </head>
 <body>
-    <div class="container">
-        <a href="/courses/" class="back-to-home">← Все курсы</a>
 
-        <header>
-            <div class="kicker">Курс №6</div>
-            <h1>Квазиэксперименты и причинная идентификация</h1>
-            <p class="subtitle">Когда A/B невозможен: как доказать эффект без рандомизации</p>
-        </header>
+<!-- ═══ NAV ═══════════════════════════════════════════════════════════ -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>АД</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/" style="color:var(--ink)">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+  </div>
+  <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/lab/">Инструменты</a>
+    <a href="/knowledge/">База знаний</a>
+    <a href="/simulators/">Симуляторы</a>
+    <a href="/calculators/">Калькуляторы</a>
+    <a href="/about/">Обо мне</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
 
-        <section class="course-hero-meta">
-            <div class="course-jtbd">
-                <strong>📌 Когда это нужно:</strong>
-                <ul>
-                    <li>A/B провести нельзя, но нужен обоснованный вывод.</li>
-                    <li>Есть только наблюдательные данные.</li>
-                    <li>Нужно доказать causal-эффект для решения.</li>
-                    <li>Нужно выбрать метод идентификации под ограничения данных.</li>
-                </ul>
-            </div>
-        </section>
+<!-- ═══ ARTICLE ════════════════════════════════════════════════════════ -->
+<article class="lesson">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/courses/">Курсы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Квазиэксперименты</span>
+  </nav>
 
-        <div class="key-terms">
-            <span class="key-terms-label">Глоссарий:</span>
-            <a href="../glossary/#causal-inference" class="glossary-link">Causal Inference</a>
-            <a href="../glossary/#did" class="glossary-link">DiD</a>
-            <a href="../glossary/#matching" class="glossary-link">Matching</a>
-            <a href="../glossary/#synthetic-control" class="glossary-link">Synthetic Control</a>
-            <a href="../glossary/#confidence-interval" class="glossary-link">CI</a>
-            <a href="../glossary/#p-value" class="glossary-link">p-value</a>
-            <a href="../glossary/#effect-size" class="glossary-link">Effect Size</a>
-        </div>
-
-                <section class="course-about">
-            <h2>О чем курс</h2>
-            <ul>
-                <li>Как оценивать причинные эффекты без рандомизации.</li>
-                <li>Как выбирать между DiD, RDD, SCM, Matching и IV.</li>
-                <li>Как проверять допущения и защищать результат перед бизнесом.</li>
-            </ul>
-        </section>
-
-                <section class="course-audience">
-            <h2>Для кого курс</h2>
-            <ul>
-                <li>Продуктовые аналитики (junior/middle).</li>
-                <li>Продукт-менеджеры.</li>
-                <li>Маркетинг / growth.</li>
-            </ul>
-        </section>
-
-        <section class="course-flow">
-            <h2>Как проходит курс</h2>
-            <ul>
-                <li>Теория → кейс → практика.</li>
-                <li>Каждый модуль = решение рабочей задачи.</li>
-                <li>Фокус на интерпретации, а не на формулах.</li>
-            </ul>
-        </section>
-
-        <section class="course-structure">
-            <h2>Структура курса</h2>
-            <p class="course-structure-note">Курс состоит из 8 модулей и блока кейсов:</p>
-        </section>
-
-        <h2>Модули курса</h2>
-
-        <div class="modules-grid">
-            <div class="module-card">
-                <div class="module-title">Cheat Sheet</div>
-                <div class="module-key-idea">Decision tree выбора метода, 10 вопросов интервьюера, красные флаги</div>
-                <div class="module-card-links">
-                    <a href="./cheat-sheet.html" class="module-card-link module-card-link-primary">Открыть →</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 1. Почему causal сложно</div>
-                <div class="module-key-idea">Confounders, selection bias, SUTVA, interference — почему корреляция ≠ причинность</div>
-                <div class="module-card-links">
-                    <a href="./module-1-causal.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 2. Difference-in-Differences (DiD)</div>
-                <div class="module-key-idea">Parallel trends, event study, staggered adoption, кластеризация SE</div>
-                <div class="module-card-meta">3 упражнения · toy example</div>
-                <div class="module-card-links">
-                    <a href="./module-2-did.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 3. Regression Discontinuity (RDD)</div>
-                <div class="module-key-idea">Sharp/fuzzy RDD, manipulation test, bandwidth robustness, локальный эффект</div>
-                <div class="module-card-meta">3 упражнения · toy example</div>
-                <div class="module-card-links">
-                    <a href="./module-3-rdd.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 4. Synthetic Control</div>
-                <div class="module-key-idea">Синтетический контрфактуал, placebo tests, donor pool, permutation inference</div>
-                <div class="module-card-meta">2 упражнения · toy example</div>
-                <div class="module-card-links">
-                    <a href="./module-4-scm.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 5. Matching и PSM</div>
-                <div class="module-key-idea">CIA, balance diagnostics, sensitivity analysis, что matching НЕ решает</div>
-                <div class="module-card-meta">3 упражнения · toy example</div>
-                <div class="module-card-links">
-                    <a href="./module-5-matching.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 6. Instrumental Variables (IV)</div>
-                <div class="module-key-idea">3 условия валидности, LATE, слабые инструменты, 2SLS</div>
-                <div class="module-card-meta">2 упражнения · toy example</div>
-                <div class="module-card-links">
-                    <a href="./module-6-iv.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 7. Практика валидности</div>
-                <div class="module-key-idea">Placebo, falsification, sensitivity — арсенал проверок для любого метода</div>
-                <div class="module-card-links">
-                    <a href="./module-7-validity.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Модуль 8. Как «продавать» результат</div>
-                <div class="module-key-idea">Narrative, допущения, ограничения — структура защиты квазиэксперимента</div>
-                <div class="module-card-links">
-                    <a href="./module-8-narrative.html" class="module-card-link module-card-link-primary">Открыть модуль</a>
-                </div>
-            </div>
-
-            <div class="module-card">
-                <div class="module-title">Мини-кейсы</div>
-                <div class="module-key-idea">6 практических кейсов: маркетинг, маркетплейс, geo, финтех, ритейл, рекомендации</div>
-                <div class="module-card-links">
-                    <a href="./cases.html" class="module-card-link module-card-link-primary">Открыть кейсы</a>
-                </div>
-            </div>
-        </div>
-
-        <section class="related-section course-links">
-            <h2>Связанные курсы</h2>
-            <ul class="related-links">
-                <li><a href="../ab-stat-os/index.html">Статистика A/B-тестирования: операционная система аналитика</a></li>
-                <li><a href="../product-analytics/index.html">Аналитика продукта: как читать систему, а не цифры</a></li>
-            </ul>
-        </section>
-
-        <div class="footer-note">
-            8 модулей · 6 кейсов · 4 toy examples · 13 упражнений · 10 вопросов интервьюера
-        </div>
+  <header class="lesson-header">
+    <div class="lesson-meta">
+      <span class="lesson-module">Causal · Senior</span>
     </div>
-<script>
-(function(){
-  var cards=document.querySelectorAll('.module-card');
-  cards.forEach(function(card){
-    if(card.querySelector('.module-question')) return;
-    var key=card.querySelector('.module-key-idea');
-    var q=document.createElement('p');
-    q.className='module-question';
-    q.textContent='Вопрос: ' + (key ? key.textContent.trim() : 'Какую causal-задачу решает модуль?');
-    if(key){ key.insertAdjacentElement('afterend', q); }
-    var ul=document.createElement('ul');
-    ul.className='module-outcomes';
-    ul.innerHTML='<li>Поймешь, какой метод применим, какие допущения критичны и как интерпретировать эффект.</li>';
-    card.appendChild(ul);
-  });
-})();
-</script>
+    <h1 class="lesson-title">Квазиэксперименты и причинная идентификация</h1>
+    <p class="lesson-lede">Каузальный анализ для платформ и двусторонних рынков. Как доказать эффект, когда классический A/B невозможен или искажён network effects.</p>
+  </header>
+
+  <div class="prose">
+    <p>На платформах с двумя сторонами рынка классический A/B часто ломается. Тест в одной группе влияет на другую через цены, аукционы, рекомендации, ранжирование — и контрольная группа перестаёт быть «как было бы без теста». В таких ситуациях нужны другие методы: квазиэксперименты, использующие естественную вариацию данных, чтобы оценить эффект без чистой рандомизации. Курс — про то, как эти методы выбирать, проверять и защищать результат перед бизнесом.</p>
+
+    <h2>Где это работает</h2>
+    <p>Платформенные задачи, для которых квазиэксперименты — основной инструмент:</p>
+    <ul>
+      <li><strong>Двусторонние рынки.</strong> Тест в группе водителей меняет поведение пассажиров (и наоборот) — контрольная группа перестаёт быть валидной. Нужен switchback или geo-experiment.</li>
+      <li><strong>Аукционы и ранжирование.</strong> Изменение в одном объявлении влияет на конкурентов в том же аукционе — рандомизация на уровне пользователя смешивает группы. Нужен подход на уровне аукциона или временного слота.</li>
+      <li><strong>Рекомендательные системы.</strong> Контент, показанный одному пользователю, попадает в обучение модели для всех — SUTVA нарушается. Нужен holdout-кластер или временное переключение.</li>
+      <li><strong>Запуск фичи без A/B</strong> (по регуляторике, бизнесу или техническому долгу). Когда деления на группы нет — synthetic control или DiD по регионам.</li>
+      <li><strong>Оценка завершившегося эффекта.</strong> Когда тест уже отгремел и нужно оценить долгосрочное влияние без возможности повторить — natural experiment + matching.</li>
+    </ul>
+
+    <h2>Программа курса</h2>
+    <ul>
+      <li>
+        <a href="./cheat-sheet.html"><strong>Cheat Sheet</strong></a><br>
+        Decision tree выбора метода, 10 вопросов интервьюера, красные флаги
+      </li>
+      <li>
+        <a href="./module-1-causal.html"><strong>Модуль 1. Почему causal сложно</strong></a><br>
+        Confounders, selection bias, SUTVA, interference — почему корреляция ≠ причинность
+      </li>
+      <li>
+        <a href="./module-2-did.html"><strong>Модуль 2. Difference-in-Differences (DiD)</strong></a><br>
+        Parallel trends, event study, staggered adoption, кластеризация SE · 3 упражнения · toy example
+      </li>
+      <li>
+        <a href="./module-3-rdd.html"><strong>Модуль 3. Regression Discontinuity Design (RDD)</strong></a><br>
+        Sharp/fuzzy RDD, manipulation test, bandwidth robustness, локальный эффект · 3 упражнения · toy example
+      </li>
+      <li>
+        <a href="./module-4-scm.html"><strong>Модуль 4. Synthetic Control</strong></a><br>
+        Синтетический контрфактуал, placebo tests, donor pool, permutation inference · 2 упражнения · toy example
+      </li>
+      <li>
+        <a href="./module-5-matching.html"><strong>Модуль 5. Matching и PSM</strong></a><br>
+        CIA, balance diagnostics, sensitivity analysis, что matching НЕ решает · 3 упражнения · toy example
+      </li>
+      <li>
+        <a href="./module-6-iv.html"><strong>Модуль 6. Instrumental Variables (IV)</strong></a><br>
+        3 условия валидности, LATE, слабые инструменты, 2SLS · 2 упражнения · toy example
+      </li>
+      <li>
+        <a href="./module-7-validity.html"><strong>Модуль 7. Практика валидности</strong></a><br>
+        Placebo, falsification, sensitivity — арсенал проверок для любого метода
+      </li>
+      <li>
+        <a href="./module-8-narrative.html"><strong>Модуль 8. Как «продавать» результат</strong></a><br>
+        Narrative, допущения, ограничения — структура защиты квазиэксперимента
+      </li>
+      <li>
+        <a href="./cases.html"><strong>Мини-кейсы</strong></a><br>
+        6 практических кейсов из платформенной экономики: маркетинг, маркетплейс с anticipation effect, geo-выкатка, скоринг финтеха, уход конкурента, рекомендательная система с network effects
+      </li>
+    </ul>
+
+    <h2>Связанные курсы</h2>
+    <p>Квазиэксперименты — это инструменты для ситуаций, которые в обычных курсах по A/B не разбираются.</p>
+    <ul>
+      <li><a href="/lab/ab-stat-os/">Статистика A/B-тестирования</a> — фундамент: метрики, дисперсия, мощность теста, типичные ошибки. Если квазиэксперимент использует доверительные интервалы и тесты на средние — это всё оттуда.</li>
+      <li><a href="/lab/ab-decisions/">A/B-решения</a> — что делать с результатом теста. Шестой шаг протокола («когда механизм требует каузального вывода») — прямой выход на этот курс.</li>
+      <li><a href="/lab/monetization/">Математика монетизации</a> — где geo-эксперименты и synthetic control применяются в реальной задаче (запуск pricing-фичи, оценка ad-load изменения).</li>
+      <li><a href="/lab/product-analytics/">Аналитика продукта</a> — оптика «читать систему», без которой выбрать правильный метод не получится.</li>
+    </ul>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
 </body>
 </html>
