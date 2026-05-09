@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рынок б/у MacBook в России (Avito) — цены, сегменты, ликвидность — Alex Davydov</title>
+    <link rel="stylesheet" href="/assets/base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/style.css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.65;
+            color: #111;
+            background: #fff;
+            padding: 0;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        .page-header { margin-bottom: 2.5rem; max-width: 740px; }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+        }
+        .page-header .subtitle {
+            font-size: 1.05rem;
+            color: rgba(17,17,17,.68);
+            line-height: 1.65;
+        }
+        .page-header .meta-line {
+            font-size: 0.82rem;
+            color: rgba(17,17,17,.38);
+            margin-top: 0.6rem;
+            font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+            letter-spacing: 0.01em;
+        }
+
+        .content { max-width: 740px; }
+        .content p {
+            font-size: 0.95rem;
+            line-height: 1.72;
+            color: rgba(17,17,17,.78);
+            margin-bottom: 1.25rem;
+        }
+        .content strong { color: #111; }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            color: #111;
+        }
+
+        .section-num {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(17,17,17,.28);
+            font-family: ui-monospace, 'SF Mono', monospace;
+            margin-right: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(17,17,17,.08);
+            margin: 3rem 0;
+        }
+
+        .table-wrap {
+            margin: 1.25rem 0 1.5rem;
+            overflow-x: auto;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table-wrap th {
+            text-align: left;
+            font-weight: 600;
+            color: rgba(17,17,17,.48);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.5rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.12);
+        }
+        .table-wrap td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            color: rgba(17,17,17,.78);
+        }
+        .table-wrap tr:hover td {
+            background: rgba(17,17,17,.02);
+        }
+        .table-wrap .mono {
+            font-family: ui-monospace, 'SF Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        .insight-block {
+            border-left: 3px solid rgba(17,17,17,.08);
+            padding: 0.8rem 1.25rem;
+            margin: 1.25rem 0;
+            border-radius: 0 8px 8px 0;
+            background: rgba(17,17,17,.015);
+        }
+        .insight-block p {
+            font-size: 0.9rem;
+            color: rgba(17,17,17,.68);
+            margin-bottom: 0;
+        }
+
+        .hypothesis-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem;
+        }
+        .hypothesis-list li {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: rgba(17,17,17,.72);
+            padding: 0.55rem 0 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(17,17,17,.05);
+            position: relative;
+        }
+        .hypothesis-list li::before {
+            content: "\2192";
+            position: absolute;
+            left: 0;
+            color: rgba(17,17,17,.24);
+            font-weight: 600;
+        }
+        .hypothesis-list li:last-child { border-bottom: none; }
+
+        .back-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(17,17,17,.38);
+            text-decoration: none;
+            transition: color 180ms ease;
+        }
+        .back-link:hover { color: #111; }
+    </style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/" style="color:var(--ink)">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="container">
+
+        <header class="page-header">
+            <p class="meta-line">case study &middot; feb 2026</p>
+            <h1>Рынок б/у MacBook в России: цены, сегменты, ликвидность</h1>
+            <p class="subtitle" id="hero-subtitle">Данные Avito &middot; парсинг конфигураций &middot; сравнение сегментов &middot; проверка цены M4 за 77k</p>
+        </header>
+
+        <div class="content">
+
+
+            <!-- ═══ 01. ФИНАЛЬНЫЙ СРЕЗ ═══ -->
+            <h2 id="snapshot"><span class="section-num">01</span> Финальный срез рынка</h2>
+
+            <p style="font-size:.82rem;color:rgba(17,17,17,.42);margin-bottom:1.25rem;">
+                <a href="#deep" style="color:rgba(17,17,17,.42);text-decoration:none;margin-right:12px;">Глубокий анализ &darr;</a>
+                <a href="#check" style="color:rgba(17,17,17,.42);text-decoration:none;margin-right:12px;">Проверить цену &darr;</a>
+                <a href="#method" style="color:rgba(17,17,17,.42);text-decoration:none;">Методология &darr;</a>
+            </p>
+
+            <div id="onepager-root" style="display:none;">
+                <p id="op-hero" style="font-size:.95rem;color:rgba(17,17,17,.68);margin-bottom:1.25rem;"></p>
+
+                <div id="op-numbers" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.5rem;"></div>
+
+                <div id="op-insights" style="margin-bottom:1.5rem;"></div>
+
+                <div id="op-coverage" style="display:none;margin-bottom:1.5rem;">
+                    <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.48);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;">Coverage</p>
+                    <p id="op-cov-line" style="font-size:.88rem;color:rgba(17,17,17,.58);margin-bottom:.5rem;"></p>
+                </div>
+
+                <div id="op-m4" style="display:none;margin-bottom:1rem;"></div>
+            </div>
+            <noscript><p style="color:rgba(17,17,17,.48);font-size:.85rem;">Для отображения нужен JavaScript.</p></noscript>
+
+            <script>
+            (function(){
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
+                function $(id){return document.getElementById(id)}
+
+                function numBlock(value,label){
+                    return '<div style="text-align:center;padding:0.75rem 0.5rem;border-radius:10px;background:rgba(17,17,17,.02);">'+
+                        '<div style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">'+value+'</div>'+
+                        '<div style="font-size:.72rem;color:rgba(17,17,17,.42);margin-top:2px;">'+label+'</div></div>';
+                }
+
+                fetch('assets/market_summary.json?v='+Date.now())
+                    .then(function(r){return r.json()})
+                    .then(function(d){
+                        var root=$('onepager-root');
+                        root.style.display='block';
+
+                        var nc=d.n_clean||d.n_total;
+                        var heroSub=$('hero-subtitle');
+                        if(heroSub){
+                            var cq=d.coverage&&d.coverage.total_queries?d.coverage.total_queries+' запросов':'\u2026';
+                            heroSub.innerHTML=fmt(nc)+' clean объявлений Avito &middot; '+cq+' &times; 30 городов &middot; парсинг конфигураций &middot; проверка цены M4 за 77k';
+                        }
+                        var methN=$('method-n');if(methN)methN.textContent=fmt(d.n_total);
+
+                        $('op-hero').innerHTML=fmt(nc)+' clean объявлений <span style="font-size:.82rem;color:rgba(17,17,17,.38);">(raw: '+fmt(d.n_total)+')</span> \u00B7 snapshot '+d.snapshot_date+' \u00B7 Avito';
+
+                        var nums=$('op-numbers');
+                        nums.innerHTML=
+                            numBlock(fmt(nc),'clean объявлений <span style="font-size:.65rem;opacity:.5">5k\u2013500k \u20BD</span>')+
+                            numBlock(fmt(d.price.median)+' \u20BD','медиана цены (clean)')+
+                            numBlock(fmt(d.price.p25)+'\u2013'+fmt(d.price.p75)+' \u20BD','середина рынка (P25\u2013P75)')+
+                            numBlock(fmt(d.price.p90)+' \u20BD','верх рынка (P90)');
+
+                        var ins=[];
+                        if(d.top_segments&&d.top_segments.length){
+                            var top=d.top_segments[0];
+                            ins.push('Самый массовый сегмент: <strong>'+top.chip+' '+top.size+'&Prime;</strong> ('+top.count+' объявлений, медиана '+fmt(top.median)+' \u20BD).');
+                        }
+                        if(d.median_by_chip&&d.median_by_chip.length>=2){
+                            var chips=d.median_by_chip;
+                            var intelAll=0,intelSum=0,mChip=null;
+                            for(var i=0;i<chips.length;i++){
+                                var cn=chips[i].chip;
+                                if(cn==='Intel'||cn==='Intel i5'||cn==='Intel i7'||cn==='Intel i9'){
+                                    intelAll+=chips[i].count;
+                                    intelSum+=chips[i].median*chips[i].count;
+                                }
+                                if(cn==='M4')mChip=chips[i];
+                            }
+                            if(intelAll>0&&mChip){
+                                var intelWm=Math.round(intelSum/intelAll);
+                                var ratio=(mChip.median/intelWm).toFixed(1);
+                                ins.push('Apple Silicon (M4) vs Intel-family: медиана '+fmt(mChip.median)+' vs '+fmt(intelWm)+' \u20BD (\u00D7'+ratio+').');
+                            }
+                        }
+                        if(d.price.p90&&d.price.p25){
+                            var spread=(d.price.p90/d.price.p25).toFixed(1);
+                            ins.push('Price spread P90/P25 = \u00D7'+spread+' \u2014 рынок сильно растянут.');
+                        }
+                        if(d.m4_summary&&d.m4_summary.count){
+                            ins.push('Сегмент M4 (все модели): '+d.m4_summary.count+' объявлений, медиана '+fmt(d.m4_summary.median)+' \u20BD (P25\u2013P75: '+fmt(d.m4_summary.p25)+'\u2013'+fmt(d.m4_summary.p75)+').');
+                        }
+                        if(ins.length){
+                            $('op-insights').innerHTML='<ul style="list-style:none;padding:0;margin:0;">'+ins.map(function(t){
+                                return '<li style="padding:0.4rem 0 0.4rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:0.3rem;font-size:.9rem;color:rgba(17,17,17,.78);">'+t+'</li>';
+                            }).join('')+'</ul>';
+                        }
+
+                        var cov=d.coverage;
+                        $('op-coverage').style.display='block';
+                        if(cov&&cov.total_queries){
+                            var parts=[];
+                            parts.push(cov.total_queries+' запросов');
+                            if(cov.target_reached)parts.push(cov.target_reached+' достигли target');
+                            if(cov.empty_pages)parts.push(cov.empty_pages+' \u2014 empty pages');
+                            if(cov.soft_block)parts.push(cov.soft_block+' soft-block');
+                            if(cov.total_unique)parts.push(fmt(cov.total_unique)+' уникальных listing_id');
+                            $('op-cov-line').textContent=parts.join(' \u00B7 ');
+                        }else{
+                            $('op-cov-line').textContent='Coverage ещё не построен. Данные из последнего снапшота.';
+                        }
+
+                        if(d.m4_summary&&d.m4_summary.count&&d.m4_summary.median){
+                            var m=$('op-m4');
+                            m.style.display='block';
+                            var txt='На выборке '+fmt(nc)+' clean объявлений M4 за 77\u00A0000 \u20BD ';
+                            if(77000<=d.m4_summary.median){
+                                txt+='ниже медианы сегмента ('+fmt(d.m4_summary.median)+' \u20BD). Похоже, ок.';
+                            }else{
+                                txt+='выше медианы сегмента ('+fmt(d.m4_summary.median)+' \u20BD). Рынок видел и дешевле.';
+                            }
+                            m.innerHTML='<div style="padding:1rem 1.25rem;border-radius:10px;border-left:3px solid rgba(17,17,17,.15);background:rgba(17,17,17,.015);">'+
+                                '<p style="margin:0;font-size:.92rem;color:rgba(17,17,17,.72);">'+txt+'</p></div>';
+                        }
+                    })
+                    .catch(function(){});
+            })();
+            </script>
+
+
+            <div id="seg-tables" style="display:none;">
+                <h3 style="margin-top:2.5rem;">Цены по линейке</h3>
+                <div id="seg-family"></div>
+
+                <h3>Цены по чипу</h3>
+                <div id="seg-chip"></div>
+
+                <h3>Цены по диагонали</h3>
+                <div id="seg-size"></div>
+            </div>
+
+            <script>
+            (function(){
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
+
+                function median(arr){
+                    if(!arr.length)return 0;
+                    arr.sort(function(a,b){return a-b});
+                    var m=arr.length>>1;
+                    return arr.length%2?arr[m]:(arr[m-1]+arr[m])/2;
+                }
+
+                function cleanRows(rows){
+                    return rows.filter(function(r){
+                        if(typeof r.is_clean!=='undefined')return r.is_clean;
+                        return r.price>=5000&&r.price<=500000;
+                    });
+                }
+
+                function groupStats(rows,keyFn){
+                    var groups={};
+                    rows.forEach(function(r){
+                        if(r.price==null)return;
+                        var k=keyFn(r);
+                        if(!groups[k])groups[k]=[];
+                        groups[k].push(r.price);
+                    });
+                    var out=[];
+                    for(var k in groups){
+                        var prices=groups[k];
+                        out.push({key:k,n:prices.length,min:Math.min.apply(null,prices),med:Math.round(median(prices)),max:Math.max.apply(null,prices)});
+                    }
+                    return out;
+                }
+
+                function renderTable(el,stats,colLabel,footnote){
+                    var h='<div class="table-wrap"><table><thead><tr>'+
+                        '<th>'+colLabel+'</th><th>мин, \u20BD</th><th>медиана, \u20BD</th><th>макс, \u20BD</th><th>кол-во</th>'+
+                        '</tr></thead><tbody>';
+                    stats.forEach(function(s){
+                        var label=s.key;
+                        if(s.n<30)label+=' <span style="font-size:.72rem;color:rgba(17,17,17,.32);font-weight:400;">(n&lt;30)</span>';
+                        h+='<tr><td><strong>'+label+'</strong></td>'+
+                            '<td class="mono">'+fmt(s.min)+'</td>'+
+                            '<td class="mono"><strong>'+fmt(s.med)+'</strong></td>'+
+                            '<td class="mono">'+fmt(s.max)+'</td>'+
+                            '<td class="mono">'+fmt(s.n)+'</td></tr>';
+                    });
+                    h+='</tbody></table></div>';
+                    h+='<p style="font-size:.72rem;color:rgba(17,17,17,.32);margin:0.2rem 0 0;">'+footnote+'</p>';
+                    el.innerHTML=h;
+                }
+
+                function renderHeatmap(clean){
+                    var el=document.getElementById('chip-size-heatmap');
+                    if(!el)return;
+
+                    var sizes=[13,14,15,16];
+                    var chipCount={};
+                    var cells={};
+                    clean.forEach(function(r){
+                        if(r.price==null)return;
+                        var c=r.chip||'Unknown';
+                        var s=r.size;
+                        if(s!=null&&sizes.indexOf(s)===-1)return;
+                        var sk=s!=null?String(s):'?';
+                        chipCount[c]=(chipCount[c]||0)+1;
+                        var key=c+'|'+sk;
+                        if(!cells[key])cells[key]=[];
+                        cells[key].push(r.price);
+                    });
+
+                    var chipList=Object.keys(chipCount).sort(function(a,b){return chipCount[b]-chipCount[a]});
+                    var topChips=chipList.slice(0,12);
+
+                    var allMedians=[];
+                    var cellStats={};
+                    topChips.forEach(function(c){
+                        sizes.forEach(function(s){
+                            var key=c+'|'+s;
+                            var arr=cells[key];
+                            if(!arr||!arr.length)return;
+                            var med=Math.round(median(arr.slice()));
+                            cellStats[key]={n:arr.length,med:med};
+                            allMedians.push(med);
+                        });
+                    });
+
+                    var gMin=allMedians.length?Math.min.apply(null,allMedians):0;
+                    var gMax=allMedians.length?Math.max.apply(null,allMedians):1;
+                    var gRange=gMax-gMin||1;
+
+                    var h='<table style="width:100%;border-collapse:collapse;font-size:.82rem;"><thead><tr>';
+                    h+='<th style="text-align:left;font-weight:600;color:rgba(17,17,17,.48);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;border-bottom:1px solid rgba(17,17,17,.12);">Чип</th>';
+                    sizes.forEach(function(s){
+                        h+='<th style="text-align:center;font-weight:600;color:rgba(17,17,17,.48);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .4rem;border-bottom:1px solid rgba(17,17,17,.12);">'+s+'\u2033</th>';
+                    });
+                    h+='</tr></thead><tbody>';
+
+                    topChips.forEach(function(c){
+                        h+='<tr>';
+                        h+='<td style="padding:.45rem .5rem;border-bottom:1px solid rgba(17,17,17,.05);font-weight:600;color:rgba(17,17,17,.78);white-space:nowrap;">'+c+'</td>';
+                        sizes.forEach(function(s){
+                            var key=c+'|'+s;
+                            var st=cellStats[key];
+                            if(!st){
+                                h+='<td style="padding:.45rem .4rem;border-bottom:1px solid rgba(17,17,17,.05);text-align:center;color:rgba(17,17,17,.15);">\u2014</td>';
+                                return;
+                            }
+                            var alpha=0.04+((st.med-gMin)/gRange)*0.14;
+                            var op=st.n<30?'opacity:.5;':'';
+                            var medK=st.med>=1000?Math.round(st.med/1000)+'k':fmt(st.med);
+                            h+='<td style="padding:.4rem .4rem;border-bottom:1px solid rgba(17,17,17,.05);text-align:center;background:rgba(17,17,17,'+alpha.toFixed(3)+');border-radius:4px;'+op+'">';
+                            h+='<div style="font-weight:700;font-size:.82rem;font-variant-numeric:tabular-nums;color:rgba(17,17,17,.82);">'+fmt(st.med)+' \u20BD</div>';
+                            h+='<div style="font-size:.68rem;color:rgba(17,17,17,.38);margin-top:1px;">n='+st.n+'</div>';
+                            h+='</td>';
+                        });
+                        h+='</tr>';
+                    });
+
+                    h+='</tbody></table>';
+                    h+='<p style="font-size:.72rem;color:rgba(17,17,17,.32);margin:.3rem 0 0;">clean: 5k\u2013500k \u20BD \u00B7 top-12 chips по объёму \u00B7 median по объявлениям</p>';
+                    el.innerHTML=h;
+                    console.log('[heatmap] chips:',topChips.join(', '));
+                }
+
+                fetch('assets/market_latest.min.json?v='+Date.now())
+                    .then(function(r){return r.json()})
+                    .then(function(payload){
+                        var rows=Array.isArray(payload)?payload:payload.rows;
+                        var clean=cleanRows(rows);
+
+                        var byFamily=groupStats(clean,function(r){return r.family_norm||r.family||'Unknown'});
+                        byFamily.sort(function(a,b){return b.n-a.n});
+                        renderTable(document.getElementById('seg-family'),byFamily,'Модель','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        var byChip=groupStats(clean,function(r){return r.chip||'Unknown'});
+                        byChip.sort(function(a,b){return b.n-a.n});
+                        renderTable(document.getElementById('seg-chip'),byChip,'Чип','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        var bySize=groupStats(clean,function(r){return r.size!=null?r.size+'\u2033':'Unknown'});
+                        bySize.sort(function(a,b){
+                            var na=parseFloat(a.key),nb=parseFloat(b.key);
+                            if(isNaN(na))return 1;
+                            if(isNaN(nb))return -1;
+                            return na-nb;
+                        });
+                        renderTable(document.getElementById('seg-size'),bySize,'Диагональ','clean: 5k\u2013500k \u20BD \u00B7 median по объявлениям');
+
+                        document.getElementById('seg-tables').style.display='block';
+
+                        renderHeatmap(clean);
+
+                        console.log('[seg tables] rows:',rows.length,'clean:',clean.length);
+                    })
+                    .catch(function(e){console.warn('[seg tables] error:',e)});
+            })();
+            </script>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 02. ГЛУБОКИЙ АНАЛИЗ ═══ -->
+            <h2 id="deep"><span class="section-num">02</span> Глубокий анализ рынка</h2>
+
+            <p style="color:rgba(17,17,17,.58);font-size:.92rem;margin-bottom:1.5rem;">Шесть графиков: сначала «сколько стоит», затем «от чего зависит».</p>
+
+            <div style="display:grid;gap:1.5rem;margin-bottom:2rem;">
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Распределение цен</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Рынок широкий: основная масса &mdash; 15&ndash;100k, но хвост дорогих конфигураций (M4&nbsp;Pro, M4&nbsp;Max) тянется далеко вправо.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: слева &mdash; дешёвые Intel, справа &mdash; топовые Apple&nbsp;Silicon. Красная линия &mdash; медиана.</p>
+                    <img src="assets/deep/price_hist_log.png" alt="Гистограмма цен" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цены по чипам</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Чип &mdash; главный фактор цены. Intel&nbsp;i5 и M1 &mdash; нижняя полка; M4&nbsp;Pro и M4&nbsp;Max &mdash; премиум.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: линия внутри коробки &mdash; медиана; коробка &mdash; P25&ndash;P75 (середина рынка); «усы» &mdash; хвосты распределения.</p>
+                    <img src="assets/deep/price_box_chip.png" alt="Boxplot по чипам" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Экран (13/14/15/16) vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">14&Prime; и 16&Prime; стоят заметно дороже &mdash; это Pro-сегмент с мощными чипами. 13&Prime; &mdash; массовый и доступный.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: сравни медианы (красные линии) и ширину коробок &mdash; узкая = предсказуемая цена.</p>
+                    <img src="assets/deep/price_box_size.png" alt="Boxplot по размеру экрана" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Air vs Pro</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Pro стоит ощутимо дороже Air при тех же поколениях чипов &mdash; премия за экран, охлаждение и порты.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: две коробки рядом &mdash; чем правее медиана, тем дороже линейка.</p>
+                    <img src="assets/deep/price_box_family.png" alt="Boxplot Air vs Pro" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">Цена по сегменту: chip &times; диагональ</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">В ячейке: медиана цены, ниже&nbsp;&mdash; количество объявлений. Полупрозрачные&nbsp;&mdash; мало данных (n&lt;30).</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: темнее фон&nbsp;&mdash; дороже сегмент. Пустая ячейка&nbsp;&mdash; нет объявлений.</p>
+                    <div id="chip-size-heatmap" style="overflow-x:auto;"></div>
+                </div>
+
+                <div style="border:1px solid rgba(17,17,17,.06);border-radius:14px;padding:1.25rem;background:rgba(17,17,17,.012);">
+                    <h3 style="font-size:1.05rem;font-weight:600;margin:0 0 .4rem;">RAM vs цена</h3>
+                    <p style="font-size:.88rem;color:rgba(17,17,17,.62);margin:0 0 .3rem;">Больше RAM = дороже, но разброс внутри каждого уровня огромный &mdash; чип и модель важнее. RAM определена не у всех объявлений &mdash; график по подвыборке.</p>
+                    <p style="font-size:.78rem;color:rgba(17,17,17,.42);margin:0 0 .75rem;">Как читать: каждая точка &mdash; объявление. Красная линия &mdash; медиана на каждом уровне RAM.</p>
+                    <img src="assets/deep/price_scatter_ram_price.png" alt="Scatter RAM vs цена" style="width:100%;height:auto;border-radius:8px;">
+                </div>
+
+            </div>
+
+            <div style="padding:1rem 1.25rem;border-radius:10px;background:rgba(17,17,17,.015);margin-bottom:1.5rem;">
+                <p style="font-size:.82rem;font-weight:600;color:rgba(17,17,17,.42);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .5rem;">Выводы в 3 строки</p>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Цена сильнее всего объясняется сегментом: чип &times; размер экрана &times; линейка (Air/Pro).</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);margin-bottom:.25rem;font-size:.9rem;color:rgba(17,17,17,.72);">Intel &mdash; дешёвый хвост рынка. Apple&nbsp;Silicon &mdash; основной ценовой объём.</li>
+                    <li style="padding:.3rem 0 .3rem 1rem;border-left:2px solid rgba(17,17,17,.08);font-size:.9rem;color:rgba(17,17,17,.72);">M4 за 77k на этой выборке &mdash; ниже медианы сегмента M4.</li>
+                </ul>
+            </div>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 03. ИНТЕРАКТИВ ═══ -->
+            <h2 id="check"><span class="section-num">03</span> Проверь свою цену</h2>
+
+            <p>
+                Выбери конфигурацию и введи цену.
+                Калькулятор покажет, как она соотносится с рынком.
+            </p>
+
+            <div id="pv-root">
+                <div id="pv-controls" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin:1rem 0;">
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Линейка
+                        <select id="pv-family" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Чип
+                        <select id="pv-chip" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Экран
+                        <select id="pv-size" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">RAM
+                        <select id="pv-ram" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">SSD
+                        <select id="pv-ssd" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;"></select>
+                    </label>
+                    <label style="font-size:.78rem;color:rgba(17,17,17,.48);">Цена, ₽
+                        <input id="pv-price" type="number" placeholder="77000" style="width:100%;margin-top:2px;padding:6px 8px;border:1px solid rgba(17,17,17,.12);border-radius:8px;font-size:.88rem;background:#fff;">
+                    </label>
+                </div>
+                <button id="pv-btn" style="padding:8px 24px;border:none;border-radius:8px;background:#111;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Посчитать</button>
+                <button id="pv-prefill" style="padding:8px 24px;border:1px solid rgba(17,17,17,.12);border-radius:8px;background:#fff;color:rgba(17,17,17,.68);font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:1rem;margin-left:0.5rem;">Мой кейс: M4 &bull; 15&Prime; &bull; 16/256 &bull; 77k</button>
+                <p id="pv-meta" style="font-size:.78rem;color:rgba(17,17,17,.38);margin:0 0 1rem;font-family:ui-monospace,'SF Mono',monospace;display:none;"></p>
+                <div id="pv-result" style="display:none;"></div>
+                <canvas id="pv-chart" width="640" height="120" style="display:none;width:100%;height:auto;border-radius:8px;margin-top:0.75rem;"></canvas>
+            </div>
+
+            <noscript><p style="color:rgba(17,17,17,.48);font-size:.85rem;">Для интерактива нужен JavaScript.</p></noscript>
+
+            <script>
+            (function(){
+                var DATA=null;
+
+                function $(id){return document.getElementById(id)}
+                function fmt(n){return n==null?'\u2014':n.toLocaleString('ru-RU')}
+
+                function populateSelect(sel,vals,label){
+                    sel.innerHTML='<option value="">'+label+'</option>';
+                    vals.forEach(function(v){
+                        var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);
+                    });
+                }
+
+                function setSelect(sel,val){
+                    for(var i=0;i<sel.options.length;i++){
+                        if(sel.options[i].value===String(val)){sel.selectedIndex=i;return true}
+                    }
+                    return false;
+                }
+
+                function unique(arr,key){
+                    var s={};arr.forEach(function(r){var v=r[key];if(v!=null)s[v]=1});
+                    return Object.keys(s).sort(function(a,b){
+                        var na=parseFloat(a),nb=parseFloat(b);
+                        if(!isNaN(na)&&!isNaN(nb))return na-nb;
+                        return a<b?-1:a>b?1:0;
+                    });
+                }
+
+                function quantile(sorted,q){
+                    if(!sorted.length)return null;
+                    var i=(sorted.length-1)*q;
+                    var lo=Math.floor(i),hi=Math.ceil(i);
+                    if(lo===hi)return sorted[lo];
+                    return sorted[lo]*(hi-i)+sorted[hi]*(i-lo);
+                }
+
+                function filter(data){
+                    var fam=$('pv-family').value;
+                    var chip=$('pv-chip').value;
+                    var size=$('pv-size').value;
+                    var ram=$('pv-ram').value;
+                    var ssd=$('pv-ssd').value;
+                    return data.filter(function(r){
+                        if(!r.is_clean)return false;
+                        if(fam&&r.family!==fam)return false;
+                        if(chip&&r.chip!==chip)return false;
+                        if(size&&r.size!=+size)return false;
+                        if(ram&&r.ram_gb!=+ram)return false;
+                        if(ssd&&r.ssd!==ssd)return false;
+                        return true;
+                    });
+                }
+
+                function drawHist(prices,userPrice){
+                    var c=$('pv-chart'),ctx=c.getContext('2d');
+                    c.style.display='block';
+                    var W=c.width=c.offsetWidth*2,H=c.height=240;
+                    ctx.clearRect(0,0,W,H);
+                    if(prices.length<3)return;
+
+                    var mn=Math.min.apply(null,prices),mx=Math.max.apply(null,prices);
+                    if(mn===mx){mx=mn+1}
+                    var bins=20,bw=(mx-mn)/bins,counts=new Array(bins).fill(0);
+                    prices.forEach(function(p){var i=Math.min(Math.floor((p-mn)/bw),bins-1);counts[i]++});
+                    var maxC=Math.max.apply(null,counts);if(!maxC)maxC=1;
+
+                    var pad=30,gw=W-pad*2,gh=H-pad-10;
+                    ctx.fillStyle='rgba(17,17,17,.06)';
+                    for(var i=0;i<bins;i++){
+                        var bh=counts[i]/maxC*gh;
+                        ctx.fillRect(pad+i*(gw/bins)+1,H-pad-bh,gw/bins-2,bh);
+                    }
+                    ctx.fillStyle='rgba(17,17,17,.18)';
+                    for(var i=0;i<bins;i++){
+                        var bh=counts[i]/maxC*gh;
+                        ctx.fillRect(pad+i*(gw/bins)+1,H-pad-bh,gw/bins-2,bh);
+                    }
+
+                    if(userPrice!=null&&userPrice>=mn&&userPrice<=mx){
+                        var x=pad+(userPrice-mn)/(mx-mn)*gw;
+                        ctx.strokeStyle='#e33';ctx.lineWidth=2;
+                        ctx.beginPath();ctx.moveTo(x,5);ctx.lineTo(x,H-pad);ctx.stroke();
+                        ctx.fillStyle='#e33';ctx.font='bold '+(W>800?'22':'18')+'px -apple-system,sans-serif';
+                        ctx.textAlign='center';
+                        ctx.fillText(fmt(userPrice)+' \u20BD',x,H-pad+18);
+                    }
+
+                    ctx.fillStyle='rgba(17,17,17,.28)';
+                    ctx.font=(W>800?'18':'14')+'px -apple-system,sans-serif';
+                    ctx.textAlign='left';ctx.fillText(fmt(mn),pad,H-4);
+                    ctx.textAlign='right';ctx.fillText(fmt(mx),W-pad,H-4);
+                }
+
+                function isMyCase(){
+                    return $('pv-chip').value==='M4'&&parseFloat($('pv-price').value)===77000;
+                }
+
+                function run(){
+                    var out=$('pv-result');
+                    if(!DATA){out.style.display='block';out.innerHTML='<p style="color:rgba(17,17,17,.48);font-size:.85rem;">Данные загружаются\u2026</p>';return}
+                    var seg=filter(DATA);
+                    var prices=seg.map(function(r){return r.price}).sort(function(a,b){return a-b});
+                    var userPrice=parseFloat($('pv-price').value)||null;
+
+                    if(prices.length<5){
+                        out.style.display='block';
+                        var warn=prices.length<20?'Мало данных в сегменте ('+prices.length+'), ослабь фильтры (например, убери SSD).':'';
+                        out.innerHTML='<div class="insight-block"><p>В этом сегменте <strong>'+prices.length+'</strong> clean объявлени'+
+                            (prices.length===1?'е':prices.length<5?'я':'й')+
+                            '. '+(warn||'Попробуй расширить фильтр.')+'</p></div>';
+                        $('pv-chart').style.display='none';
+                        return;
+                    }
+
+                    var p25=quantile(prices,.25),p50=quantile(prices,.5),p75=quantile(prices,.75),p90=quantile(prices,.9);
+
+                    var warnRow='';
+                    if(prices.length<20){
+                        warnRow='<tr><td colspan="2" style="font-size:.78rem;color:#b26a00;">Мало данных ('+prices.length+'), ослабь фильтры для надёжности.</td></tr>';
+                    }
+
+                    var h='<div class="table-wrap"><table>'+
+                        '<thead><tr><th>Метрика</th><th>Значение</th></tr></thead><tbody>'+
+                        '<tr><td>N (clean) в сегменте</td><td class="mono"><strong>'+prices.length+'</strong></td></tr>'+
+                        warnRow+
+                        '<tr><td>P25</td><td class="mono">'+fmt(Math.round(p25))+' \u20BD</td></tr>'+
+                        '<tr><td>Медиана (P50)</td><td class="mono"><strong>'+fmt(Math.round(p50))+' \u20BD</strong></td></tr>'+
+                        '<tr><td>P75</td><td class="mono">'+fmt(Math.round(p75))+' \u20BD</td></tr>'+
+                        '<tr><td>P90</td><td class="mono">'+fmt(Math.round(p90))+' \u20BD</td></tr>';
+
+                    if(userPrice){
+                        var below=0;prices.forEach(function(p){if(p<userPrice)below++});
+                        var pct=Math.round(below/prices.length*100);
+                        h+='<tr><td>Твоя цена</td><td class="mono"><strong>'+fmt(userPrice)+' \u20BD</strong></td></tr>'+
+                           '<tr><td>Перцентиль</td><td class="mono"><strong>P'+pct+'</strong></td></tr>';
+                        h+='</tbody></table></div>';
+
+                        var verdict,vcolor;
+                        if(pct<=25){verdict='Отличная цена. Или подвох, или повезло.';vcolor='#1a8d1a'}
+                        else if(pct<=40){verdict='Ниже медианы \u2014 хороший вариант.';vcolor='#2e7d32'}
+                        else if(pct<=60){verdict='Рыночная цена. Нормально.';vcolor='#555'}
+                        else if(pct<=75){verdict='Чуть выше медианы. Не критично, но можно было лучше.';vcolor='#b26a00'}
+                        else{verdict='Дороговато. Или конфигурация топовая, или стоит поторговаться.';vcolor='#c62828'}
+
+                        var extra=isMyCase()?' <span style="color:rgba(17,17,17,.38);font-size:.82rem;">\u2014 проверяю свою покупку, без оправданий :)</span>':'';
+
+                        h+='<div style="margin-top:1rem;padding:1rem 1.25rem;border-radius:10px;border-left:3px solid '+vcolor+';background:rgba(17,17,17,.015);">'+
+                           '<p style="margin:0;font-size:.95rem;color:rgba(17,17,17,.82);">'+
+                           '<strong style="color:'+vcolor+'">P'+pct+'</strong> \u2014 '+verdict+extra+'</p></div>';
+                    } else {
+                        h+='</tbody></table></div>';
+                        h+='<p style="font-size:.85rem;color:rgba(17,17,17,.38);margin-top:.75rem;">Введи цену, чтобы получить перцентиль.</p>';
+                    }
+
+                    out.style.display='block';
+                    out.innerHTML=h;
+                    drawHist(prices,userPrice);
+                }
+
+                function prefill(){
+                    if(!setSelect($('pv-chip'),'M4')){
+                        $('pv-result').style.display='block';
+                        $('pv-result').innerHTML='<div class="insight-block"><p>Чип M4 не найден в данных.</p></div>';
+                        return;
+                    }
+                    $('pv-family').value='';
+                    setSelect($('pv-size'),'15');
+                    setSelect($('pv-ram'),'16');
+                    setSelect($('pv-ssd'),'256GB');
+                    $('pv-price').value='77000';
+                    run();
+                }
+
+                function init(payload){
+                    var rows=Array.isArray(payload)?payload:payload.rows;
+                    DATA=rows;
+
+                    var cleanRows=rows.filter(function(r){return r.is_clean});
+                    if(payload.generated_at){
+                        var m=$('pv-meta');
+                        m.textContent=(payload.n_clean||cleanRows.length)+' clean объявлений \u00B7 snapshot: '+payload.generated_at+' \u00B7 источник: '+(payload.source||'Avito');
+                        m.style.display='block';
+                    }
+
+                    populateSelect($('pv-family'),unique(cleanRows,'family'),'Любая');
+                    populateSelect($('pv-chip'),unique(cleanRows,'chip'),'Любой');
+                    populateSelect($('pv-size'),unique(cleanRows,'size'),'Любой');
+                    populateSelect($('pv-ram'),unique(cleanRows,'ram_gb'),'Любой');
+                    populateSelect($('pv-ssd'),unique(cleanRows,'ssd'),'Любой');
+                    $('pv-btn').addEventListener('click',run);
+                    $('pv-prefill').addEventListener('click',prefill);
+                    $('pv-price').addEventListener('keydown',function(e){if(e.key==='Enter')run()});
+                }
+
+                fetch('assets/market_latest.min.json?v='+Date.now())
+                    .then(function(r){return r.json()})
+                    .then(init)
+                    .catch(function(){
+                        $('pv-result').style.display='block';
+                        $('pv-result').innerHTML='<div class="insight-block"><p>Не удалось загрузить данные. Открой страницу через локальный сервер или на сайте.</p></div>';
+                    });
+            })();
+            </script>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 04. ЧТО ДАЛЬШЕ ═══ -->
+            <h2><span class="section-num">04</span> Что можно улучшить</h2>
+
+            <ul class="hypothesis-list">
+                <li>
+                    <strong>Ежедневные снапшоты.</strong>
+                    Cron + build_dataset.py + snapshot_compare.py.
+                    Через 7–14 дней — реальная оценка ликвидности по сегментам.
+                </li>
+                <li>
+                    <strong>Извлечение конфигурации из карточки.</strong>
+                    Сейчас парсим только заголовок. Внутри объявления есть
+                    структурированные характеристики — это поднимет определённость
+                    с 88% до ~98%.
+                </li>
+                <li>
+                    <strong>Масштаб до 10k.</strong>
+                    <s>Query plan готов: 90 запросов &times; 30 городов.</s>
+                    &check;&nbsp;Реализовано. Coverage report + global dedup + 10k cap.
+                </li>
+                <li>
+                    <strong>Расширение на другие SKU.</strong>
+                    Тот же пайплайн работает для iPhone, PS5, любого SKU на Avito.
+                    Нужен только новый query plan и парсер заголовков.
+                </li>
+            </ul>
+
+
+            <hr class="divider">
+
+
+            <!-- ═══ 09. МЕТОДОЛОГИЯ ═══ -->
+            <h2 id="method"><span class="section-num">05</span> Методология и ограничения</h2>
+
+            <p><strong>Источник:</strong> публичная поисковая выдача Avito (категория «Ноутбуки»), февраль 2026.
+                Playwright (headful browser + persistent state).
+                <span id="method-n">&hellip;</span> уникальных объявлений после дедупликации по <code>listing_id</code>.
+                Сбор через query plan: до 90 запросов &times; 30 городов &times; 4 сортировки.</p>
+
+            <p><strong>Парсинг:</strong> regex-парсер на Python.
+                Кириллица, слэш-нотация (16/512), дюймовые форматы, инференс чипа по году.
+                Часть объявлений с неопределённым чипом — систематический gap для «ленивых» заголовков.</p>
+
+            <p><strong>Ограничения:</strong></p>
+            <ul class="hypothesis-list">
+                <li>Avito &ne; продажи. Объявления — предложение, не спрос.</li>
+                <li>Snapshot bias: быстро проданные товары недопредставлены.</li>
+                <li>Региональный bias: Москва и СПб перепредставлены.</li>
+            </ul>
+
+            <p><strong>Стек:</strong> Python, Playwright, pandas, matplotlib.</p>
+
+
+            <hr class="divider">
+
+            <a href="/cases/" class="back-link">&larr; Все кейсы</a>
+        </div>
+
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+</body>
+</html>
