@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Симуляторы — davydov.my</title>
 <link rel="canonical" href="https://davydov.my/workspace/simulators/"/>
-<meta name="description" content="Интерактивные симуляторы монетизации, аукционов и экспериментов на davydov.my."/>
+<meta name="description" content="Интерактивные модели двусторонних рынков, аукционов и экспериментальных дизайнов на davydov.my."/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Симуляторы — davydov.my"/>
-<meta property="og:description" content="Интерактивные симуляторы монетизации, аукционов и экспериментов."/>
+<meta property="og:description" content="Интерактивные модели двусторонних рынков, аукционов и экспериментальных дизайнов."/>
 <meta property="og:url" content="https://davydov.my/workspace/simulators/"/>
 <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
 <meta name="twitter:card" content="summary_large_image"/>
@@ -53,51 +53,107 @@
   </div>
 </nav>
 <div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Симуляторы</span>
+  </nav>
+
   <h1 class="page-title">Симуляторы<span class="accent-dot">.</span></h1>
-  <p class="page-lead">Живые симуляции во времени: агенты, взаимодействия, динамика системы. Параметрические модели — в <a href="/workspace/calculators/">Калькуляторах</a>.</p>
+  <p class="page-lead">Интерактивные модели реальных систем — двусторонних рынков, аукционов, экспериментальных дизайнов. Каждый симулятор показывает, как ведёт себя система при изменении параметров: что у неё за динамика, где границы, что ломается при стрессе.</p>
 
-  <div class="courses-grid">
-    <a class="course" href="/workspace/simulators/ride-hailing/">
-      <div class="course-meta"><span class="course-num">01</span><span>On-Demand</span></div>
-      <h3>Ride-Hailing Simulator</h3>
-      <p>Живая 2D-симуляция платформы: drivers, orders, matching, ETA, surge pricing. Как дисбаланс спроса и предложения влияет на cancellations и revenue?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/simulators/ad-auction/">
-      <div class="course-meta"><span class="course-num">02</span><span>Монетизация</span></div>
-      <h3>Ad Auction</h3>
-      <p>Симуляция рекламных сессий: ad opportunities → impressions → auction → pricing → revenue. Fixed и adaptive policy — что выгоднее долгосрочно?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/simulators/ad-auction-pressure/">
-      <div class="course-meta"><span class="course-num">03</span><span>Монетизация</span></div>
-      <h3>Ad Pressure Dynamics</h3>
-      <p>Модель давления рекламы: частота показов, policy и user behavior → CTR, early exit, экономика платформы. Где граница между ростом revenue и деградацией UX?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/simulators/marketplace-live/">
-      <div class="course-meta"><span class="course-num">04</span><span>Маркетплейс</span></div>
-      <h3>Marketplace Auction &amp; Delivery</h3>
-      <p>Ranking, promoted items, auction, delivery capacity и trust в едином потоке от click до delivery. Когда рост revenue через ranking начинает разрушать конверсию?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/simulators/ad-fatigue/">
-      <div class="course-meta"><span class="course-num">05</span><span>Монетизация</span></div>
-      <h3>Ad Fatigue &amp; Channel Saturation</h3>
-      <p>Pipeline-модель: ad pressure → fatigue → CTR / early exit → saturation point. Где именно находится monetization cliff?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/simulators/ab-test/">
-      <div class="course-meta"><span class="course-num">06</span><span>Эксперименты</span></div>
-      <h3>A/B Test Simulator (Live)</h3>
-      <p>Живая симуляция A/B-теста: Poisson arrivals, метрики и p-value по мере набора выборки, типовые ошибки — peeking, spillover, imbalance.</p>
-      <span class="course-arrow">↗</span>
-    </a>
+  <div class="prose">
+    <section>
+      <h2>Платформы и двусторонние рынки</h2>
+      <p>Системы, где две стороны рынка влияют друг на друга. Здесь классический A/B-эксперимент часто ломается на network effects, а интуиция «больше водителей → больше заказов» работает только до определённой точки.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/simulators/ride-hailing/">
+          <div class="course-meta"><span class="course-num">01</span><span>Двусторонний рынок</span></div>
+          <h3>Ride-Hailing Simulator</h3>
+          <p>Живая 2D-симуляция платформы такси: водители, заказы, surge pricing, отмены. Как дисбаланс спроса и предложения превращается в потерю выручки и отказ пассажиров.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/marketplace-live/">
+          <div class="course-meta"><span class="course-num">02</span><span>Двусторонний рынок</span></div>
+          <h3>Marketplace Auction &amp; Delivery</h3>
+          <p>Покупатели, продавцы, ранжирование выдачи, доставка, доверие. Как меняется экономика маркетплейса при сдвиге одной из сторон.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Аукционы и монетизация</h2>
+      <p>Где деньги конвертируются в показы и обратно. Аукционные механики, давление рекламной нагрузки, насыщение каналов — всё то, что отличает «выручку платформы» от обычного e-commerce.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/simulators/ad-auction/">
+          <div class="course-meta"><span class="course-num">01</span><span>Аукцион</span></div>
+          <h3>Ad Auction</h3>
+          <p>Механика рекламного аукциона: CPM, CTR, floor price, спрос и предложение слотов. Как формируется цена показа в second-price аукционе и где она сваливается в дисбаланс.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/ad-auction-pressure/">
+          <div class="course-meta"><span class="course-num">02</span><span>Аукцион + давление</span></div>
+          <h3>Ad Auction &amp; Pressure</h3>
+          <p>Живая симуляция: что происходит с выручкой и пользователем, когда рекламная нагрузка растёт. Граница, за которой давление перестаёт окупаться.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/ad-fatigue-live/">
+          <div class="course-meta"><span class="course-num">03</span><span>Монетизация</span></div>
+          <h3>Ad Fatigue &amp; Channel Saturation</h3>
+          <p>CTR-деградация при повторных показах, насыщение каналов привлечения, monetization cliff. Где находится экономический потолок и как он сдвигается.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Эксперименты и статистика</h2>
+      <p>Симуляторы для понимания механики A/B-тестов: как считать, какой критерий выбрать, как уменьшить дисперсию. Часть инструментов привязана к курсу <a href="/lab/ab-stat-os/">Статистика A/B-тестирования</a>.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/simulators/ab-test/">
+          <div class="course-meta"><span class="course-num">01</span><span>A/B</span></div>
+          <h3>A/B Test Simulator (Live)</h3>
+          <p>Живой A/B: метрики, p-value, доверительные интервалы в динамике. Сценарии Big Early Win, Early Spike, факторы риска (SUTVA, imbalance) — что покажет ваш дашборд при типовых проблемах.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/lab/ab-stat-os/simulators/distribution_playground/">
+          <div class="course-meta"><span class="course-num">02</span><span>Статистика</span></div>
+          <h3>Distribution Playground</h3>
+          <p>Сгенерируйте данные, увидьте форму распределения и получите рекомендацию по статтесту. Heavy tail, zero-inflation, асимметрия — как они влияют на выбор критерия.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/lab/ab-stat-os/simulators/metric_classifier/">
+          <div class="course-meta"><span class="course-num">03</span><span>Статистика</span></div>
+          <h3>Классификатор метрик</h3>
+          <p>Определите тип метрики (бинарная, счётная, непрерывная, ratio) и подходящий статкритерий для A/B-теста.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/lab/ab-stat-os/simulators/cuped_simulator/">
+          <div class="course-meta"><span class="course-num">04</span><span>Variance reduction</span></div>
+          <h3>CUPED Simulator</h3>
+          <p>Сравните raw и CUPED-adjusted оценки эффекта. Увидьте, как корреляция pre-post определяет выигрыш в чувствительности теста.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/lab/ab-stat-os/simulators/cluster_simulator/">
+          <div class="course-meta"><span class="course-num">05</span><span>Cluster A/B</span></div>
+          <h3>Cluster Simulator</h3>
+          <p>Увидьте, как ICC и размер кластера раздувают дисперсию и ломают наивный t-test. Почему рандомизация на уровне города ≠ рандомизация на уровне пользователя.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/lab/ab-stat-os/simulators/test_selection_map/">
+          <div class="course-meta"><span class="course-num">06</span><span>Decision tree</span></div>
+          <h3>Карта выбора статкритерия</h3>
+          <p>Определите подходящий тест, метод снижения дисперсии и поправки для вашего эксперимента — через интерактивный decision tree.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <p>См. также: <a href="/workspace/calculators/">Калькуляторы</a> · <a href="/workspace/glossary/">Глоссарий</a></p>
   </div>
-
-  <p style="margin-top:2rem;font-size:0.88rem;color:var(--muted)">
-    См. также: <a href="/workspace/calculators/" style="color:var(--accent)">Калькуляторы</a> · <a href="/workspace/glossary/" style="color:var(--accent)">Глоссарий</a>
-  </p>
 </div>
 <div class="footer-spacer"></div>
 <footer class="footer">

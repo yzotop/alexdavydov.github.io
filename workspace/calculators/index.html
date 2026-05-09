@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Калькуляторы — davydov.my</title>
 <link rel="canonical" href="https://davydov.my/workspace/calculators/"/>
-<meta name="description" content="Параметрические калькуляторы для монетизации и экспериментов: rollout, revenue, сценарии — davydov.my."/>
+<meta name="description" content="Параметрические модели для оценки эффектов и принятия решений: монетизация, A/B-тесты, сценарный анализ — davydov.my."/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Калькуляторы — davydov.my"/>
-<meta property="og:description" content="Параметрические калькуляторы для монетизации и экспериментов."/>
+<meta property="og:description" content="Параметрические модели для оценки эффектов и принятия решений."/>
 <meta property="og:url" content="https://davydov.my/workspace/calculators/"/>
 <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
 <meta name="twitter:card" content="summary_large_image"/>
@@ -53,51 +53,77 @@
   </div>
 </nav>
 <div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Калькуляторы</span>
+  </nav>
+
   <h1 class="page-title">Калькуляторы<span class="accent-dot">.</span></h1>
-  <p class="page-lead">Параметрические модели: покрутить рычаги и увидеть нелинейности. Живые симуляции — в <a href="/workspace/simulators/">Симуляторах</a>.</p>
+  <p class="page-lead">Параметрические модели для оценки эффектов и принятия решений. Калькулятор отвечает на вопрос «сколько». Симулятор — «как». Эта страница про первое.</p>
 
-  <div class="courses-grid">
-    <a class="course" href="/workspace/calculators/ad-monetization/">
-      <div class="course-meta"><span class="course-num">01</span><span>Монетизация</span></div>
-      <h3>Pressure → Revenue</h3>
-      <p>Параметрическая модель рекламной монетизации: как Ad Pressure меняет delivery и приводит к saturation. Где рост давления перестаёт увеличивать выручку?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/calculators/revenue/">
-      <div class="course-meta"><span class="course-num">02</span><span>Монетизация</span></div>
-      <h3>Цена × объём</h3>
-      <p>Trade-off цена × объём: как elasticity превращает рост цены в падение объёма. При какой цене рост начинает снижать общую выручку?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/calculators/rollout/">
-      <div class="course-meta"><span class="course-num">03</span><span>Эксперименты</span></div>
-      <h3>A/B: прогноз раскатки на 100%</h3>
-      <p>Прогноз полного rollout: как эффекты теста (ΔCPM, ΔShowRate, ΔRequests) пересоберут итоговые метрики. Что реально произойдёт после масштабирования?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/calculators/rollout-compare/">
-      <div class="course-meta"><span class="course-num">04</span><span>Эксперименты</span></div>
-      <h3>A/B: лучший тест из 3</h3>
-      <p>Сравнение трёх A/B: проекция на 100% rollout по текущим результатам. Какой тест даёт максимальный эффект при масштабировании?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/calculators/funnel-sensitivity/">
-      <div class="course-meta"><span class="course-num">05</span><span>Маркетплейс</span></div>
-      <h3>Воронка: цена +1 п.п. конверсии</h3>
-      <p>Чувствительность воронки: стоимость +1 п.п. на каждом шаге и вклад в итоговый revenue. Какой шаг даёт самый дешёвый рост выручки?</p>
-      <span class="course-arrow">↗</span>
-    </a>
-    <a class="course" href="/workspace/calculators/scenario-planning/">
-      <div class="course-meta"><span class="course-num">06</span><span>FP&amp;A</span></div>
-      <h3>Scenario Planning &amp; P&amp;L Forecast</h3>
-      <p>Сценарный калькулятор для executive FP&amp;A: шоки demand, price, FX и freight → Revenue → EBITDA → Net Profit. Как меняется диапазон исходов при шоках?</p>
-      <span class="course-arrow">↗</span>
-    </a>
+  <div class="prose">
+    <section>
+      <h2>Монетизация и pricing</h2>
+      <p>Как рассчитать выручку, оценить эффект изменения цены, посчитать стоимость улучшения воронки. Базовые расчёты для платформенной экономики.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/calculators/ad-monetization/">
+          <div class="course-meta"><span class="course-num">01</span><span>Pricing</span></div>
+          <h3>Pressure → Revenue</h3>
+          <p>Параметрическая модель монетизации: давление рекламы → RPM → выручка. Где платформа находится сейчас и куда сдвинется при изменении нагрузки.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/calculators/revenue/">
+          <div class="course-meta"><span class="course-num">02</span><span>Декомпозиция</span></div>
+          <h3>Цена × объём</h3>
+          <p>Декомпозиция выручки на цену, объём и микс. Откуда берётся рост и где скрытая каннибализация.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/calculators/funnel-sensitivity/">
+          <div class="course-meta"><span class="course-num">03</span><span>Воронка</span></div>
+          <h3>Воронка: цена +1 п.п. конверсии</h3>
+          <p>Стоимость улучшения воронки на один процентный пункт. Чувствительность выручки к каждому шагу.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Решения по тесту</h2>
+      <p>Что катить, что нет, что покажет раскатка на 100%. Калькуляторы для принятия решений по результатам A/B-теста.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/calculators/rollout/">
+          <div class="course-meta"><span class="course-num">01</span><span>Прогноз</span></div>
+          <h3>A/B: прогноз раскатки на 100%</h3>
+          <p>Проекция результата теста при раскатке на полную аудиторию. Ловушка экстраполяции малой выборки на большую.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/calculators/rollout-compare/">
+          <div class="course-meta"><span class="course-num">02</span><span>Сравнение</span></div>
+          <h3>A/B: лучший тест из 3</h3>
+          <p>Сравнение трёх вариантов теста по метрикам и стандартной ошибке. Какой катить, какой переделать, какой не работает.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Стратегия и сценарии</h2>
+      <p>P&amp;L-моделирование, сценарный анализ. Не специфика платформ, но полезно для общего FP&amp;A.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/calculators/scenario-planning/">
+          <div class="course-meta"><span class="course-num">01</span><span>FP&amp;A</span></div>
+          <h3>Scenario Planning &amp; P&amp;L Forecast</h3>
+          <p>Сценарный анализ выручки и прибыли: спрос, цена, валюта, логистика. P&amp;L-форкаст с регулировкой ключевых параметров.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <p>См. также: <a href="/workspace/simulators/">Симуляторы</a> · <a href="/workspace/glossary/">Глоссарий</a></p>
   </div>
-
-  <p style="margin-top:2rem;font-size:0.88rem;color:var(--muted)">
-    См. также: <a href="/workspace/simulators/" style="color:var(--accent)">Симуляторы</a> · <a href="/workspace/glossary/" style="color:var(--accent)">Глоссарий</a>
-  </p>
 </div>
 <div class="footer-spacer"></div>
 <footer class="footer">
