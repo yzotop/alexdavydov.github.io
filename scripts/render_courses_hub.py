@@ -16,6 +16,7 @@ OUT = os.path.join(ROOT, "courses", "index.html")
 # REDESIGN §3.3 tags
 COURSE_LABELS: dict[str, str] = {
     "ab-stat-os": "A/B · Middle→Senior",
+    "ab-decisions": "A/B · Middle",
     "monetization": "Монетизация · Middle",
     "product-analytics": "Продукт · Junior→Senior",
     "quasi-experiments": "Causal · Senior",
@@ -25,6 +26,7 @@ COURSE_LABELS: dict[str, str] = {
 DISPLAY_ORDER = [
     "product-analytics",
     "ab-stat-os",
+    "ab-decisions",
     "monetization",
     "quasi-experiments",
 ]
@@ -145,6 +147,8 @@ def main() -> int:
       <a href="/lab/product-analytics/">Аналитика продукта</a>
       <span class="learning-path-arrow">→</span>
       <a href="/lab/ab-stat-os/">Статистика A/B</a>
+      <span class="learning-path-arrow">→</span>
+      <a href="/lab/ab-decisions/">A/B-решения</a>
       <span class="learning-path-arrow">→</span>
       <a href="/lab/monetization/">Монетизация</a>
       <span class="learning-path-arrow">→</span>
