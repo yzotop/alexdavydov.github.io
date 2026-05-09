@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>01. Цена и объём — A/B-решения</title>
+  <link rel="canonical" href="https://davydov.my/lab/ab-decisions/lessons/01-price-vs-money/"/>
+  <meta name="description" content="Если CPM растёт — это ещё ничего не значит. Деньги меняются только когда растёт объём монетизируемых показов или меняется микс."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="01. Цена и объём — A/B-решения"/>
+  <meta property="og:description" content="Если CPM растёт — это ещё ничего не значит. Деньги меняются только когда растёт объём монетизируемых показов или меняется микс."/>
+  <meta property="og:url" content="https://davydov.my/lab/ab-decisions/lessons/01-price-vs-money/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>АД</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/" style="color:var(--ink)">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+  </div>
+  <a href="/career/" class="nav-cta"><span class="dot"></span>Менторство</a>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/courses/">Курсы</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Карьера</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/lab/">Инструменты</a>
+    <a href="/knowledge/">База знаний</a>
+    <a href="/simulators/">Симуляторы</a>
+    <a href="/calculators/">Калькуляторы</a>
+    <a href="/about/">Обо мне</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="lesson">
+
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/courses/">Курсы</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="/lab/ab-decisions/">A/B-решения</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Урок 01</span>
+  </nav>
+
+  <header class="lesson-header">
+    <div class="lesson-meta">
+      <span class="lesson-num">01</span>
+      <span class="lesson-module">A/B-решения · Модуль 1</span>
+      <span>5 мин</span>
+    </div>
+    <h1 class="lesson-title">Цена и объём: откуда берётся выручка</h1>
+    <p class="lesson-lede">Если CPM растёт — это ещё ничего не значит. Деньги меняются только когда растёт объём монетизируемых показов или меняется микс.</p>
+  </header>
+
+  <div class="prose">
+
+    <p>Самая частая ошибка при чтении эксперимента в монетизации — радоваться росту <a href="/lab/glossary/#cpm">CPM</a>. На дашборде красивая зелёная цифра, команда хочет катить, продакт уже пишет в чат. Покажу на примере, почему это опасно и что нужно проверить до любого решения.</p>
+
+    <div class="case-block">
+      <div class="case-block-tag">Кейс · ситуация</div>
+      <p>Команда монетизации тестирует новый формат рекламного блока в ленте — увеличенный, более заметный. Гипотеза: блок будет лучше «забирать» внимание, рекламодатели будут платить больше, выручка вырастет.</p>
+      <p>Через 10 дней теста дашборд:</p>
+      <ul>
+        <li><strong>CPM:</strong> +6,2% (стат-значимо)</li>
+        <li><strong>Revenue:</strong> +0,4% (на грани шума)</li>
+        <li><strong>Shows:</strong> −5,1% (стат-значимо)</li>
+      </ul>
+      <p>Продакт пишет в чат: «CPM вырос на 6%, эффект подтверждён, катим на всех». Маркетолог поддерживает: «Рекламодатели будут довольны, давайте раскатывать к концу недели». Аналитик молчит.</p>
+    </div>
+
+    <p>Интуиция «CPM вырос — значит катим» подводит здесь по одной причине: рост цены показа сам по себе ничего не говорит о том, что произошло с деньгами. Выручка — это не цена. Это цена, умноженная на объём. Пока неизвестно, что случилось с объёмом, вывод о тесте делать нельзя.</p>
+
+    <div class="stop-question">
+      <strong>Стоп-вопрос.</strong> Достаточно ли роста CPM, чтобы катить тест? Если нет — какую вторую цифру нужно увидеть, и в каком направлении она должна меняться?
+    </div>
+
+    <h2>Что на самом деле двигает выручку</h2>
+
+    <p>Выручка от рекламы — это произведение двух независимых переменных: сколько стоит один показ и сколько таких показов произошло. Рост одной при падении другой может обнулить или даже развернуть итог.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Формула выручки</div>
+      <div class="formula-expr">Revenue ≈ (CPM / 1000) × Shows</div>
+    </div>
+
+    <p><a href="/lab/glossary/#cpm">CPM</a> (cost per mille) — средняя цена за тысячу показов, которую платят рекламодатели. <a href="/lab/glossary/#shows">Shows</a> — объём монетизируемых показов, то есть показы, которые реально произошли и принесли деньги, а не просто запросы к аукциону. Отсюда прямое следствие: если CPM вырос на 6%, а Shows упали на 5% — итоговый эффект на <a href="/lab/glossary/#revenue">выручку</a> близок к нулю. Именно это и происходит в нашем кейсе.</p>
+
+    <h3>Четыре рычага, которые двигают выручку</h3>
+
+    <ul>
+      <li><strong>Цена.</strong> CPM — насколько дорого продаётся показ. Зависит от аукциона, рынка, формата.</li>
+      <li><strong>Объём.</strong> Monetizable shows — сколько показов реально произошло и принесло деньги. Не путать с requests.</li>
+      <li><strong>Воронка.</strong> Requests → responses → shows. На каком этапе теряется объём.</li>
+      <li><strong>Видимость.</strong> Show rate, viewability, scroll depth — как часто блок становится видимым и получает внимание.</li>
+    </ul>
+
+    <h3>Где ошибаются чаще всего</h3>
+
+    <ul>
+      <li><strong>«CPM вырос — значит тест успешен».</strong> Не обязательно: если Shows упали сильнее, чем вырос CPM, выручка снизится.</li>
+      <li><strong>«Выручка не выросла — значит ничего не произошло».</strong> Может выросли Shows, но упал CPM или изменился микс форматов — это диагностически важно.</li>
+      <li><strong>«Fill rate вырос — значит деньги вырастут».</strong> Если show rate или внимание не выросли, объём показов может не измениться.</li>
+      <li><strong>«Средняя дельта без формы кривой».</strong> Окно оценки скрывает динамику — особенно при лагах и эффекте новизны.</li>
+    </ul>
+
+    <h2>Мини-протокол: total-first</h2>
+
+    <p>Когда видишь результат теста в монетизации, проходи по этому списку в порядке, не пропуская шагов. Каждый следующий пункт объясняет предыдущий.</p>
+
+    <ol class="protocol-list">
+      <li><strong>Revenue или RPM.</strong> Есть ли изменение? Это главная метрика — с неё начинаем.</li>
+      <li><strong>CPM.</strong> Что происходит с ценой: растёт, падает, стабильна?</li>
+      <li><strong>Shows.</strong> Что происходит с объёмом монетизируемых показов? Это вторая часть формулы.</li>
+      <li><strong>Воронка requests → responses → shows.</strong> На каком этапе меняется объём?</li>
+      <li><strong>Show rate и viewability.</strong> Меняется ли видимость? Влияет ли это на объём показов?</li>
+      <li><strong>Разрезы по device, platform, placement.</strong> Нет ли mix shift? Агрегат может маскировать разнонаправленные эффекты.</li>
+    </ol>
+
+    <h2>Возвращаемся к ситуации</h2>
+
+    <p>Прогоним наш кейс по протоколу. На старте мы видели: CPM +6,2%, Revenue +0,4%, Shows −5,1%. Считаем по формуле.</p>
+
+    <div class="case-block case-block--return">
+      <div class="case-block-tag">Кейс · разбор</div>
+      <p>По формуле: Revenue ≈ CPM × Shows. Считаем дельту: (1 + 0,062) × (1 − 0,051) = 1,008. То есть произведение даёт +0,8% — ровно тот эффект, который мы видим на Revenue с учётом шума.</p>
+      <p>Выручка не выросла. Произошёл размен: цена показа действительно стала выше (формат заметнее, рекламодатели платят больше), но показов стало меньше — пользователи реже долистывают до места, где блок отображается, или платформа показывает блок реже из-за нового размера.</p>
+      <p><strong>Что отвечает аналитик:</strong> «CPM растёт, но выручка не меняется. Это размен, не победа. Перед раскаткой нужно понять, где теряются Shows — в воронке или в видимости. Если в воронке — формат проблемный. Если в видимости — можно искать компенсацию в плотности или геометрии блока».</p>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-tag">В работу</div>
+      <p>Рост CPM сам по себе ничего не значит. Деньги меняются только когда меняется произведение CPM × Shows.</p>
+      <p>Когда видишь рост CPM — следующий вопрос всегда «что с Shows». До ответа на него никаких решений по тесту не принимай.</p>
+    </div>
+
+    <h3>Что дальше</h3>
+
+    <ul>
+      <li><a href="/lab/ab-decisions/practice/scenarios/001-cpm-up-rev-down.html">Сценарий: цена растёт — выручка падает</a> — отработка обратной ситуации.</li>
+      <li><a href="/lab/ab-decisions/practice/scenarios/002-rev-up-no-cpm.html">Сценарий: рост выручки без роста цены</a> — другой механизм, тот же протокол.</li>
+      <li><a href="/lab/ab-decisions/practice/scenarios/010-more-shows-less-revenue.html">Сценарий: увеличение объёма с отрицательной отдачей</a> — когда рост Shows тоже не помогает.</li>
+    </ul>
+
+  </div>
+
+  <footer class="lesson-footer">
+    <nav class="lesson-nav" aria-label="Навигация по урокам">
+      <div></div>
+      <a class="lesson-nav--next" href="/lab/ab-decisions/lessons/02-statistics-vs-decision.html">
+        <div class="lesson-nav-label">Следующий →</div>
+        <div class="lesson-nav-title">02. Когда статистика не даёт ответа</div>
+      </a>
+    </nav>
+  </footer>
+
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+</body>
+</html>
