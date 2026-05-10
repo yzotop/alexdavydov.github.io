@@ -242,7 +242,7 @@ Hub-страницы добавляют свой breakpoint:
 - Анимированное подчёркивание: `::after { height: 2px; transform: scaleX(0) → scaleX(1) }`
 - Цвет: `var(--ink)` по умолчанию
 
-**Активная ссылка:** инлайн-атрибут `style="color:var(--ink)"` (класса `.active` нет — несоответствие №2, остаётся в бэклоге).
+**Активная ссылка:** атрибут `aria-current="page"` + CSS `.nav-links a[aria-current="page"] { color: var(--ink) }`. Класса `.active` нет — семантика через ARIA.
 
 **`.nav-cta` (опционально, не во всех страницах):**
 - `background: var(--accent); color: #fff`
@@ -1113,10 +1113,9 @@ Hub-страницы добавляют свой breakpoint:
 - `.article { padding: 72px 48px 0 }` — на страницах заметок
 - Разница: `64px` vs `72px`. Неясно, намеренно ли.
 
-### №2: Активная ссылка в nav — инлайн-стиль вместо класса
-- На всех страницах: `<a href="/cases/" style="color:var(--ink)">Кейсы</a>`
-- Нет класса `.active` или `.is-current` в `style.css`
-- Пронизывает все 12 страниц с активным nav-элементом
+### ~~№2: Активная ссылка в nav — инлайн-стиль вместо класса~~ ✅ Закрыто
+- Добавлено `.nav-links a[aria-current="page"] { color: var(--ink) }` в `style.css`
+- Инлайн-атрибут `style="color:var(--ink)"` заменён на `aria-current="page"` во всех 35 источниках (33 HTML-файла + генератор `render_courses_hub.py` + `courses/index.html` регенерирован)
 
 ### ~~№3: H2 в `.prose` — два размера~~ ✅ Закрыто
 - Добавлено `.prose h2 { font-size: 32px; font-weight: 500; letter-spacing: -.02em; margin: 48px 0 14px }` в `style.css`
@@ -1261,8 +1260,6 @@ Hub-страницы добавляют свой breakpoint:
 
 **Существующие исключения (зафиксированы как несоответствия,
 будут устраняться):**
-- Активная ссылка в `.nav` — `style="color:var(--ink)"`
-  (несоответствие №2)
 - В отдельных legacy-файлах остаются inline-стили,
   переехавшие из старого дизайна — устранение по мере
   редактуры этих файлов.
