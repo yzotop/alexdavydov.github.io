@@ -45,8 +45,8 @@ def esc(s: str) -> str:
 
 def nav_html(active: str) -> str:
     def _a(href: str, label: str, key: str) -> str:
-        style = ' style="color:var(--ink)"' if active == key else ""
-        return f'<a href="{href}"{style}>{label}</a>'
+        extra = ' aria-current="page"' if active == key else ""
+        return f'<a href="{href}"{extra}>{label}</a>'
 
     return f"""<nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
