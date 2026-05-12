@@ -17,63 +17,72 @@
 
         <div class="tldr">
             <p><strong>TL;DR</strong></p>
-            <p>Сравниваем изменение outcome в treatment-группе vs контрольной. Работает, если без treatment группы двигались бы параллельно. Оценивает ATT.</p>
+            <p>Сравниваем изменение outcome в treatment-группе с изменением в контрольной. Работает, если без treatment группы двигались бы параллельно. Оценивает ATT.</p>
         </div>
 
+        <h3>Фундаментальная интуиция</h3>
+        <p>Главная проблема любой оценки эффекта — мы не знаем, что произошло бы с treated-группой, если бы она не получила treatment. DiD решает это за счёт контрольной группы: предполагается, что без treatment treated развивался бы так же, как control. Тогда фактическое отклонение treated от этой траектории — и есть эффект.</p>
+        <p>Отсюда название: <em>difference-in-differences</em> — берём разность «до/после» для treated, затем вычитаем разность «до/после» для control. Разность контрольной группы убирает все внешние шоки, не связанные с treatment: если рынок в целом рос или падал, это движение отразится в обеих группах и сократится при вычитании.</p>
+        <p>DiD оценивает <strong>ATT</strong> — Average Treatment Effect on the Treated: средний каузальный эффект именно для тех, кто получил treatment. Это не средний эффект по всей популяции. Если treated и control — принципиально разные юниты, экстраполировать ATT на всю популяцию нельзя.</p>
+        <p>Ключевое ограничение: допущение о параллельных трендах (parallel trends) невозможно доказать — его можно только не опровергнуть по pre-period данным. Если в pre-period тренды были параллельны, это аргумент в пользу допущения, но не его доказательство.</p>
+
         <h3>Когда применять</h3>
+        <p>DiD подходит, когда есть натуральный эксперимент: изменение политики, запуск продукта или внешний шок, затронувший одни юниты, но не другие. Необходимы данные до и после события.</p>
         <ul>
-            <li>Есть "до/после" treatment и контрольная группа</li>
-            <li>Treatment назначается на уровне группы (город, регион, сегмент)</li>
-            <li>Parallel trends правдоподобны (визуально и по pre-period данным)</li>
-            <li>Нет spillover между treated и control</li>
-            <li>Достаточно pre-period данных для проверки trends (≥ 4–8 периодов)</li>
+            <li>Есть «до/после» treatment и контрольная группа, не получившая изменения</li>
+            <li>Treatment назначается на уровне группы: город, регион, сегмент, категория</li>
+            <li>Parallel trends правдоподобны — визуально и по pre-period данным (≥ 4–8 периодов)</li>
+            <li>Нет spillover: treatment не перетекает в контрольную группу</li>
+            <li>Состав групп стабилен — treatment не меняет, кто попадает в treated или control</li>
         </ul>
 
-        <h3>What you estimate</h3>
-        <p><strong>ATT</strong> (Average Treatment Effect on the Treated). δ = E[Y(1) − Y(0) | D=1]. DiD не оценивает ATE — только эффект для тех, кто получил treatment.</p>
+        <h3>Что мы оцениваем</h3>
+        <p><strong>ATT</strong> (Average Treatment Effect on the Treated) — средний каузальный эффект для тех, кто получил treatment. Формально: δ = E[Y(1) − Y(0) | D=1], где Y(1) — outcome при treatment, Y(0) — контрфактический outcome без treatment. Y(0) для treated-группы ненаблюдаем — его заменяет траектория контрольной группы.</p>
+        <p>DiD не оценивает ATE (средний эффект по всей популяции). Если treated и control — разные типы юнитов (крупные города vs малые, premium-сегмент vs mass-market), ATT нельзя распространить на всю популяцию.</p>
 
-        <h3>Assumptions</h3>
+        <h3>Что нужно для идентификации</h3>
+        <p>Пять допущений. Первые два критичны и нарушаются чаще всего:</p>
         <ol>
-            <li><strong>Parallel trends:</strong> без treatment обе группы двигались бы одинаково (не доказуемо, только не отвергаемо)</li>
-            <li><strong>No anticipation:</strong> treatment-группа не реагирует до формальной даты treatment</li>
-            <li><strong>No spillover:</strong> treatment не влияет на контрольную группу</li>
-            <li><strong>Stable composition:</strong> состав групп не меняется из-за treatment</li>
-            <li><strong>Common shocks:</strong> внешние шоки затрагивают обе группы одинаково</li>
+            <li><strong>Parallel trends:</strong> без treatment обе группы двигались бы одинаково. Это не доказуемо — только не отвергаемо по pre-period данным. Всё остальное — теоретический аргумент.</li>
+            <li><strong>No anticipation:</strong> treated-группа не меняет поведение до формальной даты treatment. Нарушается, если объявление за N дней до вступления в силу уже запускает реакцию.</li>
+            <li><strong>No spillover:</strong> treatment не влияет на control. В платформах часто нарушается: изменение комиссии в одной категории перетягивает продавцов из другой.</li>
+            <li><strong>Stable composition:</strong> состав групп не меняется из-за treatment. Если treatment заставляет слабых игроков уйти — оставшиеся treated сильнее среднего.</li>
+            <li><strong>Common shocks:</strong> внешние события затрагивают обе группы одинаково. Иначе DiD впишет шок в «эффект treatment».</li>
         </ol>
 
-        <h3>Diagnostics</h3>
+        <h3>Как проверить</h3>
         <table>
             <tr><th>Проверка</th><th>Что смотрим</th><th>Красный флаг</th><th>Что делать</th></tr>
-            <tr><td>Pre-trends</td><td>Event study: коэфф. для k &lt; 0</td><td>Значимые коэфф. до treatment</td><td>Matching+DiD, SCM, или отказ</td></tr>
+            <tr><td>Pre-trends</td><td>Event study: коэффициенты для k &lt; 0</td><td>Значимые коэффициенты до treatment</td><td>Matching+DiD, SCM, или отказ</td></tr>
             <tr><td>Anticipation</td><td>Коэфф. за 1–2 периода до treatment</td><td>Реакция до treatment date</td><td>Сдвинуть treatment date назад</td></tr>
             <tr><td>Placebo outcome</td><td>Outcome, не связанный с treatment</td><td>Значимый эффект на placebo</td><td>Пересмотреть дизайн</td></tr>
-            <tr><td>Placebo treatment date</td><td>Фиктивная дата в pre-period</td><td>Значимый "эффект"</td><td>Trends нестабильны → DiD невалиден</td></tr>
-            <tr><td>SE clustering</td><td>Уровень кластеризации ≥ уровня treatment</td><td>Некластеризованные SE при групповом treatment</td><td>Кластеризовать; при малом N — wild bootstrap</td></tr>
+            <tr><td>Placebo treatment date</td><td>Фиктивная дата в pre-period</td><td>Значимый «эффект»</td><td>Trends нестабильны → DiD невалиден</td></tr>
+            <tr><td>SE clustering</td><td>Уровень кластеризации ≥ уровня treatment</td><td>Некластеризованные SE при групповом treatment</td><td>Кластеризовать; при малом N кластеров — wild bootstrap</td></tr>
         </table>
 
-        <h3>Minimal estimator</h3>
+        <h3>Минимальный расчёт</h3>
 <pre><code>Y_it = α + β₁·Treat_i + β₂·Post_t + δ·(Treat_i × Post_t) + ε_it
 
 δ = (Ȳ_treat_post − Ȳ_treat_pre) − (Ȳ_control_post − Ȳ_control_pre)</code></pre>
 
-        <h3>Pitfalls</h3>
-        <ul>
-            <li>Parallel trends визуально есть, но нарушаются после treatment по другим причинам (confounding shock)</li>
-            <li>Anticipation: объявление за N дней до вступления в силу, группа реагирует заранее</li>
-            <li>Compositional change: treatment заставляет часть юнитов "уйти" из группы</li>
-            <li>SE без кластеризации → ложная значимость (Bertrand, Duflo, Mullainathan 2004)</li>
-            <li>Мало кластеров (N &lt; 20) → стандартная кластеризация невалидна, нужен wild bootstrap</li>
-            <li>Staggered adoption → TWFE смещён при гетерогенном эффекте (см. ниже)</li>
-            <li>Тренд не линейный → визуальная "параллельность" обманчива</li>
-        </ul>
+        <h3>Типичные ошибки</h3>
+        <ol>
+            <li><strong>Параллельные тренды выглядят хорошо визуально, но нарушаются после treatment по другой причине</strong> (confounding shock). Один график — недостаточно.</li>
+            <li><strong>Anticipation:</strong> объявление за N дней до вступления в силу — группа реагирует заранее. Реальная дата treatment раньше формальной.</li>
+            <li><strong>Compositional change:</strong> treatment заставляет часть юнитов «уйти» из группы. Оставшиеся treated — не случайная выборка.</li>
+            <li><strong>SE без кластеризации → ложная значимость</strong> (Bertrand, Duflo, Mullainathan 2004). Групповой treatment всегда требует кластеризации на уровне группы.</li>
+            <li><strong>Мало кластеров (N &lt; 20) → стандартная кластеризация невалидна</strong>, нужен wild cluster bootstrap или randomization inference.</li>
+            <li><strong>Staggered adoption → TWFE смещён</strong> при гетерогенном эффекте (см. раздел ниже).</li>
+            <li><strong>Нелинейный тренд → визуальная «параллельность» обманчива.</strong> Параллельность в pre-period не гарантирует её после treatment.</li>
+        </ol>
 
-        <h3>What to do next</h3>
+        <h3>Что делать дальше</h3>
         <ul>
-            <li>Event study: всегда строить, даже если "основная" оценка DiD</li>
-            <li>Placebo tests: минимум 2 (outcome + treatment date)</li>
-            <li>Если parallel trends нарушены → рассмотреть matching+DiD, synthetic DiD, или SCM</li>
-            <li>Если мало кластеров → randomization inference</li>
-            <li>Если staggered → использовать cohort-specific estimators</li>
+            <li>Event study: строить всегда — даже если «основная» оценка уже есть</li>
+            <li>Placebo tests: минимум два (по outcome и по treatment date)</li>
+            <li>Если parallel trends нарушены → matching+DiD, synthetic DiD, или SCM</li>
+            <li>Если мало кластеров → wild cluster bootstrap или randomization inference</li>
+            <li>Если staggered adoption → cohort-specific estimators (Callaway &amp; Sant'Anna и др.)</li>
         </ul>
 
         <h3>Event Study — полноценный разбор</h3>
@@ -107,7 +116,7 @@ ASCII-визуализация (идеальный случай):
         <h4>При нарушении pre-trends</h4>
         <ul>
             <li>Matching+DiD: сначала подобрать контроль по ковариатам, потом DiD</li>
-            <li>Добавить group-specific time trends (рискованно: может "съесть" эффект)</li>
+            <li>Добавить group-specific time trends (рискованно: может «съесть» эффект)</li>
             <li>Переключиться на SCM (строит контроль, воспроизводящий pre-period)</li>
             <li>При staggered: использовать clean comparisons (never-treated / not-yet-treated)</li>
         </ul>
@@ -122,72 +131,61 @@ ASCII-визуализация (идеальный случай):
         </div>
 
         <h3>Toy example: DiD вручную</h3>
-        <p>Запуск рекламы в городе A (treated), город B — контроль. Outcome: средний revenue/день.</p>
+        <p>Маркетплейс снижает комиссию для категории «Одежда» с 1 апреля (treated). Категория «Электроника» — контроль. Outcome: средний дневной GMV категории (тыс. руб.).</p>
         <table>
-            <tr><th>Город</th><th>Группа</th><th>Pre (нед. 1–4)</th><th>Post (нед. 5–8)</th></tr>
-            <tr><td>A</td><td>Treated</td><td>100</td><td>130</td></tr>
-            <tr><td>B</td><td>Control</td><td>90</td><td>105</td></tr>
+            <tr><th>Категория</th><th>Группа</th><th>Pre (янв–март, avg)</th><th>Post (апр–июнь, avg)</th></tr>
+            <tr><td>Одежда</td><td>Treated</td><td>100</td><td>90</td></tr>
+            <tr><td>Электроника</td><td>Control</td><td>130</td><td>105</td></tr>
         </table>
-<pre><code># Step 1: Разности
-ΔY_treat   = 130 − 100 = +30
-ΔY_control = 105 −  90 = +15
+<pre><code># Step 1: Изменения внутри каждой группы
+ΔY_treated = 90 − 100 = −10   (GMV упал)
+ΔY_control = 105 − 130 = −25  (GMV упал сильнее)
 
 # Step 2: DiD-оценка
-δ = ΔY_treat − ΔY_control = 30 − 15 = 15
+τ̂ = ΔY_treated − ΔY_control = −10 − (−25) = +15
 
-# Step 3: Проверка parallel trends
-# Pre-period (нед. -8..-5): были ли тренды параллельны?
-# Нужно проверить по дневным/недельным данным.</code></pre>
-<pre><code>-- Pseudo-SQL
-SELECT
-  treat,
-  post,
-  AVG(revenue) AS mean_rev
-FROM daily_revenue
-GROUP BY treat, post;
-
--- δ = (mean_rev WHERE treat=1 AND post=1)
---   - (mean_rev WHERE treat=1 AND post=0)
---   - (mean_rev WHERE treat=0 AND post=1)
---   + (mean_rev WHERE treat=0 AND post=0)</code></pre>
-        <p><strong>Ожидаемый результат:</strong> δ = 15 (каузальный эффект рекламы при выполнении parallel trends).</p>
+# Step 3: Проверки
+# → Pre-trends: были ли тренды параллельны в янв–марте?
+# → Spillover: не перетянула ли Одежда продавцов из Электроники?
+# → SE: кластеризовать на уровне категории</code></pre>
+        <p><strong>Интерпретация:</strong> общий рыночный спад затронул обе категории. Без снижения комиссии Одежда тоже упала бы на 25 тыс. Снижение комиссии смягчило падение: τ̂ = +15 тыс. — оценённый эффект изменения политики (при выполнении parallel trends).</p>
 
         <h3>Упражнения</h3>
 
         <details>
-            <summary>Задача 1: выбор метода</summary>
+            <summary>Задача 1: parallel trends</summary>
             <div>
-                <p>Компания запускает программу лояльности для клиентов с доходом > 100K. Клиенты с доходом &lt; 100K — контроль. Через 3 месяца сравнивают retention. Какой метод подходит лучше: DiD или RDD?</p>
+                <p>Финтех-компания запускает кешбэк-программу для premium-сегмента (лимит &gt; 100К руб.) с 1 марта. Контроль — middle-сегмент (лимит 50–100К). Outcome: число транзакций в месяц. Аналитик строит event study и видит значимый pre-trend: δ_{−3} = +8%, δ_{−2} = +6%. Валиден ли DiD?</p>
                 <details>
                     <summary>Решение</summary>
                     <div>
-                        <p><strong>RDD</strong> подходит лучше. Порог 100K — это cutoff по running variable (доход). Юниты рядом с порогом (95K vs 105K) почти идентичны. DiD здесь проблематичен: группы систематически различаются (высокий доход vs низкий), parallel trends маловероятны.</p>
+                        <p>DiD невалиден без коррекции. Значимые коэффициенты δ_{−3} и δ_{−2} говорят, что premium-сегмент рос быстрее middle ещё до запуска программы. Их месячный оборот менялся в <strong>pre-period</strong> не так, как у middle-сегмента. Parallel trends нарушены: оценка DiD впишет часть существующего тренда в «эффект кешбэка». Возможные действия: (1) matching+DiD — подобрать контроль из middle, похожий на premium по pre-period динамике; (2) SCM — построить синтетический premium из доноров; (3) честно признать, что DiD здесь неприменим без дополнительных допущений.</p>
                     </div>
                 </details>
             </div>
         </details>
 
         <details>
-            <summary>Задача 2: диагностика</summary>
+            <summary>Задача 2: anticipation</summary>
             <div>
-                <p>Аналитик провёл DiD: δ = +12%, p = 0.003. Но event study показывает δ_{−2} = +5% (p = 0.04), δ_{−1} = +3% (p = 0.15). Валиден ли результат?</p>
+                <p>Маркетплейс объявил об изменении алгоритма ранжирования 15 февраля; изменение вступило в силу 1 марта. Event study показывает δ_{−2} = +5% (p &lt; 0.05) — значимый рост в феврале. Что это означает и что делать?</p>
                 <details>
                     <summary>Решение</summary>
                     <div>
-                        <p><strong>Нет.</strong> Значимый коэффициент δ_{−2} = +5% указывает на нарушение parallel trends: treated группа росла быстрее ещё до treatment. Часть (или весь) эффект δ = +12% может быть продолжением существующего тренда, а не каузальным эффектом treatment.</p>
+                        <p>Это <strong>anticipation effect</strong>: продавцы отреагировали на объявление ещё до технического вступления в силу (оптимизировали листинги, подняли ставки). Формальная treatment date (1 марта) не совпадает с реальной датой изменения поведения. Решение: сдвинуть treatment date на 15 февраля (дату объявления). После сдвига проверить, исчезли ли значимые pre-trend коэффициенты.</p>
                     </div>
                 </details>
             </div>
         </details>
 
         <details>
-            <summary>Задача 3: интерпретация</summary>
+            <summary>Задача 3: SE clustering</summary>
             <div>
-                <p>DiD по geo-launch (3 treated региона, 9 контрольных). δ = +8%, SE = 2%, p = 0.001. SE не кластеризованы. Что не так?</p>
+                <p>Geo-launch: 3 региона получили treatment (новая логистика), 9 регионов — контроль. DiD: δ = +8%, SE = 2%, p = 0.001. SE не кластеризованы. Что не так и как исправить?</p>
                 <details>
                     <summary>Решение</summary>
                     <div>
-                        <p>SE должны быть кластеризованы на уровне региона (12 кластеров). Без кластеризации SE занижены, p-value ложно мал. При 12 кластерах (и только 3 treated) даже кластеризованные SE ненадёжны — нужен wild cluster bootstrap или randomization inference.</p>
+                        <p>SE должны быть кластеризованы на уровне региона — уровне, на котором назначается treatment. Без кластеризации SE занижены: остатки внутри региона коррелируют (общий региональный шок), а обычные SE считают их независимыми. p = 0.001 ложно мал. При 12 кластерах (3 treated + 9 control) даже кластеризованные SE ненадёжны — мало кластеров. Правильное решение: wild cluster bootstrap или randomization inference (переставлять treatment случайно между регионами, строить эмпирическое распределение δ).</p>
                     </div>
                 </details>
             </div>
