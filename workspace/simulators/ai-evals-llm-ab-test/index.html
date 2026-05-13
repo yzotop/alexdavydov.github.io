@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM A/B Test Simulator — AI-evals</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- TOPBAR с навигацией назад в hub -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <span class="topbar-title">AI-evals · LLM A/B Test Simulator</span>
+    </div>
+    <div class="topbar__right">
+      <a href="/workspace/simulators/" class="topbar-link">← Симуляторы</a>
+    </div>
+  </header>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main class="page">
+
+    <!-- РАЗДЕЛ 1: СЦЕНАРИЙ -->
+    <section class="prose">
+      <h1>Замена LLM-модели в чат-боте маркетплейса:
+          как спланировать A/B</h1>
+      <div class="lede">
+        <p>Маркетплейс хочет заменить LLM-модель в чат-боте
+           поддержки покупателей. Текущая модель — топовая
+           (типа GPT-4), дорогая. Новая — в 3 раза дешевле,
+           по бенчмаркам чуть слабее на общих задачах, но
+           возможно достаточная для support-сценариев
+           маркетплейса. Решение нужно принимать на данных,
+           не на бенчмарках.</p>
+        <p>Простой план: A/B-тест 50/50, метрика CSAT (1-5
+           stars после диалога). Если новая модель не
+           статистически хуже текущей — мигрируем,
+           экономим деньги. Если хуже — оставляем текущую.</p>
+        <p>Аналитик должен ответить на три вопроса:</p>
+        <ul>
+          <li>Сколько диалогов нужно для статистически
+              достоверного решения?</li>
+          <li>Какие метрики кроме CSAT нужны, чтобы решение
+              было правильным?</li>
+          <li>Что специфично для A/B на LLM-моделях, чего
+              нет в обычном A/B-тесте на UX-фиче?</li>
+        </ul>
+        <p>Эта страница даёт ответы на все три. Симулятор
+           посередине позволяет покрутить параметры и
+           увидеть, как меняется требуемый sample size при
+           разных предположениях.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 2: ЧТО ОТЛИЧАЕТ A/B НА LLM ОТ ОБЫЧНОГО A/B -->
+    <section class="prose">
+      <h2>Что отличает A/B на LLM от обычного A/B</h2>
+      <p>Главное содержание этого кейса. Три специфические
+         угрозы, которых нет в обычном A/B-тесте на UX или
+         продуктовой фиче.</p>
+
+      <h3>Угроза 1. Stochastic treatment</h3>
+      <p>В обычном A/B treatment детерминирован: пользователь
+         видит фичу A или фичу B. Один и тот же пользователь,
+         тот же контекст, тот же запрос — увидит то же самое.
+         Variance в outcome берётся из вариативности
+         пользователей и контекстов, не из самой treatment.</p>
+      <p>В A/B на LLM треатмент сам стохастичен. При temperature
+         больше нуля модель даёт разные ответы на тот же запрос.
+         Это не баг, это feature — модель так устроена. Но это
+         добавляет variance, которой не было в стандартной
+         формуле sample size.</p>
+      <p>Что это значит на практике: тот же пользователь с тем
+         же вопросом получает разный ответ при повторном
+         обращении. CSAT по диалогу зависит не только от того,
+         какая модель ответила, но и от того, как именно она
+         ответила в этот раз. Это дополнительный шум, который
+         маскирует разницу между моделями.</p>
+      <p>Численно: если variance модели добавляет 30% к общей
+         дисперсии, требуемый N вырастает примерно в 2 раза.
+         При 50% — в 4 раза. Это в формуле напрямую: N
+         пропорционально σ². Игнорировать stochasticity —
+         значит планировать в 2-4 раза меньше выборки чем
+         нужно.</p>
+
+      <h3>Угроза 2. Survivorship через handoff</h3>
+      <p>Стандартная метрика — CSAT измеряется в конце диалога.
+         Но не все диалоги доходят до конца — часть
+         переключается на живого оператора (handoff). Эти
+         диалоги либо вообще не получают CSAT, либо получают
+         CSAT уже от человека, а не от бота.</p>
+      <p>Что это меняет в анализе: если новая модель чаще
+         переключает на человека (она хуже справляется и
+         быстрее сдаётся), то на CSAT мы видим только
+         «успешные» диалоги новой модели — те где она дошла
+         до конца. Эти диалоги в среднем легче, и CSAT по
+         ним может быть даже лучше чем у старой модели. А
+         общее качество новой модели хуже — её просто меньше
+         «допускали» до конца.</p>
+      <p>Это classical survivorship bias. Если измерять только
+         CSAT — можно прийти к выводу, что новая модель
+         лучше, и переключиться на неё, при этом увеличив
+         нагрузку на живых операторов в несколько раз.</p>
+      <p>Что нужно: мониторить handoff rate как параллельную
+         метрику. Если handoff в новой модели сильно вырос,
+         выигрыш по CSAT — иллюзия selection bias.</p>
+
+      <h3>Угроза 3. Multi-metric trade-offs</h3>
+      <p>CSAT — одна метрика. Но решение про модель — это
+         multi-objective задача:</p>
+      <ul>
+        <li>CSAT (качество для пользователя)</li>
+        <li>Handoff rate (нагрузка на людей)</li>
+        <li>Average tokens per session (стоимость инференса)</li>
+        <li>Time-to-resolution (скорость)</li>
+        <li>Cost per resolved ticket (общая экономика)</li>
+      </ul>
+      <p>Новая модель может выигрывать в CSAT, проигрывать
+         в handoff и tokens. Чистый эффект на бизнес — сумма
+         этих изменений в денежных терминах. Решение
+         принимается не по одной звёздочке CSAT, а по общему
+         ROI.</p>
+      <p>Это не уникально для LLM (любое решение про продукт
+         — multi-objective), но для LLM особенно опасно:
+         разница в стоимости моделей в 3-10 раз делает
+         второстепенные метрики первостепенными. Замена
+         дорогой модели на дешёвую при равном CSAT — может
+         всё равно быть провалом, если handoff вырос вдвое.</p>
+      <p>Что нужно: считать total cost per resolved ticket
+         как итоговую метрику решения. CSAT — один из
+         компонентов, не вердикт.</p>
+    </section>
+
+    <!-- РАЗДЕЛ 3: СИМУЛЯТОР (HTML-каркас БЕЗ JS) -->
+    <section class="prose">
+      <h2>Симулятор: sample size для A/B на LLM-моделях</h2>
+      <p>Покрути параметры и посмотри, как меняется
+         минимальное число диалогов на группу. Главное
+         отличие от обычного power calculator — поправка
+         на stochasticity модели.</p>
+    </section>
+
+    <section class="simulator-section">
+      <div class="simulator-container">
+
+        <!-- Левая колонка: контролы -->
+        <aside class="simulator-controls">
+
+          <div class="control-group">
+            <label for="effect-slider">
+              <span class="control-name">Effect size (Δ CSAT)</span>
+              <span class="control-value" id="effect-value">0.15</span>
+            </label>
+            <input type="range" id="effect-slider"
+                   min="0.05" max="0.50" step="0.01" value="0.15">
+            <p class="control-hint">Минимальная разница в
+               среднем CSAT (1-5 stars), которую хотим
+               обнаружить</p>
+          </div>
+
+          <div class="control-group">
+            <label for="variance-slider">
+              <span class="control-name">Между-диалоговая дисперсия</span>
+              <span class="control-value" id="variance-value">1.20</span>
+            </label>
+            <input type="range" id="variance-slider"
+                   min="0.50" max="2.50" step="0.05" value="1.20">
+            <p class="control-hint">σ² базовая, без учёта
+               стохастичности модели</p>
+          </div>
+
+          <div class="control-group">
+            <label for="stochasticity-slider">
+              <span class="control-name">Доля variance от модели</span>
+              <span class="control-value" id="stochasticity-value">0.30</span>
+            </label>
+            <input type="range" id="stochasticity-slider"
+                   min="0.00" max="0.70" step="0.05" value="0.30">
+            <p class="control-hint">Какая часть общей variance
+               добавляется stochasticity модели (temperature,
+               retries)</p>
+          </div>
+
+          <div class="control-group">
+            <label for="power-slider">
+              <span class="control-name">Power</span>
+              <span class="control-value" id="power-value">0.80</span>
+            </label>
+            <input type="range" id="power-slider"
+                   min="0.50" max="0.95" step="0.05" value="0.80">
+            <p class="control-hint">Желаемая статистическая мощность</p>
+          </div>
+
+          <div class="control-group">
+            <label for="alpha-slider">
+              <span class="control-name">α</span>
+              <span class="control-value" id="alpha-value">0.05</span>
+            </label>
+            <input type="range" id="alpha-slider"
+                   min="0.01" max="0.10" step="0.005" value="0.05">
+            <p class="control-hint">Уровень значимости (двусторонний)</p>
+          </div>
+
+          <div class="presets">
+            <h4>Реалистичные сценарии</h4>
+            <button class="preset-btn" data-preset="min">
+              Минимальный effect (Δ=0.05)
+            </button>
+            <button class="preset-btn" data-preset="realistic">
+              Реалистичный (Δ=0.15)
+            </button>
+            <button class="preset-btn" data-preset="large">
+              Большой effect (Δ=0.30)
+            </button>
+          </div>
+        </aside>
+
+        <!-- Правая колонка: результаты -->
+        <div class="simulator-results">
+
+          <div class="main-number">
+            <div class="main-label">Минимальный sample size на группу:</div>
+            <div class="main-value" id="n-corrected">—</div>
+            <div class="main-unit">диалогов</div>
+          </div>
+
+          <div class="comparison">
+            <div class="comparison-item">
+              <span class="comparison-label">Без поправки на stochasticity:</span>
+              <span class="comparison-value" id="n-naive">—</span>
+            </div>
+            <div class="comparison-item">
+              <span class="comparison-label">Поправка:</span>
+              <span class="comparison-value" id="multiplier">—</span>
+            </div>
+          </div>
+
+          <div class="chart-block">
+            <h4>Power curve</h4>
+            <canvas id="power-curve" width="600" height="300"></canvas>
+            <p class="chart-caption">
+              Синяя линия — с учётом stochasticity модели.
+              Серая — стандартный расчёт. Горизонтальная
+              линия — целевая power.
+            </p>
+          </div>
+
+          <div class="chart-block">
+            <h4>Распределения CSAT</h4>
+            <canvas id="distributions" width="600" height="200"></canvas>
+            <p class="chart-caption">
+              Две модели с разницей в среднем = effect size.
+              Variance включает stochasticity. Чем больше
+              σ — тем сильнее перекрываются распределения,
+              тем труднее различить.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight">
+        <h4>Что показывает симулятор</h4>
+        <ol>
+          <li>Без stochasticity (slider в 0) — N
+              расчитывается по классической формуле, как
+              для обычного A/B.</li>
+          <li>Реалистичная stochasticity 30% (default) — N
+              в 1.4× больше. Это типично для GPT-class
+              моделей с temperature 0.7.</li>
+          <li>Высокая stochasticity 50%+ — N в 2× больше.
+              Это модели с большой вариативностью ответов
+              или с fallback-логикой между несколькими
+              retries.</li>
+        </ol>
+        <p><strong>Главный takeaway:</strong> для realistic
+           effect size (0.15 stars) вам нужно ~850 диалогов
+           на группу. Большинство команд закладывают 200-300
+           — и не видят разницы между моделями, делая вывод
+           что они «эквивалентны». На самом деле — просто
+           не хватает выборки.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 4: ПОЛНЫЙ EVAL PIPELINE -->
+    <section class="prose">
+      <h2>Полный eval pipeline</h2>
+      <p>Теперь практическое: что именно собирать в коде и
+         как агрегировать. Это рабочий шаблон для аналитика,
+         который запускает A/B на LLM-модели в продакшене.</p>
+
+      <h3>Что логировать на уровне диалога</h3>
+      <p>Минимальный набор полей в логе каждого диалога:</p>
+      <pre><code>dialog_id          — уникальный ID
+user_id            — кто пользователь (для дедупликации
+                     и кластеризации SE)
+arm                — A или B (какая модель)
+started_at         — время начала
+ended_at           — время окончания
+end_reason         — resolved, handoff, abandoned, timeout
+csat               — 1-5, если пользователь оценил
+num_turns          — сколько раундов диалога
+tokens_total       — суммарно токенов на сессию
+resolved_flag      — бинарный, успешно ли решена проблема
+                     (нужен для cost-per-resolved)
+category           — тип запроса (доставка, возврат,
+                     и т.д.) — для гетерогенности</code></pre>
+
+      <h3>Что считать на уровне эксперимента</h3>
+      <p>Базовая SQL-агрегация:</p>
+      <pre><code>SELECT
+  arm,
+  COUNT(*) AS n_dialogs,
+  AVG(csat) FILTER (WHERE csat IS NOT NULL) AS csat_avg,
+  COUNT(csat) * 1.0 / COUNT(*) AS csat_response_rate,
+  AVG(end_reason = 'handoff'::TEXT) AS handoff_rate,
+  AVG(resolved_flag::INT) AS resolution_rate,
+  AVG(tokens_total) AS tokens_avg,
+  AVG(EXTRACT(EPOCH FROM ended_at - started_at)) AS duration_avg
+FROM dialogs
+WHERE experiment_id = 'llm_swap_q2'
+  AND started_at &gt;= '2026-04-01'
+GROUP BY arm;</code></pre>
+      <p>Это даёт baseline-таблицу: что показывает каждая
+         модель по всем ключевым метрикам.</p>
+
+      <h3>Что считать на уровне дашборда</h3>
+      <p>Дашборд показывает:</p>
+      <ol>
+        <li>CSAT mean per arm + 95% CI, с поправкой на
+            stochasticity</li>
+        <li>Handoff rate per arm + CI</li>
+        <li>Resolution rate per arm + CI</li>
+        <li>Cost per resolved ticket per arm
+            (комбинированная)</li>
+        <li>Heterogeneity: CSAT в разрезе category
+            (топ-5 категорий)</li>
+      </ol>
+      <p>Псевдокод финального вердикта:</p>
+      <pre><code>def decision(arm_A, arm_B):
+    # Главный вопрос: total cost per resolved ticket
+    cost_A = (arm_A.tokens_cost +
+              arm_A.handoff_rate * COST_PER_HUMAN_HANDOFF)
+              / arm_A.resolution_rate
+    cost_B = (arm_B.tokens_cost +
+              arm_B.handoff_rate * COST_PER_HUMAN_HANDOFF)
+              / arm_B.resolution_rate
+
+    # CSAT не должен сильно падать
+    csat_acceptable = (arm_B.csat &gt;= arm_A.csat - 0.10)
+
+    # Statistical significance с поправкой на stochasticity
+    sig = test_diff(arm_A, arm_B, account_for_stochasticity=True)
+
+    if sig and cost_B &lt; cost_A and csat_acceptable:
+        return 'switch_to_B'
+    elif sig and cost_A &lt; cost_B:
+        return 'keep_A'
+    else:
+        return 'inconclusive_need_more_data'</code></pre>
+      <p>Это не «выкатываем по CSAT». Это решение с явным
+         учётом trade-off между качеством и стоимостью, и
+         с честной обработкой «неубедительного» исхода.</p>
+
+      <h3>Что писать в финальный отчёт</h3>
+      <p>По образцу Module 8 квазиэкспериментов — семь шагов:</p>
+      <ol>
+        <li>Контекст и вопрос</li>
+        <li>Дизайн (A/B 50/50, primary metric = cost per
+            resolved ticket, secondary = CSAT, handoff,
+            tokens)</li>
+        <li>Допущения (treatment экзогенен — рандомизация
+            на уровне пользователей; stochasticity модели
+            учтена в sample size)</li>
+        <li>Проверки (balance check, sample ratio mismatch,
+            handoff sanity)</li>
+        <li>Оценка (главные цифры с CI)</li>
+        <li>Ограничения (короткое окно, конкретный сегмент
+            пользователей, эффект на новых vs returning)</li>
+        <li>Рекомендация (migrate / keep / continue с
+            планом)</li>
+      </ol>
+    </section>
+
+    <!-- РАЗДЕЛ 5: ЧТО ДЕЛАТЬ ДАЛЬШЕ -->
+    <section class="prose">
+      <h2>Что делать дальше</h2>
+      <p>Минимальные шаги для аналитика который собирается
+         запустить A/B на LLM-моделях:</p>
+      <ul>
+        <li>Прежде чем запускать тест — посчитать sample
+            size с поправкой на stochasticity. Симулятор
+            выше делает это. Если получается N &gt; 10×
+            вашего недельного трафика — ваш тест займёт
+            месяцы, и нужно либо принимать меньший effect
+            size как минимальный значимый, либо искать
+            другой способ оценки (offline eval на golden
+            set).</li>
+        <li>Выбрать primary metric до начала теста. Не CSAT
+            по умолчанию. Подумать что значит «лучше» для
+            бизнеса — обычно это cost per resolved ticket,
+            а не одна звёздочка пользователя.</li>
+        <li>Логировать handoff и tokens с первого дня. Если
+            их нет в логах — CSAT-only тест даст неполную
+            картину, и ретроспективно собрать handoff не
+            получится.</li>
+        <li>Договориться с командой что считается success.
+            Должна ли новая модель быть строго лучше старой,
+            или достаточно «не хуже на X% при той же
+            стоимости»? Это политическое решение, и его
+            лучше сделать до того как видеть данные.</li>
+        <li>Запланировать heterogeneity-анализ по категориям
+            запросов. Новая модель может проигрывать на
+            сложных кейсах (возвраты, спорные доставки) и
+            выигрывать на простых (FAQ, статус заказа).
+            Решение по среднему CSAT может скрывать важные
+            различия по сегментам.</li>
+      </ul>
+    </section>
+
+    <!-- ФУТЕР с ссылками на связанные модули квазиэкспериментов -->
+    <section class="prose">
+      <h3>Связь с курсом</h3>
+      <p>Этот кейс опирается на понятия из курса
+         квазиэкспериментов:</p>
+      <ul>
+        <li><a href="/lab/quasi-experiments/module-1-causal.html">Модуль 1: causal inference</a> — selection bias и почему рандомизация важна</li>
+        <li><a href="/lab/quasi-experiments/module-7-validity.html">Модуль 7: валидность</a> — проверки эксперимента</li>
+        <li><a href="/lab/quasi-experiments/module-8-narrative.html">Модуль 8: narrative</a> — структура финального отчёта</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script src="./utils.js"></script>
+  <script src="./sim.js"></script>
+  <script src="./charts.js"></script>
+  <script src="./ui.js"></script>
+  <script src="./main.js"></script>
+
+</body>
+</html>
