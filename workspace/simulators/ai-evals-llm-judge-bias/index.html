@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM-as-Judge Position Bias — AI-evals</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- TOPBAR с навигацией назад в hub -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <span class="topbar-title">AI-evals · LLM-as-Judge Position Bias</span>
+    </div>
+    <div class="topbar__right">
+      <a href="/workspace/simulators/" class="topbar-link">← Симуляторы</a>
+    </div>
+  </header>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main class="page">
+
+    <!-- РАЗДЕЛ 1: СЦЕНАРИЙ -->
+    <section class="prose">
+      <h1>LLM-as-Judge: position bias и mirror-judging</h1>
+      <div class="lede">
+        <p>Маркетплейс хочет автоматизировать сравнение двух
+           LLM-моделей для саппорт-бота. Вместо тысяч
+           человеческих оценок — сгенерировать N ответов от
+           каждой модели на одни и те же запросы клиентов,
+           отдать пары ответов LLM-судье (GPT-4 в роли
+           оценщика), попросить выбрать лучший. Цель — win
+           rate новой модели B против текущей A.</p>
+        <p>План выглядит идеально: дёшево, быстро,
+           масштабируемо. На 1000 пар $20 в API-вызовах
+           вместо $5000 в зарплате разметчикам. Команда
+           уже планирует выкатить новую модель на основе
+           результатов pairwise judgment.</p>
+        <p>Но в этой методологии есть систематическая
+           ошибка, которую не видно при простом запуске.
+           LLM-судьи имеют position bias — они склонны
+           предпочитать ответ, показанный первым,
+           независимо от качества. Это measured number из
+           академической литературы: для GPT-4 как судьи
+           bias составляет 15–25 п.п. Если всегда показывать
+           ответы в порядке (A, B) — оценка win rate B
+           будет смещена.</p>
+        <p>Эта страница про то, как position bias работает,
+           как его обнаружить, и как методологически
+           правильно с ним бороться (mirror-judging).
+           Симулятор посередине показывает, как смещена
+           оценка при naive подходе и насколько
+           mirror-стратегия исправляет результат.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 2: POSITION BIAS -->
+    <section class="prose">
+      <h2>Position bias — что это и почему серьёзно</h2>
+      <p>Главная тема этого кейса.</p>
+
+      <h3>Что такое position bias</h3>
+      <p>LLM-судья получает промпт вида: «Вот два ответа
+         на запрос клиента. Какой лучше?». В промпте
+         ответы идут друг за другом — один первый, второй
+         второй. По данным академических работ (Zheng
+         et al. 2023, MT-Bench; Li et al., AlpacaFarm),
+         GPT-4-class судьи систематически предпочитают
+         ответ показанный первым — даже когда явно сказано
+         «не учитывайте порядок».</p>
+      <p>Численно: если истинная вероятность что A лучше —
+         50%, то при «A первый» judge выберет A примерно в
+         60–65% случаев. Это не случайный шум, это
+         systematic shift. Bias меняется от 15 до 25
+         процентных пунктов в зависимости от
+         модели-судьи, типа задачи и формулировки промпта.</p>
+
+      <h3>Почему это серьёзно</h3>
+      <p>В типичном A/B-pipeline команда генерирует пары
+         и оценивает их в фиксированном порядке (обычно
+         «текущая модель первая, новая вторая» или
+         наоборот — кому как удобнее). Результат — win
+         rate смещён в сторону той модели, которая всегда
+         первая.</p>
+      <p>Конкретно: если в эксперименте всегда A первый,
+         и judge имеет bias +20 п.п. в сторону первого:</p>
+      <ul>
+        <li>Истинный win rate B = 50% (модели эквивалентны)</li>
+        <li>Измеренный win rate B = 50% − 20% = 30%</li>
+        <li>Вывод команды: «B сильно хуже»</li>
+        <li>Реальность: B такая же</li>
+      </ul>
+      <p>Это не academic curiosity. Это реальные
+         продакшен-ошибки, которые приводят к неправильным
+         решениям о замене моделей. В одну сторону, если
+         порядок (A, B) — недооцениваем B. В другую, если
+         (B, A) — переоцениваем. Случайный порядок
+         смещения не убирает, потому что bias всё равно
+         работает в каждой паре — он просто маскируется
+         в среднем.</p>
+
+      <h3>Как обнаружить</h3>
+      <p>Простой sanity check: рандомизировать порядок и
+         сравнить с обратным. Если win rate B при «A
+         первый» равен 30%, а при «B первый» равен 70%
+         — есть position bias. Если bias есть, эти две
+         оценки расходятся на 2× bias_strength. Если
+         порядок был всегда фиксирован — расхождение не
+         видно, и команда «не знает» что есть проблема.</p>
+
+      <h3>Как лечить — mirror-judging</h3>
+      <p>Стандартная методология устранения position bias
+         — mirror-judging. Каждую пару судить дважды:</p>
+      <ul>
+        <li>Первый раз: порядок (A, B)</li>
+        <li>Второй раз: порядок (B, A)</li>
+      </ul>
+      <p>Дальше засчитываем «B выиграл» только если B
+         победил в обоих ордерах. Если B победил в одном,
+         а A в другом — это tie (значит судья выбирал по
+         позиции, не по содержанию).</p>
+      <p>Стоимость: 2× больше API-вызовов. Точность:
+         позиционное смещение полностью устраняется (если
+         оно симметрично). Это стандарт в академической
+         литературе и продакшен-RLHF pipelines больших
+         AI-лабораторий.</p>
+      <p>Численно: при истинном win rate 55% и bias 20 п.п.:</p>
+      <ul>
+        <li>Naive (всегда A first): измеряем 35%</li>
+        <li>Mirror: измеряем 55%, без смещения</li>
+      </ul>
+      <p>Симулятор ниже показывает эту разницу на разных
+         параметрах.</p>
+    </section>
+
+    <!-- РАЗДЕЛ 3: СИМУЛЯТОР -->
+    <section class="simulator-section">
+      <h2 class="simulator-title">Симулятор: position bias и стратегии judgment</h2>
+
+      <div class="simulator-container">
+
+        <!-- Левая колонка: контролы -->
+        <aside class="simulator-controls">
+
+          <div class="control-group">
+            <label for="winrate-slider">
+              <span class="control-name">True win rate B</span>
+              <span class="control-value" id="winrate-value">0.55</span>
+            </label>
+            <input type="range" id="winrate-slider"
+                   min="0.30" max="0.70" step="0.01" value="0.55">
+            <p class="control-hint">Истинная доля пар, где
+               модель B действительно лучше</p>
+          </div>
+
+          <div class="control-group">
+            <label for="bias-slider">
+              <span class="control-name">Position bias strength</span>
+              <span class="control-value" id="bias-value">0.20</span>
+            </label>
+            <input type="range" id="bias-slider"
+                   min="0.00" max="0.40" step="0.01" value="0.20">
+            <p class="control-hint">На сколько п.п. judge
+               предпочитает ответ показанный первым</p>
+          </div>
+
+          <div class="control-group">
+            <label for="accuracy-slider">
+              <span class="control-name">Judge accuracy (no bias)</span>
+              <span class="control-value" id="accuracy-value">0.85</span>
+            </label>
+            <input type="range" id="accuracy-slider"
+                   min="0.60" max="0.95" step="0.01" value="0.85">
+            <p class="control-hint">Точность судьи при
+               отсутствии position effect</p>
+          </div>
+
+          <div class="control-group">
+            <label for="n-slider">
+              <span class="control-name">N comparisons</span>
+              <span class="control-value" id="n-value">200</span>
+            </label>
+            <input type="range" id="n-slider"
+                   min="50" max="2000" step="50" value="200">
+            <p class="control-hint">Сколько пар в эксперименте
+               (влияет на статистический шум)</p>
+          </div>
+
+          <div class="control-group strategy-group">
+            <label class="control-name" style="display:block;margin-bottom:0.5em">
+              Стратегия judgment
+            </label>
+            <div class="strategy-options">
+              <label class="strategy-option">
+                <input type="radio" name="strategy"
+                       value="always_A_first" checked>
+                <span class="strategy-label">Всегда A первый</span>
+                <span class="strategy-hint">naive, bias против B</span>
+              </label>
+              <label class="strategy-option">
+                <input type="radio" name="strategy"
+                       value="always_B_first">
+                <span class="strategy-label">Всегда B первый</span>
+                <span class="strategy-hint">naive, bias в пользу B</span>
+              </label>
+              <label class="strategy-option">
+                <input type="radio" name="strategy"
+                       value="random_order">
+                <span class="strategy-label">Случайный порядок</span>
+                <span class="strategy-hint">снижает направленность</span>
+              </label>
+              <label class="strategy-option">
+                <input type="radio" name="strategy"
+                       value="mirror_both">
+                <span class="strategy-label">Mirror (оба порядка)</span>
+                <span class="strategy-hint">устраняет bias, 2× дороже</span>
+              </label>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- Правая колонка: результаты -->
+        <div class="simulator-results">
+
+          <div class="winrate-display">
+            <div class="winrate-row">
+              <div class="winrate-item winrate-item--true">
+                <div class="winrate-label">True win rate B</div>
+                <div class="winrate-val" id="true-winrate">0.55</div>
+              </div>
+              <div class="winrate-item winrate-item--estimated">
+                <div class="winrate-label">Estimated win rate B</div>
+                <div class="winrate-val winrate-val--main" id="est-winrate">—</div>
+              </div>
+              <div class="winrate-item winrate-item--bias">
+                <div class="winrate-label">Bias</div>
+                <div class="winrate-val" id="bias-display">—</div>
+              </div>
+            </div>
+            <div class="winrate-row winrate-row--secondary" id="tie-row">
+              <div class="winrate-item">
+                <div class="winrate-label">Tie rate</div>
+                <div class="winrate-val" id="tie-display">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-block">
+            <h4>Naive vs Mirror: оценка win rate</h4>
+            <canvas id="bar-chart" width="600" height="220"></canvas>
+            <p class="chart-caption">
+              Зелёный — истинный win rate. Синий —
+              оценка при текущей стратегии. Серый —
+              tie rate (только для mirror). Красная
+              линия — ±5 п.п. допустимое смещение.
+            </p>
+          </div>
+
+          <div class="chart-block">
+            <h4>Сравнение всех стратегий</h4>
+            <canvas id="strategy-chart" width="600" height="220"></canvas>
+            <p class="chart-caption">
+              Оценка win rate B при разных стратегиях
+              при текущих параметрах. Горизонтальная
+              линия — истинный win rate.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="insight">
+        <h4>Что показывает симулятор</h4>
+        <ol>
+          <li><strong>Always A first / Always B first</strong> — naive. Систематически
+              смещают оценку в сторону или против B
+              на 2× bias_strength.</li>
+          <li><strong>Random order</strong> — снимает «направление»
+              смещения, но добавляет шум. На большой
+              выборке среднее правильное, но variance
+              больше.</li>
+          <li><strong>Mirror (оба порядка)</strong> — единственная
+              стратегия, которая действительно устраняет
+              position bias. Стоимость — 2× API-вызовов
+              на пару.</li>
+        </ol>
+        <p><strong>Главный takeaway:</strong> если ваш
+           eval — naive (всегда один порядок), и bias
+           20 п.п., вы можете легко спутать «equivalent»
+           с «50% хуже» или «50% лучше». Mirror — это
+           не optional, это база.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 4: ПОЛНЫЙ JUDGMENT PIPELINE -->
+    <section class="prose">
+      <h2>Полный judgment pipeline</h2>
+      <p>Практическое — как настроить LLM-as-judge
+         pipeline без position bias.</p>
+
+      <h3>Что генерировать</h3>
+      <p>На N запросов клиентов получаем N пар
+         (response_A, response_B). Это твой dataset
+         для сравнения моделей. Запросы должны быть
+         representative — взять реальные запросы из
+         логов саппорта, не synthetic. Минимум 200–500
+         пар для статистически значимого вывода.</p>
+
+      <h3>Что отправлять в judge</h3>
+      <p>Каждую пару отправляем дважды в LLM-судью:</p>
+      <pre><code>judgment_1 = judge(prompt, response_A, response_B)
+judgment_2 = judge(prompt, response_B, response_A)</code></pre>
+      <p>Логируем оба результата вместе с порядком:</p>
+      <pre><code>pair_id          — ID пары
+order            — "AB" или "BA"
+judge_choice     — "first" или "second"
+judge_confidence — если judge даёт rationale, тоже логируем</code></pre>
+      <p>Псевдокод:</p>
+      <pre><code>for pair in pairs:
+    # Order 1: A first
+    verdict_1 = call_judge(pair.prompt,
+                           first=pair.response_A,
+                           second=pair.response_B)
+    log(pair_id=pair.id, order="AB", verdict=verdict_1)
+
+    # Order 2: B first
+    verdict_2 = call_judge(pair.prompt,
+                           first=pair.response_B,
+                           second=pair.response_A)
+    log(pair_id=pair.id, order="BA", verdict=verdict_2)</code></pre>
+
+      <h3>Что считать на уровне эксперимента</h3>
+      <p>SQL-агрегация по логам:</p>
+      <pre><code>WITH paired AS (
+  SELECT
+    pair_id,
+    MAX(CASE WHEN order = 'AB' THEN judge_choice END) AS verdict_AB,
+    MAX(CASE WHEN order = 'BA' THEN judge_choice END) AS verdict_BA
+  FROM judgments
+  WHERE experiment_id = 'llm_judge_q2'
+  GROUP BY pair_id
+)
+SELECT
+  COUNT(*) AS total_pairs,
+  -- B wins только если выиграл в обоих ордерах
+  AVG(CASE
+    WHEN verdict_AB = 'second' AND verdict_BA = 'first'
+    THEN 1 ELSE 0
+  END) AS mirror_winrate_B,
+  -- A wins только если выиграл в обоих ордерах
+  AVG(CASE
+    WHEN verdict_AB = 'first' AND verdict_BA = 'second'
+    THEN 1 ELSE 0
+  END) AS mirror_winrate_A,
+  -- Tie если расходятся
+  AVG(CASE
+    WHEN (verdict_AB = 'second' AND verdict_BA = 'second')
+      OR (verdict_AB = 'first' AND verdict_BA = 'first')
+    THEN 1 ELSE 0
+  END) AS tie_rate
+FROM paired;</code></pre>
+
+      <h3>Что писать в финальный отчёт</h3>
+      <p>В отчёте для команды:</p>
+      <ul>
+        <li>Mirror-corrected win rate B vs A с CI</li>
+        <li>Tie rate (это сигнал силы position bias)</li>
+        <li>Naive win rate (для сравнения) — показать разницу</li>
+        <li>Decision threshold: было ли B статистически лучше A?</li>
+      </ul>
+      <p>Не писать просто «win rate B = 55%». Правильная
+         форма: «Mirror-corrected win rate B = 55% (CI
+         48–62%), tie rate = 18%. Naive win rate без
+         mirror коррекции дал бы 38% из-за position
+         bias. Решение: B equivalent или slightly better;
+         рекомендуется второй раунд с увеличенной
+         выборкой».</p>
+    </section>
+
+    <!-- РАЗДЕЛ 5: ЧТО ДЕЛАТЬ ДАЛЬШЕ -->
+    <section class="prose">
+      <h2>Что делать дальше</h2>
+      <p>Минимальный checklist для аналитика, который
+         собирается делать LLM-as-judge сравнение:</p>
+      <ul>
+        <li>Никогда не использовать фиксированный порядок.
+            Mirror каждую пару (отправлять оба ордера) —
+            это удвоит API-cost, но не делает что-то ещё
+            дороже: вы всё равно используете judge.</li>
+        <li>Если уже сделал eval без mirror — измерить
+            bias ретроспективно. Случайная выборка 50–100
+            пар, реран в обратном порядке. Если
+            расхождение существенное — оригинальные
+            результаты ненадёжны, нужен полный mirror.</li>
+        <li>Договориться о tie-handling до запуска.
+            Когда B победил в одном ордере, A в другом
+            — это tie или «B чуть лучше»? Стандартная
+            практика — tie. Tie rate сам по себе полезный
+            сигнал: высокий tie rate = модели близки или
+            judge слабый.</li>
+        <li>Логировать оба ордера всегда. Даже если в
+            этом раунде считаете только naive — следующий
+            раунд может потребовать mirror, а данные у
+            вас будут.</li>
+        <li>Для high-stakes решений (продакшен миграция,
+            billion-dollar questions) добавить human
+            spot-check на subsample. Mirror устраняет
+            position bias, но не другие LLM-judge biases
+            (self-preference, length, style). На 50
+            случайных парах попросить человека пересудить
+            как ground truth.</li>
+        <li>Подумать про choice of judge. GPT-4-class
+            judges имеют более слабый bias чем меньшие
+            модели. Использование своей же модели как
+            judge — отдельная угроза (self-preference
+            bias).</li>
+      </ul>
+    </section>
+
+    <!-- СВЯЗЬ С КУРСОМ И ПЕРВЫМ СИМУЛЯТОРОМ -->
+    <section class="prose">
+      <h3>Связь с курсом и другими симуляторами</h3>
+      <p>Этот кейс опирается на понятия из курса
+         квазиэкспериментов и дополняет первый
+         AI-evals симулятор:</p>
+      <ul>
+        <li><a href="/workspace/simulators/ai-evals-llm-ab-test/">LLM A/B Test Simulator</a> — планирование выборки для продакшен A/B с учётом stochasticity модели</li>
+        <li><a href="/lab/quasi-experiments/module-1-causal.html">Модуль 1: causal inference</a> — selection bias и почему рандомизация важна</li>
+        <li><a href="/lab/quasi-experiments/module-7-validity.html">Модуль 7: валидность</a> — проверки эксперимента</li>
+        <li><a href="/lab/quasi-experiments/module-8-narrative.html">Модуль 8: narrative</a> — структура финального отчёта</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script src="./utils.js"></script>
+  <script src="./sim.js"></script>
+  <script src="./charts.js"></script>
+  <script src="./ui.js"></script>
+  <script src="./main.js"></script>
+
+</body>
+</html>
