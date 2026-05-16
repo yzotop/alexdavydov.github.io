@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retention vs Revenue: как не разрушить продукт ad-монетизацией — Workspace · Статьи</title>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/retention-vs-revenue/"/>
+    <meta name="description" content="Три механизма, из-за которых оптимизация revenue без модели retention систематически разрушает продукт."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Retention vs Revenue: как не разрушить продукт ad-монетизацией — Александр Давыдов"/>
+    <meta property="og:description" content="Три механизма, из-за которых оптимизация revenue без модели retention систематически разрушает продукт."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/retention-vs-revenue/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Май 2026</span>
+    <span class="chip">Монетизация</span>
+    <span>12 мин</span>
+  </div>
+  <h1>Retention vs Revenue: как не разрушить продукт ad-монетизацией</h1>
+  <div class="prose">
+  <p>Маркетплейс показывает продакт-команде квартальный отчёт. Ad revenue выросла на 18%. Команда обсуждает следующий шаг: увеличить ad load в ленте с 5 до 7 рекламных слотов на 20 органических. По быстрым прикидкам — ещё +25% к ad revenue. Аналитик предлагает A/B на 4 недели. Кто-то спрашивает: «А что с retention?» В ответ — несколько неуверенных аргументов и фраза «давайте посмотрим в тесте».</p>
+
+  <p>Через 4 недели тест закрывают. Ad revenue в treatment-группе +24%, p &lt; 0.001. Retention метрики на 28 дней — около нуля, доверительные интервалы широкие. Решение: rollout. Через полгода активная база сокращается на 7%, средний DAU просел, total revenue стагнирует. Кто-то открывает старый A/B-репорт: где было «retention близко к нулю».</p>
+
+  <p>Эта статья — про три механизма, из-за которых оптимизация revenue без модели retention систематически разрушает продукт. Каждый из механизмов выглядит безобидно в отдельном A/B-тесте, и каждый накапливается во времени и по cohort'ам. Все три объединяются одним методологическим сдвигом — измерять revenue с учётом долгосрочного behavior, не как точечную метрику.</p>
+
+  <h2>Угроза 1: retention отстаёт от revenue во времени</h2>
+
+  <p>Самая частая ловушка ad-monetization тестов. Revenue реагирует мгновенно: увеличили ad load — выручка выросла той же недели. Retention реагирует с задержкой 2–6 недель: пользователь увидел больше рекламы, испытал лёгкое раздражение, в следующий заход открыл приложение реже, ещё через неделю — реже, ещё через две — забыл про продукт. Это не падение на 30% за неделю. Это смещение probability of return на 1–3 п.п., которое накапливается через cohort decay.</p>
+
+  <p>В 4-недельном тесте retention-эффект не успевает проявиться. Среднее по cohort'у за 28 дней — это в большей мере behavior <strong>первых двух недель</strong>, когда новизна ad load ещё не сработала. В отчёте появляется «retention: ±0%, not significant». Команда принимает rollout, и медленная эрозия retention продолжается полгода.</p>
+
+  <p>Численно: если retention падает на 0.5 п.п. в месяц от повышенного ad load, через 6 месяцев база сжимается на 3%. Если ad revenue растёт на 24% — net revenue effect зависит от того, как ARPU соотносится с retention. Для большинства продуктов retention loss на 3% эквивалентен revenue loss 10–15% в годовом горизонте. И это уже не +24%, а −10%.</p>
+
+  <p>Решение — два инструмента вместе. Первый: holdout группы с длинным горизонтом измерения. Это не A/B на 4 недели, а небольшой holdout (3–5% трафика) который держится в старом режиме 6–9 месяцев. Метрики retention в нём сравниваются с большой treatment-группой. Через 3 месяца становятся видны 1–2 п.п. retention deltas, которые не видны в коротком тесте.</p>
+
+  <p>Второй: моделирование cohort decay на исторических данных. Если прошлые ad load изменения шли с retention loss 0.3–0.7 п.п. в месяц, то новое изменение почти наверняка тоже даст retention loss. Не «нулевой эффект», а «эффект который не успел проявиться в окне теста».</p>
+
+  <h2>Угроза 2: каннибализация внутри сессии</h2>
+
+  <p>Второй механизм работает на коротких временных рамках, но тоже невидим в стандартных метриках. Пользователь заходит в продукт с фиксированным «бюджетом внимания» — 5 минут, 10 минут, 20 минут. Содержание этого бюджета — органический контент плюс реклама. Каждая дополнительная единица рекламы съедает время которое могло бы пойти на органический контент.</p>
+
+  <p>Если органический контент сам генерирует revenue (комиссия с продаж в маркетплейсе, плата за просмотр в медиа, подписки, конверсии в платный продукт) — больше рекламы означает меньше revenue по другим каналам. Net effect зависит от того, какой канал monetisation эффективнее на edge.</p>
+
+  <p>Численно: представьте маркетплейс, где user в сессии видит 10 органических товаров и совершает покупку с вероятностью 3%. Средний чек 2000 рублей, маркетплейс берёт 8% комиссию — 4.8 рубля в среднем revenue с сессии. Добавляем 5 рекламных слотов вместо 3 органических. Пользователь теперь видит 7 органических товаров и 5 реклам. Conversion падает (меньше выбор) до 2.5%, expected commission revenue с сессии: 4 рубля. Ad revenue с сессии вырос с 2 до 3.5 рублей. Net revenue per session: было 6.8 рублей, стало 7.5 рублей — рост 10%, не 75%, как казалось бы от роста ad slots.</p>
+
+  <p>В A/B-отчёте, который показывает только ad revenue, рост будет +75%. Это число, на которое опирается решение. Net revenue — то, что реально приходит компании — растёт в несколько раз меньше. Иногда падает.</p>
+
+  <p>Решение — всегда смотреть net revenue, не ad revenue. В отчёте по ad load тесту обязательная метрика — это <strong>total revenue per user</strong>, агрегированная по всем каналам: ad revenue плюс commission/subscription/transaction revenue минус cost-related metrics если они зависят от поведения. Если ad revenue растёт на 75%, а total revenue на 10% — это сигнал каннибализации, а не успеха.</p>
+
+  <p>Особый случай — продукты с <strong>subscription / premium</strong> уровнем. В них рекламная нагрузка часто связана обратной связью с подпиской: больше реклам = больше пользователей покупают premium, чтобы их убрать. Net revenue эффект ad load изменений в таких продуктах считается ещё сложнее, потому что subscription revenue лагает на месяцы.</p>
+
+  <h2>Угроза 3: heavy users поглощают эффект</h2>
+
+  <p>Третий механизм связан с распределением revenue по пользователям. В большинстве продуктов с рекламой распределение крайне неравномерное: 5–10% самых активных пользователей дают 50–70% всей рекламной выручки. Они заходят часто, смотрят много, толерантны к рекламе или рассматривают её как часть продукта.</p>
+
+  <p>Когда команда тестирует изменение ad load на общей аудитории и смотрит overall metrics, эффект на heavy users <strong>доминирует</strong> в этих метриках. Если +30% ad load дал у heavy users +20% revenue (они стерпели), а у light users — +50% revenue в краткосрочном окне (тоже стерпели за 4 недели, потом начнут уходить) — overall будет выглядеть отлично.</p>
+
+  <p>Но heavy users — это база, которая останется. Light users — это будущий heavy users pipeline. Если ad load увеличение гонит light users из продукта быстрее, чем они конвертятся в heavy — long-term база сокращается. Через год доля heavy users в DAU вырастает (они никуда не делись), но absolute количество DAU падает (light users ушли), и total revenue плоско держится даже при росте ARPU.</p>
+
+  <p>Симптом — расхождение между ARPU и DAU в долгосрочном горизонте. Если после ad load изменения ARPU растёт, а DAU падает, это значит вы сжимаете базу до heavy core. Это работает в краткосроке (выручка идёт), но это <strong>медленная гибель продукта</strong>.</p>
+
+  <p>Решение — обязательная сегментация по user value tier. Минимум три сегмента: heavy (топ 5–10%), medium (следующие 30–40%), light/new (остальные). Метрики revenue и retention в каждом сегменте отдельно. Решение принимается по effect на light/new tier, не на overall и не на heavy. Если изменение даёт net positive по light/new — это устойчивая монетизация. Если только по heavy, и light/new падает — это эксплуатация базы.</p>
+
+  <h2>Что считать вместо «revenue uplift»</h2>
+
+  <p>Три угрозы выглядят разными — лагирующий retention, within-session cannibalization, heterogeneous response по сегментам. Объединяет их одно: <strong>revenue в моменте теста — это удобная для измерения метрика, а не та которая определяет долгосрочный результат</strong>.</p>
+
+  <p>Правильная метрика — <strong>LTV-aware revenue impact</strong>: revenue per cohort с учётом retention probability и времени жизни. Упрощённая формула: ΔLTV ≈ ΔARPU × retention_multiplier × cohort_lifetime, где retention_multiplier учитывает лагирующее падение retention из угрозы 1, ARPU — net после каннибализации из угрозы 2, и всё считается per segment из угрозы 3.</p>
+
+  <p>Это не academic точность. Это разница между «ad revenue +24%, ship it» и «net LTV impact +3% для heavy, −7% для light, expected net base shrinkage 5% за полгода, total revenue effect через год: −2%». Второй вариант — то, что увидит CFO компании через год. Первый — то, что увидит продакт-команда в A/B-отчёте сегодня.</p>
+
+  <p>Главное правило ad monetization: <strong>никогда не оптимизировать ad revenue в изоляции</strong>. Total revenue с учётом каннибализации, retention impact на холдауте с длинным горизонтом, segmented analysis по value tier — это базовый набор, не optional.</p>
+
+  <h2>Чеклист для команды</h2>
+
+  <p>Семь правил, которые закрывают большую часть проблем при планировании ad load или ad format теста:</p>
+
+  <ol>
+    <li>Holdout-группа с горизонтом 3–6 месяцев. Маленькая (3–5% трафика) контрольная группа, остающаяся в старом режиме. Retention метрики измеряются на ней, а не в 4-недельном A/B.</li>
+    <li>Net revenue, не ad revenue. Total revenue per user агрегированная по всем каналам. Расхождение ad revenue и net revenue — диагностика каннибализации.</li>
+    <li>Segmented analysis по user value tier. Минимум три сегмента: heavy / medium / light-new. Решение принимается по effect на light/new tier, не на overall.</li>
+    <li>Cohort retention curves, не средний 28-day retention. Среднее retention через 28 дней маскирует разную форму кривых. Curve shape (быстрая эрозия vs медленный compounded decay) определяет долгосрочный effect.</li>
+    <li>Историческая база для cohort decay rate. Если прошлые ad load повышения давали retention loss 0.3–0.7 п.п. в месяц, новое повышение почти наверняка даст похожий паттерн. «Нулевой эффект в коротком тесте» означает «не успел проявиться», не «не существует».</li>
+    <li>Subscription / premium dynamic учитывать отдельно. Если в продукте есть платный уровень, ad load повышение часто увеличивает subscription conversion (нужно отделить от ad revenue) и одновременно увеличивает churn (нужно отделить от retention loss).</li>
+    <li>Re-eval через 6 месяцев после rollout. Не «зашипили и забыли». Через полгода смотреть на тренд активной базы, retention curves, segment distribution. Если база сжимается, ad load — кандидат на откат.</li>
+  </ol>
+
+  <p>Это базовая гигиена. Команда, которая делает все семь шагов, получает ad monetization программу, на которую можно полагаться годами. Команда, которая делает один-два из них, получает квартальный рост ad revenue и медленную эрозию продукта, которую заметит CFO через год.</p>
+  </div>
+  <div class="article-author">
+    <p style="font-size:14px;color:var(--muted);margin:0;">Если интересно обсудить — напиши мне в <a href="https://t.me/Datalake" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px;">Telegram</a>.</p>
+  </div>
+  <p style="margin-top:32px;"><a href="/workspace/articles/" style="font-size:14px;color:var(--muted);text-decoration:none;">← Все статьи</a></p>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+</body>
+</html>
