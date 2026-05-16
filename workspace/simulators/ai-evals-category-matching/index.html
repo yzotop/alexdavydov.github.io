@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Matching Eval — AI-evals</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">AI-evals · Category Matching Eval</span>
+    </div>
+    <div class="topbar-right">
+      <a href="/workspace/simulators/" class="topbar-link">← Симуляторы</a>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- РАЗДЕЛ 1: СЦЕНАРИЙ -->
+    <section class="prose">
+      <h1>Price index на маркетплейсе: скрытая ошибка в
+          оценке LLM-классификатора категорий</h1>
+      <div class="lede">
+        <p>Маркетплейс хочет считать price index — сравнивать
+           свои цены с ценами конкурентов на тех же товарах.
+           Для этого нужен matching: каждый товар на нашей
+           площадке нужно сматчить с тем же товаром у
+           конкурента. Один из главных сигналов для матчинга
+           — категория. Если у нас товар лежит в «Беговые
+           кроссовки», у конкурента — в «Спортивная обувь →
+           Беговые», это тот же функциональный класс
+           товаров, нужно матчить.</p>
+        <p>Категории у разных маркетплейсов разные: разная
+           глубина дерева, разное именование, разная
+           гранулярность. На большом маркетплейсе их десятки
+           тысяч, в комбинации с конкурентами — миллионы
+           пар. Ручное сопоставление было бы 10 человеко-лет.</p>
+        <p>LLM умеет это решать: даём промпт «вот категория
+           с маркетплейса A, вот 20 кандидатов с маркетплейса
+           B, какие ближе по смыслу», получаем ranked list.
+           На bench-test получили 85% precision. Можно
+           выкатывать в production.</p>
+        <p>Не так быстро. Эта страница про скрытую ошибку в
+           такой оценке. Истинное «85%» при разном
+           distribution категорий между golden set и
+           production может означать 75% в production.
+           Решение про rollout не должно опираться на одну
+           overall-цифру — нужна heterogeneous-оценка.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 2: ГЕТЕРОГЕННОСТЬ КАК УГРОЗА -->
+    <section class="prose">
+      <h2>Гетерогенность как угроза category-matching
+          evaluation</h2>
+      <p>Главное содержание этого кейса. Категории не
+         одинаковы по сложности матчинга, и это меняет всё
+         в evaluation.</p>
+
+      <h3>Сегменты по сложности</h3>
+
+      <p><strong>Электроника.</strong> Бренды + модельные
+         ряды + чёткие спецификации. «iPhone 15 Pro 256GB
+         Titanium» матчится с аналогичным однозначно.
+         LLM-точность здесь высокая — обычно 92-97%. Объём
+         — большой, но не доминирующий.</p>
+
+      <p><strong>Fashion.</strong> Цвета, размерные сетки,
+         материалы, сезоны. «Платье черное Zara M летнее»
+         — это не «платье черное Zara M». LLM путает
+         похожие позиции, придумывает атрибуты, по-разному
+         обрабатывает варианты бренда. Точность — 70-80%.
+         Объём — большой.</p>
+
+      <p><strong>Food &amp; FMCG.</strong> Составы, веса,
+         количество в упаковке, варианты «оригинал/диет/
+         без сахара». «Coca-Cola 1L» и «Coca-Cola Zero 1L»
+         — два разных товара, не вариант. LLM часто не
+         различает. Точность — 55-70%. Объём средний.</p>
+
+      <p><strong>Long tail (нишевые категории).</strong>
+         Хобби, профессиональные товары, узкоспециализированные
+         позиции. Обучающих данных мало, LLM работает на
+         знаниях из training data. Точность — 40-60% и
+         сильно зависит от того, обсуждалась ли категория
+         публично. Объём по штукам мал, но категорий
+         много.</p>
+
+      <h3>Почему это рушит overall-оценку</h3>
+
+      <p>Команда собирает golden set — 1000 пар «правильных»
+         матчей, размеченных вручную. Считает на нём
+         accuracy своего LLM-классификатора. Получает 85%.
+         Сообщает: «готовы выкатывать».</p>
+
+      <p>Проблема: pattern, по которому собирали golden
+         set, не соответствует production. Обычно golden
+         set смещён в сторону электроники (легче размечать,
+         легче выбирать эталоны) — например, 50%
+         электроники в golden vs 30% в production. Fashion
+         и food недопредставлены.</p>
+
+      <p>Численно: если в golden 50% электроники (precision
+         95%), 30% fashion (precision 75%), 20% остального
+         (precision 55%) — overall = 84%. Если в production
+         30% электроники, 40% fashion, 30% остального —
+         overall = 74%. Команда ждёт 85%, получает 74%.
+         Это <strong>10 п.п. разрыва</strong> между
+         заявленной и реальной точностью, и весь price
+         index в production деградирует.</p>
+
+      <p>Это не редкая проблема. Это <strong>типичный</strong>
+         провал в LLM-classification evaluation на крупных
+         платформах.</p>
+
+      <h3>Что делать — stratified evaluation</h3>
+
+      <p>Решение: не одна overall-цифра, а <strong>разбиение
+         по сегментам</strong>. На каждом сегменте — своя
+         precision, recall, sample size для оценки.
+         Финальный отчёт:</p>
+
+      <p>«Precision электроники: 95% (CI 93-96%) на 400
+         эталонах. Precision fashion: 76% (CI 72-80%) на
+         300 эталонах. Precision food: 62% (CI 56-68%) на
+         200 эталонах. Precision long tail: 51% (CI 44-58%)
+         на 100 эталонах.»</p>
+
+      <p>Из этого получается <strong>weighted overall</strong>
+         под production distribution: переумножаем
+         precision каждого сегмента на его долю в
+         production. Это и есть «честная» цифра.</p>
+
+      <p>Симулятор ниже считает эту разницу. Параметры —
+         distribution categories в golden vs production,
+         accuracy per segment. Выход — naive overall vs
+         production-weighted overall, и sample size per
+         segment для целевой точности оценки.</p>
+    </section>
+
+    <!-- РАЗДЕЛ 3: СИМУЛЯТОР -->
+    <section class="prose">
+      <h2>Симулятор: stratified evaluation</h2>
+      <p>Покрути параметры — доли категорий в golden set и
+         в production, точность LLM на каждом сегменте.
+         Симулятор покажет разницу между «naive overall»
+         (overall на golden set) и «production-weighted»
+         (как это работает в проде).</p>
+    </section>
+
+    <section class="simulator-section">
+      <div class="simulator-container">
+
+        <aside class="simulator-controls">
+
+          <div class="control-group-section">
+            <h4 class="control-section-title">Доли в golden set</h4>
+
+            <div class="control-group">
+              <label for="golden-electronics-slider">
+                <span class="control-name">Electronics</span>
+                <span class="control-value" id="golden-electronics-value">0.45</span>
+              </label>
+              <input type="range" id="golden-electronics-slider"
+                     min="0.10" max="0.70" step="0.01" value="0.45">
+            </div>
+
+            <div class="control-group">
+              <label for="golden-fashion-slider">
+                <span class="control-name">Fashion</span>
+                <span class="control-value" id="golden-fashion-value">0.30</span>
+              </label>
+              <input type="range" id="golden-fashion-slider"
+                     min="0.10" max="0.50" step="0.01" value="0.30">
+            </div>
+
+            <div class="control-group">
+              <label for="golden-long-tail-slider">
+                <span class="control-name">Long tail</span>
+                <span class="control-value" id="golden-long-tail-value">0.05</span>
+              </label>
+              <input type="range" id="golden-long-tail-slider"
+                     min="0.00" max="0.30" step="0.01" value="0.05">
+            </div>
+
+            <p class="control-hint">
+              Food &amp; «остальное» — остаток до 1.0:
+              <span id="golden-food-display">0.20</span>
+            </p>
+          </div>
+
+          <div class="control-group-section">
+            <h4 class="control-section-title">Precision per segment</h4>
+
+            <div class="control-group">
+              <label for="precision-electronics-slider">
+                <span class="control-name">Electronics</span>
+                <span class="control-value" id="precision-electronics-value">0.94</span>
+              </label>
+              <input type="range" id="precision-electronics-slider"
+                     min="0.70" max="0.99" step="0.01" value="0.94">
+            </div>
+
+            <div class="control-group">
+              <label for="precision-fashion-slider">
+                <span class="control-name">Fashion</span>
+                <span class="control-value" id="precision-fashion-value">0.76</span>
+              </label>
+              <input type="range" id="precision-fashion-slider"
+                     min="0.50" max="0.90" step="0.01" value="0.76">
+            </div>
+
+            <div class="control-group">
+              <label for="precision-long-tail-slider">
+                <span class="control-name">Long tail</span>
+                <span class="control-value" id="precision-long-tail-value">0.52</span>
+              </label>
+              <input type="range" id="precision-long-tail-slider"
+                     min="0.30" max="0.80" step="0.01" value="0.52">
+            </div>
+
+            <p class="control-hint">
+              Food &amp; «остальное» — зафиксировано на 0.65
+            </p>
+          </div>
+
+          <div class="control-group-section">
+            <h4 class="control-section-title">Доли в production</h4>
+
+            <div class="control-group">
+              <label for="prod-electronics-slider">
+                <span class="control-name">Electronics</span>
+                <span class="control-value" id="prod-electronics-value">0.30</span>
+              </label>
+              <input type="range" id="prod-electronics-slider"
+                     min="0.10" max="0.50" step="0.01" value="0.30">
+            </div>
+
+            <div class="control-group">
+              <label for="prod-fashion-slider">
+                <span class="control-name">Fashion</span>
+                <span class="control-value" id="prod-fashion-value">0.35</span>
+              </label>
+              <input type="range" id="prod-fashion-slider"
+                     min="0.20" max="0.50" step="0.01" value="0.35">
+            </div>
+
+            <div class="control-group">
+              <label for="prod-long-tail-slider">
+                <span class="control-name">Long tail</span>
+                <span class="control-value" id="prod-long-tail-value">0.20</span>
+              </label>
+              <input type="range" id="prod-long-tail-slider"
+                     min="0.00" max="0.40" step="0.01" value="0.20">
+            </div>
+
+            <p class="control-hint">
+              Food &amp; «остальное» — остаток до 1.0:
+              <span id="prod-food-display">0.15</span>
+            </p>
+          </div>
+
+          <div class="presets">
+            <h4>Сценарии</h4>
+            <button class="preset-btn" data-preset="balanced">
+              Сбалансированный golden set
+            </button>
+            <button class="preset-btn" data-preset="typical">
+              Типичный bias (default)
+            </button>
+            <button class="preset-btn" data-preset="severe">
+              Сильный bias на electronics
+            </button>
+          </div>
+
+        </aside>
+
+        <div class="simulator-results">
+
+          <div class="main-comparison">
+            <div class="comparison-card comparison-card-naive">
+              <div class="comparison-card-label">Naive overall<br>(на golden set)</div>
+              <div class="comparison-card-value" id="naive-overall">—</div>
+            </div>
+            <div class="comparison-card comparison-card-production">
+              <div class="comparison-card-label">Production-weighted<br>(честная цифра)</div>
+              <div class="comparison-card-value" id="production-weighted">—</div>
+            </div>
+            <div class="comparison-card comparison-card-gap">
+              <div class="comparison-card-label">Gap</div>
+              <div class="comparison-card-value" id="gap-value">—</div>
+            </div>
+          </div>
+
+          <div class="chart-block">
+            <h4>Distribution: golden vs production</h4>
+            <canvas id="distribution-chart" width="600" height="240"></canvas>
+            <p class="chart-caption">
+              Доли категорий в эталонной выборке (зелёный)
+              и в production (синий). Расхождение между
+              ними — корень heterogeneous accuracy
+              проблемы.
+            </p>
+          </div>
+
+          <div class="chart-block">
+            <h4>Precision per segment + sample size для CI ±3%</h4>
+            <canvas id="precision-chart" width="600" height="240"></canvas>
+            <p class="chart-caption">
+              Точность LLM-классификатора по сегментам.
+              Подпись — required N для CI ±3%. Если в
+              текущем golden set по сегменту меньше — оценка
+              недостаточно надёжна для rollout.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight">
+        <h4>Что показывает симулятор</h4>
+        <ol>
+          <li><strong>При сбалансированном golden set</strong>
+              naive overall = production-weighted. Это
+              идеальный сценарий — редкий на практике.</li>
+          <li><strong>Типичный bias</strong> (overdrawn
+              electronics в golden) даёт разрыв 5-10 п.п.
+              Это незаметно при overall reporting, но это
+              реальная цифра деградации в production.</li>
+          <li><strong>Per-segment sample sizes</strong>
+              показывают где golden set «слабый». Если
+              для fashion нужно 800 пар для CI ±3%, а в
+              golden 200 — оценка fashion недостаточно
+              надёжна для rollout decisions.</li>
+        </ol>
+        <p><strong>Главный takeaway:</strong> «85%
+           accuracy» как cumulative число — самая частая
+           ошибка в LLM-classification evaluation.
+           Stratified evaluation per segment +
+           production-weighted overall — это база, не
+           optional.</p>
+      </div>
+    </section>
+
+    <!-- РАЗДЕЛ 4: ПОЛНЫЙ MATCHING EVAL PIPELINE -->
+    <section class="prose">
+      <h2>Полный matching eval pipeline</h2>
+      <p>Практическое — как настроить evaluation pipeline
+         для category matching без сегментной слепоты.</p>
+
+      <h3>Что должно быть в golden set</h3>
+      <p>Не просто «1000 пар» — golden set должен быть
+         <strong>stratified</strong>.</p>
+      <pre><code>category_segment    target_n
+-----------------    -------
+electronics            300
+fashion                300
+food_fmcg              200
+home_garden            150
+long_tail              250</code></pre>
+      <p>Total: 1200. Стратификация под production
+         distribution — не равными долями, и не
+         пропорционально объёму golden set который проще
+         собрать (типичная ошибка).</p>
+      <p>Если production distribution неизвестен —
+         собрать его сначала. Категории-фильтры на page
+         views в течение недели, агрегация. Это первый
+         шаг evaluation проекта, часто пропускается.</p>
+
+      <h3>Что считать на уровне эксперимента</h3>
+      <p>SQL-агрегация по логам матчинга:</p>
+      <pre><code>SELECT
+  category_segment,
+  COUNT(*) AS n_pairs,
+  AVG(is_correct::INT) AS precision,
+  1.96 * SQRT(AVG(is_correct::INT) * (1 - AVG(is_correct::INT)) / COUNT(*)) AS ci_half_width,
+  AVG(llm_confidence) AS avg_confidence
+FROM matching_eval
+WHERE eval_id = 'price_index_v2'
+GROUP BY category_segment
+ORDER BY n_pairs DESC;</code></pre>
+      <p>Получаем precision per segment + sample size + CI.</p>
+
+      <h3>Weighted overall accuracy</h3>
+      <p>Python-псевдокод:</p>
+      <pre><code>def production_weighted_accuracy(per_segment_results,
+                                   production_distribution):
+    total = 0
+    for segment, weight in production_distribution.items():
+        total += per_segment_results[segment].precision * weight
+    return total
+
+# Example:
+# per_segment = {'electronics': 0.95, 'fashion': 0.76, ...}
+# production_distribution = {'electronics': 0.30, 'fashion': 0.40, ...}
+# production_weighted_accuracy(...) = 0.74</code></pre>
+      <p>Сравнить с naive overall (просто average по
+         pair_id):</p>
+      <pre><code>SELECT AVG(is_correct::INT) FROM matching_eval
+WHERE eval_id = 'price_index_v2';</code></pre>
+      <p>Разница между ними = systematic bias of golden
+         set distribution. Если разрыв &gt; 5 п.п. —
+         golden set нерепрезентативен, оценка ненадёжна.</p>
+
+      <h3>Что писать в отчёт</h3>
+      <p>В отчёте для команды:</p>
+      <ul>
+        <li>Per-segment precision + CI (не overall)</li>
+        <li>Production-weighted overall (это «честная»
+            цифра)</li>
+        <li>Distribution gap между golden и production
+            (если есть)</li>
+        <li>Sample sizes per segment с обоснованием</li>
+      </ul>
+      <p>Не писать «LLM-классификатор: precision 85%».
+         Правильная форма: «На golden set precision 84%
+         (overall). Production-weighted overall: 74%.
+         Per-segment: electronics 95%, fashion 76%, food
+         62%, long tail 51%. Перед rollout требуется
+         усилить evaluation на fashion и food, и
+         дособрать выборку long tail для надёжной
+         оценки.»</p>
+    </section>
+
+    <!-- РАЗДЕЛ 5: ЧТО ДЕЛАТЬ ДАЛЬШЕ -->
+    <section class="prose">
+      <h2>Что делать дальше</h2>
+      <p>Минимальный checklist для аналитика, который
+         запускает LLM-classification для category
+         matching:</p>
+      <ul>
+        <li>Никогда не использовать overall accuracy без
+            segment breakdown. Это всегда даёт
+            оптимистическую оценку потому что golden set
+            смещён в сторону «простых» сегментов где проще
+            собирать эталоны.</li>
+        <li>Собрать production distribution до golden set,
+            не после. Знать что распределение в проде
+            30/40/30 (electronics/fashion/food) — критично
+            для правильного стратифицирования.</li>
+        <li>Sample size per segment, не на overall. Sample
+            size для целевой точности оценки (CI ±3%) на
+            fashion при precision 75% — около 800 пар.
+            Если у вас 200 — CI ±6%, оценка fashion почти
+            бесполезна.</li>
+        <li>Long tail оценить отдельно. Это самая опасная
+            категория — LLM может работать на 90% или 30%
+            в зависимости от специфики данных, и golden
+            set обычно содержит долю long tail
+            непропорционально малую. Если в production long
+            tail = 15%, в golden — 3%, при rollout вы
+            откроете что эта часть стоила вам price index
+            деградации.</li>
+        <li>Re-eval после rollout. Production distribution
+            меняется (новые категории, переименование,
+            перестройки), и «хорошая» оценка через месяц
+            может быть устаревшей. Plan a re-eval каждые
+            3-6 месяцев на свежем golden subsample.</li>
+        <li>Confidence threshold для high-stakes решений.
+            Если precision сегмента 60% — нельзя
+            автоматизировать 100% matching там. Поставить
+            confidence threshold: выше X — auto, ниже X —
+            human-in-loop. Это балансирует throughput и
+            quality.</li>
+      </ul>
+    </section>
+
+    <!-- ФУТЕР с ссылками -->
+    <section class="prose">
+      <h3>Связь с курсом</h3>
+      <p>Этот кейс — третий в направлении AI-evals на
+         davydov.my. Связанные материалы:</p>
+      <ul>
+        <li><a href="/workspace/simulators/ai-evals-llm-ab-test/">LLM A/B Test Simulator</a> — sample size для сравнения LLM-моделей с поправкой на stochasticity</li>
+        <li><a href="/workspace/simulators/ai-evals-llm-judge-bias/">LLM-as-Judge Position Bias</a> — mirror correction для pairwise judgment</li>
+        <li><a href="/lab/ab-stat-os/modules/02_metric_types/">Модуль 02: Типы метрик</a> — классификация как основа evaluation</li>
+        <li><a href="/lab/ab-stat-os/modules/06_cluster_tests/">Модуль 06: Кластерные эксперименты</a> — heterogeneity и stratification</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script src="./utils.js"></script>
+  <script src="./sim.js"></script>
+  <script src="./charts.js"></script>
+  <script src="./ui.js"></script>
+  <script src="./main.js"></script>
+
+</body>
+</html>
