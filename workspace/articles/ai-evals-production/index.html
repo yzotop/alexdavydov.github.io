@@ -56,22 +56,89 @@
   <div class="article-meta">
     <span>Май 2026</span>
     <span class="chip">AI-evals</span>
-    <span>в работе</span>
+    <span>12 мин</span>
   </div>
   <h1>AI-evals в продакшене на маркетплейсе</h1>
   <div class="prose">
-    <p>Статья в работе. Будет опубликована на этой
-       странице после завершения. Тематика — практический
-       подход к AI-evaluation в продакшене маркетплейса:
-       что измерять, какие методологические ошибки
-       подстерегают, какие инструменты помогают.</p>
-    <p>До публикации можно посмотреть три интерактивных
-       симулятора, которые иллюстрируют ключевые проблемы:</p>
-    <ul>
-      <li><a href="/workspace/simulators/ai-evals-llm-ab-test/">LLM A/B Test Simulator</a> — sample size для сравнения LLM-моделей с поправкой на stochasticity</li>
-      <li><a href="/workspace/simulators/ai-evals-llm-judge-bias/">LLM-as-Judge Position Bias</a> — mirror correction для pairwise judgment</li>
-      <li><a href="/workspace/simulators/ai-evals-category-matching/">Category Matching Eval</a> — heterogeneous accuracy + stratified evaluation</li>
-    </ul>
+  <p>Маркетплейс хочет считать price index. Для этого нужно сопоставить свои товары с товарами конкурентов на разных площадках. Один из ключевых сигналов для матчинга — категория товара. Категории у всех маркетплейсов разные, миллионы пар матчей, ручное сопоставление — десятки человеко-лет.</p>
+
+  <p>Команда выбирает LLM-классификатор. Промпт «вот категория с маркетплейса A, вот 20 кандидатов с маркетплейса B, какие ближе по смыслу». Собирают golden set — 1000 размеченных пар. Считают accuracy: 85%. Принимают решение выкатывать.</p>
+
+  <p>Через два месяца после rollout price index в продакшене показывает странности. Цифры расходятся с ручной проверкой на reasonable subsample. Кто-то считает заново: фактическая точность в production — около 73%. Что произошло, и почему 85% оказалось не настоящим 85%.</p>
+
+  <p>Эта статья — про три самых частых методологических провала в AI-evaluation на маркетплейсе. У каждого есть конкретный механизм, конкретное решение, и интерактивный симулятор где можно покрутить параметры самому. Все три встречаются часто, все три остаются незамеченными в стандартных отчётах «accuracy: X%».</p>
+
+  <h2>Угроза 1: гетерогенность распределения</h2>
+
+  <p>Когда команда собирает golden set, она почти всегда собирает его непропорционально. Электронику легко размечать — чёткие бренды, модельные ряды, спецификации. Fashion и food сложнее: размеры, цвета, варианты, составы. Long tail (нишевые категории) сложнее всего и часто пропускается потому что эталонов мало.</p>
+
+  <p>В итоге golden set смещён к простым сегментам. Если в production распределение 30% электроника / 40% fashion / 20% food / 10% long tail, а в golden set оно 50% / 30% / 15% / 5% — overall accuracy на golden и в production будут разными числами, даже если модель ведёт себя стабильно.</p>
+
+  <p>Численно: при precision 95% на электронике, 76% на fashion, 65% на food, 50% на long tail и golden distribution 50/30/15/5 — overall в golden получается 84%. На production distribution 30/40/20/10 — 71%. Это 13 п.п. разрыва, который не виден в стандартном репортинге «overall = 84%».</p>
+
+  <p>Решение — stratified evaluation. Не одна цифра, а precision на каждом сегменте отдельно плюс production-weighted overall: точность по каждому сегменту, умноженная на долю этого сегмента в production. Это <strong>честное</strong> число — то, что увидят в проде после rollout.</p>
+
+  <p>В пайплайне это четыре шага: (1) измерить production distribution до сборки golden set; (2) собрать golden стратифицированно под production; (3) считать precision per segment с CI; (4) давать в отчёте как per-segment числа, так и production-weighted overall. Naive overall оставлять для сравнения — разрыв между naive и weighted сам по себе диагностика: больше 5 п.п. означает что golden set нерепрезентативен.</p>
+
+  <p>→ Покрутить параметры (доли в golden vs production, precision per segment, sample size for CI): <a href="/workspace/simulators/ai-evals-category-matching/">Category Matching Eval</a></p>
+
+  <h2>Угроза 2: стохастичность модели</h2>
+
+  <p>A/B-тест двух LLM выглядит как обычный A/B: 50/50 трафика, ждём sample size для значимого эффекта, считаем разницу, принимаем решение. Стандартный power analysis говорит N для заданного MDE.</p>
+
+  <p>Проблема: в LLM treatment не детерминирован. При temperature больше нуля одна и та же модель на одинаковом запросе даёт разные ответы. CSAT по диалогу зависит не только от того какая модель ответила, но и от того <strong>как именно</strong> она ответила в этот раз. Это дополнительная variance, которой нет в обычной формуле sample size.</p>
+
+  <p>Численно: если variance модели добавляет 30% к общей дисперсии — N вырастает в 1.4 раза. При 50% — в два раза. Это в формуле напрямую: N пропорционально σ². Игнорировать stochasticity модели — значит планировать в 2-4 раза меньше выборки чем нужно, не различить модели с реальным эффектом, и сделать вывод «эквивалентны».</p>
+
+  <p>Решение — компонентная декомпозиция variance в sample size расчёте. Variance общая = variance между диалогами + variance модели. Базовая формула N = 2·(z_α + z_β)²·σ²/Δ² становится N = 2·(z_α + z_β)²·σ²_total/Δ², где σ²_total включает стохастичность.</p>
+
+  <p>В пайплайне это три шага: (1) до запуска теста — оценить share variance модели на small calibration sample, прогнав одинаковые запросы 5-10 раз и посмотрев spread ответов; (2) применить поправку к sample size; (3) если N после поправки выходит за разумные пределы — пересмотреть MDE или вернуться к offline-eval на golden set.</p>
+
+  <p>→ Покрутить параметры (effect size, share variance модели, power): <a href="/workspace/simulators/ai-evals-llm-ab-test/">LLM A/B Test Simulator</a></p>
+
+  <h2>Угроза 3: bias в LLM-as-judge</h2>
+
+  <p>Третий типичный сценарий: команда хочет сравнить две LLM через pairwise judgment. Вместо тысячи человеческих оценок — показать пары ответов GPT-4 в роли судьи, попросить выбрать лучший. Дёшево, быстро, масштабируемо.</p>
+
+  <p>Документированная проблема: LLM-судьи имеют position bias. По работам Zheng et al. 2023 (MT-Bench) и Li et al. (AlpacaFarm) — GPT-4-class судьи систематически предпочитают первый показанный ответ на 15-25 п.п., независимо от качества. Это не случайный шум, это systematic shift.</p>
+
+  <p>Конкретно: если в эксперименте всегда «модель A первой, модель B второй», и position bias 20 п.п. в сторону первого, то истинный win rate B 50% измерится как 30%. Это не undermining — модель просто не лучше. Это <strong>смещение оценки</strong>, которое отправляет команду откатить B как «хуже на 20 п.п.», хотя она эквивалентна.</p>
+
+  <p>Решение — mirror judging. Каждую пару показывать дважды: один раз (A, B), второй раз (B, A). B засчитывается только если выиграл в обоих ордерах. Если выиграл в одном и проиграл в другом — это tie (значит судья выбирал по позиции, а не по содержанию). Стоимость удваивается — 2× API-вызовов. Точность position bias устраняется полностью.</p>
+
+  <p>В пайплайне это два шага: (1) логировать обе оценки с явной меткой ордера; (2) считать mirror win rate как «B победил тогда и только тогда когда выиграл оба ордера». Tie rate сам по себе диагностика: высокий tie rate означает модели близки или judge слабый. Низкий tie rate после mirror — modeli действительно расходятся.</p>
+
+  <p>→ Покрутить параметры (true win rate, bias strength, strategy): <a href="/workspace/simulators/ai-evals-llm-judge-bias/">LLM-as-Judge Position Bias</a></p>
+
+  <h2>Что общего у этих трёх</h2>
+
+  <p>Три ошибки выглядят разными — gold-set distribution, model stochasticity, judge position bias. Но у них одна структурная природа: <strong>разрыв между тем что мы измеряем и тем что есть в production</strong>.</p>
+
+  <ul>
+    <li>Gold-set distribution: измеряем на распределении эталонов, производит на другом распределении.</li>
+    <li>Model stochasticity: измеряем single-shot, в production работает multi-shot.</li>
+    <li>Judge position bias: измеряем фиксированным ордером, production агностичен к ордеру.</li>
+  </ul>
+
+  <p>В каждом случае «overall accuracy» или «win rate» — это <strong>проекция</strong> на удобную для измерения, но не релевантную для production схему. Корректное решение в каждом случае — сделать измерение <strong>репрезентативным</strong> относительно production: production-weighted overall, variance-corrected sample size, mirror judgment.</p>
+
+  <p>Главное правило AI-evaluation на маркетплейсе: <strong>никогда не доверяй cumulative число без разбора того, как оно получено</strong>. Один-два уточняющих вопроса аналитика часто ловят 10-20 п.п. systematic bias, который не виден в standalone отчёте «accuracy: X%».</p>
+
+  <h2>Чеклист для команды</h2>
+
+  <p>Семь правил, которые закрывают большую часть проблем на этапе планирования eval, до того как rollout decision уже принято:</p>
+
+  <ol>
+    <li>Измерить production distribution до сборки golden set. Категории-фильтры на page views в течение недели, агрегация. Это первый шаг, часто пропускается.</li>
+    <li>Стратифицированный golden set под production. Не равными долями, не пропорционально удобству разметки — под реальное production distribution.</li>
+    <li>Никогда не репортить только overall accuracy. Per-segment precision + CI как primary, production-weighted overall как honest summary, naive overall как diagnostic.</li>
+    <li>Для A/B на LLM — оценить share variance модели до расчёта sample size. Calibration sample 50-100 запросов с повторами, измерить spread.</li>
+    <li>Для pairwise judgment — всегда mirror. Каждую пару судить в обоих ордерах. Tie как honest output, не как ошибка.</li>
+    <li>Для high-stakes решений — human spot-check на subsample после автоматизированной eval. Mirror устраняет position bias, но не другие LLM-judge biases (self-preference, length, style). 50 случайных пар, человек как ground truth.</li>
+    <li>Re-eval каждые 3-6 месяцев. Production distribution меняется (новые категории, переименования, перестройки), и «хорошая» оценка через полгода может быть устаревшей.</li>
+  </ol>
+
+  <p>Это не academic точность — это базовая гигиена. Команда которая делает все семь шагов получает eval, на который можно полагаться при rollout decisions. Команда которая делает один-два — получает 85% в отчёте и сюрприз через два месяца.</p>
   </div>
   <div class="article-author">
     <p style="font-size:14px;color:var(--muted);margin:0;">Если интересно обсудить — напиши мне в <a href="https://t.me/Datalake" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px;">Telegram</a>.</p>
