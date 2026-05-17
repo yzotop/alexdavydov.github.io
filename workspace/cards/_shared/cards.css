@@ -1,0 +1,585 @@
+/*
+  cards.css — shared visual system for LinkedIn carousel cards
+  Format: 1080×1350 px (4:5, portrait) · device_scale_factor=2
+  Tokens: historically tuned for LinkedIn rendering (warm off-white palette).
+  Not identical to davydov.my/style.css — cards are a separate subsystem.
+*/
+
+/* ─── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Tokens ─────────────────────────────────────────────────── */
+:root {
+  --bg:     #f8f8f6;  /* warm off-white — better on LinkedIn than pure white */
+  --ink:    #1a1a1a;
+  --muted:  #6b6b6b;
+  --line:   #d4d4d0;
+  --accent: #e63946;
+}
+
+/* ─── Base ───────────────────────────────────────────────────── */
+body {
+  background: #f0f0f0; /* visible only in browser preview, not in PNG */
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px;
+  align-items: flex-start;
+}
+
+/* ─── Card container ─────────────────────────────────────────── */
+.card {
+  width: 1080px;
+  height: 1350px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Sans', system-ui, sans-serif;
+  padding: 80px 64px;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ─── Mono meta — kickers, counters, slide numbers ──────────── */
+.card-meta {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+/* Accent variant (e.g. slide number in red) */
+.card-meta .accent {
+  color: var(--accent);
+}
+
+/* ─── Card title ─────────────────────────────────────────────── */
+.card-title {
+  font-family: 'Sans Wide', system-ui, sans-serif;
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+
+/* ─── Lede ───────────────────────────────────────────────────── */
+.card-lede {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* ─── Body text ──────────────────────────────────────────────── */
+.card-body {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.card-body p + p {
+  margin-top: 18px;
+}
+
+/* ─── List ───────────────────────────────────────────────────── */
+.card-list {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink);
+  padding-left: 0;
+  list-style: none;
+}
+
+.card-list li {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-list li:last-child {
+  border-bottom: none;
+}
+
+.card-list .num {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  padding-top: 4px;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+/* ─── Divider ────────────────────────────────────────────────── */
+.card-divider {
+  width: 48px;
+  height: 2px;
+  background: var(--accent);
+  margin: 32px 0;
+  flex-shrink: 0;
+}
+
+/* ─── Insight box — dark anchor block, pinned to bottom ─────── */
+.insight {
+  background: var(--ink);
+  color: #fff;
+  padding: 32px 36px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.insight-label {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.insight-text {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 22px;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.insight-text strong {
+  color: #fff;
+}
+
+/* ─── Footer inside insight box ─────────────────────────────── */
+.insight-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.insight-footer .footer-num {
+  color: var(--accent);
+}
+
+/* ─── Accent dot (for CTA card) ─────────────────────────────── */
+.accent-dot {
+  color: var(--accent);
+}
+
+/* ─── Stat block (for data cards) ───────────────────────────── */
+.card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
+}
+
+.card-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-stat:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.stat-value {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 52px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.stat-label {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ─── Highlight (inline accent) ─────────────────────────────── */
+.hl {
+  color: var(--accent);
+}
+
+/* ============================================================
+ * Legacy carousel classes (monetization-funnel)
+ * These mirror the styles from the original v2 carousel.
+ * Used in monetization-funnel/. Do not modify without
+ * comparing against the rendered output.
+ * ============================================================ */
+
+/* Body override for legacy carousels */
+body {
+  background: #e8e8e6;
+  font-family: 'Sans', system-ui, sans-serif;
+  padding: 20px 0;
+}
+
+/* .card override: legacy padding and centering — scoped to .legacy body */
+.legacy .card {
+  padding: 80px 80px 0 80px;
+  margin: 0 auto 20px auto;
+}
+.legacy .card:last-child { page-break-after: auto; }
+
+/* Card body flex wrapper */
+.legacy .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 30px;
+}
+
+/* Kicker — mono uppercase accent label */
+.kicker {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 22px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 50px;
+  font-weight: 500;
+}
+
+/* Cover / topic title — largest heading */
+h1.title-xl {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 88px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+h1.title-xl .accent  { color: var(--accent); }
+h1.title-xl .secondary { color: var(--muted); }
+
+/* Section title */
+h2.title-lg {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 80px;
+  line-height: 1.0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+h2.title-lg .accent { color: var(--accent); }
+
+/* Subtitle / lede below title */
+.subtitle {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 30px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 40px;
+  max-width: 80%;
+}
+
+/* Giant decorative letter (ARPU card) */
+.big-letter {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 380px;
+  line-height: 0.85;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 30px 0;
+  text-align: left;
+}
+
+/* Topic title (smaller than title-lg, e.g. ARPU subhead) */
+.topic-title {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 30px;
+}
+
+/* Body text paragraph */
+.body-text {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 26px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.body-text strong { font-weight: 700; color: var(--ink); }
+
+/* Inline mono helper class */
+.mono { font-family: 'Mono', ui-monospace, monospace; }
+
+/* Insight box — dark inset block, full bleed from card padding */
+.insight-box {
+  background: var(--ink);
+  margin-left: -80px;
+  margin-right: -80px;
+  margin-top: auto;
+  padding: 40px 80px 40px 80px;
+  color: #ffffff;
+}
+.legacy .insight-label {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 20px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.legacy .insight-text {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 28px;
+  line-height: 1.45;
+  color: #ffffff;
+  font-weight: 400;
+}
+.legacy .insight-text strong { font-weight: 700; color: var(--accent); }
+
+/* Funnel architecture diagram (card 02) */
+.funnel-arch {
+  margin: 30px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.arch-node {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 16px 0;
+}
+.arch-node .accent { color: var(--accent); }
+.arch-transition {
+  margin-left: 60px;
+  padding-left: 30px;
+  border-left: 2px solid var(--accent);
+  padding-top: 10px;
+  padding-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+.arch-arrow {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.arch-metric-name {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 22px;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+.arch-metric-desc {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 22px;
+  color: var(--muted);
+}
+
+/* Terms / glossary list (card 03) */
+.terms-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 30px 0;
+}
+.term-row {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+}
+.term-row:last-child { border-bottom: none; }
+.term-name {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  width: 280px;
+  flex-shrink: 0;
+}
+.term-name .accent { color: var(--accent); }
+.term-def {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 24px;
+  color: var(--muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Metric pair block (cards 04–06) */
+.metric-pair {
+  display: flex;
+  flex-direction: column;
+  margin: 30px 0;
+  flex: 1;
+  justify-content: center;
+  gap: 35px;
+}
+.metric-block {
+  border-left: 4px solid var(--accent);
+  padding-left: 30px;
+}
+.metric-name {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.metric-formula {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 26px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.metric-text {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 23px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* Product-health protection list (card 08) */
+.protect-list {
+  margin: 30px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.protect-row {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+}
+.protect-row:last-child { border-bottom: none; }
+.protect-name {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  width: 360px;
+  flex-shrink: 0;
+}
+.protect-desc {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 23px;
+  color: var(--muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* CTA link block (card 09) */
+.cta-link {
+  border: 2px solid var(--ink);
+  padding: 35px 40px;
+  margin-bottom: 25px;
+}
+.cta-link-label {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 18px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.cta-link-title {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.cta-link-desc {
+  font-family: 'Sans', system-ui, sans-serif;
+  font-size: 22px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.cta-link-url {
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 20px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Footer strip — absolute, pinned to card bottom */
+.legacy .footer {
+  position: absolute;
+  bottom: 40px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 25px;
+  border-top: 1px solid var(--line);
+  font-family: 'Mono', ui-monospace, monospace;
+  font-size: 18px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.legacy .footer-num { color: var(--accent); font-weight: 500; }
+
+/* Footer variant when insight box sits above it (dark bg → footer on light) */
+.legacy .card.has-dark-insight .footer {
+  background: var(--bg);
+  margin-left: -80px;
+  margin-right: -80px;
+  padding-left: 80px;
+  padding-right: 80px;
+  padding-top: 25px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: none;
+}
+
+@media print {
+  body { background: white; padding: 0; }
+  .legacy .card { margin: 0; page-break-after: always; }
+}

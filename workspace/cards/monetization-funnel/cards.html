@@ -1,0 +1,392 @@
+<!--
+  Импортированная карусель v2. Inline styles намеренно сохранены
+  из оригинала — это эталонный артефакт, не правим без переноса
+  на новые классы в _shared/cards.css.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Карусель: метрики монетизации</title>
+<link rel="stylesheet" href="../_shared/fonts.css">
+<link rel="stylesheet" href="../_shared/cards.css">
+</head>
+<body class="legacy">
+
+<!-- ═════════════════════════ КАРТОЧКА 01 — COVER ═════════════════════════ -->
+<div class="card">
+  <div class="card-body">
+    <div class="kicker">Монетизация · Метрики</div>
+
+    <h1 class="title-xl" style="margin-top: 80px;">
+      Как читать <span class="accent">воронку</span>
+    </h1>
+    <h1 class="title-xl" style="font-size: 56px; color: var(--muted); margin-top: 30px; font-weight: 400;">
+      от запроса до выручки
+    </h1>
+
+    <div class="subtitle">
+      Девять метрик которые формируют рекламную выручку — что они значат
+      и где аналитики чаще всего ошибаются.
+    </div>
+
+    <div style="flex: 1;"></div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">01</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 02 — АРХИТЕКТУРА (переходы) ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Контекст · Архитектура воронки</div>
+
+    <h2 class="title-lg">Между метриками —<br>переходы с потерями</h2>
+
+    <div class="funnel-arch">
+      <div class="arch-node">Requests</div>
+      <div class="arch-transition">
+        <span class="arch-arrow">↓</span>
+        <span class="arch-metric-name">Fill rate</span>
+        <span class="arch-metric-desc">— responses / requests</span>
+      </div>
+
+      <div class="arch-node">Responses</div>
+      <div class="arch-transition">
+        <span class="arch-arrow">↓</span>
+        <span class="arch-metric-name">Show rate</span>
+        <span class="arch-metric-desc">— shows / responses</span>
+      </div>
+
+      <div class="arch-node">Shows</div>
+      <div class="arch-transition">
+        <span class="arch-arrow">↓</span>
+        <span class="arch-metric-name">Viewability</span>
+        <span class="arch-metric-desc">— shows monet / shows</span>
+      </div>
+
+      <div class="arch-node">Shows <span class="accent">monet</span></div>
+      <div class="arch-transition">
+        <span class="arch-arrow">↓</span>
+        <span class="arch-metric-name">CTR</span>
+        <span class="arch-metric-desc">— clicks / shows monet</span>
+      </div>
+
+      <div class="arch-node">Clicks</div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Принцип</div>
+      <div class="insight-text">
+        Аналитик монетизации работает не с метриками отдельно,
+        а с <strong>переходами между ними</strong>. На каждом переходе теряется
+        часть объёма — задача найти где потери оправданы, а где можно вернуть.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">02</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 03 — СЛОВАРЬ ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Тема 1 · Словарь</div>
+
+    <h2 class="title-lg">Что значит<br>каждое звено</h2>
+
+    <div class="terms-list">
+      <div class="term-row">
+        <div class="term-name">Request</div>
+        <div class="term-def">запрос рекламы у аукциона, когда нужно показать слот</div>
+      </div>
+      <div class="term-row">
+        <div class="term-name">Response</div>
+        <div class="term-def">ответ аукциона: реклама загружена в слот</div>
+      </div>
+      <div class="term-row">
+        <div class="term-name">Show</div>
+        <div class="term-def">пользователь увидел слот, элемент загружен в DOM</div>
+      </div>
+      <div class="term-row">
+        <div class="term-name">Show <span class="accent">monet</span></div>
+        <div class="term-def">показ зачётный для выручки: больше 1 секунды в видимой зоне</div>
+      </div>
+      <div class="term-row">
+        <div class="term-name">Click</div>
+        <div class="term-def">пользователь кликнул по рекламе</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Главный сдвиг</div>
+      <div class="insight-text">
+        <strong>Show ≠ Show monet.</strong> Между ними обычно 20–40% разницы.
+        Аналитик считающий по show — переоценивает охват и недооценивает eCPM.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">03</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 04 — FILL RATE / SHOW RATE ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Тема 2 · Эффективность воронки</div>
+
+    <h2 class="title-lg">Fill rate<br>и Show rate</h2>
+
+    <div class="metric-pair">
+      <div class="metric-block">
+        <div class="metric-name">Fill rate</div>
+        <div class="metric-formula">= Responses / Requests</div>
+        <div class="metric-text">
+          Доля запросов на которые аукцион ответил рекламой.
+        </div>
+      </div>
+
+      <div class="metric-block">
+        <div class="metric-name">Show rate</div>
+        <div class="metric-formula">= Shows monet / Responses</div>
+        <div class="metric-text">
+          Доля загруженных реклам ставших зачётными показами.
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Внимание</div>
+      <div class="insight-text">
+        <strong>100% fill rate — не цель.</strong> Высокий fill rate может означать
+        слишком низкий floor price — инвентарь продаётся ниже рыночной цены.
+        Здоровый fill rate балансирует объём и качество, обычно ниже 100%.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">04</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 05 — CPM / CTR ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Тема 3 · Цена и кликабельность</div>
+
+    <h2 class="title-lg">CPM и CTR</h2>
+
+    <div class="metric-pair">
+      <div class="metric-block">
+        <div class="metric-name">CPM</div>
+        <div class="metric-formula">= Revenue / Shows monet × 1000</div>
+        <div class="metric-text">
+          Цена тысячи зачётных показов. Cost per Mille.
+        </div>
+      </div>
+
+      <div class="metric-block">
+        <div class="metric-name">CTR</div>
+        <div class="metric-formula">= Clicks / Shows monet</div>
+        <div class="metric-text">
+          Доля кликов от зачётных показов.
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Главная ошибка</div>
+      <div class="insight-text">
+        CPM и CTR можно считать <strong>по show</strong> или <strong>по show monet</strong> —
+        это две разные метрики. Сравнения между плейсментами / форматами —
+        только в одинаковой единице. Иначе получите ложные выводы.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">05</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 06 — REVENUE / eCPM ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Тема 4 · Выручка</div>
+
+    <h2 class="title-lg">Revenue<br>и eCPM</h2>
+
+    <div class="metric-pair">
+      <div class="metric-block">
+        <div class="metric-name">Revenue</div>
+        <div class="metric-formula">сумма от рекламодателей</div>
+        <div class="metric-text">
+          Деньги полученные от рекламодателей за период.
+        </div>
+      </div>
+
+      <div class="metric-block">
+        <div class="metric-name">eCPM</div>
+        <div class="metric-formula">эффективный CPM по всем каналам</div>
+        <div class="metric-text">
+          Учитывает все источники выручки: CPM-аукционы + CPC × CTR + др.
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Внимание</div>
+      <div class="insight-text">
+        Растущая <strong>ad revenue</strong> не равна растущей <strong>net revenue</strong>.
+        Дополнительные показы каннибализируют комиссию, подписки, retention.
+        Total revenue считают по всем каналам, не только ad.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">06</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 07 — ARPU ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Тема 5 · Выручка на пользователя</div>
+
+    <div class="big-letter" style="font-size: 240px; margin-top: 20px;">ARPU</div>
+
+    <h2 class="topic-title">Average Revenue Per User</h2>
+
+    <div class="body-text">
+      <span class="mono" style="color: var(--accent);">ARPU = Revenue / DAU</span>
+    </div>
+
+    <div class="body-text" style="margin-top: 20px; color: var(--muted);">
+      В медиа-продуктах ARPU = ARPDAU — рекламу видят все активные
+      пользователи, не только платящие.
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Что прячет среднее</div>
+      <div class="insight-text">
+        Среднее обманывает на heavy-tail. <strong>5–10% самых активных дают
+        50–70% выручки.</strong> Среднее ARPU маскирует структуру. Правильно —
+        медиана + распределение по value-tier (heavy / medium / light).
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">07</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 08 — НЕ ПРИБИТЬ ПРОДУКТ ═════════════════════════ -->
+<div class="card has-dark-insight">
+  <div class="card-body">
+    <div class="kicker">Внимание</div>
+
+    <h2 class="title-lg">Чем ad revenue<br>может убить <span class="accent">продукт</span></h2>
+
+    <div class="protect-list">
+      <div class="protect-row">
+        <div class="protect-name">Retention</div>
+        <div class="protect-desc">D7, D30 — доля пользователей вернувшихся</div>
+      </div>
+      <div class="protect-row">
+        <div class="protect-name">Session length</div>
+        <div class="protect-desc">продолжительность сессии</div>
+      </div>
+      <div class="protect-row">
+        <div class="protect-name">Stickiness</div>
+        <div class="protect-desc">DAU / MAU — частота возврата</div>
+      </div>
+      <div class="protect-row">
+        <div class="protect-name">Content consumption</div>
+        <div class="protect-desc">единиц контента за сессию</div>
+      </div>
+      <div class="protect-row">
+        <div class="protect-name">Engagement rate</div>
+        <div class="protect-desc">действия за сессию — лайки, шеры, комментарии</div>
+      </div>
+      <div class="protect-row">
+        <div class="protect-name">Churn rate</div>
+        <div class="protect-desc">отток</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-label">Принцип</div>
+      <div class="insight-text">
+        Оптимизация ad load в изоляции — путь к деградации продукта.
+        Через 6 месяцев база уходит, net revenue падает несмотря на рост
+        ad revenue. <strong>Продуктовые метрики в каждом ad-эксперименте</strong>,
+        не отдельно.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">08</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>свайп →</span>
+  </div>
+</div>
+
+<!-- ═════════════════════════ КАРТОЧКА 09 — CTA ═════════════════════════ -->
+<div class="card">
+  <div class="card-body">
+    <div class="kicker">Углубиться</div>
+
+    <h2 class="title-lg" style="margin-bottom: 50px;">Длиннее и глубже<br>про монетизацию</h2>
+
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+
+      <div class="cta-link">
+        <div class="cta-link-label">Статья</div>
+        <div class="cta-link-title">Retention vs Revenue: как не разрушить продукт ad-монетизацией</div>
+        <div class="cta-link-desc">три механизма деградации продукта от ad load</div>
+        <div class="cta-link-url">davydov.my/workspace/articles/retention-vs-revenue</div>
+      </div>
+
+      <div class="cta-link">
+        <div class="cta-link-label">Курс</div>
+        <div class="cta-link-title">Монетизация · 6 модулей</div>
+        <div class="cta-link-desc">метрики · давление · время · эксперименты · операционка · рынок</div>
+        <div class="cta-link-url">davydov.my/lab/monetization</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="footer-num">09</span>&nbsp;·&nbsp;9</span>
+    <span>Александр Давыдов</span>
+    <span>конец</span>
+  </div>
+</div>
+
+</body>
+</html>

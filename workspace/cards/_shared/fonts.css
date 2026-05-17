@@ -1,0 +1,82 @@
+/*
+  fonts.css — @font-face declarations for card rendering
+  Three logical families: 'Sans', 'Sans Wide', 'Mono'
+
+  Strategy: unicode-range splits Latin (Space Grotesk) and
+  Cyrillic (Manrope) into a single logical family name.
+  The browser picks the right file per character automatically.
+*/
+
+/* ─── Sans · weight 400 ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/manrope-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  unicode-range: U+0400-04FF, U+0500-052F;
+}
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/space-grotesk-500.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2000-206F, U+2070-209F;
+}
+
+/* ─── Sans · weight 500 ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/space-grotesk-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2000-206F, U+2070-209F;
+}
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/manrope-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  unicode-range: U+0400-04FF, U+0500-052F;
+}
+
+/* ─── Sans · weight 700 (Cyrillic headings) ─────────────────── */
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/manrope-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  unicode-range: U+0400-04FF, U+0500-052F;
+}
+@font-face {
+  font-family: 'Sans';
+  src: url('../_fonts/space-grotesk-600.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2000-206F, U+2070-209F;
+}
+
+/* ─── Sans Wide · card headings (600/700) ───────────────────── */
+/* Latin: Space Grotesk 600 — tight tracking, geometric stems   */
+@font-face {
+  font-family: 'Sans Wide';
+  src: url('../_fonts/space-grotesk-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  unicode-range: U+0000-007F, U+00A0-00FF, U+2000-206F, U+2070-209F;
+}
+/* Cyrillic: Manrope 700 — bold, matches Space Grotesk at 600   */
+@font-face {
+  font-family: 'Sans Wide';
+  src: url('../_fonts/manrope-700.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  unicode-range: U+0400-04FF, U+0500-052F;
+}
+
+/* ─── Mono — kickers, counters, labels ─────────────────────── */
+@font-face {
+  font-family: 'Mono';
+  src: url('../_fonts/geist-mono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
