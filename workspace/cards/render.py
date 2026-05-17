@@ -8,12 +8,13 @@ Usage:
 Example:
     python3 render.py monetization-funnel
 
-The script reads cards.html inside the given directory, renders each
-.card element to a separate PNG in out/, at 2× retina resolution
-(output size: 2160×2700 px).
+Steps:
+  1. Renders each .card element to card-NN.png in out/ at 2× retina
+     resolution (2160×2700 px, 4:5 LinkedIn portrait ratio).
+  2. Assembles all PNGs into out/carousel.pdf at 144 DPI.
 
 Requirements:
-    pip install playwright
+    pip install playwright Pillow
     playwright install chromium
 """
 
@@ -84,6 +85,42 @@ def render_carousel(carousel_dir: str) -> None:
 
     print(f"\nDone. {total} PNG(s) saved to {out_dir}/")
     print(f"Output resolution: 2160×2700 px (2× retina).")
+
+    assemble_pdf(out_dir, total)
+
+
+def assemble_pdf(out_dir: Path, expected: int) -> None:
+    """Assemble card-NN.png files in out_dir into carousel.pdf at 144 DPI."""
+    # JpegImagePlugin must be imported explicitly in Pillow 12+ to register
+    # the JPEG save handler before the PDF plugin tries to use it.
+    from PIL import Image, JpegImagePlugin  # noqa: F401
+
+    pngs = sorted(out_dir.glob("card-*.png"))
+
+    if not pngs:
+        print("Warning: no card-*.png found, skipping PDF assembly.", file=sys.stderr)
+        return
+
+    if len(pngs) != expected:
+        print(
+            f"Warning: expected {expected} PNGs, found {len(pngs)}. Assembling anyway.",
+            file=sys.stderr,
+        )
+
+    print(f"\nAssembling PDF from {len(pngs)} PNG(s)...")
+
+    images = [Image.open(p).convert("RGB") for p in pngs]
+
+    pdf_path = out_dir / "carousel.pdf"
+    images[0].save(
+        pdf_path,
+        save_all=True,
+        append_images=images[1:],
+        resolution=144.0,
+    )
+
+    size_mb = pdf_path.stat().st_size / (1024 * 1024)
+    print(f"PDF saved → out/carousel.pdf  ({size_mb:.1f} MB, {len(images)} pages)")
 
 
 def main() -> None:
