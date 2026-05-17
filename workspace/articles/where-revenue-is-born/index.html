@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Где рождается выручка — воронка монетизации от запроса до клика · Workspace</title>
+  <link rel="canonical" href="https://davydov.my/workspace/articles/where-revenue-is-born/"/>
+  <meta name="description" content="Пять последовательных переходов — от запроса к аукциону до клика — складываются в рекламную выручку. На каждом шаге потери. Разбор механики, типичных диапазонов и пяти способов терять деньги молча."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Где рождается выручка — воронка монетизации · Александр Давыдов"/>
+  <meta property="og:description" content="Пять переходов воронки монетизации: механика, потери, типичные диапазоны и интерактивный калькулятор."/>
+  <meta property="og:url" content="https://davydov.my/workspace/articles/where-revenue-is-born/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+  /* calc-only — interactive funnel calculator widget */
+  .calc {
+    border: 1px solid var(--ink);
+    padding: 40px;
+    margin: 48px 0;
+  }
+  .calc-kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .calc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .calc-field-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+  .calc-input {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line-d);
+    padding: 10px 12px;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+  .calc-input:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .calc-input::-webkit-outer-spin-button,
+  .calc-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  .calc-funnel {
+    margin-bottom: 32px;
+  }
+  .calc-node {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+  }
+  .calc-node:last-of-type {
+    border-bottom: 1px solid var(--line);
+  }
+  .calc-node-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+  .calc-node-val {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .calc-step {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0 5px 16px;
+  }
+  .calc-step-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .calc-step-arrow {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .calc-step-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+  }
+  .calc-step-loss {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .calc-result {
+    border-top: 2px solid var(--ink);
+    padding-top: 24px;
+  }
+  .calc-result-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .calc-result-daily {
+    font-family: var(--mono);
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .calc-result-monthly {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .calc-hint {
+    margin-top: 20px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+    border-left: 3px solid var(--line-d);
+    padding-left: 16px;
+  }
+  /* article-local */
+  .article-author .page-sub a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .article-back {
+    margin-top: 40px;
+  }
+  .article-back a {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .article-back a:hover {
+    color: var(--ink);
+  }
+  @media (max-width: 900px) {
+    .calc { padding: 24px; }
+    .calc-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  }
+  </style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Май 2026</span>
+    <span class="chip">Монетизация</span>
+    <span>15 мин</span>
+  </div>
+  <h1>Где рождается выручка</h1>
+
+  <div class="prose">
+
+  <p>В дашборде рекламная выручка выглядит как одно число. В реальности это произведение пяти последовательных событий: насколько часто аукцион отвечает на запрос, насколько часто загруженная реклама попадает в поле зрения, насколько часто попавшая в поле зрения реклама считается зачётной, насколько часто по ней кликают, и сколько стоит каждый клик. Каждое из этих событий — отдельная точка потерь со своим механизмом.</p>
+
+  <p>Аналитик, который видит только итоговое число, не знает, где именно теряются деньги. Аналитик, который работает с воронкой, видит на каком переходе потери выше нормы, через какой механизм это происходит и что нужно изменить, чтобы выручка выросла. Это разница не в доступе к данным — это разница в модели, через которую данные читаются.</p>
+
+  <h2>Откуда берётся выручка</h2>
+
+  <p>Каждый рубль рекламной выручки рождается в момент клика. Пользователь нажал на объявление — рекламодатель заплатил CPC. Revenue = Clicks × CPC. Это CPC-модель. CPM-модель выражает то же самое через показы: Revenue = Shows monet × eCPM / 1000, где eCPM = CTR × CPC × 1000. Обе формулы равнозначны — они описывают одну цепочку с разных концов.</p>
+
+  <div class="formula-box">
+    <div class="formula-label">Полная формула выручки</div>
+    <div class="formula-expr">Revenue = Requests × Fill rate × Show rate × Viewability × CTR × CPC</div>
+  </div>
+
+  <p>Это произведение шести чисел. Каждый из множителей управляется независимо: fill rate зависит от floor price и числа партнёров по спросу; show rate — от позиции в интерфейсе и архитектуры загрузки; viewability — от скорости рендеринга и глубины скролла; CTR — от формата, таргетинга и качества объявления; CPC — от конкуренции в аукционе. Когда выручка падает, причина находится в одном из этих множителей, реже в нескольких одновременно.</p>
+
+  <p>Важное следствие: «показывать больше рекламы» — это только один рычаг из пяти. Рост Requests через увеличение числа слотов на странице сразу оказывает давление на остальные множители: show rate падает (больше слотов, часть не доскроллена), viewability снижается (слоты вытесняются ниже), CTR падает (пользователь перегружен). Net-эффект может быть меньше ожидаемого — или отрицательным.</p>
+
+  <h2>Переходы воронки</h2>
+
+  <h3>Requests → Responses: Fill rate</h3>
+
+  <p>Запрос (request) возникает каждый раз, когда рекламный слот готов к заполнению и ваш SSP отправляет bid request в аукцион. Ответ (response) — аукцион нашёл победителя и загрузил объявление в слот. Fill rate = Responses / Requests. Это первый фильтр воронки — и первый сигнал о состоянии спроса.</p>
+
+  <p>Потери на этом шаге вызываются несколькими механизмами. <strong>Floor price слишком высокий</strong>: аукцион не находит покупателей выше порога, запрос остаётся без ответа. <strong>Мало партнёров по спросу</strong>: без header bidding и waterfall конкуренция за показ низкая. <strong>Технические задержки</strong>: SSP не укладывается в timeout (обычно 200–400 мс) и запрос истекает. <strong>Нет альтернативных источников</strong>: единственный DSP не отвечает — весь запрос теряется.</p>
+
+  <p>Типичный диапазон: 70–95% для здоровой воронки. Выше 95% — сигнал, что floor price занижен: аукцион принимает любые ставки, включая самые низкие. Ниже 70% — структурная проблема; начинают с аудита timeouts и числа активных партнёров по спросу, не с переговоров с рекламодателями.</p>
+
+  <h3>Responses → Shows: Show rate</h3>
+
+  <p>Ответ аукциона означает, что объявление технически загружено в слот. Show означает, что пользователь дошёл до этого слота в интерфейсе. Show rate = Shows / Responses. Между «реклама загружена» и «реклама показана» — реальное поведение пользователя, которое зависит от позиции в контенте и длины сессии.</p>
+
+  <p>Самая частая причина потерь — позиция размещения. Слот внизу длинной ленты загружается при открытии страницы, но большинство пользователей не доматывают до него. Lazy loading с агрессивными триггерами: слот загружается только при скролле, но к этому моменту пользователь уже листает быстро. Короткие сессии: пользователь открыл страницу и сразу закрыл до того, как реклама отобразилась.</p>
+
+  <p>Типичный show rate: 60–85% в зависимости от позиции. Слоты выше первого скролла (above the fold) — 85–95%. Слоты ниже третьего экрана — 40–60%. Это объясняет, почему один и тот же формат на разных позициях даёт принципиально разную выручку при одинаковом fill rate: show rate меняется в 1.5–2× раза.</p>
+
+  <h3>Shows → Shows monet: Viewability</h3>
+
+  <p>Это самый часто неправильно понимаемый переход. «Show» в логах — факт появления HTML-элемента в DOM. «Show monet» — видимый показ, зачётный для выручки: рекламный блок занимал не менее 50% своей площади в видимой зоне экрана в течение не менее 1 секунды. Это отраслевой стандарт MRC (Media Rating Council). Разница между show и show monet — обычно 20–40%.</p>
+
+  <p>Почему этот переход важен: именно за show monet рекламодатели платят CPM. Показ, который был в DOM, но не был виден — технический артефакт, не коммерческий. Если аналитик считает CPM по show вместо show monet, он систематически занижает реальную стоимость показа. При viewability 70% такое занижение составляет 1 / 0.7 ≈ 43%: CPM выглядит на 43% ниже реального. Это меняет все сравнения между плейсментами и форматами.</p>
+
+  <p>Типичный диапазон viewability: 55–80% для стандартных форматов. Выше у native-рекламы (блок встроен в контент и виден дольше), ниже у баннеров внизу страницы. Рост viewability на 10 п.п. даёт прямо пропорциональный рост eCPM при прочих равных — это один из немногих рычагов, полностью подконтрольных издателю.</p>
+
+  <h3>Shows monet → Clicks: CTR</h3>
+
+  <p>CTR (Click-Through Rate) = Clicks / Shows monet. Здесь встречаются два независимых агента: пользователь, который решает кликнуть или проигнорировать, и рекламодатель, который определяет качество и релевантность объявления. Издатель на CTR влияет косвенно — через позицию, формат и глубину сессии.</p>
+
+  <p>Что управляет CTR на стороне издателя: позиция в интерфейсе (чем выше, тем выше CTR, но это же давит на viewability соседних блоков), формат (native даёт CTR в 2–5 раз выше, чем banner), глубина сессии (пользователи в середине сессии кликают активнее, чем в первые секунды). На стороне рекламодателя: точность таргетинга, соответствие объявления аудитории, качество creatives.</p>
+
+  <p>Типичные диапазоны CTR: 0.5–2% для standard banner, 1–4% для native, 5–15% для interstitial. Важная оговорка: CTR легко увеличить кликбейтом — визуально навязчивые объявления дают краткосрочный рост CTR, но снижают качество инвентаря в глазах premium-рекламодателей и со временем снижают CPM. Правильный CTR — не «как можно выше», а оптимальный для качества аудитории и долгосрочного eCPM.</p>
+
+  <h3>Clicks → Revenue: CPC и eCPM</h3>
+
+  <p>CPC (Cost Per Click) — рыночная цена, которую рекламодатель платит за клик. В CPC-модели Revenue = Clicks × CPC. В CPM-модели цена фиксируется за тысячу показов независимо от кликов. На практике большинство programmatic-аукционов работают в гибриде: CPM как базовая единица торгов, но ставки для CPC-кампаний пересчитываются в eCPM = CTR × CPC × 1000.</p>
+
+  <p>CPC находится вне прямого контроля издателя — это результат конкуренции в аукционе. Но косвенно: точные данные об аудитории увеличивают ставки рекламодателей; чистый инвентарь с высокой viewability привлекает premium-demand с более высокими CPM; сегментированные floor prices удерживают минимальный eCPM для ценных сегментов. eCPM = Revenue / Shows monet × 1000 — это «здоровье» всей воронки в одном числе. Рост eCPM означает, что воронка в целом стала эффективнее.</p>
+
+  </div><!-- /prose — calculator follows -->
+
+  <div class="calc">
+    <div class="calc-kicker">Калькулятор воронки</div>
+
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-requests">Requests в день</label>
+        <input class="calc-input" id="f-requests" type="number" value="1000000" min="0">
+      </div>
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-fill">Fill rate, %</label>
+        <input class="calc-input" id="f-fill" type="number" value="75" min="0" max="100" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-show">Show rate, %</label>
+        <input class="calc-input" id="f-show" type="number" value="60" min="0" max="100" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-view">Viewability, %</label>
+        <input class="calc-input" id="f-view" type="number" value="70" min="0" max="100" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-ctr">CTR, %</label>
+        <input class="calc-input" id="f-ctr" type="number" value="1.5" min="0" max="100" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label class="calc-field-lbl" for="f-cpc">CPC, ₽</label>
+        <input class="calc-input" id="f-cpc" type="number" value="8" min="0" step="0.5">
+      </div>
+    </div>
+
+    <div class="calc-funnel">
+      <div class="calc-node">
+        <span class="calc-node-name">Requests</span>
+        <span class="calc-node-val" id="fn-requests">1 000 000</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-left">
+          <span class="calc-step-arrow">↓</span>
+          <span class="calc-step-name">Fill rate</span>
+        </span>
+        <span class="calc-step-loss" id="fl-fill"></span>
+      </div>
+      <div class="calc-node">
+        <span class="calc-node-name">Responses</span>
+        <span class="calc-node-val" id="fn-responses">750 000</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-left">
+          <span class="calc-step-arrow">↓</span>
+          <span class="calc-step-name">Show rate</span>
+        </span>
+        <span class="calc-step-loss" id="fl-show"></span>
+      </div>
+      <div class="calc-node">
+        <span class="calc-node-name">Shows</span>
+        <span class="calc-node-val" id="fn-shows">450 000</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-left">
+          <span class="calc-step-arrow">↓</span>
+          <span class="calc-step-name">Viewability</span>
+        </span>
+        <span class="calc-step-loss" id="fl-view"></span>
+      </div>
+      <div class="calc-node">
+        <span class="calc-node-name">Shows monet</span>
+        <span class="calc-node-val" id="fn-shows-monet">315 000</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-left">
+          <span class="calc-step-arrow">↓</span>
+          <span class="calc-step-name">CTR</span>
+        </span>
+        <span class="calc-step-loss" id="fl-ctr"></span>
+      </div>
+      <div class="calc-node">
+        <span class="calc-node-name">Clicks</span>
+        <span class="calc-node-val" id="fn-clicks">4 725</span>
+      </div>
+    </div>
+
+    <div class="calc-result">
+      <div class="calc-result-label">Ad revenue в день</div>
+      <div class="calc-result-daily" id="out-daily">37 800 ₽</div>
+      <div class="calc-result-monthly" id="out-monthly">1 134 000 ₽ в месяц</div>
+    </div>
+
+    <div class="calc-hint">Подкрути любой параметр — увидишь, где работа аналитика даёт максимальный лифт по выручке.</div>
+  </div>
+
+  <div class="prose">
+
+  <h2>Пять способов потерять выручку</h2>
+
+  <h3>100% fill rate — не успех</h3>
+
+  <p>Интуитивно кажется, что 100% fill rate — идеал: каждый запрос к аукциону получает ответ. На практике это тревожный сигнал. Если аукцион заполняет все запросы, значит floor price ниже любой ставки в системе. Вы не отказали ни одному покупателю — в том числе тем, кто платит минимум.</p>
+
+  <p>Правильная модель — баланс между fill rate и CPM. Если поднять floor с 30 ₽ до 60 ₽, fill rate упадёт с 100% до 80%. Но средний CPM вырастет с 30 ₽ до 65 ₽. Было: 100 requests × 30 ₽ / 1000 = 3 ₽ выручки с тысячи запросов. Стало: 80 requests × 65 ₽ / 1000 = 5.2 ₽. Отказ от 20% запросов увеличил выручку на 73%.</p>
+
+  <p>Оптимизация floor price — нелинейная задача, и для разных сегментов аудитории оптимум разный. Ценная аудитория (высокий доход, активная покупательская история) выдерживает более высокий floor без потери fill rate. Сегментированные floor prices по ценным сегментам — один из основных инструментов роста eCPM без изменения ad load.</p>
+
+  <h3>Ad load и D30: выручка сейчас, база потом</h3>
+
+  <p>Увеличение числа рекламных блоков на странице — самый очевидный способ поднять ad revenue. Он работает мгновенно и хорошо виден в A/B-тесте за 2–4 недели. Он же запускает процесс, результат которого виден через 3–6 месяцев: медленное угасание удержания аудитории.</p>
+
+  <p>Механизм незаметен в коротком тесте. Больше рекламы → лёгкое увеличение когнитивной нагрузки → небольшое снижение удовлетворённости сессией → чуть меньше вероятность вернуться на следующий день. Это изменение probability of return на 1–2 п.п. За 4 недели — невидимо в доверительном интервале. Кумулятивно за 6 месяцев — сокращение DAU на 5–8%.</p>
+
+  <p>Правило: каждый A/B-тест по ad load должен включать D30 retention как guardrail-метрику. Если D30 в 4-недельном тесте показывает «не значимо» — это не «нет эффекта», это «эффект не успел накопиться». Рекомендуемая структура: основной тест 4 недели по ad revenue + holdout-группа (5% трафика) с горизонтом 2–3 месяца для retention-замера.</p>
+
+  <h3>CPM по show и CPM по show monet — это разные числа</h3>
+
+  <p>Одни и те же данные производят два разных CPM в зависимости от знаменателя. CPM_show = Revenue / Shows × 1000. CPM_show_monet = Revenue / Shows monet × 1000. Второе всегда больше первого, потому что Shows ≥ Shows monet. При viewability 70% разница составляет ×1.43.</p>
+
+  <p>Где это становится проблемой: при сравнении форматов, плейсментов и периодов времени. Если один плейсмент считает CPM по show, другой — по show monet, и при этом у них разная viewability — сравнение бессмысленно. «CPM вырос со 150 ₽ до 200 ₽» может означать реальный рост, а может означать падение viewability при неизменной выручке: знаменатель уменьшился.</p>
+
+  <p>Правило: в одной системе отчётности — единый знаменатель. В отчёте, где есть CPM, всегда указывать, какой. При аудите метрик первый вопрос к числу CPM: «по show или по show monet?» Если неизвестно — все сравнения, основанные на этом числе, ненадёжны.</p>
+
+  <h3>Среднее ARPU маскирует распределение</h3>
+
+  <p>ARPU (Average Revenue Per User) = Revenue / DAU. В продуктах с рекламой все активные пользователи участвуют в монетизации, поэтому ARPU и ARPDAU практически совпадают. Растущий ARPU выглядит как сигнал успеха. Это не обязательно так.</p>
+
+  <p>В большинстве ad-supported продуктов 5–10% самых активных пользователей дают 50–70% рекламной выручки. Mean ARPU — взвешенное среднее с тяжёлым хвостом. Если лёгкие и средние пользователи начинают уходить, а тяжёлые остаются, DAU падает, ARPU растёт, общая выручка держится плоско или слабо падает. Аналитик смотрит на ARPU и делает вывод «монетизация работает».</p>
+
+  <p>Правильная диагностика — распределение, а не среднее. Минимум три разреза: heavy tier (топ 5–10%), medium tier (следующие 30–40%), light/new tier (остальные). ARPU и retention отдельно по каждому тиру. Если ARPU light tier плоский, а heavy tier растёт — это не «монетизация улучшается», это «база сжимается до core».</p>
+
+  <h3>Ad revenue — не весь P&amp;L</h3>
+
+  <p>Рекламная выручка — один канал монетизации. В большинстве продуктов рядом существуют: комиссия с транзакций, подписки, платные функции. Больше рекламы в интерфейсе изменяет поведение пользователей не только в отношении рекламы — это влияет на все каналы.</p>
+
+  <p>Конкретный механизм: в маркетплейсе рекламные слоты вытесняют органические листинги — пользователь видит меньше нативных товаров, conversion rate падает, комиссия снижается. В медиа с платным уровнем рекламная нагрузка увеличивает конверсию в подписку (хорошо), но одновременно увеличивает churn (плохо). Net-эффект зависит от соотношения этих сил.</p>
+
+  <p>Правило: в A/B-тестах по ad load обязательная метрика — total revenue per user, сумма по всем каналам. Если ad revenue +20%, subscription revenue −5%, commission revenue −3% — итоговый net может быть меньше нуля. Команда, которая отчитывается только по ad revenue, отчитывается о части истории.</p>
+
+  <h2>Где работает аналитик монетизации</h2>
+
+  <p>Аналитик монетизации работает не с итоговым числом выручки — он работает с переходами. На каком шаге воронки потери выше нормы? Через какой механизм это происходит? Какое изменение даёт наибольший рост выручки при минимальном риске для retention? Это вопросы про конкретные множители в цепочке, а не про сумму на выходе.</p>
+
+  <p>Воронка — это не просто диагностический инструмент. Это модель, через которую данные становятся читаемыми. Requests × Fill rate × Show rate × Viewability × CTR × CPC — это описание того, где принимаются решения на каждом шаге и кто несёт ответственность за каждый множитель. Понять воронку — значит понять, за какой рычаг стоит тянуть в первую очередь, а не «нажимать на все кнопки одновременно» и смотреть, что изменится на выходе.</p>
+
+  </div>
+
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script>
+(function () {
+  'use strict';
+  var DEF = { requests: 1000000, fill: 75, show: 60, view: 70, ctr: 1.5, cpc: 8 };
+
+  function getVal(id, def) {
+    var el = document.getElementById(id);
+    if (!el) return def;
+    var v = parseFloat(el.value);
+    return (el.value === '' || isNaN(v) || v < 0) ? def : v;
+  }
+
+  function fmt(n) {
+    return Math.round(n).toLocaleString('ru-RU');
+  }
+  function fmtRub(n) {
+    return Math.round(n).toLocaleString('ru-RU') + ' ₽';
+  }
+  function setText(id, s) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = s;
+  }
+
+  function recalc() {
+    var requests   = getVal('f-requests', DEF.requests);
+    var fillRate   = getVal('f-fill',     DEF.fill)  / 100;
+    var showRate   = getVal('f-show',     DEF.show)  / 100;
+    var viewRate   = getVal('f-view',     DEF.view)  / 100;
+    var ctr        = getVal('f-ctr',      DEF.ctr)   / 100;
+    var cpc        = getVal('f-cpc',      DEF.cpc);
+
+    var responses  = requests  * fillRate;
+    var shows      = responses * showRate;
+    var showsMonet = shows     * viewRate;
+    var clicks     = showsMonet * ctr;
+    var revDay     = clicks    * cpc;
+
+    setText('fn-requests',    fmt(requests));
+    setText('fn-responses',   fmt(responses));
+    setText('fn-shows',       fmt(shows));
+    setText('fn-shows-monet', fmt(showsMonet));
+    setText('fn-clicks',      fmt(clicks));
+
+    function lossStr(absLoss, keepRate) {
+      var pct = Math.round((1 - keepRate) * 100);
+      return '−' + fmt(absLoss) + ' (' + pct + '%)';
+    }
+    setText('fl-fill', lossStr(requests   - responses,  fillRate));
+    setText('fl-show', lossStr(responses  - shows,      showRate));
+    setText('fl-view', lossStr(shows      - showsMonet, viewRate));
+    setText('fl-ctr',  lossStr(showsMonet - clicks,     ctr));
+
+    setText('out-daily',   fmtRub(revDay));
+    setText('out-monthly', fmtRub(revDay * 30) + ' в месяц');
+  }
+
+  document.querySelectorAll('.calc-input').forEach(function (el) {
+    el.addEventListener('input', recalc);
+  });
+
+  recalc();
+}());
+</script>
+</body>
+</html>
