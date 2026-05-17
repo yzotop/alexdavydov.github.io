@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Когда метрика становится переменной — выручка, прибыль и работа аналитика на развороте · Workspace</title>
+  <link rel="canonical" href="https://davydov.my/workspace/articles/profit-vs-revenue-pivot/"/>
+  <meta name="description" content="В B2B SaaS выручка и прибыль тянут компанию в разные стороны на горизонте квартала. Как аналитику пережить разворот цели без паники — через дерево метрик и переключение фокуса."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Когда метрика становится переменной · Александр Давыдов"/>
+  <meta property="og:description" content="Выручка, прибыль и работа аналитика на развороте. Дерево метрик как инструмент быстрой перестройки приоритетов."/>
+  <meta property="og:url" content="https://davydov.my/workspace/articles/profit-vs-revenue-pivot/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <style>
+  /* tree-widget — metric tree interactive component */
+  .mtw {
+    margin: 48px 0;
+    border: 1px solid var(--line);
+  }
+  .mtw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+  }
+  .mtw-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+  }
+  .mtw-tabs {
+    display: flex;
+    gap: 28px;
+  }
+  .mtw-tab {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0 0 3px 0;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+  }
+  .mtw-tab--active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .mtw-sep {
+    height: 1px;
+    background: var(--line);
+  }
+  .mtw-body {
+    padding: 24px 20px 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mtw-body svg {
+    display: block;
+  }
+  .mtw-hint {
+    padding: 10px 20px 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .04em;
+    color: var(--muted);
+  }
+  /* article-local */
+  .article-author .page-sub a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .article-back {
+    margin-top: 40px;
+  }
+  .article-back a {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .article-back a:hover {
+    color: var(--ink);
+  }
+  @media (max-width: 600px) {
+    .mtw-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+  </style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Май 2026</span>
+    <span class="chip">Монетизация</span>
+    <span class="chip">A/B-эксперименты</span>
+    <span class="chip">B2B SaaS</span>
+    <span>15 мин</span>
+  </div>
+  <h1>Когда метрика становится переменной: выручка, прибыль и работа аналитика на развороте</h1>
+
+  <div class="prose">
+
+  <p>В B2B SaaS бизнес-показатели живут парами. Выручка и прибыль — главная такая пара, и теоретически они не противоречат друг другу: больше клиентов и выше чек должны давать и то, и другое. На горизонте трёх-пяти лет так и работает. На горизонте одного квартала — почти никогда.</p>
+
+  <p>Аналитик это видит первым. То, что разгоняет выручку, бьёт по прибыли с задержкой в полгода-год, и в течение этого лага две метрики тянут компанию в разные стороны. Узнаёт аналитик о выборе обычно постфактум — когда совет директоров уже решил, по какой стороне компания движется в этом квартале.</p>
+
+  <h2>Почему акционеры разворачивают цель</h2>
+
+  <p>Выручка — это язык роста. Прибыль — язык зрелости. Между ними не выбирают по любви; выбирают по конкурентной обстановке, инвестиционному климату и стадии жизненного цикла компании.</p>
+
+  <p>На молодом рынке акционеры хотят долю. Доля — это будущая монопольная позиция, способность диктовать цену, защитный ров от конкурентов. Платить за это можно сегодняшней прибылью, потому что она «вернётся потом». На зрелом рынке, когда доли поделены, дальше расти негде, и инвесторы переключают вопрос: «не сколько вы продали, а сколько на этом заработали». То же касается макроэкономики: дешёвые деньги толкают компании в гонку за выручкой; дорогие — в режим эффективности.</p>
+
+  <p>Решение об этом не принимается на уровне продуктовых команд. Оно спускается сверху, обычно вместе со сменой формулировок в стратегических документах: «exit-readiness», «path to profitability», «unit economics consolidation». Аналитик в этой цепочке не выбирает, он адаптирует свою работу под выбор. Спорить с этим — терять время; нужно понимать, что для аналитика разворот цели — не редкое исключение, а постоянная часть работы в долгоживущей компании. Цикл выручка ↔ прибыль повторяется столько раз, сколько меняется внешний контекст.</p>
+
+  <h2>Чем выручка «гонится» в ущерб прибыли</h2>
+
+  <p>Когда цель — выручка, компания запускает несколько типов механизмов. Каждый из них приносит деньги быстро и стоит маржи в горизонте полугода.</p>
+
+  <p><strong>Расширение sales-функции.</strong> Штатные продажники, партнёрская сеть, региональные менеджеры. ФОТ команды плюс премии за выполнение плана. Это самая прямая линия к росту выручки — больше людей касаются клиента, больше сделок закрывается. Маржу это съедает по двум каналам: рост постоянных затрат (зарплаты) и переменных (премии, которые в B2B нередко считаются от объёма, а не от прибыли сделки).</p>
+
+  <p><strong>Дисконты от менеджеров.</strong> В большинстве B2B SaaS-продаж sales-менеджер имеет право давать скидку, чтобы закрыть сделку. Чем агрессивнее план — тем чаще он этим правом пользуется, и тем менее прозрачна реальная маржа на каждом контракте. На уровне отчёта это выглядит как «средний чек снизился на 8%», но за этим скрывается реальная динамика: 30% сделок ушло со скидкой 25%, а остальные — без неё. Компания не видит этого, пока специально не построит распределение маржинальности по сделкам.</p>
+
+  <p><strong>Бонусные программы и реферальный канал.</strong> Промокоды, кэшбэк за приведённого клиента, повышенные комиссии партнёрам. Часть этого работает честно, часть — порождает фрод: одни и те же клиенты привлекают друг друга в кругах, менеджеры пробивают своих знакомых через реферальную программу, партнёрские кабинеты накручивают регистрации. В отчётах выручка растёт; фактическая прибыль на инкремент стремится к нулю.</p>
+
+  <p><strong>Дешёвые входные тарифы.</strong> Стартовый план с большим дисконтом, чтобы клиент попробовал. Конверсия в покупку растёт, выручка растёт, но в первый год клиент платит существенно меньше стоимости его онбординга. Прибыль приходит только во второй год — если клиент остаётся. Часть клиентов уходит, и эти деньги списываются в убыток.</p>
+
+  <p><strong>Платные каналы привлечения.</strong> Performance-маркетинг, контекст, programmatic. Они дают прогнозируемый объём, но привлекают преимущественно низкомаржинальные сегменты: малый бизнес, single-user тарифы, клиенты, чувствительные к цене. Когорта, пришедшая через performance, в среднем имеет более низкий LTV и более высокий churn — но в моменте она увеличивает количество сделок и выручку.</p>
+
+  <p>Всё это вместе образует машину: выручка растёт быстро и стабильно, прибыль растёт медленно или падает. Менеджмент знает об этом. Это не баг, это плата за рост в выбранный период.</p>
+
+  <h2>Момент разворота</h2>
+
+  <p>Однажды наверху меняется формулировка цели. «Quarterly revenue growth» уступает место «contribution margin» или «EBITDA». Внешне это выглядит как обновление слайда в стратегической презентации. Внутри аналитической команды это запускает цепную реакцию.</p>
+
+  <p>Конкретный пример. До разворота компания вкладывалась в офлайн-каналы продаж: персональные менеджеры, выезды к клиентам, конференции, региональные представительства. Эти каналы дают высокую конверсию — личный контакт работает в B2B сильнее любого лендинга, особенно для крупных контрактов. CR2 (конверсия из лида в покупку) по офлайн-каналу часто в два-три раза выше, чем по платному онлайну. Аналитик три квартала отчитывался о росте CR2 и о расширении регионального присутствия. Это была победа.</p>
+
+  <p>После разворота офлайн-каналы выпиливают. Не потому что они «плохие» — наоборот, они хорошо конвертят. Но затраты на них (зарплаты региональных команд, командировки, офисные расходы) делают их низкомаржинальными. Компания решает оставить высокомаржинальные каналы, даже если они хуже конвертят.</p>
+
+  <p>И вот метрика, которая три квартала была главным KPI, начинает падать. CR2 снижается. Аналитик отчитывается о падении CR2 — и это норма, потому что затраты падают быстрее. Падение CR2 на 15% при падении CAC на 40% — это рост прибыли, не провал. Но дашборд, заточенный под предыдущую цель, показывает падение CR2 красным, и продакт-менеджер, не успевший перенастроиться, спрашивает «что мы сделали не так».</p>
+
+  <p>Это и есть ломка. Метрики не сломались — сломалась их интерпретация. То, что три месяца считалось хорошим, теперь нейтрально или плохо. То, что считалось проблемой (низкая конверсия дорогих лидов), теперь нормально. И всё это происходит одновременно во всех сечениях — в дашбордах, в A/B-тестах в прогрессе, в прогнозах квартала, в обсуждениях со стейкхолдерами. Аналитик оказывается на минном поле собственной отчётности: каждая старая цифра, прозвучавшая на встрече, теперь требует переинтерпретации.</p>
+
+  <p>Старые метрики никуда не делись. Выручка, средний чек, количество сделок, процент продлений, доля первичных оплат — всё это продолжает считаться, в этом нет ничего нерелевантного. Меняется что из этого главное. Появляются новые: маржинальность сделки, payback period, contribution margin per cohort, retention сегментов с учётом маржи, а не выручки. Аналитик должен жонглировать обоими наборами одновременно, пока компания и команды переучиваются на новый язык.</p>
+
+  <h2>Дерево метрик как инструмент перестройки</h2>
+
+  <p>Есть два способа пережить разворот. Первый — паника, пересмотр дашбордов с нуля, потеря трёх недель и доверия со стороны продакт-команды. Второй — дерево метрик, в котором заранее видны связи между верхним показателем и его компонентами.</p>
+
+  <p>Дерево — это не модный термин, это рабочий инструмент. Берётся главная цель компании, на следующем уровне раскладывается на компоненты, каждый компонент — на свои компоненты, и так до операционных метрик, которыми можно управлять.</p>
+
+  </div><!-- /prose — tree widget follows -->
+
+  <div id="metric-tree-widget" class="mtw">
+    <div class="mtw-header">
+      <span class="mtw-meta">Корень дерева</span>
+      <div class="mtw-tabs">
+        <button class="mtw-tab mtw-tab--active" data-state="revenue">Выручка</button>
+        <button class="mtw-tab" data-state="profit">Прибыль</button>
+      </div>
+    </div>
+    <div class="mtw-sep"></div>
+    <div class="mtw-body" id="mtw-body"></div>
+    <div class="mtw-hint" id="mtw-hint"></div>
+  </div>
+
+  <div class="prose">
+
+  <p>Заметьте: выручка не исчезает. Она становится первой веткой дерева прибыли, а не корнем. Все наработки по разложению выручки на компоненты сохраняются — они переезжают на уровень ниже. Меняется фокус: теперь столь же важно понимать вторую и третью ветки — переменные и фиксированные затраты, разложенные с той же глубиной.</p>
+
+  <p>Это даёт две вещи. Первая — никто не начинает с нуля. Дашборды по компонентам выручки переезжают в новую структуру как есть, появляются параллельные дашборды по затратам. Вторая — связи между ветками подсказывают, где менеджмент будет рубить. Если ясно, что переменные затраты сильнее всего бьются о CAC по платному каналу — становится понятно, что платный канал режут первым. Если в фиксированных затратах самая большая статья — региональные команды — становится понятно, почему офлайн уходит, даже несмотря на хороший CR2.</p>
+
+  <p>Уметь держать в голове это дерево и видеть, что на что влияет — это и есть скилл, отличающий senior-аналитика от middle. Не «знать правильные метрики», а держать граф зависимостей и быстро перевешивать акценты, когда меняется корень дерева. Знание формулы прибыли не помогает, если ты не разложил её до уровня операционных рычагов. Декомпозиция — это работа, и её делают заранее, в спокойное время, а не на развороте под давлением.</p>
+
+  <h2>Антихрупкий аналитик</h2>
+
+  <p>Стратегия акционеров — пинг-понг. Не факт, что через год компания не вернётся к выручке: если конкурент начнёт расти быстрее, если поднимут раунд, если рынок откроется заново. Аналитик, который привязался к одной метрике как к истине, теряет голову каждый раз, когда метрика меняется. Аналитик, который привык жить с переменными целями, переживает разворот без паники, потому что разворот для него — не катастрофа, а ожидаемое событие.</p>
+
+  <p>Это близко к концепту антихрупкости — не выдержать удар, а усилиться от него. Каждый разворот делает дерево глубже: добавляются новые ветки, перепрошиваются связи, обнаруживаются ранее не нужные метрики. Аналитик, прошедший два-три цикла «выручка → прибыль → выручка», становится сильно ценнее, чем тот, кто год работал в одной парадигме. Не потому что знает больше, а потому что знает, как переучиваться быстро.</p>
+
+  <p>Это, между прочим, и есть один из критериев senior-роли в найме. Когда на собеседовании спрашивают «как вы работали с метриками» — слабый кандидат рассказывает, какие метрики он считал. Сильный — как менялись метрики, и как он адаптировался. Первое — про опыт с цифрами. Второе — про опыт с компанией.</p>
+
+  <h2>Главная ловушка: не оправдываться</h2>
+
+  <p>Аналитик при попытке объяснить «почему планировали одно, получили другое» — почти всегда проигрывает. Объяснение звучит как оправдание, и стейкхолдер слышит «аналитик не справился». Особенно опасно это в первые недели после разворота, когда все ещё думают в старых категориях, а ты уже пытаешься говорить в новых.</p>
+
+  <p>Правильная позиция — не оправдываться, а пересобирать. «Раньше мы смотрели на X, теперь смотрим на Y, потому что цель изменилась. Вот новый прогноз. Вот новый план. Вот A/B-тесты, которые продолжаем, и тесты, которые останавливаем как нерелевантные новой цели». Без рефлексии «а что мы сделали не так в прошлом квартале» — потому что в прошлом квартале не сделали ничего не так. Делали то, что было нужно тогда.</p>
+
+  <p>Тон — спокойный, технический. Аналитик не виноват в развороте; он его обслуживает. Это разные позиции, и важно их не путать в собственной голове. Если попасть в позу «я провинился» — стейкхолдеры это считывают и начинают давить. Если оставаться в позе «я перепрягаю, потому что наверху перепрягли» — давление уходит, и можно работать.</p>
+
+  <h2>Что в работу</h2>
+
+  <p>Два правила, которые повторяются в этой статье в разных формулировках, в финальной концентрации:</p>
+
+  <ol>
+    <li><p><strong>Декомпозируйте метрики в дерево, пока этого никто не требует.</strong> Знание связей между выручкой, затратами и операционными рычагами — это страховка от паники в момент разворота. Сделать это в спокойное время — час работы; сделать это под давлением — неделя, которой у вас не будет.</p></li>
+    <li><p><strong>Переобувайтесь на лету.</strong> Метрика, которая была успехом в первом квартале, может быть нейтральной во втором и провалом в третьем — и наоборот. Это не ваша слабость, это природа работы в B2B. Аналитик, который умеет говорить «раньше мы смотрели на X, теперь на Y, потому что цель изменилась», — переживёт любой разворот. Аналитик, который пытается оправдать старые KPI новыми реалиями, — нет.</p></li>
+  </ol>
+
+  </div>
+
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Data ── */
+  var TREES = {
+    revenue: {
+      label: 'выручка', accent: true,
+      children: [
+        { label: 'количество сделок', children: [
+          { label: 'трафик', children: [
+            { label: 'органический' },
+            { label: 'платный', accent: true },
+            { label: 'офлайн', accent: true }
+          ]},
+          { label: 'CR2', children: [
+            { label: 'CR2 по платному' },
+            { label: 'CR2 по органике' },
+            { label: 'CR2 по офлайн' }
+          ]}
+        ]},
+        { label: 'средний чек', children: [
+          { label: 'тариф', children: [
+            { label: 'базовый' },
+            { label: 'корпоративный' }
+          ]},
+          { label: 'дисконт', children: [
+            { label: 'автоматический' },
+            { label: 'менеджерский', accent: true }
+          ]}
+        ]}
+      ]
+    },
+    profit: {
+      label: 'прибыль', accent: true,
+      children: [
+        { label: 'выручка', muted: true, note: '(детализация выше)' },
+        { label: 'переменные затраты', children: [
+          { label: 'CAC по каналам', children: [
+            { label: 'CAC по платному', accent: true },
+            { label: 'CAC по органике' },
+            { label: 'CAC по офлайн' }
+          ]},
+          { label: 'комиссии партнёрам' },
+          { label: 'премии sales', accent: true },
+          { label: 'инфраструктура на пользователя' }
+        ]},
+        { label: 'фиксированные затраты', children: [
+          { label: 'ФОТ команд', accent: true },
+          { label: 'офис и обслуживание' }
+        ]}
+      ]
+    }
+  };
+
+  var HINTS = {
+    revenue: 'Красным — рычаги, на которые команда давит, чтобы расти.',
+    profit:  'Красным — узлы, которые компания режет первыми после разворота.'
+  };
+
+  /* ── Layout constants ── */
+  var NODE_H   = 30;   /* node rect height, px */
+  var ROW_GAP  = 9;    /* vertical gap between rows, px */
+  var INDENT   = 36;   /* horizontal indent per depth level, px */
+  var PAD_X    = 11;   /* text padding inside node, px */
+  var FS       = 11.5; /* font-size in SVG user units */
+
+  /* ── Helpers ── */
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(function (k) { el.setAttribute(k, attrs[k]); });
+    return el;
+  }
+
+  /* Resolve CSS variable from document root */
+  function cssVar(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  }
+
+  /* Build flat row list via preorder traversal; each row has .childRows[] */
+  function buildRows(tree) {
+    var rows = [];
+    var idx  = 0;
+
+    function walk(node, depth) {
+      var row = {
+        node: node,
+        depth: depth,
+        rowIdx: idx++,
+        childRows: []
+      };
+      rows.push(row);
+      if (node.children) {
+        node.children.forEach(function (child) {
+          row.childRows.push(walk(child, depth + 1));
+        });
+      }
+      return row;
+    }
+
+    walk(tree, 0);
+
+    /* Assign y positions */
+    rows.forEach(function (r) {
+      r.x = r.depth * INDENT;
+      r.y = r.rowIdx * (NODE_H + ROW_GAP);
+    });
+
+    return rows;
+  }
+
+  /* ── Render ── */
+  function renderSVG(state, containerW) {
+    var accent = cssVar('--accent', '#e63946');
+    var ink    = cssVar('--ink',    '#0a0a0a');
+    var muted  = cssVar('--muted',  '#737373');
+    var line   = cssVar('--line',   '#e5e5e5');
+    var bg     = cssVar('--bg',     '#ffffff');
+
+    var rows  = buildRows(TREES[state]);
+    var svgW  = Math.max(containerW, 240);
+    var svgH  = rows.length * (NODE_H + ROW_GAP) - ROW_GAP + 4;
+
+    var svg = svgEl('svg', {
+      viewBox:  '0 0 ' + svgW + ' ' + svgH,
+      width:    svgW,
+      height:   svgH,
+      'aria-label': 'Дерево метрик: ' + state
+    });
+    svg.style.maxWidth = '100%';
+    svg.style.display  = 'block';
+
+    /* ── Edges (drawn before nodes so node rects cover them) ── */
+    rows.forEach(function (row) {
+      if (!row.childRows.length) return;
+
+      /* The "trunk" sits halfway between parent x and children x */
+      var trunkX    = row.x + INDENT * 0.5;
+      var firstCy   = row.childRows[0].y + NODE_H / 2;
+      var lastCy    = row.childRows[row.childRows.length - 1].y + NODE_H / 2;
+
+      /* Vertical trunk connecting first→last child center */
+      svg.appendChild(svgEl('line', {
+        x1: trunkX, y1: firstCy,
+        x2: trunkX, y2: lastCy,
+        stroke: line, 'stroke-width': 1
+      }));
+
+      /* Horizontal branch to each child's left edge */
+      row.childRows.forEach(function (cr) {
+        var cy = cr.y + NODE_H / 2;
+        svg.appendChild(svgEl('line', {
+          x1: trunkX, y1: cy,
+          x2: cr.x,   y2: cy,
+          stroke: line, 'stroke-width': 1
+        }));
+      });
+    });
+
+    /* ── Nodes ── */
+    rows.forEach(function (row) {
+      var node = row.node;
+      var x    = row.x;
+      var y    = row.y;
+      var w    = svgW - x;  /* fill to right edge */
+
+      /* Colour scheme */
+      var borderColor = line;
+      var textColor   = ink;
+      if (node.accent) { borderColor = accent; textColor = accent; }
+      if (node.muted)  { textColor = muted; }
+
+      var g = svgEl('g', {});
+
+      /* White background rect (covers edge lines) */
+      var rect = svgEl('rect', {
+        x: x, y: y, width: w, height: NODE_H,
+        stroke: borderColor, 'stroke-width': 1
+      });
+      rect.style.fill = bg;
+      g.appendChild(rect);
+
+      /* Text label (+ optional note via tspan) */
+      var textEl = svgEl('text', {
+        x: x + PAD_X,
+        y: y + NODE_H / 2,
+        'dominant-baseline': 'central',
+        'font-family': 'Geist Mono, monospace',
+        'font-size': FS
+      });
+
+      if (node.note) {
+        var span1 = svgEl('tspan', { fill: textColor });
+        span1.textContent = node.label;
+        var span2 = svgEl('tspan', { fill: muted });
+        span2.textContent = '  ' + node.note;
+        textEl.appendChild(span1);
+        textEl.appendChild(span2);
+      } else {
+        textEl.setAttribute('fill', textColor);
+        textEl.textContent = node.label;
+      }
+
+      g.appendChild(textEl);
+      svg.appendChild(g);
+    });
+
+    return svg;
+  }
+
+  /* ── Init ── */
+  function init() {
+    var widget = document.getElementById('metric-tree-widget');
+    if (!widget) return;
+
+    var body  = document.getElementById('mtw-body');
+    var hint  = document.getElementById('mtw-hint');
+    var tabs  = widget.querySelectorAll('.mtw-tab');
+    var state = 'revenue';
+    var renderTimer;
+
+    function getW() {
+      return body.getBoundingClientRect().width || 640;
+    }
+
+    function render() {
+      body.innerHTML = '';
+      body.appendChild(renderSVG(state, getW()));
+      hint.textContent = HINTS[state];
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        state = tab.dataset.state;
+        tabs.forEach(function (t) {
+          t.classList.toggle('mtw-tab--active', t.dataset.state === state);
+        });
+        render();
+      });
+    });
+
+    /* Debounced re-render on container resize */
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(render, 40);
+      }).observe(body);
+    }
+
+    /* Initial render — wait for fonts so text measurements are accurate */
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(render);
+    } else {
+      render();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+}());
+</script>
+</body>
+</html>
