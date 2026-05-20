@@ -4,7 +4,7 @@
 
 > Зеркало того, что сейчас есть в коде. Не рекомендации — факты.  
 > Источник правды: `style.css` + реальные HTML-файлы переехавших страниц.  
-> Дата: 2026-04-26 · Обновлено: 2026-04-26 (Phase 4: lesson components + inconsistencies #3, #5, #6 closed)
+> Дата: 2026-04-26 · Обновлено: 2026-05-20 (fonts: Space Grotesk → Manrope, self-hosted @font-face)
 
 ---
 
@@ -86,15 +86,18 @@
 **Шрифтовые стеки:**
 
 ```css
---sans: "Space Grotesk", system-ui, sans-serif;
+--sans: "Manrope", system-ui, sans-serif;
 --mono: "Geist Mono", ui-monospace, monospace;
 ```
 
-Подключение через Google Fonts (на каждой странице):
-```
-Space Grotesk: wght@400;500;600;700
-Geist Mono: wght@400;500;600
-```
+Шрифты self-hosted через `@font-face` в `style.css`, файлы в `/assets/fonts/`:
+
+| Семья | Языки | Веса |
+|---|---|---|
+| `"Manrope"` | latin + cyrillic | 400, 500, 600, 700 |
+| `"Geist Mono"` | latin + cyrillic (native) | 400, 500, 600 |
+
+Формат: `woff2` с `unicode-range` для автоматического выбора файла по символу. Google Fonts не используются.
 
 **Уровни типографики (из `style.css`):**
 
@@ -126,7 +129,7 @@ Geist Mono: wght@400;500;600
 - Кода и технических строк
 - Футер-центр
 
-**Space Grotesk (`--sans`) — всё остальное.**
+**Manrope (`--sans`) — всё остальное.**
 
 ### 2.3 Отступы и ритм
 
