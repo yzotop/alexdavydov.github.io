@@ -1,71 +1,96 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 760 295" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 680 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="svgtitle svgdesc" font-family="Manrope, system-ui, sans-serif">
+  <title id="svgtitle">Как общий бюджет иссякает за день и смещает оценку A/B-теста</title>
+  <desc id="svgdesc">Сверху три момента дня: утром тест и контроль оба показывают рекламодателя при полном бюджете; днём бюджет наполовину истрачен, причём тест съел большую долю; вечером бюджет кончился и контроль остался без рекламодателя. Снизу: A/B-тест измерил +6%, но это раскладывается на истинный эффект +2% и смещение +4% — бюджет, отнятый тестом у контроля.</desc>
+
   <defs>
-    <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <line x1="0" y1="0" x2="0" y2="6" stroke="#d4d4d0" stroke-width="2.5"/>
-    </pattern>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
   </defs>
 
-  <!-- Row labels -->
-  <text x="142" y="68" text-anchor="end" font-size="10" font-weight="700" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#1a1a1a">ТЕСТ</text>
-  <text x="142" y="82" text-anchor="end" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">новый алгоритм</text>
-  <text x="142" y="132" text-anchor="end" font-size="10" font-weight="700" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#1a1a1a">БЮДЖЕТ X</text>
-  <text x="142" y="146" text-anchor="end" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">общий пул</text>
-  <text x="142" y="195" text-anchor="end" font-size="10" font-weight="700" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#1a1a1a">КОНТРОЛЬ</text>
-  <text x="142" y="209" text-anchor="end" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">старый алгоритм</text>
+  <!-- ===== Верхний заголовок ===== -->
+  <text x="32" y="28" font-size="15" font-weight="600" fill="#1a1a1a">Один рекламодатель за день — общий бюджет на обе группы</text>
 
-  <!-- Separator lines -->
-  <line x1="148" y1="108" x2="720" y2="108" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="148" y1="160" x2="720" y2="160" stroke="#d4d4d0" stroke-width="1"/>
+  <!-- ===== Три момента дня: рамки ===== -->
+  <rect x="32"  y="44" width="196" height="190" rx="2" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+  <rect x="242" y="44" width="196" height="190" rx="2" fill="none" stroke="#d4d4d0" stroke-width="1"/>
+  <rect x="452" y="44" width="196" height="190" rx="2" fill="none" stroke="#d4d4d0" stroke-width="1"/>
 
-  <!-- ТЕСТ row: dense blocks (06:00–~13:00) -->
-  <rect x="150" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="176" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="202" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="228" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="254" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="280" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="306" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="332" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <rect x="358" y="52" width="22" height="46" fill="#1a1a1a" rx="1"/>
-  <!-- ТЕСТ after exhaustion -->
-  <rect x="404" y="52" width="316" height="46" fill="url(#h)" rx="1"/>
-  <text x="562" y="79" text-anchor="middle" font-size="10" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#9b9b9b">нет рекламодателя X</text>
+  <text x="130" y="68" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="12" letter-spacing="0.08em" fill="#1a1a1a">УТРО</text>
+  <text x="340" y="68" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="12" letter-spacing="0.08em" fill="#1a1a1a">ДЕНЬ</text>
+  <text x="550" y="68" text-anchor="middle" font-family="'Geist Mono', monospace" font-size="12" letter-spacing="0.08em" fill="#1a1a1a">ВЕЧЕР</text>
 
-  <!-- Budget bar -->
-  <rect x="150" y="119" width="570" height="24" fill="#f5f5f3" stroke="#d4d4d0" stroke-width="1" rx="1"/>
-  <rect x="150" y="119" width="250" height="24" fill="#1a1a1a" rx="1"/>
-  <text x="275" y="135" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#f5f5f3" font-weight="600">тест расходует быстрее</text>
-  <text x="557" y="135" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#9b9b9b">исчерпан</text>
+  <!-- стрелки между моментами -->
+  <line x1="228" y1="139" x2="242" y2="139" stroke="#6b6b6b" stroke-width="1.2" marker-end="url(#ar)"/>
+  <line x1="438" y1="139" x2="452" y2="139" stroke="#6b6b6b" stroke-width="1.2" marker-end="url(#ar)"/>
 
-  <!-- КОНТРОЛЬ row: sparse blocks (06:00–~13:00) -->
-  <rect x="152" y="168" width="22" height="46" fill="#6b6b6b" rx="1"/>
-  <rect x="258" y="168" width="22" height="46" fill="#6b6b6b" rx="1"/>
-  <rect x="364" y="168" width="22" height="46" fill="#6b6b6b" rx="1"/>
-  <!-- КОНТРОЛЬ after exhaustion (red) -->
-  <rect x="404" y="168" width="316" height="46" fill="url(#h)" rx="1"/>
-  <text x="562" y="188" text-anchor="middle" font-size="10" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#e63946" font-weight="700">нет рекламодателя X</text>
-  <text x="562" y="204" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#e63946">хотя алгоритм не менялся</text>
+  <!-- ===== Бюджетные полоски ===== -->
+  <!-- Утро: полный -->
+  <text x="130" y="92" text-anchor="middle" font-size="11.5" fill="#6b6b6b">бюджет полный</text>
+  <rect x="64" y="102" width="132" height="22" rx="1" fill="#e9a23b"/>
+  <rect x="64" y="102" width="132" height="22" rx="1" fill="none" stroke="#b9791f" stroke-width="0.75"/>
 
-  <!-- Vertical exhaustion line -->
-  <line x1="400" y1="40" x2="400" y2="225" stroke="#e63946" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <polygon points="396,222 404,222 400,231" fill="#e63946"/>
-  <text x="404" y="32" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#e63946" font-weight="600">бюджет исчерпан (~13:00)</text>
+  <!-- День: половина (тест съел больше) -->
+  <text x="340" y="92" text-anchor="middle" font-size="11.5" fill="#6b6b6b">истрачено наполовину</text>
+  <rect x="274" y="102" width="132" height="22" rx="1" fill="#fff"/>
+  <rect x="274" y="102" width="66"  height="22" fill="#e9a23b"/>
+  <rect x="340" y="102" width="44"  height="22" fill="#2b6cb0"/>
+  <rect x="384" y="102" width="22"  height="22" fill="#9a9a93"/>
+  <rect x="274" y="102" width="132" height="22" rx="1" fill="none" stroke="#b9791f" stroke-width="0.75"/>
 
-  <!-- Time axis -->
-  <line x1="150" y1="230" x2="720" y2="230" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="150" y1="229" x2="150" y2="237" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="293" y1="229" x2="293" y2="237" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="436" y1="229" x2="436" y2="237" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="578" y1="229" x2="578" y2="237" stroke="#d4d4d0" stroke-width="1"/>
-  <line x1="720" y1="229" x2="720" y2="237" stroke="#d4d4d0" stroke-width="1"/>
-  <text x="150" y="249" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">06:00</text>
-  <text x="293" y="249" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">10:00</text>
-  <text x="436" y="249" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">14:00</text>
-  <text x="578" y="249" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">18:00</text>
-  <text x="720" y="249" text-anchor="middle" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#6b6b6b">22:00</text>
+  <!-- Вечер: пусто (почти всё выкачал тест) -->
+  <text x="550" y="92" text-anchor="middle" font-size="11.5" fill="#6b6b6b">бюджет кончился</text>
+  <rect x="484" y="102" width="132" height="22" rx="1" fill="#fff"/>
+  <rect x="484" y="102" width="92"  height="22" fill="#2b6cb0"/>
+  <rect x="576" y="102" width="40"  height="22" fill="#9a9a93"/>
+  <rect x="484" y="102" width="132" height="22" rx="1" fill="none" stroke="#b9791f" stroke-width="0.75"/>
 
-  <!-- Bottom annotation -->
-  <rect x="150" y="259" width="570" height="31" fill="none" stroke="#e63946" stroke-width="1.5" rx="1"/>
-  <text x="435" y="278" text-anchor="middle" font-size="10" font-family="ui-monospace,Menlo,Consolas,monospace" fill="#e63946" font-weight="700">СМЕЩЕНИЕ: контроль потерял X не из-за алгоритма — из-за теста</text>
+  <!-- ===== Строки «кто видит рекламодателя» ===== -->
+  <!-- Утро -->
+  <rect x="56" y="150" width="148" height="30" rx="2" fill="#f1efe8" stroke="#d4d4d0" stroke-width="0.75"/>
+  <text x="130" y="169" text-anchor="middle" font-size="11.5" fill="#444441">контроль · видит</text>
+  <rect x="56" y="188" width="148" height="30" rx="2" fill="#e6eef7" stroke="#2b6cb0" stroke-width="0.75"/>
+  <text x="130" y="207" text-anchor="middle" font-size="11.5" fill="#1d4e80">тест · видит</text>
+
+  <!-- День -->
+  <rect x="266" y="150" width="148" height="30" rx="2" fill="#f1efe8" stroke="#d4d4d0" stroke-width="0.75"/>
+  <text x="340" y="169" text-anchor="middle" font-size="11.5" fill="#444441">контроль · реже</text>
+  <rect x="266" y="188" width="148" height="30" rx="2" fill="#e6eef7" stroke="#2b6cb0" stroke-width="0.75"/>
+  <text x="340" y="207" text-anchor="middle" font-size="11.5" fill="#1d4e80">тест · часто</text>
+
+  <!-- Вечер -->
+  <rect x="476" y="150" width="148" height="30" rx="2" fill="none" stroke="#e63946" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="550" y="169" text-anchor="middle" font-size="11.5" fill="#e63946">контроль · остался без</text>
+  <rect x="476" y="188" width="148" height="30" rx="2" fill="none" stroke="#b4b2a9" stroke-width="0.75" stroke-dasharray="4 3"/>
+  <text x="550" y="207" text-anchor="middle" font-size="11.5" fill="#888780">тест · уже истратил</text>
+
+  <!-- подпись под моментами -->
+  <text x="340" y="252" text-anchor="middle" font-size="11.5" fill="#6b6b6b">синим — доля бюджета, выкачанная тестом; тест опустошает пул быстрее</text>
+
+  <!-- ===== Связка верх → низ ===== -->
+  <line x1="340" y1="270" x2="340" y2="300" stroke="#6b6b6b" stroke-width="1.2" marker-end="url(#ar)"/>
+  <text x="352" y="288" font-family="'Geist Mono', monospace" font-size="11" letter-spacing="0.04em" fill="#6b6b6b">итог за день</text>
+
+  <!-- ===== Нижний заголовок ===== -->
+  <text x="32" y="330" font-size="15" font-weight="600" fill="#1a1a1a">Что из этого видит аналитик</text>
+
+  <!-- Измерено -->
+  <rect x="32" y="346" width="616" height="56" rx="2" fill="#e6eef7" stroke="#2b6cb0" stroke-width="0.75"/>
+  <text x="52" y="370" font-size="14" font-weight="600" fill="#1d4e80">Измерено: тест +6%</text>
+  <text x="52" y="389" font-size="11.5" fill="#3a6494">прямая разница средних между группами — то, что показал A/B</text>
+
+  <!-- Истинный + Смещение -->
+  <rect x="32" y="418" width="248" height="56" rx="2" fill="#e4f1ea" stroke="#2f8f6b" stroke-width="0.75"/>
+  <text x="156" y="442" text-anchor="middle" font-size="14" font-weight="600" fill="#1f6b4f">Истинный эффект +2%</text>
+  <text x="156" y="461" text-anchor="middle" font-size="11.5" fill="#2f7d5e">реальная польза алгоритма</text>
+
+  <text x="298" y="451" text-anchor="middle" font-size="18" font-weight="600" fill="#6b6b6b">+</text>
+
+  <rect x="316" y="418" width="332" height="56" rx="2" fill="#fdeaec" stroke="#e63946" stroke-width="0.75"/>
+  <text x="482" y="442" text-anchor="middle" font-size="14" font-weight="600" fill="#c1121f">Смещение +4%</text>
+  <text x="482" y="461" text-anchor="middle" font-size="11.5" fill="#b5202c">бюджет, отнятый тестом у контроля</text>
+
+  <!-- финальные подписи -->
+  <text x="340" y="500" text-anchor="middle" font-size="11.5" fill="#6b6b6b">две трети «прироста» — не польза алгоритма, а артефакт перетока бюджета</text>
+  <text x="340" y="520" text-anchor="middle" font-size="11.5" fill="#6b6b6b">знак ошибки заранее непредсказуем: тест может казаться и лучше, и хуже</text>
 </svg>
