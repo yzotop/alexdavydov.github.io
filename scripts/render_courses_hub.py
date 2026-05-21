@@ -167,7 +167,9 @@ def main() -> int:
   </div>
 </div>
 {footer_html()}
-<script src="/main.js" defer></script>"""
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
