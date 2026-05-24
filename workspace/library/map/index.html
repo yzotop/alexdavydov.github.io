@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Карта AB-методологии — Библиотека — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/map/"/>
+<meta name="description" content="Карта методов A/B-экспериментов: 8 методов, 15 компаний, топ-10 антипаттернов, заметки-хабы, инсайты — синтез по библиотеке davydov.my."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Карта AB-методологии — Библиотека — davydov.my"/>
+<meta property="og:description" content="8 методов · 73 статьи · 15 компаний — мета-синтез по библиотеке."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/map/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Карта</span>
+  </nav>
+  <h1 class="page-title">Карта AB-методологии<span class="accent-dot">.</span></h1>
+  <p class="page-lead">8 методов · 73 статьи · 15 компаний. Не повторяет содержание синтезов — связывает в общую карту.</p>
+  <p class="page-back"><a href="/workspace/library/">← Библиотека</a></p>
+
+  <div class="prose prose--narrow prose--section">
+
+    <h2>§ 01 Граф методов</h2>
+    <p>Восемь тем образуют <strong>сеть, а не список</strong>. Связи прослеживаются по прямым формулировкам в источниках.</p>
+
+    <pre class="map-graph"><code>        Stratification ─── CUPED ─── Ratio/Linearization ─── Bootstrap
+              │              │              │                    │
+              │              │              │                    │
+              └──── Causal Inference ────── │                    │
+                            │               │                    │
+                            └───── Switchback ───────────────────┘</code></pre>
+
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Связь</th><th>Прямая отсылка</th><th>Источник</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="/workspace/library/?q=%D0%A1%D1%82%D1%80%D0%B0%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F"><strong>Stratification</strong></a> ↔ <a href="/workspace/library/?q=CUPED"><strong>CUPED</strong></a></td>
+          <td>«CUPED — непрерывный аналог пост-стратификации»</td>
+          <td>Самокат (воркшоп)</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=CUPED"><strong>CUPED</strong></a> ↔ <a href="/workspace/library/?q=%D0%9B%D0%B8%D0%BD%D0%B5%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F"><strong>Linearization</strong></a></td>
+          <td>«Чтобы применить CUPED к ratio — сначала линеаризуй»</td>
+          <td>Kuper (Mosin)</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=CUPED"><strong>CUPED</strong></a> ↔ <a href="/workspace/library/?topic=causality"><strong>Causal Inference</strong></a></td>
+          <td>«DiD — это аналог CUPED для observational»</td>
+          <td>HH (Kochnev)</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=CUPED"><strong>CUPED</strong></a> ↔ <a href="/workspace/library/?q=%D0%91%D1%83%D1%82%D1%81%D1%82%D1%80%D0%B0%D0%BF"><strong>Bootstrap</strong></a></td>
+          <td>«Bootstrap для итоговой оценки после CUPED-преобразования»</td>
+          <td>expf</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=ratio"><strong>Ratio</strong></a> ↔ <a href="/workspace/library/?q=%D0%91%D1%83%D1%82%D1%81%D1%82%D1%80%D0%B0%D0%BF"><strong>Bootstrap</strong></a></td>
+          <td>«Бутстрап для ratio: семплируй по объектам»</td>
+          <td>X5, Kuper</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=ratio"><strong>Ratio</strong></a> ↔ <a href="/workspace/library/?q=Switchback"><strong>Switchback</strong></a></td>
+          <td>«Switchback + линеаризация + дельта-метод — улучшенная версия»</td>
+          <td>Citymobil (ч.2)</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=Switchback"><strong>Switchback</strong></a> ↔ <a href="/workspace/library/?topic=causality"><strong>Causal Inference</strong></a></td>
+          <td>«Switchback — кластерный эксперимент против network effect; CI идёт дальше для observational»</td>
+          <td>HH, expf</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=%D0%A1%D1%82%D1%80%D0%B0%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F"><strong>Stratification</strong></a> ↔ <a href="/workspace/library/?topic=causality"><strong>Causal Inference</strong></a></td>
+          <td>«PSS, IPW — стратификация по propensity»</td>
+          <td>HH (Kochnev), X5</td>
+        </tr>
+        <tr>
+          <td><a href="/workspace/library/?q=Switchback"><strong>Switchback</strong></a> ↔ <a href="/workspace/library/?q=%D0%91%D1%83%D1%82%D1%81%D1%82%D1%80%D0%B0%D0%BF"><strong>Bootstrap</strong></a></td>
+          <td>«Block/cluster bootstrap для switchback-структуры»</td>
+          <td>X5 (Бутстрап временных рядов)</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Главная нота: то, что выглядит зоопарком техник, — <strong>единая семья методов</strong> борьбы с двумя проблемами: высокой дисперсией и зависимостью наблюдений. Условия задачи (есть/нет рандомизации, есть/нет network effect, что в знаменателе метрики) выбирают конкретный инструмент.</p>
+
+    <h2>§ 02 Компании и их роль в комьюнити</h2>
+    <p>15 компаний с устойчивым голосом в коммьюнити — те, что задают язык AB-методологии в RU-сегменте. Клик по названию — все статьи компании в библиотеке.</p>
+
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Компания</th><th>Сильная тема</th><th>Цитата-маркер</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><a href="/workspace/library/?company=X5"><strong>X5</strong></a> (Nazarov)</td><td>методичка по всем темам</td><td>«бутстреп — это…» (формализм X5 Tech)</td></tr>
+        <tr><td><a href="/workspace/library/?company=Avito"><strong>Avito</strong></a> (Lunin)</td><td>CUPED, Mann-Whitney, ML-критерии</td><td>«CUPED состоит всего из четырёх строчек кода»</td></tr>
+        <tr><td><a href="/workspace/library/?company=expf"><strong>expf</strong></a></td><td>теория + переводы, площадка-портал</td><td>«−30% дисперсии в Skyeng», «17.95× выборки» (Booking)</td></tr>
+        <tr><td><a href="/workspace/library/?company=Kuper"><strong>Kuper</strong></a> (Mosin)</td><td>линеаризация, бутстрап, ratio</td><td>«линеаризация + CUPED внедрены в платформу»</td></tr>
+        <tr><td><a href="/workspace/library/?company=VK"><strong>VK</strong></a></td><td>Practitioner's Guide</td><td>«Poisson bootstrap для global CTR»</td></tr>
+        <tr><td><a href="/workspace/library/?company=HH"><strong>HH</strong></a> (Kochnev)</td><td>Causal Inference из observational</td><td>«CausalML (Uber), DoWhy (Microsoft)»</td></tr>
+        <tr><td><a href="/workspace/library/?company=Citymobil"><strong>Citymobil</strong></a></td><td>switchback в такси</td><td>«геохроносплитование»</td></tr>
+        <tr><td><strong>DoorDash</strong> (через expf)</td><td>switchback — первоисточник методики</td><td>«на 30% быстрее принимаем решения»</td></tr>
+        <tr><td><a href="/workspace/library/?company=Glowbyte"><strong>Glowbyte</strong></a></td><td>байесовский подход, ABacus</td><td>«делайте стратификацию всегда, когда возможно»</td></tr>
+        <tr><td><strong>Самокат</strong> (ecom.tech)</td><td>концептуальные связи в воркшопах</td><td>«CUPED как непрерывный аналог пост-стратификации»</td></tr>
+        <tr><td><a href="/workspace/library/?company=Uzum"><strong>Uzum</strong></a></td><td>CausalImpact</td><td>«байесовские структурные временные ряды»</td></tr>
+        <tr><td><a href="/workspace/library/?company=Lamoda"><strong>Lamoda</strong></a></td><td>квазиэксперименты, PSM+DiD</td><td>«Discovery как treatment»</td></tr>
+        <tr><td><a href="/workspace/library/?company=Ozon"><strong>Ozon</strong></a></td><td>антипаттерны, критика практик</td><td>«Шесть причин почему AB не работают»</td></tr>
+        <tr><td><a href="/workspace/library/?company=ODS"><strong>ODS</strong></a></td><td>обзоры, лестница доказательств</td><td>«причинно-следственная лестница»</td></tr>
+        <tr><td><a href="/workspace/library/?company=DeliveryClub"><strong>Delivery Club</strong></a></td><td>switchback в логистике</td><td>период переключения как функция отложенных эффектов</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="page-sub">Расширенная таблица всех 36 компаний — на странице <a href="/workspace/library/companies/">Компании</a>.</p>
+
+    <h2>§ 03 Топ-10 антипаттернов</h2>
+    <p>Те, что повторяются в ≥2 синтезах разных компаний. Это де-факто учебник «как НЕ надо».</p>
+
+    <ol class="map-antipatterns">
+      <li><strong>t-test «в лоб» на ratio-метрику → неверный p-value.</strong> Дисперсия отношения не считается стандартной формулой для среднего, нарушена независимость. <span class="map-warns">Предупреждают: Kuper, Ozon, X5, VK.</span></li>
+      <li><strong>CUPED напрямую на ratio-метрику.</strong> CUPED ожидает независимые наблюдения; для ratio нужна сначала линеаризация. <span class="map-warns">Kuper, expf.</span></li>
+      <li><strong>«Среднее средних» ≠ глобальный CTR.</strong> Сначала считать ratio на пользователя, потом усреднять — даёт биномиальное распределение, а не честный global CTR. <span class="map-warns">Kuper, expf, VK.</span></li>
+      <li><strong>Composite-метрики с обычной формулой дисперсии.</strong> Знаменатель — сумма случайных величин, появляется ratio-bias (назначаемость, удержание заказа). <span class="map-warns">Citymobil.</span></li>
+      <li><strong>Бутстрап для ratio: семплировать события, а не объекты.</strong> Один пользователь «разделяется» между группами, оценка смещается. <span class="map-warns">X5, Kuper.</span></li>
+      <li><strong>Игнорировать network effect / SUTVA.</strong> Если treatment одного пользователя влияет на других — обычный A/B неприменим. <span class="map-warns">Citymobil, expf, HH.</span></li>
+      <li><strong>Игнорировать смещение групп при использовании CUPED.</strong> CUPED сокращает дисперсию, но НЕ балансирует группы; ДИ красиво сужаются вокруг кривой оценки. <span class="map-warns">X5 (Causal Inference в ритейле).</span></li>
+      <li><strong>CUPED через выражение Y/(E[X]−X) или Y/X.</strong> «Нормированный» CUPED ломает и критерий, и интерпретацию метрики. <span class="map-warns">Lunin (Avito) — специально предупреждает.</span></li>
+      <li><strong>Бутстрап на временных рядах без block-структуры.</strong> Случайное семплирование с возвращением разрушает временные зависимости — нужны block/sieve/residual bootstrap. <span class="map-warns">X5 (отдельная статья на 925 строк).</span></li>
+      <li><strong>Стратификация / PSM по слабой ковариате.</strong> Без сильной связи с метрикой выигрыш по дисперсии копеечный, а сложность процесса растёт. Аналогично — мэтчинг без учёта конфаундеров. <span class="map-warns">X5, HH.</span></li>
+    </ol>
+
+    <h2>§ 04 Заметки-хабы</h2>
+    <p>5 статей, которые упоминаются как ядерные сразу в нескольких синтезах — лучшие точки входа в коллекцию.</p>
+  </div>
+
+  <div class="km-list map-hubs">
+    <a class="km-row" href="https://colab.research.google.com/drive/1_CY_8DJRLm70gl9RjTz1vmPoLMwCeT0u" target="_blank" rel="noopener noreferrer">
+      <span class="km-tags">EXPF · 6 СИНТЕЗОВ</span>
+      <div class="km-main">
+        <h3 class="km-title">Вся основная теория Лоладзе + expf</h3>
+        <p class="km-summary">CUPED · Bootstrap · Stratification · Ratio · Switchback · Causal Inference</p>
+        <p class="km-marker">универсальная сводка курса, ссылается на все основные методы по очереди</p>
+      </div>
+      <span class="km-arrow">↗</span>
+    </a>
+    <a class="km-row" href="https://vkteam.medium.com/practitioners-guide-to-statistical-tests-ed2d580ef04f" target="_blank" rel="noopener noreferrer">
+      <span class="km-tags">VK · 2 СИНТЕЗА</span>
+      <div class="km-main">
+        <h3 class="km-title">Practitioner's Guide to Statistical Tests</h3>
+        <p class="km-summary">Bootstrap · Ratio</p>
+        <p class="km-marker">самый систематический academic-style разбор: Mann-Whitney, t-test, Poisson bootstrap, дельта-метод — со сравнением мощностей</p>
+      </div>
+      <span class="km-arrow">↗</span>
+    </a>
+    <a class="km-row" href="https://habr.com/ru/companies/avito/articles/571096/" target="_blank" rel="noopener noreferrer">
+      <span class="km-tags">AVITO · 4 СИНТЕЗА</span>
+      <div class="km-main">
+        <h3 class="km-title">Как улучшить ваши AB-тесты ч.2</h3>
+        <p class="km-summary">CUPED · Bootstrap · Stratification · Ratio</p>
+        <p class="km-marker">производственная сборка приёмов с кодом, авторитетный голос Lunin</p>
+      </div>
+      <span class="km-arrow">↗</span>
+    </a>
+    <a class="km-row" href="https://habr.com/ru/companies/sbermarket/articles/768826/" target="_blank" rel="noopener noreferrer">
+      <span class="km-tags">KUPER · 3 СИНТЕЗА</span>
+      <div class="km-main">
+        <h3 class="km-title">Линеаризация — зачем и как укрощать ratio-метрики</h3>
+        <p class="km-summary">CUPED · Bootstrap · Ratio</p>
+        <p class="km-marker">концептуальный мост между ratio-метриками и всем семейством техник снижения дисперсии</p>
+      </div>
+      <span class="km-arrow">↗</span>
+    </a>
+    <a class="km-row" href="https://koch-kir.medium.com/causal-inference-from-observational-data-%D0%B8%D0%BB%D0%B8-%D0%BA%D0%B0%D0%BA-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%81%D1%82%D0%B8-%D0%B0-%D0%B2-%D1%82%D0%B5%D1%81%D1%82-%D0%B1%D0%B5%D0%B7-%D0%B0-%D0%B2-%D1%82%D0%B5%D1%81%D1%82%D0%B0-afb84f2579f2" target="_blank" rel="noopener noreferrer">
+      <span class="km-tags">HH · 3 СИНТЕЗА</span>
+      <div class="km-main">
+        <h3 class="km-title">Causal Inference from Observational Data</h3>
+        <p class="km-summary">Causal Inference · Stratification · Switchback</p>
+        <p class="km-marker">единственная исчерпывающая статья по CI из коллекции; рамка для «не-A/B» мира</p>
+      </div>
+      <span class="km-arrow">↗</span>
+    </a>
+  </div>
+
+  <div class="prose prose--narrow prose--section">
+
+    <h2>§ 05 Три инсайта</h2>
+    <p>Три вывода, которые не видны без прохода по всем синтезам.</p>
+
+    <h3>Инсайт 1: «AB-методология — это одна семья методов, а не зоопарк»</h3>
+    <p>CUPED, стратификация, линеаризация, дельта-метод, DiD, причинный анализ — выглядят как разные ремёсла, но решают одну задачу: <strong>снизить дисперсию или скомпенсировать зависимость наблюдений</strong>. Самокат прямо называет CUPED «непрерывным аналогом пост-стратификации»; HH — DiD «аналогом CUPED для observational»; Kuper встроил «линеаризация + CUPED» как единый шаг в production. Для курса: рисовать единый граф методов, а не вводить каждый изолированно.</p>
+    <p class="map-confirm">Подтверждают: Самокат, HH, Kuper, X5.</p>
+
+    <h3>Инсайт 2: «Топ-3 запретных приёма повторяются во всех серьёзных компаниях»</h3>
+    <p>(1) t-test на ratio в лоб; (2) CUPED через <code>Y / (E[X] − X)</code>; (3) бутстрап для ratio с семплированием по событиям, не по пользователям. Эти три ошибки выходят на поверхность у каждой компании — отдельный гневный абзац. Подтверждает: насколько фундаментальна именно зависимость наблюдений в ratio-метриках (а это большинство ключевых продуктовых метрик). Для курса: сделать «топ-10 как НЕ надо» первым уроком, а не последним.</p>
+    <p class="map-confirm">Подтверждают: Avito (Lunin), Kuper (Mosin), Ozon, X5, VK.</p>
+
+    <h3>Инсайт 3: «Лестница доказательств: от RCT к observational, по убыванию надёжности»</h3>
+    <p>ODS вводит термин «лестница доказательств», и она ясно собирается из коллекции: <strong>рандомизированный A/B → switchback (для network effect) → квазиэксперимент с PSM/IPW/DiD → CausalImpact на 100%-раскатке</strong>. Каждая ступенька — компромисс: ниже надёжность, но шире применимость. Каждая компания спускается по этой лестнице по своей причине. Для курса: дать читателю явный mental model выбора метода под условия задачи; «нужен ли тебе вообще A/B, или хватит ступеньки ниже».</p>
+    <p class="map-confirm">Подтверждают: ODS, Citymobil, HH, X5, Uzum, Lamoda.</p>
+
+  </div>
+
+  <p class="page-back map-nav">
+    <a href="/workspace/library/">← Библиотека</a>
+    <span class="map-nav-sep"> · </span>
+    <a href="/workspace/library/companies/">Компании →</a>
+  </p>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
