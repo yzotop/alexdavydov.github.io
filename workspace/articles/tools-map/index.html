@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта инструментов: A/B-эксперименты, AI-evals и продуктовая аналитика · Workspace</title>
+  <link rel="canonical" href="https://davydov.my/workspace/articles/tools-map/"/>
+  <meta name="description" content="Справочная карта инструментов для экспериментов, оценки LLM-систем и продуктовой аналитики. Таблицы фактов: что делает, модель распространения, ключевая особенность."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Карта инструментов: A/B, AI-evals, продуктовая аналитика · Александр Давыдов"/>
+  <meta property="og:description" content="Справочная карта инструментов для экспериментов, оценки LLM и продуктовой аналитики. Таблицы фактов без рейтингов."/>
+  <meta property="og:url" content="https://davydov.my/workspace/articles/tools-map/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Май 2026</span>
+    <span class="chip">Справка</span>
+    <span>5 мин</span>
+  </div>
+  <h1>Карта инструментов: A/B-эксперименты, AI-evals и продуктовая аналитика</h1>
+
+  <div class="prose">
+
+  <p>Это справочная карта инструментов для трёх процессов — экспериментов, оценки LLM-систем и продуктовой аналитики. Не рейтинг и не рекомендации: таблицы фактов, по которым удобно ориентироваться и сравнивать. Для каждого инструмента — что делает, модель распространения (open-source, open-core или SaaS) и ключевая особенность. Состояние на май 2026; ландшафт меняется быстро, проверяйте актуальность под свой контекст.</p>
+
+  <h2>A/B-эксперименты</h2>
+
+  <p>Инструменты для управления выкаткой (feature flags), привязки изменений к метрикам и статистического анализа экспериментов.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Инструмент</th>
+          <th>Что делает</th>
+          <th>Модель</th>
+          <th>Особенность</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GrowthBook</strong></td>
+          <td>feature flags + эксперименты, warehouse-native</td>
+          <td>open-source</td>
+          <td>self-host, Bayesian + Frequentist движки</td>
+        </tr>
+        <tr>
+          <td><strong>Statsig</strong></td>
+          <td>эксперименты, feature flags, CUPED, sequential</td>
+          <td>SaaS</td>
+          <td>cloud-only; куплен OpenAI (сен 2025)</td>
+        </tr>
+        <tr>
+          <td><strong>Eppo</strong></td>
+          <td>warehouse-native эксперименты, holdouts, bandits</td>
+          <td>SaaS</td>
+          <td>проприетарный, интеграции с Snowflake/BigQuery</td>
+        </tr>
+        <tr>
+          <td><strong>Unleash</strong></td>
+          <td>feature management, таргетинг выкатки</td>
+          <td>open-source</td>
+          <td>self-host, фокус на флагах, не на статистике</td>
+        </tr>
+        <tr>
+          <td><strong>Flagsmith</strong></td>
+          <td>feature flags, сегментация</td>
+          <td>open-source</td>
+          <td>self-host, лёгкий</td>
+        </tr>
+        <tr>
+          <td><strong>Optimizely</strong></td>
+          <td>эксперименты enterprise-уровня</td>
+          <td>SaaS</td>
+          <td>давний игрок, тяжёлый для малых команд</td>
+        </tr>
+        <tr>
+          <td><strong>PlanOut</strong> (Meta)</td>
+          <td>фреймворк дизайна экспериментов</td>
+          <td>open-source</td>
+          <td>концептуальный референс, не активный продукт</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>AI-evals</h2>
+
+  <p>Здесь устоявшийся паттерн — два слоя: лёгкий фреймворк для гейтов в CI/CD (блокирует деплой при просадке качества) и отдельная платформа для трейсинга и мониторинга на проде.</p>
+
+  <h3>Слой CI-гейтов</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Инструмент</th>
+          <th>Что делает</th>
+          <th>Модель</th>
+          <th>Особенность</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DeepEval</strong></td>
+          <td>юнит-тесты для LLM (галлюцинации, bias, токсичность)</td>
+          <td>open-source (MIT)</td>
+          <td>Python, встраивается в pytest</td>
+        </tr>
+        <tr>
+          <td><strong>promptfoo</strong></td>
+          <td>red-teaming, сравнение моделей и промптов</td>
+          <td>open-source</td>
+          <td>Node.js, YAML/CLI, 40+ red-team плагинов</td>
+        </tr>
+        <tr>
+          <td><strong>RAGAS</strong></td>
+          <td>метрики для RAG (faithfulness, context precision/recall)</td>
+          <td>open-source</td>
+          <td>Python, академическая методология</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Слой платформы (трейсинг, мониторинг, дашборды)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Инструмент</th>
+          <th>Что делает</th>
+          <th>Модель</th>
+          <th>Особенность</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Langfuse</strong></td>
+          <td>трейсинг и observability вызовов</td>
+          <td>open-source</td>
+          <td>self-hostable</td>
+        </tr>
+        <tr>
+          <td><strong>Phoenix</strong> (Arize)</td>
+          <td>трейсинг и анализ</td>
+          <td>open-source</td>
+          <td>интеграции с RAGAS</td>
+        </tr>
+        <tr>
+          <td><strong>Braintrust</strong></td>
+          <td>полный цикл оценки на одной платформе</td>
+          <td>SaaS</td>
+          <td>enterprise-ориентация</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Оценка самих моделей (а не приложений поверх них)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Инструмент</th>
+          <th>Что делает</th>
+          <th>Модель</th>
+          <th>Особенность</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>lm-evaluation-harness</strong> (EleutherAI)</td>
+          <td>бенчмарки языковых моделей</td>
+          <td>open-source</td>
+          <td>стандарт для публичных бенчей</td>
+        </tr>
+        <tr>
+          <td><strong>inspect_ai</strong> (UK AI Safety Institute)</td>
+          <td>строгие, безопасность-ориентированные evals</td>
+          <td>open-source</td>
+          <td>для аудита и safety-оценки</td>
+        </tr>
+        <tr>
+          <td><strong>HELM</strong> (Stanford)</td>
+          <td>воспроизводимые сравнения по широкому набору сценариев</td>
+          <td>open-source</td>
+          <td>академический эталон</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Продуктовая аналитика</h2>
+
+  <p>BI и продуктовая аналитика — дашборды, исследование данных, метрики.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Инструмент</th>
+          <th>Что делает</th>
+          <th>Модель</th>
+          <th>Особенность</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>PostHog</strong></td>
+          <td>аналитика + feature flags + эксперименты</td>
+          <td>open-source</td>
+          <td>all-in-one, частый дефолт для стартапов</td>
+        </tr>
+        <tr>
+          <td><strong>Metabase</strong></td>
+          <td>BI, дашборды, быстрый старт</td>
+          <td>open-core (AGPL)</td>
+          <td>часть фич за платным тиром; ~60k организаций</td>
+        </tr>
+        <tr>
+          <td><strong>Superset</strong> (Apache)</td>
+          <td>BI, глубокая визуализация, масштаб</td>
+          <td>open-source (Apache 2.0)</td>
+          <td>полностью открыт, без гейтинга; Airbnb/Lyft</td>
+        </tr>
+        <tr>
+          <td><strong>Lightdash</strong></td>
+          <td>BI поверх dbt, метрики в YAML</td>
+          <td>open-source (Apache 2.0)</td>
+          <td>dbt-native, версионируемые метрики</td>
+        </tr>
+        <tr>
+          <td><strong>evidence</strong></td>
+          <td>BI-as-code (SQL + Markdown)</td>
+          <td>open-source</td>
+          <td>дашборды в git, для разработчиков</td>
+        </tr>
+        <tr>
+          <td><strong>rill</strong></td>
+          <td>быстрые дашборды на DuckDB</td>
+          <td>open-source</td>
+          <td>code-first, MCP-интеграция для агентов</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Как читать эту карту</h2>
+
+  <p>Это справка, а не рейтинг. Таблицы дают факты — что инструмент делает и как распространяется, — но не отвечают, какой «лучше»: правильный выбор зависит от вашего стека, объёма, требований к данным и наличия инженерных рук. Несколько ориентиров, которые стоит держать в голове при чтении:</p>
+
+  <ul>
+    <li>Модель распространения важна не меньше функций. Open-source с self-host даёт контроль над данными и независимость от чужой стратегии; SaaS снимает заботу об инфраструктуре, но добавляет вендор-лок. История Statsig (отличная платформа, ушедшая под OpenAI в 2025) показывает, как быстро статус проприетарного инструмента может измениться.</li>
+    <li>Для AI-evals обычно нужны два инструмента, а не один: фреймворк для CI-гейтов и платформа для наблюдаемости. Попытка закрыть оба слоя одним упирается в его слабую сторону.</li>
+    <li>Ландшафт быстро меняется. Часть инструментов уходит в заморозку (например, Redash после покупки Databricks), часть меняет модель. Любая такая карта — снимок на дату, а не вечная истина.</li>
+  </ul>
+
+  </div>
+
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+    <p class="page-sub">По теме: <a href="/workspace/articles/ab-auction-interference/">разбор экспериментов в рекламном аукционе</a> и <a href="/workspace/simulators/">интерактивные симуляторы AI-evals</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
