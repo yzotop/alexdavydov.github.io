@@ -84,6 +84,16 @@
           <option value="">Все источники</option>
         </select>
       </label>
+      <label class="km-filter">
+        <span class="km-filter-label">Сложность</span>
+        <select id="km-filter-difficulty">
+          <option value="">Все уровни</option>
+          <option value="базовый">Базовый</option>
+          <option value="методология">Методология</option>
+          <option value="продвинутый">Продвинутый</option>
+          <option value="экспертный">Экспертный</option>
+        </select>
+      </label>
     </div>
     <div class="km-count" id="km-count"></div>
   </div>
@@ -203,16 +213,18 @@
   }
 
   function render() {
-    var q       = document.getElementById('km-search').value.toLowerCase().trim();
-    var section = document.getElementById('km-filter-section').value;
-    var topic   = document.getElementById('km-filter-topic').value;
-    var source  = document.getElementById('km-filter-source').value;
+    var q          = document.getElementById('km-search').value.toLowerCase().trim();
+    var section    = document.getElementById('km-filter-section').value;
+    var topic      = document.getElementById('km-filter-topic').value;
+    var source     = document.getElementById('km-filter-source').value;
+    var difficulty = document.getElementById('km-filter-difficulty').value;
 
     var filtered = DATA.filter(function (d) {
-      if (section && d.section !== section)                    return false;
-      if (q       && d.title.toLowerCase().indexOf(q) === -1) return false;
-      if (topic   && d.themes.indexOf(topic) === -1)          return false;
-      if (source  && d.source !== source)                     return false;
+      if (section    && d.section !== section)                    return false;
+      if (q          && d.title.toLowerCase().indexOf(q) === -1) return false;
+      if (topic      && d.themes.indexOf(topic) === -1)          return false;
+      if (source     && d.source !== source)                     return false;
+      if (difficulty && d.difficulty !== difficulty)             return false;
       return true;
     });
 
@@ -248,9 +260,10 @@
   }
 
   function onSectionChange() {
-    // Reset topic/source when section changes — stale filters otherwise
-    document.getElementById('km-filter-topic').value = '';
-    document.getElementById('km-filter-source').value = '';
+    // Reset topic/source/difficulty when section changes — stale filters otherwise
+    document.getElementById('km-filter-topic').value      = '';
+    document.getElementById('km-filter-source').value     = '';
+    document.getElementById('km-filter-difficulty').value = '';
     buildFilters();
     render();
   }
@@ -265,6 +278,7 @@
       document.getElementById('km-filter-section').addEventListener('change', onSectionChange);
       document.getElementById('km-filter-topic').addEventListener('change', render);
       document.getElementById('km-filter-source').addEventListener('change', render);
+      document.getElementById('km-filter-difficulty').addEventListener('change', render);
     })
     .catch(function () {
       document.getElementById('km-list').innerHTML =
