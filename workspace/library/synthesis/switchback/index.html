@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Switchback — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/switchback/"/>
+<meta name="description" content="Switchback — синтез по 8 статьям из 6 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Switchback — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 8 статьям из 6 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/switchback/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Switchback</span>
+  </nav>
+  <h1 class="page-title">Switchback<span class="accent-dot">.</span></h1>
+  <p class="page-lead">8 заметок · 6 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>8 заметкам</strong> из <code>AB/</code>, где упоминается switchback. 5 «ядра» (≥10 упоминаний) — основные источники.</p>
+<h2>§ 01 В чём метод</h2>
+<p><strong>Switchback (геохроносплитование)</strong> — тип эксперимента, в котором деление на тест и контроль идёт не по пользователям, а по <strong>парам «геозона × временной интервал»</strong>. Каждая такая пара (unit) случайно попадает в тест или контроль; через заданный период (минуты-часы) распределение пересоздаётся. Все пользователи, попавшие в данную геозону в данное время, получают одинаковое «лечение».</p>
+<p>Зачем: на пользовательском A/B не работает в логистике/маркетплейсах/такси, где <strong>наблюдения зависят друг от друга</strong> — один заказ влияет на следующий (свободный курьер уходит — другой заказ дольше доставляется). Это <strong>network effect / social effect</strong> — тест-группа «протекает» в контроль через общий ресурс. Switchback изолирует группы пространственно-временными границами.</p>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>DoorDash</strong> (через expf)</td><td>Первоисточник методики; на 30% быстрее принимали продуктовые решения с switchback вместо обычного A/B</td></tr>
+<tr><td><strong>Citymobil</strong></td><td>Эпизоды 1 и 2: внедрение «геохроносплитования» в такси-сервисе; статанализ — <strong>Multi Level Modelling (MLM)</strong> как основной метод (мало освещён в литературе)</td></tr>
+<tr><td><strong>Delivery Club</strong> (DC)</td><td>Внедрение в логистике доставки; «отложенные эффекты» как фактор выбора периода переключения; снижение доли невыполненных заказов</td></tr>
+<tr><td><strong>expf</strong></td><td>Перевод DoorDash + контекст «социального эффекта»; trade-off скорости решений и сложности инфраструктуры</td></tr>
+<tr><td><strong>X5</strong></td><td>Switchback по магазинам («Пятёрочка-день» как unit) для офлайн-ритейла; A/A-симуляции для калибровки</td></tr>
+<tr><td><strong>HH</strong></td><td>Упоминание в Causal Inference как один из подходов борьбы с network effect</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Доставка / такси / маркетплейсы</strong> — где курьеры/водители/исполнители разделяемый ресурс, и тест одного заказа влияет на другие (DoorDash, Citymobil, Delivery Club)</li>
+<li><strong>Офлайн-ритейл с географическими границами</strong> — магазин-день как unit (X5 «Пятёрочка-день»)</li>
+<li><strong>Когда сетевой эффект сильный</strong> — пользователи или объекты взаимодействуют между собой; обычный A/B даст недооценку или переоценку из-за «протечки» теста в контроль</li>
+<li><strong>При наличии чётких гео-границ</strong> — зоны должны быть достаточно изолированы, чтобы пользователи редко пересекали границу (Citymobil, expf)</li>
+<li><strong>Когда отложенные эффекты ограничены во времени</strong> — период переключения должен быть больше времени распространения эффекта, иначе предыдущий период «загрязняет» следующий (Delivery Club)</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>Зоны должны быть изолированы.</strong> Если пользователи/курьеры свободно пересекают границу зоны — сетевой эффект всё равно «протекает». Правильное выделение зон — отдельная сложная задача (expf, Лоладзе).</li>
+<li><strong>Период переключения = функция от длительности эффекта.</strong> Слишком короткий — отложенный эффект из предыдущего периода загрязняет следующий; слишком длинный — мало unit'ов, низкая мощность (Delivery Club).</li>
+<li><strong>Стандартные t-test/z-test не подходят напрямую.</strong> Unit-уровень (geo × time) — это не пользователь; нужны методы для <strong>зависимых наблюдений</strong>: MLM, линеаризация + дельта-метод, бутстрап с учётом структуры (Citymobil ч.2).</li>
+<li><strong>Высокая инфраструктурная сложность.</strong> Нужны системы автоматического переключения магазинов/зон между группами, что требует времени на разработку (X5).</li>
+<li><strong>Меньше unit'ов = ниже мощность.</strong> В обычном A/B каждый пользователь — наблюдение, в switchback — каждая пара (зона×время). На том же горизонте unit'ов в десятки/сотни раз меньше.</li>
+<li><strong>Композитные метрики ломаются сильнее.</strong> Назначаемость, удержание заказа — ratio-метрики на unit-уровне; смещение оценки нужно компенсировать дельта-методом или линеаризацией (Citymobil).</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль рядом со switchback</th></tr></thead>
+<tbody>
+<tr><td><strong>Multi Level Modelling (MLM)</strong></td><td>Основной статметод для анализа switchback; учитывает иерархическую структуру unit'ов (Citymobil)</td></tr>
+<tr><td><strong>Дельта-метод + линеаризация</strong></td><td>Для ratio-метрик на unit-уровне; «улучшенная версия» базового подхода (Citymobil ч.2)</td></tr>
+<tr><td><strong>Diff-in-diff</strong></td><td>Альтернатива switchback, когда нет возможности переключать единицы во времени (DoorDash)</td></tr>
+<tr><td><strong>CUPED</strong></td><td>Перспектива внедрения поверх switchback для уменьшения дисперсии (Citymobil — обещание в следующей серии)</td></tr>
+<tr><td><strong>Бакетизация</strong></td><td>Параллельная техника для switchback (Citymobil)</td></tr>
+<tr><td><strong>Бутстрап с учётом структуры</strong></td><td>Block bootstrap для временной зависимости unit'ов</td></tr>
+<tr><td><strong>Кластерные эксперименты</strong></td><td>Семейство, к которому относится switchback: рандомизация по кластерам (geo×time = один тип кластера), expf-классификация</td></tr>
+<tr><td><strong>Sequential testing</strong></td><td>Перспектива для ускорения switchback (упоминание в expf-DoorDash)</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>5 ядерных заметок (≥10 упоминаний):</p>
+<ul>
+<li><code>Switchback-тестирование. Как бороться с социальными эффектами в AB-тестах</code> (expf/DoorDash, 42) · <code>Эксперименты в Ситимобил. Эпизод 1</code> (Citymobil, 24) · <code>Как мы научились АB-тестировать алгоритмы с помощью switchback-тестов</code> (Delivery Club, 23) · <code>Увеличиваем размер выборки и прокрашиваем серые метрики</code> (—, 10) · <code>Эксперименты в Ситимобил. Эпизод 2</code> (Citymobil, 8)</li>
+</ul>
+<p>3 контекстных — см. <code>grep -rliE "switchback|свитчбэк" AB/</code>.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"><a href="/workspace/library/synthesis/ratio/">← Ratio / линеаризация</a></span>
+    <span class="synth-nav-next"><a href="/workspace/library/synthesis/causal-inference/">Causal Inference →</a></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mann-Whitney — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/mann-whitney/"/>
+<meta name="description" content="Mann-Whitney — синтез по 17 статьям из 7 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Mann-Whitney — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 17 статьям из 7 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/mann-whitney/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Mann-Whitney</span>
+  </nav>
+  <h1 class="page-title">Mann-Whitney<span class="accent-dot">.</span></h1>
+  <p class="page-lead">17 заметок · 7 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>17 заметкам</strong> из <code>AB/</code>, где обсуждается критерий Манна-Уитни и непараметрические тесты. 6 «ядра» (≥3 упоминаний) — основные источники. Уникальность темы: <strong>две статьи противоположных мнений</strong> — Avito ругает, X5 защищает.</p>
+<h2>§ 01 В чём метод</h2>
+<p><strong>Манн-Уитни (U-тест)</strong> — непараметрический критерий сравнения двух выборок. Не работает со значениями метрики, а с <strong>рангами</strong> (порядковыми позициями):</p>
+<ol>
+<li>Объединить обе выборки, проранжировать от 1 до N</li>
+<li>Посчитать сумму рангов в одной из групп</li>
+<li>Сравнить с распределением сумм при случайном перемешивании</li>
+</ol>
+<p>Что <strong>на самом деле</strong> проверяет U-тест: гипотезу «выборки взяты из одного распределения» (тест однородности). Не сравнивает ни средние, ни медианы — это распространённое заблуждение.</p>
+<p>Формально: H₀ говорит «случайно выбранное значение из одной выборки равновероятно больше или меньше случайного значения из другой» — но это эквивалентно равенству распределений только при определённых условиях (например, симметричный сдвиг).</p>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>позиция</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>Avito</strong> (Lunin)</td><td>❌ <strong>«Самый главный враг AB-тестов»</strong></td><td>Показывает на симуляциях: U[−1,1] vs U[−100,100] даёт FPR 11% вместо 5%. Манн-Уитни даёт ложные «прокрасы» относительно T-test, и это не преимущество, а проблема</td></tr>
+<tr><td><strong>X5</strong> (Varioqub)</td><td>✅ Защищают и используют</td><td>Под капотом Varioqub (AppMetrica) — Mann-Whitney. Авторы развенчивают мифы, объясняют, что критерий валиден в своих условиях; вводят Probability Index и связь с Wilcoxon</td></tr>
+<tr><td><strong>VK</strong> (Practitioner's Guide)</td><td>✅ Базовый стандарт</td><td>«Often more powerful and more stable» для skewed distributions; сравнение FPR vs sensitivity; baseline при выборе любого fancy теста</td></tr>
+<tr><td><strong>expf</strong> (ранговая трансформация)</td><td>Прагматично</td><td>T-test на рангах ≈ Mann-Whitney. Когда инфраструктурно сложно применить MW — берут t-test на ранжированных данных</td></tr>
+<tr><td><strong>expf</strong> (Лоладзе)</td><td>Подсветка</td><td>«U-тест не проверяет равенство медиан, так как медиана — параметр»</td></tr>
+<tr><td><strong>Uchi</strong></td><td>Стандартная рекомендация</td><td>Для маленьких выборок и больших выбросов; устойчивость к выбросам</td></tr>
+<tr><td><strong>Glowbyte / Avito (Часть 1) / Okko / Kuper</strong></td><td>Упоминание</td><td>«Используем для ненормальных распределений» — без углубления</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Скошенные распределения / heavy tails</strong> — VK: «known to work well with skewed distributions»</li>
+<li><strong>Малые выборки</strong> — при n &lt; 30 параметрические критерии нестабильны, ранговый U-тест работает (Uchi)</li>
+<li><strong>Много выбросов</strong> — поскольку считаются ранги, а не значения; устойчив к extreme values</li>
+<li><strong>Сравнение распределений</strong> — когда нужна не разница средних, а ответ «вообще ли выборки одинаковые» (X5/Varioqub)</li>
+<li><strong>При sample stratification</strong> — внутри страт MW часто стабильнее t-test (VK)</li>
+<li><strong>Как baseline для сравнения</strong> — VK: «when using a fancy statistical test, compare it with baselines» (MW = классический baseline)</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>MW не сравнивает средние и медианы.</strong> Самое распространённое заблуждение. Lunin (Avito) демонстрирует: на U[−1,1] vs U[−100,100] средние и медианы равны (обе 0), а MW отвергает H₀ в 11% случаев — это ошибка I рода, не корректное «обнаружение» эффекта.</li>
+<li><strong>MW «прокрашивает» чаще, чем t-test — это не преимущество.</strong> Если данные не сдвинуты симметрично, лишние прокрасы — ложные. Это критика Lunin: «больше прокрасов» ≠ «больше мощность».</li>
+<li><strong>Не считает абсолютные значения.</strong> Манн-Уитни смотрит только на <em>порядок</em> элементов — т.е. он по построению не может сравнить математические ожидания (X5/Varioqub: «он даже не знает абсолютные значения»).</li>
+<li><strong>Логарифмирование метрики ≠ решение проблемы ненормальности.</strong> Lunin: «это плохая идея» — меняется не критерий, а интерпретация метрики; направление эффекта может стать противоположным.</li>
+<li><strong>MW требует мало совпадающих значений (ties).</strong> На дискретных метриках с большим числом повторов (например, биномиальные конверсии) точность падает (Uchi).</li>
+<li><strong>При нормальных данных MW менее мощный, чем t-test.</strong> Если данные действительно нормальные — MW требует на ~5% больше выборки для того же эффекта (expf: ARE-эффективность 0.95).</li>
+<li><strong>Нельзя интерпретировать через «сумму рангов».</strong> X5/Varioqub: «фраза 'сумма рангов стат. значима, а поэтому…' — нонсенс. Нужно проверять конкретную гипотезу.»</li>
+<li><strong>Формулы для sample size сложнее.</strong> Для непараметрических — обычно через симуляции, а не аналитическую формулу (Лоладзе).</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль рядом с MW</th></tr></thead>
+<tbody>
+<tr><td><strong>t-test</strong></td><td>Параметрическая альтернатива; работает при нормальных данных или большом n (ЦПТ); более мощный при выполнении предпосылок</td></tr>
+<tr><td><strong>Ранговая трансформация</strong></td><td>t-test на рангах ≈ MW; используется когда MW неудобно реализовать инфраструктурно (expf, Booking)</td></tr>
+<tr><td><strong>Wilcoxon signed-rank test</strong></td><td>Парный вариант для зависимых наблюдений; X5/Varioqub упоминают</td></tr>
+<tr><td><strong>Probability Index</strong></td><td>Альтернативная формулировка той же статистики — вероятность P(T &gt; C); X5/Varioqub популяризируют</td></tr>
+<tr><td><strong>Bootstrap</strong></td><td>Универсальная непараметрическая альтернатива; работает с любой статистикой, не только с рангами</td></tr>
+<tr><td><strong>Permutation test</strong></td><td>Самый близкий концептуально метод — тоже работает с перестановками; в учебниках часто рядом с MW</td></tr>
+<tr><td><strong>CUPED + t-test</strong></td><td>Если можно сократить дисперсию — иногда лучше CUPED+t-test, чем MW (Lunin)</td></tr>
+<tr><td><strong>Robust t-test / усечённый t-test</strong></td><td>Trim outliers и применить t-test — альтернатива для устойчивости к выбросам (expf)</td></tr>
+<tr><td><strong>Симуляции</strong></td><td>Для расчёта мощности MW (Лоладзе: «нет простой формулы»)</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>6 ядерных заметок (≥3 упоминаний):</p>
+<ul>
+<li><code>Varioqub за Mann-Whitney замолвите слово</code> (X5, 68) — защита и развенчание мифов</li>
+<li><code>Критерий Манна-Уитни — самый главный враг AB-тестов</code> (Avito/Lunin, 34) — разоблачение и симуляции</li>
+<li><code>Practitioner's Guide to Statistical Tests</code> (VK, 9) — академический baseline</li>
+<li><code>Увеличиваем чувствительность экспериментов при помощи ранговой трансформации</code> (expf, 6) — связь с ранговой трансформацией</li>
+<li><code>Вся основная теория Лоладзе + expf</code> (3) — концептуальная сводка</li>
+<li><code>На что мы обращаем внимание при расчете статистической значимости AB-теста</code> (Uchi, 3) — стандартная рекомендация</li>
+</ul>
+<p>11 контекстных — см. <code>grep -rliE "[Мм]анн|[Mm]ann|непараметр" AB/</code>.</p>
+<h2>§ Бонус: спор Avito vs X5/Varioqub</h2>
+<p>Уникальный для коллекции случай прямой методологической дискуссии:</p>
+<ul>
+<li><strong>Avito (Lunin):</strong> «Манн-Уитни даёт ложные прокрасы при ненормальных данных — это враг, а не друг.» Решение: использовать CUPED + t-test или bootstrap.</li>
+<li><strong>X5 (Varioqub):</strong> «Манн-Уитни валиден в своих границах — проверяет гипотезу однородности распределений. Проблема не в критерии, а в неправильной интерпретации того, что он проверяет.»</li>
+</ul>
+<p>Обе позиции корректны, но решают разные задачи: Lunin критикует <strong>MW как замену t-test для сравнения средних</strong> (где он действительно неподходящ); X5/Varioqub защищают <strong>MW как тест на однородность</strong> (где он валиден). Для читателя: важно явно формулировать H₀ перед выбором критерия.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"><a href="/workspace/library/synthesis/mde/">← MDE / Sample size</a></span>
+    <span class="synth-nav-next"></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
