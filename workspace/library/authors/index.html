@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Авторы — Библиотека — davydov.my</title>
 <link rel="canonical" href="https://davydov.my/workspace/library/authors/"/>
-<meta name="description" content="16 авторов — аналитики и эксперты по A/B-тестированию: Назаров, Лунин, Мосин, Кочнев и другие голоса коммьюнити."/>
+<meta name="description" content="22 автора — аналитики и эксперты по A/B-тестированию: Назаров, Лунин, Мосин, Кочнев и другие голоса коммьюнити."/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Авторы — Библиотека — davydov.my"/>
-<meta property="og:description" content="16 авторов — аналитики и эксперты по A/B-тестированию."/>
+<meta property="og:description" content="22 автора — аналитики и эксперты по A/B-тестированию."/>
 <meta property="og:url" content="https://davydov.my/workspace/library/authors/"/>
 <meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
 <meta name="twitter:card" content="summary_large_image"/>
@@ -61,11 +61,12 @@
     <span class="breadcrumb-current">Авторы</span>
   </nav>
   <h1 class="page-title">Авторы<span class="accent-dot">.</span></h1>
-  <p class="page-lead">16 авторов · аналитика и AB-тестирование. Восемь — в библиотеке, восемь — за её пределами, но важные голоса коммьюнити.</p>
+  <p class="page-lead">22 автора · аналитика и AB-тестирование. Восемь — в библиотеке davydov.my, остальные — известные голоса коммьюнити.</p>
 
   <nav class="km-subnav" aria-label="Разделы библиотеки">
     <a href="/workspace/library/" class="km-subnav-link">Материалы</a>
     <a href="/workspace/library/companies/" class="km-subnav-link">Компании</a>
+    <a href="/workspace/library/authors/" class="km-subnav-link km-subnav-active">Авторы</a>
     <a href="/workspace/library/synthesis/" class="km-subnav-link">Синтезы</a>
     <a href="/workspace/library/map/" class="km-subnav-link">Карта</a>
   </nav>
@@ -76,12 +77,6 @@
   </div>
 
   <div id="km-list"></div>
-
-  <p class="page-back">
-    <a href="/workspace/library/companies/">← Компании</a>
-    <span class="map-nav-sep"> · </span>
-    <a href="/workspace/library/">Все материалы →</a>
-  </p>
 </div>
 <div class="footer-spacer"></div>
 <footer class="footer">
@@ -101,28 +96,15 @@
   var DATA = [];
   var searchTimer;
 
-  // Порядок иконок-ссылок (label → ключ в записи)
-  var LINK_FIELDS = [
-    ['habr',     'habr_url'],
-    ['li',       'linkedin_url'],
-    ['tg',       'telegram_url'],
-    ['md',       'medium_url'],
-    ['gh',       'github_url'],
-    ['site',     'site_url']
-  ];
-
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // Русская плюрализация: 1 статья · 2-4 статьи · 5-20 статей
-  function pluralStatii(n) {
-    var mod10 = n % 10, mod100 = n % 100;
-    if (mod10 === 1 && mod100 !== 11) return 'статья';
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'статьи';
-    return 'статей';
+  function truncate(s, n) {
+    s = String(s || '');
+    return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s;
   }
 
   function matchAuthor(a, q) {
@@ -131,49 +113,33 @@
     return hay.indexOf(q) !== -1;
   }
 
+  // Хабр-колонка: habr_url > telegram_url > "—"
+  function habrCellHtml(a) {
+    if (a.habr_url) {
+      return '<a href="' + esc(a.habr_url) + '" target="_blank" rel="noopener noreferrer" '
+        + 'class="authors-link" aria-label="Habr-профиль ' + esc(a.name) + '">↗</a>';
+    }
+    if (a.telegram_url) {
+      return '<a href="' + esc(a.telegram_url) + '" target="_blank" rel="noopener noreferrer" '
+        + 'class="authors-link" aria-label="Telegram ' + esc(a.name) + '">tg ↗</a>';
+    }
+    return '<span class="authors-empty">—</span>';
+  }
+
   function rowHtml(a) {
-    var countLabel = a.in_library
-      ? a.articles_count + ' ' + pluralStatii(a.articles_count)
-      : '—';
+    return '<tr>'
+      + '<td class="authors-name">' + esc(a.name) + '</td>'
+      + '<td>' + esc(a.company || '—') + '</td>'
+      + '<td>' + esc(truncate(a.specialty, 40)) + '</td>'
+      + '<td class="authors-link-cell">' + habrCellHtml(a) + '</td>'
+      + '<td class="authors-count">'
+      + (a.in_library ? esc(String(a.articles_count)) : '<span class="authors-empty">—</span>')
+      + '</td>'
+      + '</tr>';
+  }
 
-    // 1-я мета-строка: company · role (только то что есть)
-    var meta1Parts = [];
-    if (a.company) meta1Parts.push(esc(a.company));
-    if (a.role)    meta1Parts.push(esc(a.role));
-    var meta1Html = meta1Parts.length
-      ? '<p class="km-summary">' + meta1Parts.join(' · ') + '</p>'
-      : '';
-
-    var specHtml = a.specialty
-      ? '<p class="km-summary">' + esc(a.specialty) + '</p>'
-      : '';
-    var markerHtml = a.marker
-      ? '<p class="km-marker">' + esc(a.marker) + '</p>'
-      : '';
-
-    // иконки-ссылки только для непустых полей
-    var linksHtml = LINK_FIELDS
-      .filter(function (f) { return a[f[1]]; })
-      .map(function (f) {
-        return '<a class="km-external" href="' + esc(a[f[1]]) + '" target="_blank" rel="noopener noreferrer">'
-          + f[0] + ' ↗</a>';
-      }).join('');
-    var linksBlock = linksHtml
-      ? '<div class="km-author-links">' + linksHtml + '</div>'
-      : '';
-
-    var mutedClass = a.in_library ? '' : ' km-row--muted';
-
-    return '<div class="km-row km-row--author' + mutedClass + '">'
-      + '<span class="km-tags">' + esc(countLabel) + '</span>'
-      + '<div class="km-main">'
-      +   '<h3 class="km-title">' + esc(a.name) + '</h3>'
-      +   meta1Html
-      +   specHtml
-      +   markerHtml
-      +   linksBlock
-      + '</div>'
-      + '</div>';
+  function sectionRow(label) {
+    return '<tr class="authors-section"><td colspan="5">' + esc(label) + '</td></tr>';
   }
 
   function render() {
@@ -187,20 +153,35 @@
     document.getElementById('km-count').textContent =
       'Найдено: ' + (inlib.length + ext.length);
 
-    var list = document.getElementById('km-list');
-    var html = '';
+    if (!inlib.length && !ext.length) {
+      document.getElementById('km-list').innerHTML =
+        '<div class="km-empty">Ничего не найдено</div>';
+      return;
+    }
+
+    var body = '';
     if (inlib.length) {
-      html += '<h2 class="km-section-title">§ 01 В библиотеке</h2>';
-      html += '<div class="km-list">' + inlib.map(rowHtml).join('') + '</div>';
+      body += sectionRow('В библиотеке');
+      body += inlib.map(rowHtml).join('');
     }
     if (ext.length) {
-      html += '<h2 class="km-section-title">§ 02 За пределами библиотеки</h2>';
-      html += '<div class="km-list">' + ext.map(rowHtml).join('') + '</div>';
+      body += sectionRow('Известные авторы');
+      body += ext.map(rowHtml).join('');
     }
-    if (!inlib.length && !ext.length) {
-      html = '<div class="km-empty">Ничего не найдено</div>';
-    }
-    list.innerHTML = html;
+
+    document.getElementById('km-list').innerHTML =
+        '<div class="table-wrap">'
+      +   '<table class="authors-table">'
+      +     '<thead><tr>'
+      +       '<th>Имя</th>'
+      +       '<th>Компания</th>'
+      +       '<th>Тема</th>'
+      +       '<th class="authors-link-cell">Хабр</th>'
+      +       '<th class="authors-count">Статей</th>'
+      +     '</tr></thead>'
+      +     '<tbody>' + body + '</tbody>'
+      +   '</table>'
+      + '</div>';
   }
 
   function onSearch() {
