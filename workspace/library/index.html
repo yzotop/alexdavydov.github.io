@@ -135,6 +135,13 @@
     'other':      'Другое'
   };
 
+  var DIFFICULTY_LABELS = {
+    'базовый':       'Базовый',
+    'методология':   'Методология',
+    'продвинутый':   'Продвинутый',
+    'экспертный':    'Экспертный'
+  };
+
   var DATA = [];
   var searchTimer;
 
@@ -144,8 +151,9 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function themeLabel(slug)  { return THEME_LABELS[slug]  || slug; }
-  function sourceLabel(slug) { return SOURCE_LABELS[slug] || slug; }
+  function themeLabel(slug)      { return THEME_LABELS[slug]      || slug; }
+  function sourceLabel(slug)     { return SOURCE_LABELS[slug]     || slug; }
+  function difficultyLabel(slug) { return DIFFICULTY_LABELS[slug] || slug; }
 
   function buildFilters() {
     var sectionVal = document.getElementById('km-filter-section').value;
@@ -217,10 +225,18 @@
     }
 
     list.innerHTML = filtered.map(function (d) {
-      var tag = esc(themeLabel(d.themes[0])) + ' · ' + esc(sourceLabel(d.source));
+      var tagParts = [themeLabel(d.themes[0]), sourceLabel(d.source)];
+      if (d.difficulty) tagParts.push(difficultyLabel(d.difficulty));
+      var tag = tagParts.map(esc).join(' · ');
+      var summaryHtml = d.summary
+        ? '<p class="km-summary">' + esc(d.summary) + '</p>'
+        : '';
       return '<a class="km-row" href="' + esc(d.link) + '" target="_blank" rel="noopener noreferrer">'
         + '<span class="km-tags">' + tag + '</span>'
-        + '<h3 class="km-title">' + esc(d.title) + '</h3>'
+        + '<div class="km-main">'
+        +   '<h3 class="km-title">' + esc(d.title) + '</h3>'
+        +   summaryHtml
+        + '</div>'
         + '<span class="km-arrow">↗</span>'
         + '</a>';
     }).join('');
