@@ -313,11 +313,35 @@
     render();
   }
 
+  // Подхватить ?section=…&topic=…&source=…&company=…&difficulty=…&q=…
+  // из URL и проставить в фильтры/поиск после buildFilters.
+  function applyUrlParams() {
+    var p = new URLSearchParams(window.location.search);
+    var map = {
+      'section':    'km-filter-section',
+      'topic':      'km-filter-topic',
+      'source':     'km-filter-source',
+      'company':    'km-filter-company',
+      'difficulty': 'km-filter-difficulty'
+    };
+    Object.keys(map).forEach(function (key) {
+      var v = p.get(key);
+      if (v) document.getElementById(map[key]).value = v;
+    });
+    var q = p.get('q');
+    if (q) document.getElementById('km-search').value = q;
+  }
+
   fetch('./index.json')
     .then(function (r) { return r.json(); })
     .then(function (data) {
       DATA = data;
       buildFilters();
+      applyUrlParams();
+      // section мог измениться через URL — пересобрать зависимые фильтры
+      if (document.getElementById('km-filter-section').value) buildFilters();
+      // ещё раз applyUrlParams, чтобы восстановить значения, сброшенные пересборкой
+      applyUrlParams();
       render();
       document.getElementById('km-search').addEventListener('input', onSearch);
       document.getElementById('km-filter-section').addEventListener('change', onSectionChange);
