@@ -63,36 +63,26 @@
 
   <div class="km-controls">
     <input type="text" id="km-search" class="km-search" placeholder="Поиск по названию…" autocomplete="off"/>
+    <label class="km-filter km-filter--full">
+      <span class="km-filter-label">Раздел</span>
+      <select id="km-filter-section"></select>
+    </label>
     <div class="km-filters">
       <label class="km-filter">
-        <span class="km-filter-label">Раздел</span>
-        <select id="km-filter-section">
-          <option value="">Все разделы</option>
-          <option value="analytics">Аналитика и эксперименты</option>
-          <option value="leadership">Тимлидство</option>
-        </select>
-      </label>
-      <label class="km-filter">
         <span class="km-filter-label">Тема</span>
-        <select id="km-filter-topic">
-          <option value="">Все темы</option>
-        </select>
+        <select id="km-filter-topic"></select>
       </label>
       <label class="km-filter">
         <span class="km-filter-label">Источник</span>
-        <select id="km-filter-source">
-          <option value="">Все источники</option>
-        </select>
+        <select id="km-filter-source"></select>
+      </label>
+      <label class="km-filter">
+        <span class="km-filter-label">Компания</span>
+        <select id="km-filter-company"></select>
       </label>
       <label class="km-filter">
         <span class="km-filter-label">Сложность</span>
-        <select id="km-filter-difficulty">
-          <option value="">Все уровни</option>
-          <option value="базовый">Базовый</option>
-          <option value="методология">Методология</option>
-          <option value="продвинутый">Продвинутый</option>
-          <option value="экспертный">Экспертный</option>
-        </select>
+        <select id="km-filter-difficulty"></select>
       </label>
     </div>
     <div class="km-count" id="km-count"></div>
@@ -151,6 +141,14 @@
     'продвинутый':   'Продвинутый',
     'экспертный':    'Экспертный'
   };
+  // фиксированный порядок difficulty (от простого к сложному)
+  var DIFFICULTY_ORDER = ['базовый', 'методология', 'продвинутый', 'экспертный'];
+
+  var SECTION_LABELS = {
+    'analytics':  'Аналитика и эксперименты',
+    'leadership': 'Тимлидство'
+  };
+  var SECTION_ORDER = ['analytics', 'leadership'];
 
   var DATA = [];
   var searchTimer;
@@ -165,51 +163,95 @@
   function sourceLabel(slug)     { return SOURCE_LABELS[slug]     || slug; }
   function difficultyLabel(slug) { return DIFFICULTY_LABELS[slug] || slug; }
 
-  function buildFilters() {
-    var sectionVal = document.getElementById('km-filter-section').value;
+  // Перезаписать опции селекта.
+  // items: массив {value, label, count}. Первый элемент — «Все Х»: count = размер выборки при выборе.
+  // Сохраняет текущее значение, если такая опция есть в новом наборе; иначе сбрасывает на ''.
+  function setOptions(selectId, items) {
+    var sel = document.getElementById(selectId);
+    var cur = sel.value;
+    sel.innerHTML = '';
+    var hasCur = false;
+    items.forEach(function (o) {
+      var opt = document.createElement('option');
+      opt.value = o.value;
+      opt.textContent = o.label + ' (' + o.count + ')';
+      if (o.value === cur) { opt.selected = true; hasCur = true; }
+      sel.appendChild(opt);
+    });
+    if (!hasCur) sel.value = '';
+  }
 
-    // Filter data for dynamic filter building (respect section selection)
-    var filtered = DATA.filter(function (d) {
+  function buildFilters() {
+    // 1) Section options — counts всегда от полного DATA
+    var sectionCount = {};
+    DATA.forEach(function (d) {
+      sectionCount[d.section] = (sectionCount[d.section] || 0) + 1;
+    });
+    var sectionItems = [{ value: '', label: 'Все разделы', count: DATA.length }];
+    SECTION_ORDER.forEach(function (k) {
+      if (sectionCount[k]) {
+        sectionItems.push({ value: k, label: SECTION_LABELS[k], count: sectionCount[k] });
+      }
+    });
+    setOptions('km-filter-section', sectionItems);
+
+    // 2) Подвыборка для остальных фильтров — только по выбранному section
+    var sectionVal = document.getElementById('km-filter-section').value;
+    var subset = DATA.filter(function (d) {
       return !sectionVal || d.section === sectionVal;
     });
 
-    // Themes — sorted by frequency descending
+    // 3) Topic
     var themeCount = {};
-    filtered.forEach(function (d) {
-      d.themes.forEach(function (t) {
+    subset.forEach(function (d) {
+      (d.themes || []).forEach(function (t) {
         themeCount[t] = (themeCount[t] || 0) + 1;
       });
     });
-    var themes = Object.keys(themeCount);
-    themes.sort(function (a, b) { return themeCount[b] - themeCount[a]; });
-    var topicSel = document.getElementById('km-filter-topic');
-    var topicVal = topicSel.value;
-    topicSel.innerHTML = '<option value="">Все темы</option>';
-    themes.forEach(function (t) {
-      var o = document.createElement('option');
-      o.value = t;
-      o.textContent = themeLabel(t);
-      if (t === topicVal) o.selected = true;
-      topicSel.appendChild(o);
-    });
+    var themes = Object.keys(themeCount).sort(function (a, b) { return themeCount[b] - themeCount[a]; });
+    setOptions('km-filter-topic',
+      [{ value: '', label: 'Все темы', count: subset.length }].concat(
+        themes.map(function (t) { return { value: t, label: themeLabel(t), count: themeCount[t] }; })
+      )
+    );
 
-    // Sources — sorted by frequency descending
+    // 4) Source
     var sourceCount = {};
-    filtered.forEach(function (d) {
-      sourceCount[d.source] = (sourceCount[d.source] || 0) + 1;
+    subset.forEach(function (d) {
+      if (d.source) sourceCount[d.source] = (sourceCount[d.source] || 0) + 1;
     });
-    var sources = Object.keys(sourceCount);
-    sources.sort(function (a, b) { return sourceCount[b] - sourceCount[a]; });
-    var sourceSel = document.getElementById('km-filter-source');
-    var sourceVal = sourceSel.value;
-    sourceSel.innerHTML = '<option value="">Все источники</option>';
-    sources.forEach(function (s) {
-      var o = document.createElement('option');
-      o.value = s;
-      o.textContent = sourceLabel(s);
-      if (s === sourceVal) o.selected = true;
-      sourceSel.appendChild(o);
+    var sources = Object.keys(sourceCount).sort(function (a, b) { return sourceCount[b] - sourceCount[a]; });
+    setOptions('km-filter-source',
+      [{ value: '', label: 'Все источники', count: subset.length }].concat(
+        sources.map(function (s) { return { value: s, label: sourceLabel(s), count: sourceCount[s] }; })
+      )
+    );
+
+    // 5) Company — те же правила, что и source; алфавитная сортировка после частотной (стабильнее визуально)
+    var companyCount = {};
+    subset.forEach(function (d) {
+      if (d.company) companyCount[d.company] = (companyCount[d.company] || 0) + 1;
     });
+    var companies = Object.keys(companyCount).sort(function (a, b) {
+      var diff = companyCount[b] - companyCount[a];
+      return diff !== 0 ? diff : a.localeCompare(b);
+    });
+    setOptions('km-filter-company',
+      [{ value: '', label: 'Все компании', count: subset.length }].concat(
+        companies.map(function (c) { return { value: c, label: c, count: companyCount[c] }; })
+      )
+    );
+
+    // 6) Difficulty — фиксированный порядок, скрываем уровни с count=0 в текущей подвыборке
+    var diffCount = {};
+    subset.forEach(function (d) {
+      if (d.difficulty) diffCount[d.difficulty] = (diffCount[d.difficulty] || 0) + 1;
+    });
+    var diffItems = [{ value: '', label: 'Все уровни', count: subset.length }];
+    DIFFICULTY_ORDER.forEach(function (k) {
+      if (diffCount[k]) diffItems.push({ value: k, label: difficultyLabel(k), count: diffCount[k] });
+    });
+    setOptions('km-filter-difficulty', diffItems);
   }
 
   function render() {
@@ -217,6 +259,7 @@
     var section    = document.getElementById('km-filter-section').value;
     var topic      = document.getElementById('km-filter-topic').value;
     var source     = document.getElementById('km-filter-source').value;
+    var company    = document.getElementById('km-filter-company').value;
     var difficulty = document.getElementById('km-filter-difficulty').value;
 
     var filtered = DATA.filter(function (d) {
@@ -224,6 +267,7 @@
       if (q          && d.title.toLowerCase().indexOf(q) === -1) return false;
       if (topic      && d.themes.indexOf(topic) === -1)          return false;
       if (source     && d.source !== source)                     return false;
+      if (company    && d.company !== company)                   return false;
       if (difficulty && d.difficulty !== difficulty)             return false;
       return true;
     });
@@ -260,9 +304,10 @@
   }
 
   function onSectionChange() {
-    // Reset topic/source/difficulty when section changes — stale filters otherwise
+    // Reset topic/source/company/difficulty when section changes — stale filters otherwise
     document.getElementById('km-filter-topic').value      = '';
     document.getElementById('km-filter-source').value     = '';
+    document.getElementById('km-filter-company').value    = '';
     document.getElementById('km-filter-difficulty').value = '';
     buildFilters();
     render();
@@ -278,6 +323,7 @@
       document.getElementById('km-filter-section').addEventListener('change', onSectionChange);
       document.getElementById('km-filter-topic').addEventListener('change', render);
       document.getElementById('km-filter-source').addEventListener('change', render);
+      document.getElementById('km-filter-company').addEventListener('change', render);
       document.getElementById('km-filter-difficulty').addEventListener('change', render);
     })
     .catch(function () {
