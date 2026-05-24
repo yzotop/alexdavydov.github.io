@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Стратификация — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/stratification/"/>
+<meta name="description" content="Стратификация — синтез по 24 статьям из 8 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Стратификация — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 24 статьям из 8 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/stratification/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Стратификация</span>
+  </nav>
+  <h1 class="page-title">Стратификация<span class="accent-dot">.</span></h1>
+  <p class="page-lead">24 заметок · 8 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>24 заметкам</strong> из <code>AB/</code> с упоминанием стратификации. 8 «ядра» (от 7 и более упоминаний) — основные источники.</p>
+<h2>§ 01 В чём метод</h2>
+<p>Стратификация — приём, который повышает чувствительность A/B-теста за счёт более «честного» разделения пользователей на группы. Выборку режут на страты по ковариате (пол, возраст, доход, кластер поведения), и из каждой страты в тест и контроль попадает равная доля. В результате межгрупповая дисперсия — та часть, что объяснялась случайным дисбалансом страт — уходит из общей дисперсии метрики.</p>
+<p>Две формы:</p>
+<ul>
+<li><strong>Пре-стратификация</strong> — формируем группы заранее, на этапе сэмплирования. Доступна, когда есть полная база пользователей.</li>
+<li><strong>Пост-стратификация</strong> — режем уже собранные данные на страты после эксперимента и считаем взвешенное среднее. Применяется, когда пользователи приходят онлайн и до разбиения о них ничего не известно.</li>
+</ul>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>X5</strong> (Nazarov)</td><td>Базовая статья-методичка (52 упоминания); формулы пре- и пост-стратификации; статья про <strong>Методы балансировки</strong> — стратификация как одна из техник наряду с матчингом и взвешиванием</td></tr>
+<tr><td><strong>Avito</strong> (Lunin)</td><td>Подача через метафору с покемонами (понятно даже джуну); <strong>парная стратификация</strong> — улучшение, когда на одну страту приходится мало объектов</td></tr>
+<tr><td><strong>Glowbyte</strong> (Альфа-Банк)</td><td>Внутренняя библиотека <strong>ABacus</strong>: кластеризация HDBScan → стратификация → 1-командой; все эксперименты персонализации в Альфа теперь идут через ABacus</td></tr>
+<tr><td><strong>expf</strong> (Лоладзе)</td><td>Сводка теории: формула <code>var_strat = 1/n · Σ p_k·var_k</code>, главная польза пост-стратификации — убрать межгрупповую дисперсию</td></tr>
+<tr><td><strong>Самокат</strong></td><td>Парадокс Симпсона как мотивация; CUPED трактуют как «непрерывный аналог пост-стратификации»</td></tr>
+<tr><td><strong>HH</strong></td><td>В контексте Causal Inference: PS-стратификация, IPW — стратификация по propensity score</td></tr>
+<tr><td><strong>LM</strong></td><td>Стратификация для офлайн-ритейла (отток ПРО-клиентов)</td></tr>
+<tr><td><strong>Glowbyte</strong> (роадмэп)</td><td>«Делаю всегда, когда возможно» — рекомендация для новичков</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Известная заранее структура аудитории</strong> — есть ковариата с сильной связью с метрикой (пол, возраст, доход, регион, кластер поведения)</li>
+<li><strong>Малая выборка</strong> — балансировка страт даёт больше прироста чувствительности, чем на большой</li>
+<li><strong>Кластеризуемые сегменты</strong> — Альфа-Банк выделяет «плотные» кластеры через HDBScan и стратифицирует по ним</li>
+<li><strong>Когда есть полная база пользователей</strong> — пре-стратификация лучше всего работает офлайн (известны все участники)</li>
+<li><strong>Онлайн с постепенным набором</strong> — постстратификация спасает (Glowbyte)</li>
+<li><strong>В связке с CUPED</strong> — стратификация + CUPED дают комплементарное снижение дисперсии (Avito парная стратификация)</li>
+<li><strong>Для устранения дисбаланса по ключевой ковариате</strong> — когда случайное разбиение может сильно разойтись по ковариате</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>Неправильные веса страт смещают оценку.</strong> Если оценка <code>p_k</code> неточная — стратифицированное среднее становится смещённым (X5).</li>
+<li><strong>Слишком мелкие страты.</strong> Когда в страту попадает 2-3 пользователя, дисперсия внутри страты оценивается плохо. Лучше укрупнить.</li>
+<li><strong>Пре-стратификация невозможна онлайн.</strong> Если пользователи приходят последовательно — заранее их в страты не распределить (Glowbyte).</li>
+<li><strong>Стратификация по «не той» ковариате.</strong> Если ковариата слабо связана с метрикой — снижение дисперсии будет копеечным, а сложность процесса возрастает.</li>
+<li><strong>На больших данных эффект меньше.</strong> На веб-A/B со 100 000+ пользователей случайное разбиение и так балансирует страты — стратификация даёт минимум выигрыша.</li>
+<li><strong>Парадокс Симпсона.</strong> Без стратификации общая метрика может «врать» (Самокат) — направление эффекта в каждой страте противоположно общему.</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль рядом со стратификацией</th></tr></thead>
+<tbody>
+<tr><td><strong>CUPED</strong></td><td>Близкий метод снижения дисперсии; Самокат: CUPED = «непрерывный аналог пост-стратификации». Обычно применяют либо/либо, иногда вместе (Avito)</td></tr>
+<tr><td><strong>Парная стратификация</strong></td><td>Улучшение для случаев с малыми стратами: соседние объекты в страте парно идут в тест/контроль (Avito)</td></tr>
+<tr><td><strong>Матчинг</strong> (PSM, Mahalanobis)</td><td>Альтернативная балансировка через попарное сопоставление, не группами (X5, HH)</td></tr>
+<tr><td><strong>Взвешивание / IPW</strong></td><td>Третий метод балансировки: вместо разделения — пересчёт весов наблюдений (X5, HH)</td></tr>
+<tr><td><strong>Кластеризация (HDBScan)</strong></td><td>Источник «правильных» страт — плотные кластеры поведения (Alfa-ABacus)</td></tr>
+<tr><td><strong>Бакетирование</strong></td><td>Альтернативный способ создания страт через равномерные интервалы (Glowbyte)</td></tr>
+<tr><td><strong>Линеаризация ratio</strong></td><td>Можно стратифицировать перед линеаризацией для ratio-метрик (Kuper)</td></tr>
+<tr><td><strong>Propensity Score Stratification</strong></td><td>Расширение для observational data из Causal Inference (HH)</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>8 ядерных заметок (≥7 упоминаний):</p>
+<ul>
+<li><code>Стратификация. Как разбиение выборки повышает чувствительность AB теста</code> (X5, 52) · <code>Как улучшить ваши AB-тесты ч.2</code> (Avito, 21) · <code>Оценка эффекта персонализации баннеров в Альфа-Банке (ABacus)</code> (Glowbyte, 18) · <code>Вся основная теория Лоладзе + expf</code> (15) · <code>Методы балансировки в AB тестировании</code> (X5, 11) · <code>Как подготовить и провести AB-тестирование</code> (Glowbyte, 8) · <code>Воркшопы и методология АБ Самоката</code> (7) · <code>Causal Inference from Observational Data</code> (HH, 7)</li>
+</ul>
+<p>16 контекстных — см. <code>grep -rlE "[Сс]тратификац|[Ss]tratif" AB/</code>.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"><a href="/workspace/library/synthesis/bootstrap/">← Бутстрап</a></span>
+    <span class="synth-nav-next"><a href="/workspace/library/synthesis/ratio/">Ratio / линеаризация →</a></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

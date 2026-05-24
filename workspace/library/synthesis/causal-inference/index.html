@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Causal Inference — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/causal-inference/"/>
+<meta name="description" content="Causal Inference — синтез по 12 статьям из 7 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="Causal Inference — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 12 статьям из 7 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/causal-inference/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Causal Inference</span>
+  </nav>
+  <h1 class="page-title">Causal Inference<span class="accent-dot">.</span></h1>
+  <p class="page-lead">12 заметок · 7 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>12 заметкам</strong> из <code>AB/</code>, где обсуждаются методы причинно-следственного анализа за пределами рандомизированных A/B. 6 «ядра» (≥14 упоминаний) — основные источники.</p>
+<h2>§ 01 В чём область</h2>
+<p>Causal Inference (CI) — семейство методов оценки эффекта воздействия в ситуациях, когда <strong>рандомизированный A/B невозможен или некорректен</strong>:</p>
+<ul>
+<li>фича уже работает на всех — нельзя выключить</li>
+<li>ограниченный пул объектов (магазины города) — рандомизация даёт несопоставимые группы</li>
+<li>этичные/правовые ограничения — нельзя «лечить» одних и «не лечить» других</li>
+<li>историческое наблюдение — нужна оценка постфактум</li>
+</ul>
+<p>Базовый фреймворк — <strong>Rubin Causal Model / Potential Outcomes (PO)</strong>: оцениваем разницу <code>Y(i|t=1) − Y(i|t=0)</code>, где невозможно одновременно наблюдать обе версии у одного объекта. Альтернатива — <strong>Structural Causal Model (SCM)</strong> с графами причинности.</p>
+<p>Главная сложность — <strong>конфаундеры</strong>: переменные, влияющие и на treatment, и на outcome. Если их не контролировать, оценка эффекта будет смещена. Решение — балансировать группы по этим переменным.</p>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>HH</strong> (Kochnev)</td><td>Главная методичка (93 упоминания): PO vs SCM, propensity score matching (PSM), IPW, пакеты CausalML (Uber) и DoWhy (Microsoft)</td></tr>
+<tr><td><strong>X5</strong> (Tech)</td><td><strong>Doubly Robust</strong> модель в офлайн-ритейле: propensity score + linear regression; гарантия корректной оценки если хотя бы одна модель специфицирована верно. Эволюция за 4 года от классического A/B</td></tr>
+<tr><td><strong>X5</strong> (балансировка)</td><td>Полный обзор PSM, Exact Matching, <strong>Coarsened Exact Matching (CEM)</strong>, Mahalanobis Distance Matching (MDM), IPW, регрессия как методы балансировки</td></tr>
+<tr><td><strong>X5</strong> (Nazarov)</td><td>Отдельная статья про <strong>Diff-in-Diff</strong> — интуиция, формальное изложение, когда заменяет рандомизацию</td></tr>
+<tr><td><strong>Lamoda</strong></td><td>Квазиэксперимент для контент-продукта (Discovery): Simple Matching → PSM → Diff-in-Diff в комбинации</td></tr>
+<tr><td><strong>Uzum</strong></td><td><strong>CausalImpact</strong> (Google): байесовские структурные временные ряды, синтетический контрольный ряд; кейс «введение минимальной стоимости заказа»</td></tr>
+<tr><td><strong>expf</strong> (Лоладзе)</td><td>Обзор семьи: DiD, Causal Impact, Jacknife estimator, PSM; концепция confounders + SUTVA</td></tr>
+<tr><td><strong>ODS</strong> (Бабаев)</td><td>«Лестница доказательств причинно-следственного анализа» — позиционирует CI ниже классических A/B</td></tr>
+<tr><td><strong>Citymobil</strong></td><td>Causal Inference на стыке со switchback для сетевых эффектов</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Оценка работающей фичи постфактум</strong> — нельзя выключить, нет ретроспективного A/B (HH, Uzum «изменение цены»)</li>
+<li><strong>Офлайн-ритейл с ограниченным пулом</strong> — рандомизация даст несопоставимые магазины, нужна балансировка по фичам (X5)</li>
+<li><strong>Раскатка на 100% после пилота</strong> — Causal Impact оценивает финальный эффект, минуя сложности дизайна (ODS)</li>
+<li><strong>Долгосрочные эффекты</strong> — синтетический контрольный ряд (CausalImpact) хорошо показывает кумулятивный эффект во времени (Uzum)</li>
+<li><strong>Когда выборка не позволяет рандомизировать</strong> — мало объектов, ограниченная гео-граница (X5, Lamoda)</li>
+<li><strong>Внешние шоки и интервенции</strong> — DiD ловит изменение тренда при правильном выборе контрольной группы (X5 Nazarov)</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>Конфаундеры — главная угроза.</strong> Если переменная влияет и на treatment, и на outcome — оценка смещена. В отличие от рандомизированного A/B, тут балансировка не автоматическая (HH).</li>
+<li><strong>PSM работает только при наличии «близнецов».</strong> Если для пользователя из тест-группы нет похожего в контроле — он исключается; псевдоконтроль может стать сильно меньше изначальной выборки (Лоладзе).</li>
+<li><strong>DiD требует параллельных трендов до интервенции.</strong> Если до treatment тренды у групп уже расходились — оценка эффекта неверна (X5 DiD).</li>
+<li><strong>Менее надёжно, чем рандомизированный A/B.</strong> «Лестница доказательств»: квазиэксперименты — это ступень ниже RCT (Uzum, ODS).</li>
+<li><strong>SUTVA</strong> (Stable Unit Treatment Value Assumption) часто нарушается. Если есть network effect — оценка через PSM/DiD будет смещена (Лоладзе, Citymobil).</li>
+<li><strong>CausalImpact чувствителен к выбору ковариат.</strong> Качество синтетического контроля = качество прогноза модели; плохие ковариаты → ложный «эффект» (Uzum).</li>
+<li><strong>Doubly Robust требует хотя бы одной правильной модели.</strong> Если обе (PSM и регрессия) специфицированы плохо — оценка не имеет гарантий корректности (X5).</li>
+<li><strong>Confusing causality with ML association.</strong> В обычной ML-модели важность фичи ≠ её причинный эффект (HH).</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль</th></tr></thead>
+<tbody>
+<tr><td><strong>Propensity Score Matching (PSM)</strong></td><td>Базовая техника: оценить вероятность попадания в treatment, мэтчить по этой вероятности (HH, X5, Lamoda)</td></tr>
+<tr><td><strong>Inverse Probability Weighting (IPW)</strong></td><td>Альтернатива мэтчингу: вместо отбора — пересчёт весов; «псевдопопуляция» (HH, X5)</td></tr>
+<tr><td><strong>Diff-in-Diff (DiD)</strong></td><td>Сравнение изменений во времени между treated и control: «разность разностей»; подаётся как аналог CUPED для observational (X5 Nazarov, HH)</td></tr>
+<tr><td><strong>CausalImpact</strong> (Google)</td><td>Байесовские структурные временные ряды; синтетический контроль из ковариат (Uzum, expf)</td></tr>
+<tr><td><strong>Synthetic Control Method (SCM)</strong></td><td>Раскатка на 100% → сравнение с синтетическим контролем из истории (expf)</td></tr>
+<tr><td><strong>Coarsened Exact Matching (CEM)</strong></td><td>Развитие Exact Matching: непрерывные признаки → категории, потом точное совпадение (X5)</td></tr>
+<tr><td><strong>Mahalanobis Distance Matching (MDM)</strong></td><td>Мэтчинг по расстоянию Махаланобиса (учёт ковариаций) (X5)</td></tr>
+<tr><td><strong>Doubly Robust estimation</strong></td><td>Композиция PSM + регрессии: корректна, если хотя бы одна спецификация верна (X5)</td></tr>
+<tr><td><strong>Jacknife estimator</strong></td><td>Leave-one-out оценка как робастный способ агрегировать ежедневные лифты (expf)</td></tr>
+<tr><td><strong>CUPED как метод</strong></td><td>Технически разные, но HH прямо сопоставляет: DiD = аналог CUPED для observational</td></tr>
+<tr><td><strong>CausalML</strong> (Uber)</td><td>Python-пакет: PSM, IPW, uplift modeling (HH)</td></tr>
+<tr><td><strong>DoWhy</strong> (Microsoft)</td><td>Python-пакет: создание графа зависимостей + проверка предположений (HH)</td></tr>
+<tr><td><strong>Switchback</strong></td><td>Альтернатива observational для сетевых эффектов в реальном времени (Citymobil, expf)</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>6 ядерных заметок (≥14 упоминаний):</p>
+<ul>
+<li><code>Causal Inference from Observational Data</code> (HH, 93) · <code>От AB-тестирования к Causal Inference в оффлайн ритейле</code> (X5, 56) · <code>Методы балансировки в AB тестировании</code> (X5, 38) · <code>Diff-in-diff — жизнь за пределами идеального эксперимента</code> (X5, 18) · <code>А если без A-B-тестов: квазиэксперименты</code> (Lamoda, 17) · <code>Causal Impact как инструмент аналитика в Uzum</code> (Uzum, 14)</li>
+</ul>
+<p>6 контекстных — см. <code>grep -rliE "causal|квазиэксперимент|observational|diff.in.diff|propensity|matching" AB/</code>.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"><a href="/workspace/library/synthesis/switchback/">← Switchback</a></span>
+    <span class="synth-nav-next"><a href="/workspace/library/synthesis/mde/">MDE / Sample size →</a></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

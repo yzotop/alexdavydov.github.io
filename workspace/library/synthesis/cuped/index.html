@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CUPED — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/cuped/"/>
+<meta name="description" content="CUPED — синтез по 22 статьям из 9 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="CUPED — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 22 статьям из 9 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/cuped/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">CUPED</span>
+  </nav>
+  <h1 class="page-title">CUPED<span class="accent-dot">.</span></h1>
+  <p class="page-lead">22 заметок · 9 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>22 заметкам</strong> из <code>AB/</code>, где упоминается CUPED. 10 «ядра» (≥5 упоминаний) — основные источники, 12 «обвязки» — контекстные ссылки на метод.</p>
+<h2>§ 01 В чём метод</h2>
+<p>CUPED (Controlled-experiment Using Pre-Experiment Data) — техника снижения дисперсии в A/B-тесте за счёт ковариаты, измеренной до эксперимента. Из исходной метрики вычитается линейная компонента, скоррелированная с предэкспериментальным поведением пользователя:</p>
+<pre><code>Y_cuped = Y − θ·X</code></pre>
+<p>где X — поведение пользователя до эксперимента, θ = cov(Y,X)/var(X). Точечная оценка эффекта (разница средних) остаётся несмещённой, а дисперсия сжимается до <code>var(Y)·(1 − ρ²)</code>, где ρ — корреляция X↔Y. Чем сильнее связь предэкспериментального поведения с метрикой, тем больше выигрыш.</p>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>X5</strong></td><td>Базовый CUPED + интеграция в Causal Inference для офлайн-ритейла: дисперсия и смещение групп решаются одновременно. Часовые гистограммы как ковариаты — дисперсия минус 40–70%</td></tr>
+<tr><td><strong>Avito</strong> (Lunin)</td><td>CUPED как 4 строки кода; ML-расширения CUPAC / CUNOPAC / CUMPED (ковариата как ML-прогноз); парная стратификация поверх</td></tr>
+<tr><td><strong>expf</strong></td><td>Базовая статья с кейсами Skyeng (-30% дисперсии) и Avito; ранговая трансформация поверх CUPED — эквивалент 17.95× увеличения выборки (Booking.com)</td></tr>
+<tr><td><strong>Kuper</strong></td><td>Линеаризация ratio-метрик + CUPED — связка встроена в платформу A/B-тестов</td></tr>
+<tr><td><strong>Glowbyte</strong></td><td>Учебный «роадмэп для новичков»: CUPED и CUPAC бок о бок с формулами</td></tr>
+<tr><td><strong>VK</strong></td><td>Practitioner's Guide §6.2: CUPED как стандарт; §6.3 — future-metric prediction как развитие</td></tr>
+<tr><td><strong>Самокат</strong></td><td>Внутренняя документация + воркшопы; трактуют CUPED как непрерывный аналог пост-стратификации</td></tr>
+<tr><td><strong>HH</strong></td><td>DiD (Diff-in-diff) подаётся как аналог CUPED для observational-данных</td></tr>
+<tr><td><strong>Citymobil</strong></td><td>Switchback-эксперименты + перспектива внедрения CUPED поверх</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Большой поток экспериментов на узких сегментах</strong> (Skyeng — ученики). Снижение дисперсии прямо переводится в сокращение трафика.</li>
+<li><strong>Сильная автокорреляция пользователя</strong> — метрики типа выручки, GMV, времени в продукте, числа сессий.</li>
+<li><strong>Длинная предэкспериментальная история</strong> — больше данных, выше ρ, сильнее эффект.</li>
+<li><strong>Поверх линеаризации</strong> для ratio-метрик (Kuper) — сначала линеаризовать, затем CUPED.</li>
+<li><strong>Офлайн-ритейл с гистограмными ковариатами</strong> — у X5 даёт –40–70% дисперсии.</li>
+<li><strong>Малые ожидаемые эффекты (MDE)</strong> — когда нужно ловить 1–5% прирост, CUPED делает это реалистичным без увеличения выборки.</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>Матожидание X на предпериоде должно совпадать в тесте и контроле.</strong> Иначе CUPED даёт некорректный результат — это де-факто проверка валидности A/A-разбиения.</li>
+<li><strong>Никогда не используйте «нормированный» CUPED</strong> вида Y / (E[X] − X). Lunin (Avito) прямо: «может портить и критерий, и оценку метрики».</li>
+<li><strong>На ratio-метриках напрямую не работает.</strong> Нужна сначала линеаризация (Kuper, expf), либо дельта-метод.</li>
+<li><strong>Не приводит распределение к нормальному.</strong> Дисперсия сжимается, но хвосты и выбросы остаются — для тяжёлых распределений нужна ранговая трансформация поверх (Booking).</li>
+<li><strong>Не решает смещение групп.</strong> Только повышает чувствительность. X5: задачи дисперсии и смещения должны решаться одновременно — иначе ДИ сужаются вокруг кривой оценки.</li>
+<li><strong>Требует, чтобы X не зависел от эксперимента.</strong> Иначе оценка эффекта смещается.</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль рядом с CUPED</th></tr></thead>
+<tbody>
+<tr><td><strong>Стратификация</strong> (особенно парная)</td><td>Комплементарный способ снижения дисперсии; Avito комбинирует</td></tr>
+<tr><td><strong>Линеаризация</strong></td><td>Обязательный шаг перед CUPED для ratio-метрик (Kuper, VK)</td></tr>
+<tr><td><strong>Ранговая трансформация</strong></td><td>Накладывается поверх CUPED для тяжёлых хвостов (expf, Booking)</td></tr>
+<tr><td><strong>CUPAC / CUNOPAC / CUMPED</strong></td><td>ML-обобщения CUPED: ковариата — прогноз модели (Avito)</td></tr>
+<tr><td><strong>Бутстрап</strong></td><td>Альтернатива t-test для итоговой оценки после CUPED (expf)</td></tr>
+<tr><td><strong>Diff-in-diff</strong></td><td>Аналог CUPED для observational-данных, добавляет временной фактор (HH)</td></tr>
+<tr><td><strong>Бакетизация</strong></td><td>Параллельная техника предобработки для switchback (Citymobil)</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>10 ядерных заметок (≥5 упоминаний CUPED):</p>
+<ul>
+<li><code>AB тестирование с CUPED детальный разбор</code> (X5) · <code>ML-критерии для AB-тестов</code> (Avito) · <code>Как улучшить ваши AB-тесты ч.2</code> (Avito) · <code>Увеличиваем чувствительность экспериментов при помощи ранговой трансформации</code> (expf) · <code>CUPED или увеличение чувствительности метрики</code> (expf) · <code>Воркшопы и методология АБ Самоката</code> · <code>Вся основная теория Лоладзе + expf</code> · <code>Линеаризация</code> (Kuper) · <code>Как подготовить и провести AB-тестирование</code> (Glowbyte) · <code>От AB-тестирования к Causal Inference</code> (X5)</li>
+</ul>
+<p>12 обвязочных: см. полный список через <code>grep -rl "CUPED" AB/</code>.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"></span>
+    <span class="synth-nav-next"><a href="/workspace/library/synthesis/bootstrap/">Бутстрап →</a></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

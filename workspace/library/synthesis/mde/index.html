@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MDE / Sample size — синтез — davydov.my</title>
+<link rel="canonical" href="https://davydov.my/workspace/library/synthesis/mde/"/>
+<meta name="description" content="MDE / Sample size — синтез по 58 статьям из 10 компаний. Часть библиотеки davydov.my."/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="MDE / Sample size — синтез — davydov.my"/>
+<meta property="og:description" content="Синтез по 58 статьям из 10 компаний."/>
+<meta property="og:url" content="https://davydov.my/workspace/library/synthesis/mde/"/>
+<meta property="og:image" content="https://davydov.my/assets/og/workspace.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/">Библиотека</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/library/synthesis/">Синтезы</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">MDE / Sample size</span>
+  </nav>
+  <h1 class="page-title">MDE / Sample size<span class="accent-dot">.</span></h1>
+  <p class="page-lead">58 заметок · 10 компаний.</p>
+
+  <nav class="km-subnav synth-back" aria-label="Навигация синтеза">
+    <a href="/workspace/library/synthesis/" class="km-subnav-link">← Синтезы</a>
+    <a href="/workspace/library/map/" class="km-subnav-link">← Карта</a>
+    <a href="/workspace/library/" class="km-subnav-link">← Библиотека</a>
+  </nav>
+
+  <div class="prose prose--narrow prose--section synth-body">
+<p>Сводка по <strong>58 заметкам</strong> из <code>AB/</code>, где обсуждается дизайн эксперимента: минимальный детектируемый эффект, расчёт размера выборки, мощность, ошибки I/II рода, правила остановки. 10 «ядра» (≥30 упоминаний) — основные источники.</p>
+<h2>§ 01 В чём область</h2>
+<p>Дизайн A/B-теста — это <strong>управление двумя ошибками</strong> на старте:</p>
+<ul>
+<li><strong>α (ошибка I рода)</strong> — отклонить верную H₀: «сказать, что эффект есть, когда его нет» (обычно 0.05)</li>
+<li><strong>β (ошибка II рода)</strong> — принять неверную H₀: «не заметить реальный эффект» (обычно 0.2)</li>
+<li><strong>мощность</strong> = 1 − β: вероятность поймать эффект, который реально есть</li>
+</ul>
+<p>Базовая формула связи: <code>n = (Var₁ + Var₂) · (z_{α/2} + z_β)² / MDE²</code>.</p>
+<p>Из неё считают одно из трёх (остальные фиксируют):</p>
+<ul>
+<li><strong>MDE (Minimum Detectable Effect)</strong> — минимальный эффект, который при заданном n будет с вероятностью 1−β признан значимым</li>
+<li><strong>Sample size</strong> — сколько пользователей нужно при заданном MDE</li>
+<li><strong>Длительность теста</strong> — sample size, делённый на трафик</li>
+</ul>
+<p><strong>Когда останавливать</strong> — две парадигмы:</p>
+<ul>
+<li><strong>Fixed Horizon</strong> — фиксируем время заранее, не «подглядываем» (классика)</li>
+<li><strong>Sequential testing</strong> — допускает раннюю остановку при достижении условия (требует поправок)</li>
+</ul>
+<h2>§ 02 Как применяют в компаниях</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>компания</th><th>особенность</th></tr></thead>
+<tbody>
+<tr><td><strong>Lamoda</strong> (Смирнов)</td><td>Главное предупреждение: <strong>наблюдаемый аплифт нельзя сравнивать с MDE</strong> напрямую — это популярная и опасная ошибка интерпретации (183 упоминания в одной статье)</td></tr>
+<tr><td><strong>expf</strong></td><td>Серия «Когда останавливать AB-тест»: ч.1 MDE (Fixed Horizon), ч.2 Monte Carlo для оценки правил остановки</td></tr>
+<tr><td><strong>X5</strong> (Nazarov)</td><td>Множественная проверка гипотез: FWER, формула <code>1−(1−α)^m</code>, Бонферрони, Холм; отдельная статья про оптимальный размер групп при множественном тестировании</td></tr>
+<tr><td><strong>Ozon</strong></td><td>«Шесть причин» — расширенная формула MDE с <code>ratio_correction = r+2+1/r</code> и пилотной долей; учёт нескольких групп разного размера</td></tr>
+<tr><td><strong>Glowbyte</strong></td><td>Учебный роадмэп для новичков: 5 шагов дизайна — H₀ → MDE → α/β → размер выборки → оптимизация</td></tr>
+<tr><td><strong>ODS</strong></td><td>Байесовские многорукие бандиты как альтернатива: вместо фикс. размера — динамическое распределение трафика; вводит концепцию <code>regret</code></td></tr>
+<tr><td><strong>expf</strong> (дисбаланс)</td><td>99/1 vs 50/50 — как непропорциональные группы влияют на мощность; матожидание сохраняется, но дисперсия и MDE растут</td></tr>
+<tr><td><strong>Avito</strong> (Lunin)</td><td>В контексте «как улучшить AB-тесты» — расчёт мощности после применения CUPED/стратификации</td></tr>
+<tr><td><strong>RetailRocket</strong></td><td>E-commerce: «99% сплит-тестов проводятся неверно» из-за игнорирования мощности и подглядывания</td></tr>
+<tr><td><strong>Kuper</strong> («Айсберг»)</td><td>Концептуальная карта: ошибки I/II рода — контролируемый параметр, а не наблюдение</td></tr>
+</tbody></table></div>
+<h2>§ 03 Где работает хорошо</h2>
+<ul>
+<li><strong>Заранее известный трафик</strong> — для офлайн-ритейла X5, маркетплейсов: можно посчитать время до достижения нужного n</li>
+<li><strong>Стабильные исторические запуски</strong> — Glowbyte рекомендует калибровать MDE на исторических лифтах похожих фич</li>
+<li><strong>Множественные эксперименты с холдаутом</strong> — Ozon, X5: формулы учитывают и дисбаланс групп, и число сравнений</li>
+<li><strong>Долгие A/B на маленьких сегментах</strong> — где CUPED + стратификация позволяют сократить выборку в N раз при том же MDE</li>
+<li><strong>Платформенный подход</strong> — Sравни/Avito строят DIY-инструменты для автоматического расчёта дизайна</li>
+<li><strong>Когда нужна сходимость к бизнес-метрике</strong> — <code>Monte Carlo</code> (expf ч.2) оценивает правила остановки для несимметричных распределений</li>
+</ul>
+<h2>§ 04 Подводные камни</h2>
+<ul>
+<li><strong>Сравнивать наблюдаемый аплифт с MDE — фундаментальная ошибка.</strong> MDE — это <strong>планируемый</strong> минимум, на который дизайнили мощность. Наблюдаемый эффект сравнивается с критическим значением статистики, а не с MDE (Lamoda).</li>
+<li><strong>Подглядывать в Fixed Horizon = инфлировать α.</strong> Каждый промежуточный «взгляд» с принятием решения увеличивает шанс ложного положительного. Для legitime раннего стопа — sequential testing с поправками (expf, RetailRocket).</li>
+<li><strong>Игнорировать множественность гипотез.</strong> При 100 проверках с α=0.05 шанс хотя бы одной ошибки I рода ≈ 99%. Нужны Бонферрони, Холм, BH (X5 множественная проверка).</li>
+<li><strong>Не учитывать дисбаланс групп в формуле.</strong> Стандартная формула предполагает равные доли — при 80/20 эффективная мощность сильно ниже расчётной (Ozon, expf).</li>
+<li><strong>Брать MDE «с потолка».</strong> Без калибровки на исторических лифтах — MDE может оказаться больше реалистичных эффектов фичи, тест гарантированно «не прокрасит».</li>
+<li><strong>Не пересчитывать MDE после CUPED/стратификации.</strong> После уменьшения дисперсии эффективный MDE снижается; продолжать тест с исходным дизайном — переплатить трафиком.</li>
+<li><strong>Малая выборка vs нормальность.</strong> Формула на основе z-статистики предполагает ЦПТ; для тяжелых хвостов и n&lt;100 на группу — нужны другие подходы (Mann-Whitney, бутстрап, симуляции).</li>
+<li><strong>Считать sample size только для основной метрики.</strong> Если планируете смотреть guardrail-метрики или сегменты — расчёт нужно делать с учётом множественности (X5).</li>
+</ul>
+<h2>§ 05 Связанные методы</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>метод</th><th>роль рядом с дизайном</th></tr></thead>
+<tbody>
+<tr><td><strong>CUPED / стратификация / линеаризация</strong></td><td>Уменьшают дисперсию → снижают MDE при том же n или сокращают n при том же MDE</td></tr>
+<tr><td><strong>Бутстрап для дизайна</strong></td><td>Симулируют тест на исторических данных, оценивая мощность под фактическое распределение, а не под теоретическое</td></tr>
+<tr><td><strong>Monte Carlo</strong></td><td>expf ч.2: проверка правил остановки на симулированных сценариях, особенно для несимметричных метрик</td></tr>
+<tr><td><strong>Sequential testing</strong></td><td>Альтернатива Fixed Horizon с легальной ранней остановкой; требует поправок на множественные взгляды</td></tr>
+<tr><td><strong>Бандиты (Bayesian)</strong></td><td>Альтернативная парадигма: не фиксируем выборку, динамически перераспределяем трафик; ODS</td></tr>
+<tr><td><strong>Бонферрони / Холм / BH</strong></td><td>Поправки на множественные гипотезы (X5 multiple testing)</td></tr>
+<tr><td><strong>Power analysis (statsmodels)</strong></td><td>Инструмент: <code>tt_ind_solve_power</code> для расчёта одной из {alpha, power, effect_size, nobs} (Лоладзе)</td></tr>
+<tr><td><strong>MDE c ratio_correction</strong></td><td>Расширенная формула Ozon для несбалансированных групп с пилотной долей</td></tr>
+<tr><td><strong>Holdout / guardrail metrics</strong></td><td>Параллельный мониторинг негативного эффекта — добавляет к дизайну условие «не ухудшить X»</td></tr>
+<tr><td><strong>Causal Inference</strong></td><td>Когда правильный дизайн невозможен — переход на CI с оценкой эффекта постфактум</td></tr>
+</tbody></table></div>
+<h2>§ Источники</h2>
+<p>10 ядерных заметок (≥30 упоминаний):</p>
+<ul>
+<li><code>Как же мощно я провел AB-тест, или почему не стоит сравнивать наблюдаемый аплифт с MDE</code> (Lamoda, 183) · <code>Байесовские многорукие бандиты против AB тестов</code> (ODS, 123) · <code>Diff-in-diff</code> (X5, 88) · <code>Когда останавливать AB-тест. Часть 1 MDE</code> (expf, 80) · <code>Шесть причин, почему ваши AB-тесты не работают</code> (Ozon, 59) · <code>AB тестирование множественная проверка гипотез</code> (X5, 57) · <code>Как подготовить и провести AB-тестирование</code> (Glowbyte, 56) · <code>От AB-тестирования к Causal Inference</code> (X5, 50) · <code>Дисбаланс в AB-тестах. 99/1 vs 50/50</code> (expf, 37) · <code>«Подземные камни» AB-тестирования в e-commerce</code> (RetailRocket, 37)</li>
+</ul>
+<p>48 контекстных — см. <code>grep -rliE "MDE|sample.size|размер выборк|мощност|остановит" AB/</code>.</p>
+  </div>
+
+  <nav class="synth-nav" aria-label="Соседние синтезы">
+    <span class="synth-nav-prev"><a href="/workspace/library/synthesis/causal-inference/">← Causal Inference</a></span>
+    <span class="synth-nav-next"><a href="/workspace/library/synthesis/mann-whitney/">Mann-Whitney →</a></span>
+  </nav>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
