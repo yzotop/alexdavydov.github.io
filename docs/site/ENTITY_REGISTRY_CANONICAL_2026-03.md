@@ -16,7 +16,6 @@ Scope: publish-слой `alexdavydov.github.io`
 | slug | entity_type | canonical_url | filesystem_path | legacy_urls | status | notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | macbook-market | case | `/cases/macbook-market/` | `cases/macbook-market/` | - | active | Canonical case |
-| nloto-portfolio | case | `/cases/nloto-portfolio/` | `cases/nloto-portfolio/` | - | active | Canonical case |
 | nikifilini | case | `/cases/nikifilini/` | `cases/nikifilini/` | `/cases/nikifilini/story_v1..v43/*` | active | Redirects configured |
 | solvery-mentors | case | `/cases/solvery-mentors/` | `cases/solvery-mentors/` | - | active | Canonical case |
 | ab-test | simulator | `/simulators/ab-test/` | `simulators/ab-test/` | - | active | Canonical simulator |

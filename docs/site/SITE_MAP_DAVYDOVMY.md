@@ -11,7 +11,7 @@
 | **Calculators** | Параметрические калькуляторы: вводишь числа → получаешь расчёт | `/calculators/<slug>/` | rollout, revenue, funnel-sensitivity, scenario-planning |
 | **Simulators** | Интерактивные симуляции: взаимодействуешь с моделью, смотришь динамику | `/simulators/<slug>/` | ab-test, ad-auction, ride-hailing, marketplace-live |
 | **Courses** | Обучающий контент: модули, уроки, практика | `/lab/<slug>/` | monetization, ab-decisions, product-analytics |
-| **Cases** | Кейсы / портфолио: реальные проекты и примеры | `/cases/<slug>/` | macbook-market, nloto-portfolio, solvery-mentors |
+| **Cases** | Кейсы / портфолио: реальные проекты и примеры | `/cases/<slug>/` | macbook-market, solvery-mentors |
 
 ---
 
@@ -64,7 +64,6 @@
 
 /cases/                ← Кейсы (портфолио)
   macbook-market/
-  nloto-portfolio/
   nikifilini/
   solvery-mentors/
 
