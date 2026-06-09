@@ -1,4 +1,5 @@
 # Alex Davydov — Systems Gallery
+Status: active
 
 A minimal static site for exploring system patterns and mathematical visualizations, deployed on GitHub Pages.
 
