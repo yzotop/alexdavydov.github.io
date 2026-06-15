@@ -115,17 +115,16 @@ def md_title(f):
 
 # Knowledge base lives at involute/knowledge/involutevault — not on map (Obsidian-only)
 # core/personal-os retired 2026-03
-DOMAIN_ORDER = ['cursor', 'lab', 'public', 'work', 'business']
+DOMAIN_ORDER = ['cursor', 'lab', 'public', 'work']
 
 DOMAIN_DESC = {
     'cursor':    'Cursor IDE context: prompt agents, playbooks, registry',
     'lab':       'Research and experiments',
     'public':    'Personal brand static site',
     'work':      'Employer-specific projects and artifacts',
-    'business':  'Commercial side projects',
 }
 
-# Known projects per domain (lab/work/business are discovered dynamically)
+# Known projects per domain (lab/work are discovered dynamically)
 KNOWN_PROJECTS = {
     'public':    ['alexdavydov.github.io'],
 }
@@ -153,7 +152,7 @@ for dn in DOMAIN_ORDER:
     elif dn == 'cursor':
         pnames = []          # cursor is structured differently (no sub-projects)
     else:
-        pnames = ls_dirs(dp)  # lab/work/business: discover first-level dirs
+        pnames = ls_dirs(dp)  # lab/work: discover first-level dirs
 
     projects = []
     for pn in pnames:
@@ -287,8 +286,8 @@ for proj in (ls_dirs(os.path.join(D, 'lab')) if exists(D, 'lab') else []):
 for proj in (ls_dirs(os.path.join(D, 'work')) if exists(D, 'work') else []):
     add_da(f'work/{proj}', 'raw', 'runtime', f'{proj} work data', 'work')
 
-# business / knowledge data (if any subdirs exist)
-for area in ['business', 'knowledge']:
+# knowledge data (if any subdirs exist)
+for area in ['knowledge']:
     for proj in (ls_dirs(os.path.join(D, area)) if exists(D, area) else []):
         add_da(f'{area}/{proj}', 'raw', 'runtime', f'{proj} data', area)
 
