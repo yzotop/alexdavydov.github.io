@@ -158,7 +158,7 @@ def main() -> int:
   <div class="banner" style="margin:32px 0">
     <div class="banner-left">
       <span class="banner-tag">COMING SOON</span>
-      <span>Новый курс на <strong>karpov.courses</strong> — следи за анонсом в <a href="https://t.me/Datalake">Telegram</a></span>
+      <span>Новый курс на <strong>karpov.courses</strong> — <a href="https://karpov.courses/simulator-ab" target="_blank" rel="noopener noreferrer">Продвинутый Симулятор A/B-тестов</a>, старт 31 августа</span>
     </div>
   </div>
 
