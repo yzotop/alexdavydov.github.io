@@ -57,7 +57,7 @@ def nav_html(active: str) -> str:
     {_a("/courses/", "Курсы", "courses")}
     {_a("/workspace/", "Workspace", "workspace")}
     {_a("/cases/", "Кейсы", "cases")}
-    {_a("/notes/", "Заметки", "notes")}
+    {_a("/workspace/articles/", "Статьи", "articles")}
     {_a("/career/", "Менторство", "career")}
   </div>
   {BURGER_BTN}
