@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blind Verdict Evals (BVE) · Workspace</title>
+  <link rel="canonical" href="https://davydov.my/workspace/blind-verdict-evals/"/>
+  <meta name="description" content="AI-evals для решений: оценка вердикта модели вслепую к правильному ответу — статистикой эксперимента. Capability-evals меряют умение; BVE меряет суждение."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Blind Verdict Evals (BVE) · Александр Давыдов"/>
+  <meta property="og:description" content="AI-evals для решений: оценка вердикта модели вслепую к правильному ответу — статистикой эксперимента."/>
+  <meta property="og:url" content="https://davydov.my/workspace/blind-verdict-evals/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og-card.svg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/workspace/">Workspace</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Blind Verdict Evals</span>
+  </nav>
+
+  <h1 class="page-title">Blind Verdict Evals (BVE)</h1>
+  <p class="page-lead">AI-evals для решений: оценка вердикта модели вслепую к правильному ответу — статистикой эксперимента</p>
+
+  <div class="prose">
+
+  <p>Большинство evals меряют, умеет ли модель выполнить задачу. Blind Verdict Evals (BVE, «слепой вердикт») меряет другое — выносит ли модель верный вердикт по результатам эксперимента, когда видит только контракт и данные, как живой аналитик. И меряет это статистикой самих экспериментов.</p>
+
+  <h2>Что это</h2>
+
+  <p>Модель-судья получает <strong>только</strong> <code>contract.json</code> (метрики, пороги, guardrails) и <code>data.csv</code> (таблицу результатов). Она <strong>не видит</strong> <code>truth.json</code> — правильный ответ, который лежит у оценщика. Не видит и <code>policy.json</code> — правила, по которым кейс собран. Поэтому BVE мерит <em>суждение</em> модели по данным, а не способность подсмотреть или угадать ответ. Это принципиально отличает метод от evals, где эталон или подсказка могут просочиться в промпт.</p>
+
+  <p>Модель должна вынести вердикт: ship, no-ship или investigate, назвать механизм, проставить уверенность. В корпус встроена honesty-probe: кейсы, где нужного сигнала в данных физически нет, и единственное честное поведение — отказаться, а не угадать.</p>
+
+  <h2>Зачем</h2>
+
+  <div class="takeaway">
+    <div class="takeaway-tag">Зачем</div>
+    <p>Capability-evals спрашивают «может ли модель сделать задачу». BVE спрашивает «выносит ли модель верное решение» — и проверяет это инструментами экспериментов, которых нет ни у кого в evals.</p>
+  </div>
+
+  <p>Оценка AI-систем почти везде делается на vibes или на LLM-as-judge без поправки на значимость. BVE вносит в неё то, что аналитик эксперимента считает гигиеной: парное сравнение, доверительный интервал на разницу, разделение статистической и практической значимости, guardrails. Это узкий стык — большинство в AI-evals не знают каузальный вывод, большинство в экспериментах не строят evals — и потому защищённый.</p>
+
+  <h2>Как устроено</h2>
+
+  <ul>
+    <li><strong>Вход модели:</strong> только <code>contract.json</code> + <code>data.csv</code>. <code>truth.json</code> остаётся у оценщика — модель слепа к правильному ответу.</li>
+    <li><strong>Почему «слепой»:</strong> без доступа к эталону нельзя «угадать правильно» — только рассудить по данным. Именно это BVE и измеряет.</li>
+    <li><strong>Honesty-probe:</strong> блок кейсов без сигнала. Метрики: false_confidence_rate, claimed_reversal_rate, калибровка mean_confidence. Правильное поведение — признать «не вижу».</li>
+    <li><strong>3×3 confusion matrix</strong> (ship / no-ship / investigate) — ловит схлопывание investigate→no-ship, частую поломку, которую бинарная метрика прячет.</li>
+    <li><strong>Парная статистика:</strong> McNemar и bootstrap CI на разницу между версиями. Отличает реальное различие от шума на тех же задачах.</li>
+  </ul>
+
+  <h2>Что ловит</h2>
+
+  <ul>
+    <li>Ловушку практической значимости: эффект значим статистически, мал практически — частый ложный ship.</li>
+    <li>Расцепление reasoning↔verdict: модель пишет корректный анализ и выносит вердикт мимо него. Трассировку рассуждения нельзя принимать за объяснение ответа.</li>
+    <li>False confidence там, где данных для ответа нет.</li>
+  </ul>
+
+  <h2>Рецепт</h2>
+
+  <p>Собери 50–100 кейсов с известными правильными ответами. Прогони модель в двух режимах или две версии модели. Сравни точность с поправкой на значимость. Мини-eval, отвечающий на «работает ли приём X на моей задаче» цифрами, а не верой.</p>
+
+  <h2>Материалы</h2>
+
+  <p>Чтобы проверить, ловит ли модель сложные A/B-кейсы, нужен корпус с известным ответом — для этого построена <a href="/workspace/articles/ab-traps-factory/">фабрика ловушек</a>. На нём прогнаны модели. Цепочка: <strong>метод</strong> (эта страница) → <strong>инструмент</strong> (фабрика) → <strong>результат</strong> (разбор на полной карте).</p>
+
+  <ul>
+    <li><strong>Результат — <a href="/workspace/articles/llm-decisions-two-metrics/">Точность и безопасность: две метрики на полной карте 33 типов</a></strong> — флагман серии: strict vs anti-ship, derive-from-context, где модели расходятся по-настоящему</li>
+    <li><strong>Инструмент — <a href="/workspace/articles/ab-traps-factory/">33 способа запороть A/B-тест: каталог ловушек и фабрика</a></strong> — таксономия 33 типов, карта сложности, генератор кейсов с эталоном</li>
+    <li><strong>Ранний разбор — <a href="/workspace/articles/sgr-ab-decisions/">Схема рассуждения снижает точность сильных моделей</a></strong> — первый эксперимент BVE: Schema-Guided Reasoning на 100 A/B-кейсах, четыре модели Claude</li>
+  </ul>
+
+  <h2>Код</h2>
+
+  <p>Корпус, харнесс, результаты — <a href="https://github.com/yzotop/ab-decisions-bench">ab-decisions-bench</a>.</p>
+
+  <h2>Цитирование</h2>
+
+  <pre><code>@misc{davydov2026bve,
+  author = {Davydov, Alexander},
+  title  = {Blind Verdict Evals (BVE)},
+  year   = {2026},
+  month  = jun,
+  url    = {https://davydov.my/workspace/blind-verdict-evals/},
+}</code></pre>
+
+  </div>
+
+  <p style="margin-top:32px;"><a href="/workspace/" style="font-size:14px;color:var(--muted);text-decoration:none;">← Workspace</a></p>
+</div>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
