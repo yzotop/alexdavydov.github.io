@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Тренажёр A/B-решений · Workspace</title>
+<link rel="canonical" href="https://davydov.my/workspace/simulators/ab-trap-trainer/"/>
+<meta name="description" content="20 реальных A/B-кейсов: реши по контракту и таблице — катить, не катить или разобраться, — затем сверься с эталоном и с тем, как ответили модели."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#6b6b6b; --axis:#d4d4d0; --accent:#e63946; --bg:#f8f8f6;
+  --ok:#2c6e49; --okbg:#eef3ee; --badbg:#fbecec; --hl:#ffe8ea;
+  --sans:'Manrope',system-ui,-apple-system,sans-serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:780px;margin:0 auto;padding:28px 24px 80px}
+.topnav{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;display:flex;gap:16px;flex-wrap:wrap}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+h1.title{font-size:25px;font-weight:800;line-height:1.1;margin:0 0 16px}
+.progress{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+.progress .lab{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.progress .num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.contract{border:1px solid var(--axis);padding:14px 16px;margin-bottom:14px;font-size:14px;line-height:1.7}
+.contract strong{font-weight:700}
+.contract .notes{color:var(--muted);margin-top:6px}
+.contract .notes b{color:var(--ink)}
+.hl{background:var(--hl);padding:1px 4px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:18px}
+th{text-align:right;padding:6px 4px;font-family:var(--mono);font-weight:600;border-bottom:2px solid var(--ink)}
+th:first-child{text-align:left}
+td{text-align:right;padding:6px 4px;font-family:var(--mono);border-bottom:1px solid var(--axis)}
+td:first-child{text-align:left;font-family:var(--sans)}
+tr.sig td{background:var(--hl)}
+tr.sig td:first-child,tr.sig td:nth-child(4){font-weight:700}
+.verdicts{display:flex;gap:10px}
+.vbtn{flex:1;padding:14px 8px;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;font-family:inherit;text-align:center}
+.vbtn:hover{background:#efefec}
+.vbtn .vl{font-size:15px;font-weight:700}
+.vbtn .vs{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.banner{padding:11px 16px;margin-bottom:14px;font-size:15px}
+.banner.ok{background:var(--okbg);border:1px solid var(--ok)}
+.banner.bad{background:var(--badbg);border:1px solid var(--accent)}
+.banner .w{font-weight:700}
+.banner.ok .w{color:var(--ok)}
+.banner.bad .w{color:var(--accent)}
+.banner .sub{color:var(--muted)}
+.sec{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.signal{font-size:15px;line-height:1.55;margin:0 0 18px}
+.vrow{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.vrow .vk{font-family:var(--mono);font-size:11px;min-width:84px;padding-top:2px;color:var(--muted)}
+.vrow .vk.ans{color:var(--ok);font-weight:700}
+.vrow .vt{font-size:14px;line-height:1.5;color:var(--muted)}
+.vrow .vt.ans{color:var(--ink)}
+.models{border:1px solid var(--axis);padding:12px 16px;margin:4px 0 14px}
+.models .mgrid{display:flex;gap:24px;margin-bottom:8px;font-size:14px}
+.models .mgrid .ml{font-family:var(--mono);color:var(--muted);font-size:12px}
+.models .mnote{font-size:13.5px;line-height:1.5;color:var(--muted);margin:0}
+.next{font-family:var(--mono);margin-top:12px;padding:12px 22px;background:var(--ink);border:none;color:var(--bg);font-size:14px;cursor:pointer}
+.next:hover{opacity:.9}
+/* final */
+.zwrap{margin-bottom:16px}
+.zhead{display:flex;justify-content:space-between;margin-bottom:6px}
+.zhead .zn{font-size:15px;font-weight:600}
+.zhead .zc{font-family:var(--mono);font-size:14px}
+.zbar{height:6px;background:#ececea}
+.zbar .fill{height:100%}
+.mistakes{margin-top:24px}
+.mrow{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin-bottom:12px}
+.mrow .mt{font-size:15px;font-weight:600}
+.mrow .md{font-size:14px;color:var(--muted)}
+.darkbox{background:var(--ink);color:var(--bg);padding:20px 22px;margin-top:26px}
+.darkbox .sec{color:var(--accent)}
+.darkbox p{font-size:15px;line-height:1.55;margin:0}
+.restart{font-family:var(--mono);margin-top:22px;padding:12px 20px;background:none;border:1px solid var(--ink);color:var(--ink);font-size:14px;cursor:pointer}
+.loading{color:var(--muted);font-size:15px;padding:40px 0}
+.err{color:var(--accent);font-size:15px;padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav">
+    <a href="/workspace/blind-verdict-evals/">← Blind Verdict Evals</a>
+    <a href="/workspace/articles/ab-traps-factory/">Каталог 33 ловушек</a>
+  </div>
+  <div id="app"><div class="loading">Загрузка кейсов…</div></div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const VERDICTS = [
+    { id:'ship', label:'Катить', sub:'ship' },
+    { id:'no_ship', label:'Не катить', sub:'no-ship' },
+    { id:'investigate', label:'Разобраться', sub:'investigate' },
+  ];
+  const ZONES = [
+    { id:'obvious', name:'Очевидные' },
+    { id:'grey', name:'Серая зона вердикта' },
+    { id:'derive', name:'Вывести из контекста' },
+    { id:'blind', name:'Структурно слепые' },
+  ];
+  const ZNAME = Object.fromEntries(ZONES.map(z => [z.id, z.name]));
+  const vLabel = id => (VERDICTS.find(v => v.id === id) || {}).label || id;
+
+  let CASES = [], MODELPERF = {};
+  let idx = 0, picked = null, results = [], done = false;
+
+  async function load() {
+    try {
+      const [cRes, mRes] = await Promise.all([
+        fetch('data/trainer_cases.json'),
+        fetch('data/model_perf.json'),
+      ]);
+      CASES = await cRes.json();
+      MODELPERF = await mRes.json();
+      if (!Array.isArray(CASES) || !CASES.length) throw new Error('empty cases');
+      render();
+    } catch (e) {
+      document.getElementById('app').innerHTML =
+        '<div class="err">Не удалось загрузить кейсы. Проверьте data/trainer_cases.json.</div>';
+    }
+  }
+
+  function pick(v) {
+    if (picked !== null) return;
+    picked = v;
+    const c = CASES[idx];
+    results.push({ id:c.case_id, title:c.title_ru || c.title, zone:c.zone, picked:v, answer:c.answer, correct:v === c.answer });
+    render();
+  }
+  function next() {
+    if (idx + 1 >= CASES.length) { done = true; } else { idx++; picked = null; }
+    render();
+  }
+  function restart() { idx = 0; picked = null; results = []; done = false; render(); }
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+  function pct(x){ return Math.round(x * 100); }
+
+  function renderCase() {
+    const c = CASES[idx];
+    const revealed = picked !== null;
+    const correct = revealed && picked === c.answer;
+    const ct = c.contract || {};
+    const horizonHl = revealed && c.signal_contract === 'horizon';
+
+    // rows
+    const rowsHtml = (c.rows || []).map(r => {
+      const sig = revealed && r.signal;
+      return `<tr class="${sig ? 'sig' : ''}">
+        <td>${esc(r.k)}</td>
+        <td>${esc(r.c)}</td><td>${esc(r.t)}</td>
+        <td>${esc(r.eff)}</td><td style="color:var(--muted)">${esc(r.p)}</td>
+      </tr>`;
+    }).join('');
+
+    let revealHtml = '';
+    if (revealed) {
+      const vbreak = VERDICTS.map(v => {
+        const isAns = v.id === c.answer, isPk = v.id === picked;
+        const txt = (c.verdicts && c.verdicts[v.id]) || '';
+        if (!txt) return '';
+        return `<div class="vrow">
+          <span class="vk ${isAns ? 'ans' : ''}">${esc(v.label)}${isAns ? ' ✓' : ''}${isPk && !isAns ? ' ←' : ''}</span>
+          <span class="vt ${isAns ? 'ans' : ''}">${esc(txt)}</span>
+        </div>`;
+      }).join('');
+
+      const mp = MODELPERF[c.trap_type];
+      let modelsHtml = '';
+      if (mp) {
+        modelsHtml = `<div class="models">
+          <div class="sec">Ты против моделей</div>
+          <div class="mgrid">
+            <div><span class="ml">Sonnet (сильная)</span><br><strong>не катит ${pct(mp.sonnet)}%</strong></div>
+            <div><span class="ml">Haiku (дешёвая)</span><br><strong>не катит ${pct(mp.haiku)}%</strong></div>
+          </div>
+          <p class="mnote">${esc(modelNote(c, mp))}</p>
+        </div>`;
+      }
+
+      revealHtml = `
+        <div class="banner ${correct ? 'ok' : 'bad'}">
+          <span class="w">${correct ? 'Верно' : 'Мимо'}</span>
+          <span class="sub"> · твой выбор «${esc(vLabel(picked))}», эталон «${esc(vLabel(c.answer))}»</span>
+        </div>
+        ${c.signal_note ? `<div class="sec">Где был ключ</div><p class="signal">${esc(c.signal_note)}</p>` : ''}
+        ${vbreak ? `<div class="sec">Разбор вердиктов</div>${vbreak}` : `<div class="sec">Разбор</div><p class="signal">${esc(c.rationale || '')}</p>`}
+        ${modelsHtml}
+        <button class="next" id="nextBtn">${idx + 1 >= CASES.length ? 'Показать результат →' : 'Следующий кейс →'}</button>
+      `;
+    } else {
+      revealHtml = `<div class="verdicts">${VERDICTS.map(v =>
+        `<button class="vbtn" data-v="${v.id}"><div class="vl">${esc(v.label)}</div><div class="vs">${esc(v.sub)}</div></button>`
+      ).join('')}</div>`;
+    }
+
+    const horizon = ct.horizon_days != null ? ct.horizon_days + ' дн.' : (ct.horizon || '—');
+    return `
+      <div class="progress">
+        <span class="lab">Тренажёр A/B-решений</span>
+        <span class="num">${idx + 1} / ${CASES.length}</span>
+      </div>
+      <div class="kicker">Кейс · ${revealed ? esc(ZNAME[c.zone] || c.zone) : 'реши сам'}</div>
+      <h1 class="title">${esc(c.title_ru || c.title)}</h1>
+      <div class="contract">
+        <div><strong>Метрика:</strong> ${esc(ct.metric || ct.primary_metric || '—')}</div>
+        <div><strong>Длительность:</strong> <span class="${horizonHl ? 'hl' : ''}">${esc(horizon)}</span> · <strong>alpha:</strong> <span style="font-family:var(--mono)">${esc(ct.alpha != null ? ct.alpha : '0.05')}</span></div>
+        <div><strong>Guardrails:</strong> ${esc(ct.guardrails_ru || ct.guardrails || '—')}</div>
+        ${ct.notes ? `<div class="notes"><b>Заметки:</b> ${esc(ct.notes_ru || ct.notes)}</div>` : ''}
+      </div>
+      <table>
+        <thead><tr><th>Метрика</th><th>control</th><th>test</th><th>Δ</th><th>p</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      ${revealHtml}
+    `;
+  }
+
+  function modelNote(c, mp) {
+    if (c.models_note) return c.models_note;
+    const gap = mp.sonnet - mp.haiku;
+    if (gap >= 0.4) return 'Derive-тип: сильная модель выводит подвох из контекста, дешёвая слепнет. Большой разрыв.';
+    if (mp.sonnet >= 0.95 && mp.haiku >= 0.9) return 'Подвох виден прямо в данных — ловят обе модели.';
+    return 'Обе модели в основном не катят; расхождение — в оттенке вердикта.';
+  }
+
+  function renderFinal() {
+    const totalOk = results.filter(r => r.correct).length;
+    const byZone = {};
+    ZONES.forEach(z => byZone[z.id] = { n:0, ok:0 });
+    results.forEach(r => { if (byZone[r.zone]) { byZone[r.zone].n++; if (r.correct) byZone[r.zone].ok++; } });
+    const mistakes = results.filter(r => !r.correct);
+
+    const zonesHtml = ZONES.map(z => {
+      const d = byZone[z.id];
+      if (!d.n) return '';
+      const p = pct(d.ok / d.n);
+      const full = d.ok === d.n;
+      return `<div class="zwrap">
+        <div class="zhead"><span class="zn">${esc(z.name)}</span>
+          <span class="zc" style="color:${full ? 'var(--ink)' : 'var(--accent)'}">${d.ok}/${d.n}</span></div>
+        <div class="zbar"><div class="fill" style="width:${p}%;background:${full ? 'var(--ink)' : 'var(--accent)'}"></div></div>
+      </div>`;
+    }).join('');
+
+    const mistakesHtml = mistakes.length ? `<div class="mistakes">
+      <div class="sec">Где промахнулся</div>
+      ${mistakes.map(m => `<div class="mrow">
+        <div class="mt">${esc(m.title)}</div>
+        <div class="md">ты выбрал «${esc(vLabel(m.picked))}», надо «${esc(vLabel(m.answer))}»</div>
+      </div>`).join('')}
+    </div>` : '';
+
+    const dz = byZone['derive'];
+    const derivePct = dz.n ? dz.ok / dz.n : 0;
+    const closer = derivePct >= 0.5
+      ? 'Sonnet — сильной модели. Ты вытягиваешь подвох из контекста там, где дешёвая модель слепнет (интерференция, новизна, неполные циклы).'
+      : 'Haiku — дешёвой модели. Очевидное ловишь, но на «вывести из контекста» сыпешься — катишь то, где надо было усомниться.';
+
+    return `
+      <div class="kicker">Тренажёр A/B-решений · результат</div>
+      <h1 class="title" style="font-size:32px">Твоя карта слепых зон</h1>
+      <p style="font-size:17px;color:var(--muted);margin:0 0 26px">Верно ${totalOk} из ${results.length}. По зонам сложности — там же, где спотыкаются модели.</p>
+      ${zonesHtml}
+      ${mistakesHtml}
+      <div class="darkbox">
+        <div class="sec">Ты ближе к…</div>
+        <p>${esc(closer)}</p>
+      </div>
+      <button class="restart" id="restartBtn">Пройти заново</button>
+      <p style="margin-top:24px;font-size:14px;color:var(--muted)">Метод и результаты на моделях — <a href="/workspace/articles/llm-decisions-two-metrics/">флагманский разбор</a> и <a href="/workspace/blind-verdict-evals/">Blind Verdict Evals</a>.</p>
+    `;
+  }
+
+  function render() {
+    const app = document.getElementById('app');
+    app.innerHTML = done ? renderFinal() : renderCase();
+    if (done) {
+      const rb = document.getElementById('restartBtn');
+      if (rb) rb.addEventListener('click', restart);
+      return;
+    }
+    if (picked === null) {
+      app.querySelectorAll('.vbtn').forEach(b =>
+        b.addEventListener('click', () => pick(b.getAttribute('data-v'))));
+    } else {
+      const nb = document.getElementById('nextBtn');
+      if (nb) nb.addEventListener('click', next);
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
