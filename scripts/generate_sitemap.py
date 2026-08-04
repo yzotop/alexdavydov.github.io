@@ -16,6 +16,7 @@ EXTRA_PATHS = (
     "/cases/",
     "/cases/macbook-market/",
     "/workspace/glossary/",
+    "/workspace/articles/",
     "/search/",
     "/workspace/simulators/",
     "/workspace/calculators/",
