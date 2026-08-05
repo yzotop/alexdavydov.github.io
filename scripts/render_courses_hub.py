@@ -184,6 +184,8 @@ def main() -> int:
 <meta property="og:description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам."/>
 <meta property="og:url" content="https://davydov.my/courses/"/>
 <meta property="og:image" content="https://davydov.my/assets/og/courses.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.ico" sizes="any"/>
