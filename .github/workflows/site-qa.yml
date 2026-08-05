@@ -25,11 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Без continue-on-error: битая ссылка должна валить сборку.
+      # Хосты, которые блокируют ботов целиком (LinkedIn, Telegram,
+      # Medium), исключены в lychee.toml — они не создают ложных красных.
       - name: Link check (HTML)
         uses: lycheeverse/lychee-action@v2
         with:
           args: --config lychee.toml './**/*.html'
-        continue-on-error: true
 
   lighthouse-sample:
     if: github.event_name != 'pull_request'
