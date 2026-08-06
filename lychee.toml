@@ -37,10 +37,11 @@ exclude = [
   "^https?://t\\.me",                 # Telegram (bot-blocked)
   "^mailto:",                          # mailto links
   "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)
-  "^https://(www\\.)?medium\\.com",   # Medium (403 на весь домен, включая
-                                       # корень — не только на публикацию;
-                                       # с браузерным UA тоже. Состояние
-                                       # страницы отсюда не проверяется)
+  # Medium: 403 на весь домен, включая корень, и с браузерным UA тоже.
+  # Поддомены обязательно: публикации живут на koch-kir.medium.com,
+  # vkteam.medium.com и т.п. Первая версия правила ловила только apex
+  # и пропустила две ссылки — CI поймал, локальный прогон нет (кеш).
+  "^https://([a-z0-9-]+\\.)?medium\\.com",
 ]
 
 # Exclude paths from checking (values are regular expressions)
