@@ -222,6 +222,32 @@
         page:         'Страницы'
     };
 
+    // Секции в индексе хранятся по-английски. Для показа переводим;
+    // чего нет в карте — выводится как есть. Lab не переводится:
+    // так раздел называется на самом сайте.
+    var SECTION_LABELS = {
+        'Articles':     'Статьи',
+        'Notes':        'Заметки',
+        'Cases':        'Кейсы',
+        'Courses':      'Курсы',
+        'Course 04':    'Курс 04',
+        'Course 05':    'Курс 05',
+        'Monetization': 'Монетизация',
+        'Knowledge':    'База знаний',
+        'Career':       'Менторство',
+        'Tools':        'Инструменты',
+        'Companies':    'Для компаний',
+        'About':        'Обо мне'
+    };
+
+    // «тип · раздел», но после перевода они часто совпадают
+    // (заметка в разделе «Заметки») — тогда показываем один раз.
+    function metaLine(item) {
+        var t = TYPE_LABELS[item.type] || item.type;
+        var s = SECTION_LABELS[item.section] || item.section;
+        return t === s ? t : t + ' · ' + s;
+    }
+
     // --- DOM ---
     var input      = document.getElementById('searchInput');
     var filtersEl  = document.getElementById('filters');
@@ -385,7 +411,7 @@
         return '<a class="result-card" href="' + escapeHtml(item.url) + '">'
             + '<div class="result-info">'
             + '<div class="result-title">' + highlight(item.title, query) + '</div>'
-            + '<div class="result-meta">' + escapeHtml(item.type) + ' &middot; ' + escapeHtml(item.section) + '</div>'
+            + '<div class="result-meta">' + escapeHtml(metaLine(item)) + '</div>'
             + '<div class="result-tags">' + tagsHtml + '</div>'
             + '</div>'
             + '<span class="result-open">Открыть &rarr;</span>'
