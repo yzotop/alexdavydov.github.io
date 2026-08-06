@@ -61,6 +61,13 @@
   python3 scripts/render_courses_hub.py
   git diff --exit-code sitemap.xml courses/index.html
   ```
+- Локальный прогон `link-check` — **обязательно без кеша**.
+  `.lycheecache` не в репозитории, поэтому в CI его нет, а локально
+  он держит устаревшие «OK» и даёт зелёный прогон при красном CI:
+
+  ```
+  rm -f .lycheecache && lychee --config lychee.toml './**/*.html'
+  ```
 
 После пуша — проверить статус Actions (`gh run watch --exit-status`),
 а не только коды ответов по URL. Зелёный curl при красном CI
