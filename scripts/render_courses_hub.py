@@ -179,6 +179,7 @@ def main() -> int:
 <title>Курсы — davydov.my</title>
 <link rel="canonical" href="https://davydov.my/courses/"/>
 <meta name="description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам. Рекомендованный путь и материалы на davydov.my."/>
+<meta name="author" content="Александр Давыдов"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Курсы — davydov.my"/>
 <meta property="og:description" content="Курсы по аналитике продукта, A/B, монетизации и квазиэкспериментам."/>
