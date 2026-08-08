@@ -42,6 +42,11 @@ exclude = [
   # vkteam.medium.com и т.п. Первая версия правила ловила только apex
   # и пропустила две ссылки — CI поймал, локальный прогон нет (кеш).
   "^https://([a-z0-9-]+\\.)?medium\\.com",
+  # DOI: сам doi.org всегда отвечает 302, ломается издатель, куда он ведёт.
+  # 10.1086/… → academic.oup.com отдаёт 403 ботам, 10.1287/… →
+  # pubsonline.informs.org уходит в таймаут. DOI — постоянный идентификатор,
+  # он по определению не протухает; проверять тут нечего.
+  "^https://doi\\.org/",
 ]
 
 # Exclude paths from checking (values are regular expressions)
