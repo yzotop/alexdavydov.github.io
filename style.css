@@ -137,11 +137,14 @@
   .stats--page{margin:32px -48px 0;}
 
   /* companies */
-  .companies{margin:0 48px;padding:28px 0;display:flex;align-items:center;gap:56px;
-    border-bottom:1px solid var(--line);overflow:hidden;}
+  /* Полоса «где читаю курсы». Была в CSS с nowrap + overflow:hidden —
+     при таком сочетании на узком экране всё, кроме первых двух пунктов,
+     обрезалось и становилось невидимым. Перенос строк вместо обрезки. */
+  .companies{margin:0 48px;padding:28px 0;display:flex;align-items:center;
+    flex-wrap:wrap;gap:16px 44px;border-bottom:1px solid var(--line);}
   .companies-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
   .company{font-size:20px;font-weight:600;letter-spacing:-.02em;transition:color .15s;}
-  .company:hover{color:var(--accent);}
+  a.company:hover{color:var(--accent);}
 
   /* portrait + manifesto */
   .portrait-row{margin:64px 48px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
