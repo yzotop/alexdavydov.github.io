@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Средний чек хипстерской кофейни</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__left">
+        <div class="brand">
+          <div class="brand__title">Средний чек хипстерской кофейни</div>
+          <div class="brand__subtitle">внимание · drink attach · апселл · маржа</div>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <span id="statusBadge" class="badge badge--ok">Готово</span>
+
+        <div class="seed">
+          <label class="seed__label" for="seedInput">Seed</label>
+          <input id="seedInput" class="seed__input" type="number" min="1" max="999999999" step="1" value="42" />
+          <button id="randomizeSeedBtn" class="btn btn--ghost" type="button">Randomize</button>
+        </div>
+
+        <div class="topbar__buttons">
+          <button id="runBtn" class="btn btn--primary" type="button">Run</button>
+          <button id="resetBtn" class="btn btn--outline" type="button">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <aside class="panel panel--left">
+        <div class="panel__header">
+          <div class="panel__title">Controls</div>
+          <div class="panel__hint">Крутилки не пересчитывают модель на лету — жми Run. Seed + Reset делают прогон воспроизводимым.</div>
+        </div>
+
+        <section class="control-group">
+          <div class="control-group__title">A) Поведение гостя и раскладка</div>
+          <div id="controlsBehavior" class="control-group__body"></div>
+        </section>
+
+        <section class="control-group">
+          <div class="control-group__title">B) Маржа — твои допущения</div>
+          <div id="controlsMargin" class="control-group__body"></div>
+        </section>
+      </aside>
+
+      <section class="center">
+        <div class="main-card">
+          <div class="main-card__header">
+            <div class="main-card__title">Распределение чека</div>
+            <div class="chart-card__subtitle" id="runInfo">—</div>
+          </div>
+
+          <div class="main-card__summary">
+            <div class="headline">
+              <span class="headline__num" id="hMean">—</span>
+              <span class="headline__unit">₽ средний чек</span>
+              <span class="headline__sub" id="hSub">медиана — · p90 —</span>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-card__header">
+                <div>
+                  <div class="chart-card__title">Гистограмма чека</div>
+                  <div class="chart-card__subtitle">бины по 100 ₽, последний накопительный, линия — среднее</div>
+                </div>
+              </div>
+              <div class="chart-card__body"><canvas id="chartHist"></canvas></div>
+              <div class="chart-card__legend">Горбик слева — заказы, в которых сложилась только одна позиция вместо двух</div>
+            </div>
+
+            <div class="chart-card chart-card--short">
+              <div class="chart-card__header">
+                <div>
+                  <div class="chart-card__title">Что двигает чек</div>
+                  <div class="chart-card__subtitle">полный размах контрола, не запас роста от текущей точки</div>
+                </div>
+              </div>
+              <div class="chart-card__body"><canvas id="chartLevers"></canvas></div>
+              <div class="chart-card__legend">Пересчитывается под текущие крутилки: рычаги не складываются</div>
+            </div>
+          </div>
+        </div>
+
+        <details class="howto">
+          <summary class="howto__summary">How to read this</summary>
+          <div class="howto__body">
+            <ul class="howto__list">
+              <li><b>Это батч, а не поток.</b> Нажали Run — модель прогоняет 20 000 заказов и останавливается. Ничего не тикает в фоне: Start/Pause здесь нечего ставить на паузу.</li>
+              <li><b>Это модель на заявленном спросе, а не измеренные продажи.</b> Вероятность, что гость возьмёт позицию, пропорциональна вниманию: лист × позиция в разделе. Так устроен дизайн меню — это гипотеза заведения о собственном спросе, а не факт. Ни одного чека в основе нет.</li>
+              <li><b>Food-cost задаёте вы.</b> Себестоимости в данных нет. Два нижних ползунка — ваши допущения, не мои данные; вся маржа справа наследует эти цифры.</li>
+              <li><b>Вероятность заказать еду зашита константой 0.9</b> и в крутилки не выведена. Крутится только напиток, attach добавок, затухание внимания и ширина апселла.</li>
+              <li><b>Гистограмма</b> — распределение чека по всем прогонам, вертикальная линия — среднее. Форма не колокол: слева отдельный горбик в районе 300–450 ₽, там заказы, в которых сложилась только одна позиция вместо двух.</li>
+              <li><b>Бар «что двигает чек» — это полный размах контрола</b>, от минимума до максимума, а не запас роста от текущей точки. Остальные крутилки при этом стоят там, где вы их поставили, поэтому рычаги живут и не складываются: включите расширенный апселл — и attach добавок прыгнет примерно с 55 ₽ до 195 ₽, потому что у него появилось на чём работать.</li>
+              <li><b>Seed и Reset делают прогон воспроизводимым.</b> Все сценарии внутри одного Run берут одну и ту же матрицу случайных чисел, поэтому бар показывает эффект рычага, а не дрожь Монте-Карло: разброс между сидами падает примерно с 6 ₽ до 1.5 ₽.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <aside class="panel panel--right">
+        <div class="panel__header">
+          <div class="panel__title">Metrics</div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric metric--accent">
+            <div class="metric__k">Средний чек</div>
+            <div id="mMean" class="metric__v">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Медиана</div>
+            <div id="mMedian" class="metric__v">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">p90</div>
+            <div id="mP90" class="metric__v">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Валовая маржа с чека</div>
+            <div id="mGross" class="metric__v">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">Маржа, % от чека</div>
+            <div id="mGrossPct" class="metric__v">—</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="./data/menu.js"></script>
+    <script src="./utils.js"></script>
+    <script src="./sim.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./main.js"></script>
+  <script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
