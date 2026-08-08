@@ -54,6 +54,7 @@ def nav_html(active: str) -> str:
     <span>davydov.my</span>
   </a>
   <div class="nav-links">
+    {_a("/companies/", "Для компаний", "companies")}
     {_a("/courses/", "Курсы", "courses")}
     {_a("/workspace/", "Workspace", "workspace")}
     {_a("/cases/", "Кейсы", "cases")}
