@@ -543,6 +543,50 @@
 .takeaway a{color:var(--accent);}
 .takeaway a:hover{color:#fff;text-decoration:underline;}
 
+/* bridge — мост из кейса в смежную тему (статья, симулятор, evals).
+   Тише .takeaway: это не вывод разбора, а указатель «отсюда ведёт дорожка».
+   Без рамки .case-block — только левая линия цвета --ink. */
+.bridge{border-left:2px solid var(--ink);padding:4px 0 4px 24px;margin:48px 0;}
+.bridge-tag{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.bridge p:last-child{margin-bottom:0;}
+
+/* boundary — граница применимости разбора («чего данные не говорят»).
+   Модификатор --plain для случая, когда блок идёт сразу за абзацем
+   и верхняя линия дублировала бы ритм текста. */
+.boundary{font-size:15px;line-height:1.6;color:var(--muted);border-top:1px solid var(--line);padding-top:24px;margin:56px 0 0;}
+.boundary--plain{border-top:0;padding-top:0;margin:24px 0 0;}
+.boundary strong{color:var(--ink);}
+
+/* двухуровневый заголовок секции внутри .prose: mono-кикер с номером +
+   обычный h2. .sec-kicker переиспользован с index.html — здесь верхний
+   отступ переезжает на кикер, а у следующего h2 сбрасывается. */
+.article .prose .sec-kicker{margin-top:64px;}
+.article .prose .sec-kicker+h2{margin-top:0;}
+
+/* примечание ПОД формулой — в отличие от .formula-label, который сверху */
+.formula-expr+.formula-label{margin:10px 0 0;}
+
+/* case-chart — инлайновые SVG-графики в кейсах. Классы вместо
+   presentation-атрибутов: атрибут style в HTML запрещён (CLAUDE.md),
+   и перекрасить график из одного места дешевле, чем по сорока нодам.
+   Пары «.x, .x text» обязательны: правило .case-chart text попадает
+   прямо в <text> и бьёт значение, унаследованное от <g class="x">, —
+   наследование проигрывает любому прямому правилу. */
+.case-chart{width:100%;height:auto;display:block;}
+.case-chart text{font-family:var(--mono);font-size:12px;fill:var(--muted);}
+/* нейтральный столбик: --line-d (#d4d4d4) теряется на белом,
+   --mute2 (#a3a3a3) спорит с --ink. Токена такой плотности в системе нет. */
+.case-chart .bar{fill:#c9c9c4;}
+.case-chart .bar-hot{fill:var(--accent);}
+.case-chart .bar-food{fill:var(--ink);}
+.case-chart .axis{stroke:var(--line-d);stroke-width:1;}
+.case-chart .ref-line{stroke:var(--accent);stroke-width:1;stroke-dasharray:4 4;}
+.case-chart .mean-line{stroke:var(--accent);stroke-width:1.5;}
+.case-chart .t-accent,.case-chart .t-accent text{fill:var(--accent);}
+.case-chart .t-ink,.case-chart .t-ink text{fill:var(--ink);}
+.case-chart .t-inv,.case-chart .t-inv text{fill:#fff;}
+.case-chart .t-sm,.case-chart .t-sm text{font-size:11px;}
+.case-chart .t-md,.case-chart .t-md text{font-size:13px;}
 
 /* lesson footer nav */
 .lesson-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--ink);}
@@ -650,7 +694,7 @@
 
 /* article */
 .article{padding:72px 48px 0;max-width:880px;margin:0 auto;}
-.article-meta{display:flex;gap:16px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px;}
+.article-meta{display:flex;flex-wrap:wrap;gap:16px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px;}
 .article-meta .chip{padding:3px 9px;background:var(--soft);}
 .article h1{font-size:clamp(44px,5.5vw,68px);line-height:1.05;letter-spacing:-.035em;margin:0 0 24px;font-weight:500;}
 .article .prose p{max-width:none;font-size:18px;}

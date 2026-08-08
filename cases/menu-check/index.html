@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аудит по слепой салфетке · Кейсы</title>
+  <meta name="author" content="Александр Давыдов"/>
+  <link rel="canonical" href="https://davydov.my/cases/menu-check/"/>
+  <meta name="description" content="Меню кофейни выглядит так, будто за ним скрытая формула. Нулевая модель убивает её (p=0.43), а выживает только то, что прошло χ². Кейс про то, как отличить закономерность от желания её увидеть."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Аудит по слепой салфетке"/>
+  <meta property="og:description" content="Меню кофейни выглядит так, будто за ним скрытая формула. Нулевая модель убивает её (p=0.43), а выживает только то, что прошло χ²."/>
+  <meta property="og:url" content="https://davydov.my/cases/menu-check/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og/cases.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/" aria-current="page">Кейсы</a>
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>2026</span>
+    <span class="chip">Кейс</span>
+    <span>~8 мин чтения</span>
+    <span>Ценообразование · Метод</span>
+    <span>Нулевые модели · Монетизация · A/B-скепсис</span>
+  </div>
+  <h1>Аудит по слепой салфетке</h1>
+  <p class="page-lead">Меню кофейни с ценами 482, 591, 631 выглядит так, будто за ним стоит скрытая формула. Я потратил вечер, чтобы её найти — и главный результат в том, что её нет.</p>
+
+  <div class="prose">
+
+  <p>Коллеги из Москвы дразнят, что в провинции ничего толком нет, а что есть — дорого. Повод был кофейный: неровные, будто нарочно кривые цены. Не 499, не 590 — а 482, 591, 631. Первая мысль любого, кто зарабатывает на жизнь анализом: за этим прячется система. Кто-то умный вывел базовую цену и умножил на коэффициент. Разгадать бы его — и весь прайс раскроется как на ладони.</p>
+
+  <p>Эта первая мысль почти всегда и есть ловушка. Кейс — про то, как её распознать: не на LLM и не на A/B-платформе, а на восьми ламинированных листах, где всё видно невооружённым глазом и оттого особенно поучительно.</p>
+
+  <div class="sec-kicker">01 — Соблазн</div>
+  <h2>Скрытый множитель, которого хочется</h2>
+
+  <div class="case-block">
+    <div class="case-block-tag">Наблюдение</div>
+    <p>Шесть цен с одного листа: 482, 482, 591, 631, 482, 161. Если предположить, что каждая — это круглая база, умноженная на общий коэффициент наценки, то задача сводится к подбору одного числа.</p>
+  </div>
+
+  <p>Я перебрал коэффициент по сетке. При <strong>k ≈ 1.341</strong> базы получаются 360, 360, 440, 470, 360, 120 — все кратны десяти, максимальное отклонение 0.16%. Выглядит как разоблачение: нашли наценку в 34%, приклеенную к идеально круглому внутреннему прайсу.</p>
+
+  <div class="formula-box">
+    <div class="formula-expr">цена = база × k,&nbsp;&nbsp;k ≈ 1.341</div>
+    <div class="formula-label">6 точек · max отклонение 0.16% от кратного 10</div>
+  </div>
+
+  <div class="stop-question">
+    <strong>Стоп-вопрос.</strong> Если из шести цен выводится одна константа с ошибкой в десятые доли процента — это находка или совпадение, которое я принял за находку?
+  </div>
+
+  <p>Проверка занимает две строки. Гипотезу нужно столкнуть с нулевой моделью: а насколько хорошо тот же «скрытый множитель» описывает <em>случайный</em> прайс того же диапазона? Я взял все 65 позиций меню (честный размер выборки, а не шесть удобных точек) и прогнал ту же процедуру против тысячи случайных прайсов.</p>
+
+  <div class="case-block case-block--return">
+    <div class="case-block-tag">Результат</div>
+    <p>На полном наборе лучший коэффициент описывает реальное меню <strong>не лучше, чем случайные цены</strong>: p&nbsp;=&nbsp;0.43. Красивый k=1.341 родился из четырёх точек и одного свободного параметра — это не закон, это подгонка на салфетке. Гипотеза мертва.</p>
+  </div>
+
+  <div class="sec-kicker">02 — Что выжило</div>
+  <h2>Настоящий сигнал прячется в последней цифре</h2>
+
+  <p>Убить свою любимую гипотезу — половина работы. Вторая половина: посмотреть, что осталось стоять после нулевой модели. И тут меню выдаёт кое-что железобетонное.</p>
+
+  <figure>
+    <svg class="case-chart" viewBox="0 0 720 300" role="img" aria-label="Распределение последней цифры цены по 65 позициям. Цифра 1 встречается 18 раз при ожидаемых 6.5.">
+      <!-- baseline -->
+      <line class="axis" x1="40" y1="250" x2="710" y2="250"/>
+      <!-- expected line -->
+      <line class="ref-line" x1="40" y1="222" x2="710" y2="222"/>
+      <text class="t-accent" x="712" y="222" text-anchor="start" dx="-670" dy="-4">ожидалось ≈6.5</text>
+      <!-- bars: data [0,18,8,10,8,1,5,4,1,10], scale 8px per unit -->
+      <g>
+        <rect class="bar"     x="52"  y="250" width="46" height="0"/>
+        <rect class="bar-hot" x="118" y="106" width="46" height="144"/>
+        <rect class="bar"     x="184" y="186" width="46" height="64"/>
+        <rect class="bar"     x="250" y="170" width="46" height="80"/>
+        <rect class="bar"     x="316" y="186" width="46" height="64"/>
+        <rect class="bar"     x="382" y="242" width="46" height="8"/>
+        <rect class="bar"     x="448" y="210" width="46" height="40"/>
+        <rect class="bar"     x="514" y="218" width="46" height="32"/>
+        <rect class="bar"     x="580" y="242" width="46" height="8"/>
+        <rect class="bar"     x="646" y="170" width="46" height="80"/>
+      </g>
+      <!-- value labels -->
+      <g class="t-ink">
+        <text x="141" y="98" text-anchor="middle">18</text>
+      </g>
+      <!-- x labels -->
+      <g>
+        <text x="75"  y="270" text-anchor="middle">0</text>
+        <text x="141" y="270" text-anchor="middle">1</text>
+        <text x="207" y="270" text-anchor="middle">2</text>
+        <text x="273" y="270" text-anchor="middle">3</text>
+        <text x="339" y="270" text-anchor="middle">4</text>
+        <text x="405" y="270" text-anchor="middle">5</text>
+        <text x="471" y="270" text-anchor="middle">6</text>
+        <text x="537" y="270" text-anchor="middle">7</text>
+        <text x="603" y="270" text-anchor="middle">8</text>
+        <text x="669" y="270" text-anchor="middle">9</text>
+      </g>
+      <text x="375" y="294" text-anchor="middle">последняя цифра цены</text>
+    </svg>
+    <figcaption>Последняя цифра 65 цен. Цифра «1» — 18 из 65 (28%) при ожидаемых 10%. χ²=41.9, p=3.4·10⁻⁶: равномерность отвергается уверенно.</figcaption>
+  </figure>
+
+  <p>Вот она, настоящая неровность — и она проходит проверку, которую не прошёл множитель. Но раз единый коэффициент её <em>не</em> объясняет, значит генератор попозиционный, а не системный. Никакого элегантного правила нет. Есть человек, который правит прайс блюдо за блюдом.</p>
+
+  <p>Доказательство лежит прямо на меню, шариковой ручкой:</p>
+
+  <div class="case-block">
+    <div class="case-block-tag">Три правки маркером — все вниз</div>
+    <p>555 → 471&nbsp;&nbsp;·&nbsp;&nbsp;572 → 472&nbsp;&nbsp;·&nbsp;&nbsp;554 → 454.<br>Две из трёх — ровно на сто рублей. Все на самых заметных пищевых листах. Это не дизайн-решение, это операционка: кто-то сидит и признаёт своей рукой, что переоценил готовность платить.</p>
+  </div>
+
+  <div class="sec-kicker">03 — Как кофейни на самом деле продают</div>
+  <h2>Внимание, маржа и цена как поза</h2>
+
+  <p>Второй тезис москвичей — «дорого» — проверить строго нельзя: чеков нет. Но восемь листов в определённом порядке — это гипотеза самого заведения о том, как убывает внимание. Кто долистает до восьмого листа? Значит, что стоит впереди, то и ставят на поток. Посмотрим, куда что положено.</p>
+
+  <figure>
+    <svg class="case-chart" viewBox="0 0 720 320" role="img" aria-label="Средняя цена позиции по восьми листам. Еда на листах 1,3,4,5 стоит 525-571 рубль, напитки на листах 6,7,8 — 304-322.">
+      <line class="axis" x1="40" y1="270" x2="710" y2="270"/>
+      <!-- data 534,318,571,525,560,322,304,315 ; scale: 0.4 px per ruble -> max 571*0.4=228 -->
+      <g>
+        <rect class="bar-food" x="52"  y="56"  width="60" height="214"/>
+        <rect class="bar"      x="135" y="143" width="60" height="127"/>
+        <rect class="bar-food" x="218" y="42"  width="60" height="228"/>
+        <rect class="bar-food" x="301" y="60"  width="60" height="210"/>
+        <rect class="bar-food" x="384" y="46"  width="60" height="224"/>
+        <rect class="bar-hot"  x="467" y="141" width="60" height="129"/>
+        <rect class="bar-hot"  x="550" y="148" width="60" height="122"/>
+        <rect class="bar-hot"  x="633" y="144" width="60" height="126"/>
+      </g>
+      <g class="t-inv t-sm">
+        <text x="82"  y="72"  text-anchor="middle">534</text>
+        <text x="248" y="58"  text-anchor="middle">571</text>
+        <text x="331" y="76"  text-anchor="middle">525</text>
+        <text x="414" y="62"  text-anchor="middle">560</text>
+      </g>
+      <g class="t-ink t-sm">
+        <text x="165" y="135" text-anchor="middle">318</text>
+        <text x="497" y="133" text-anchor="middle">322</text>
+        <text x="580" y="140" text-anchor="middle">304</text>
+        <text x="663" y="136" text-anchor="middle">315</text>
+      </g>
+      <g class="t-sm">
+        <text x="82"  y="288" text-anchor="middle">1</text>
+        <text x="165" y="288" text-anchor="middle">2</text>
+        <text x="248" y="288" text-anchor="middle">3</text>
+        <text x="331" y="288" text-anchor="middle">4</text>
+        <text x="414" y="288" text-anchor="middle">5</text>
+        <text x="497" y="288" text-anchor="middle">6</text>
+        <text x="580" y="288" text-anchor="middle">7</text>
+        <text x="663" y="288" text-anchor="middle">8</text>
+      </g>
+      <text x="375" y="312" text-anchor="middle">лист меню (глубже → меньше внимания)</text>
+      <!-- legend -->
+      <rect class="bar-food" x="40" y="12" width="12" height="12"/><text class="t-ink" x="58" y="22" text-anchor="start">еда</text>
+      <rect class="bar-hot" x="120" y="12" width="12" height="12"/><text class="t-ink" x="138" y="22" text-anchor="start">напитки</text>
+    </svg>
+    <figcaption>Средняя цена по листам. Дорогая еда (534–571 ₽) — впереди, в зоне внимания. Напитки (304–322 ₽) — на задних листах, куда при разумном затухании попадает ~6–19% просмотров.</figcaption>
+  </figure>
+
+  <p>На первый взгляд — грамотно: дорогое впереди, дешёвое сзади, сезонные лисички на первом листе, где внимание максимально. Наивный аналитик скажет «отлично, ничего не трогаем» или «переставь ещё агрессивнее». Оба неправы, и вот где кейс становится про монетизацию всерьёз.</p>
+
+  <h3>Ошибка №1: оптимизировать цену вместо маржи</h3>
+  <p>Если пересортировать листы строго по убыванию цены, «взвешенная вниманием» средняя растёт всего на <strong>3–12%</strong> (зависит от крутизны затухания; +9% при среднем приоре) — и то это потолок. По цене раскладка почти оптимальна. Но цена — не маржа. Кофе за 259 ₽ — это себестоимость рублей сорок и маржа под 85%. Завтрак за 978 ₽ — хорошо если 30%. «Дешёвые» задние листы, скорее всего, самые прибыльные на единицу — и именно они зарыты там, где никто не листает. Спасает заведение лишь то, что кофе — покупка-цель: за ним приходят и заказывают на любом листе.</p>
+
+  <h3>Ошибка №2: путать заявленный спрос с настоящим</h3>
+  <p>Меню выдаёт, во что заведение <em>верит</em> про свой спрос. Яичница за 454 ₽ несёт девять платных добавок — до 1839 ₽ сверху. Хашбрауны — пять. Никто не вешает столько апселла на блюдо, которое не считает рабочей лошадкой. Десять бейджей «NEW!» сгруппированы там, куда толкают внимание. А летние напитки стоят ровно 316 ₽ впятером при разных объёмах — это не расчёт себестоимости, это единый якорь на раздел.</p>
+
+  <h3>Наполовину использованный рычаг: позиция внутри раздела</h3>
+  <p>Дорогое вынесено вперёд <em>по листам</em> — но не внутри раздела. Корреляция между позицией блюда в своём разделе и его ценой = −0.05, то есть ноль: верх раздела и низ раздела стоят одинаково. Классический gaze-cascade (верх раздела читают чаще) не задействован. Заведение фронт-лоадит внимание на уровне листов и забывает про него на уровне строк.</p>
+
+  <h3>Средний чек: симуляция, а не гадание</h3>
+  <p>Чеков у меня нет, поэтому среднего чека тоже нет. Но есть модель. Собираю заказ из 65 позиций как «одно блюдо + напиток + добавки», где вероятность выбора пропорциональна вниманию (лист × позиция), добавки цепляются независимо. Двадцать тысяч прогонов — и распределение чека, честно помеченное как <em>модель на заявленном спросе</em>, не измерение.</p>
+
+  <figure>
+    <svg class="case-chart" viewBox="0 0 720 280" role="img" aria-label="Распределение среднего чека по 20 тысячам смоделированных заказов. Пик в районе 750-900 рублей, средний чек около 757 рублей.">
+      <line class="axis" x1="40" y1="220" x2="710" y2="220"/>
+      <!-- hist bins 150..1650, counts scaled to max 9860 -> 175px -->
+      <g class="bar">
+        <rect x="52"  y="209" width="62" height="11"/>
+        <rect x="118" y="167" width="62" height="53"/>
+        <rect x="184" y="170" width="62" height="50"/>
+        <rect x="250" y="124" width="62" height="96"/>
+        <rect x="316" y="45"  width="62" height="175"/>
+        <rect x="382" y="113" width="62" height="107"/>
+        <rect x="448" y="203" width="62" height="17"/>
+        <rect x="514" y="210" width="62" height="10"/>
+        <rect x="580" y="219" width="62" height="1"/>
+        <rect x="646" y="219" width="62" height="1"/>
+      </g>
+      <!-- mean line at ~757 -> bin index: (757-150)/150=4.05 -> x ≈ 52 + 4.05*66 +31 ≈ 350 -->
+      <line class="mean-line" x1="350" y1="30" x2="350" y2="220"/>
+      <text class="t-accent" x="356" y="40" text-anchor="start">средний чек ≈ 757 ₽</text>
+      <g>
+        <text x="52"  y="238" text-anchor="start">150</text>
+        <text x="316" y="238" text-anchor="middle">750</text>
+        <text x="580" y="238" text-anchor="middle">1350</text>
+        <text x="708" y="238" text-anchor="end">₽</text>
+      </g>
+      <text x="375" y="262" text-anchor="middle">чек за заказ, ₽ (20 000 прогонов)</text>
+    </svg>
+    <figcaption>Смоделированное распределение чека. Средний ≈ 757 ₽, медиана 785 ₽, p90 ≈ 1000 ₽. Форма — заявленный спрос, а не измеренный.</figcaption>
+  </figure>
+
+  <p>А теперь ради чего всё затевалось. Прогоняю модель под разными рычагами и смотрю, что реально двигает чек. Ответ отрезвляющий для всех, кто носится с ценовой психологией:</p>
+
+  <figure>
+    <svg class="case-chart" viewBox="0 0 720 210" role="img" aria-label="Три рычага среднего чека. Заказ напитка добавляет 126 рублей, расширение апселла на большее число блюд 45 рублей, а цифра позиция и attach на текущих платформах лишь 26 рублей.">
+      <!-- horizontal bars; scale 126->360px -->
+      <g>
+        <rect class="bar-hot" x="250" y="22"  width="360" height="34"/>
+        <rect class="bar"     x="250" y="82"  width="129" height="34"/>
+        <rect class="bar"     x="250" y="142" width="74"  height="34"/>
+      </g>
+      <g class="t-ink t-md">
+        <text x="242" y="44"  text-anchor="end">Закажет ли напиток</text>
+        <text x="242" y="104" text-anchor="end">Больше апселл-платформ</text>
+        <text x="242" y="164" text-anchor="end">Цифра · позиция · attach</text>
+      </g>
+      <g class="t-md">
+        <text class="t-accent" x="618" y="44"  text-anchor="start">+126 ₽</text>
+        <text x="387" y="104" text-anchor="start">+45 ₽</text>
+        <text x="332" y="164" text-anchor="start">+26 ₽</text>
+      </g>
+      <text x="470" y="200" text-anchor="middle">насколько рычаг двигает средний чек</text>
+    </svg>
+    <figcaption>То, вокруг чего все пляшут — хитрая цифра цены и полка — двигает чек меньше всего (+26 ₽). Больше всего двигает простейшее: закажет ли гость напиток вообще (+126 ₽). Кофе — 85% маржи. Вся игра в drink attach, а не в психологии цифр.</figcaption>
+  </figure>
+
+  <div class="sec-kicker">04 — Так зачем всё-таки неровные цены</div>
+  <h2>Точная цена — это сигнал, а не расчёт</h2>
+
+  <p>Вернёмся к вопросу, с которого всё началось. Есть два семейства «неровных» цен, и они означают противоположное.</p>
+
+  <p><strong>Charm-цена</strong> — та, что кончается на 9 (499, 590). Она эксплуатирует <a href="https://doi.org/10.1086/429600">left-digit effect</a> (Thomas &amp; Morwitz, 2005): взгляд цепляется за левую цифру, и 499 кодируется как «четыреста с чем-то», ощущается сильно дешевле пятисот. Сигнал: <em>скидка, масс-маркет, экономия</em>.</p>
+
+  <p><strong>Точная цена</strong> — специфичная, некруглая, но <em>не</em> подогнанная под порог (471, 316, 631). За ней стоит <a href="https://doi.org/10.1287/mksc.1090.0512">price precision effect</a> (Thomas, Simon &amp; Kadiyali, 2010): точные цены воспринимаются меньше круглых того же порядка, потому что крупные суммы обычно круглые, а мелкие — точные, и мозг достраивает «точное = небольшое». Плюс точность сама по себе сигналит расчёт, аккуратность, ремесло.</p>
+
+  <p>Это меню — во втором лагере. Оно кончается на 1, а не на 9. Значит сигнал не «у нас дёшево», а «мы посчитали себестоимость до рубля, мы честные». Неровность тут — не жадность и не небрежность, а <strong>заявление о ценностях</strong>, зашитое в последнюю цифру.</p>
+
+  <p class="boundary boundary--plain">Оговорка в духе всего разбора: свежие высокомощные предрегистрированные эксперименты (<a href="https://doi.org/10.3389/frbhe.2026.1828446">Escher et al., 2026</a>) сравнили именно точные, just-below и круглые цены — и нашли эффекты неубедительными и противоречивыми, предупреждая, что прежние оценки могли быть завышены. Так что это ведущее объяснение стиля, а не доказанный факт про эту кофейню.</p>
+
+  <div class="case-block case-block--return">
+    <div class="case-block-tag">Разворот</div>
+    <p>И вот ирония. Сигнал «мы честно посчитали» — сам по себе тоже приём. Данные показывают, что расчёт себестоимости до рубля наполовину поза: напитки якорятся плоско на 316 ₽, себестоимость там не при чём. То есть точная цена — <strong>такое же ценовое искусство, как charm-цена</strong>, просто целится в другую аудиторию. 499 говорит «тут выгодно». 471 говорит «тут считают по-честному». Оба — рассказанная цифрой история. Просто вторая продаётся дороже.</p>
+  </div>
+
+  <div class="bridge">
+    <div class="bridge-tag">Зачем это аналитику монетизации и evals</div>
+    <p>Одна дисциплина держит весь кейс: не давать уверенный неверный вердикт на чисто выглядящей поверхности. Ровное меню соблазняет ответить «тут скрытая формула» — а честный ответ иногда «воздержаться, данных нет». Ровно эту способность — распознать, когда правильный ход <em>abstain</em>, а не уверенный вердикт — я измеряю у языковых моделей в Blind-Contract Evals. Меню — тот же экзамен на честность, только сдаёт его человек с калькулятором. Про то, как это выглядит в решениях по A/B, — <a href="/workspace/articles/sgr-ab-decisions/">отдельная статья</a>.</p>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-tag">Правило в работу</div>
+    <p>Закономерность реальна, только если переживает нулевую модель. Всё, что её не переживает, — узор, который ты нарисовал сам и принял за чужой замысел.</p>
+  </div>
+
+  <p class="boundary">
+    <strong>Чего данные не говорят.</strong> Здесь нет ни одного чека, а значит нет настоящих вероятностей продаж. Всё, что сказано выше про «спрос» и «внимание», — это гипотезы, которые заведение заложило в дизайн меню, реконструированные из артефакта. Отличать заложенную веру от измеренного факта — и есть вся суть этого разбора. Датасет из 65 позиций и 23 добавок с разметкой сигналов — открыт.
+  </p>
+
+  </div>
+
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/cases/">← Все кейсы</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
