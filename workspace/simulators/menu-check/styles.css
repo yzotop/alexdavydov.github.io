@@ -57,6 +57,24 @@ body {
 .brand__title { font-size: 16px; font-weight: 780; letter-spacing: 0.2px; }
 .brand__subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
+/* Навигация наружу. В ad-fatigue-live её нет — там ссылки живут в компаньоне
+   about/, которого у menu-check нет, и без этого блока страница была бы
+   тупиком для всех, кто пришёл из поиска. Правило .topbar-link взято у
+   ai-evals-* как есть: оно описано через токены --muted/--text, поэтому
+   переезжает в тёмный скин без единого хардкода.
+   Ссылки идут в строку СПРАВА от бренда, а не под ним: липкие .panel--left
+   и .panel--right позиционируются от top:76px, и лишняя строка в топбаре
+   разъехалась бы с этим числом. */
+.topbar__left { display: flex; align-items: center; gap: 20px; }
+.topbar__nav { display: flex; gap: 14px; white-space: nowrap; }
+.topbar-link {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.topbar-link:hover { color: var(--text); }
+
 .topbar__right {
   display: flex;
   gap: 12px;
