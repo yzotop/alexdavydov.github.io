@@ -631,6 +631,33 @@
 .disclosure--quote[open] .disclosure-trigger{background:transparent;color:var(--accent);}
 .disclosure--quote .disclosure-content{margin-top:12px;padding-top:12px;}
 
+/* .disclosure--case — раскрывающийся кейс на /companies/.
+   Триггером служит строка .course-item, поэтому с .disclosure-trigger
+   снимается вид кнопки — тем же приёмом, что в .disclosure--quote.
+   Padding переопределяется явно: .disclosure-trigger идёт в файле
+   позже .course-item и иначе перебивает его 28px 0. */
+.disclosure--case{margin:0;}
+/* Триггер — сама строка .course-item, без .disclosure-trigger:
+   тот несёт вид кнопки (рамка, моно, капитель, свой padding),
+   и снимать его по частям — лишний спор в каскаде. Здесь нужно
+   только убрать стандартный маркер <summary>. */
+.disclosure--case > summary{list-style:none;cursor:pointer;}
+.disclosure--case > summary::-webkit-details-marker{display:none;}
+.disclosure--case > summary::marker{content:"";}
+.disclosure--case .ci-arrow{transition:transform .25s;}
+.disclosure--case[open] .ci-arrow{transform:rotate(180deg);color:var(--accent);}
+.disclosure--case .disclosure-content{margin-top:0;padding:0 0 28px 84px;border-top:none;}
+.disclosure--case .disclosure-content h4{font-family:var(--mono);font-size:11px;
+  color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin:20px 0 8px;}
+.disclosure--case .disclosure-content h4:first-child{margin-top:0;}
+/* Базовый .ci-meta .chip стоит с width:max-content и не сжимается:
+   длинное название сектора вылезало из колонки 220px на 40+ px.
+   Здесь чип переносится по словам внутри своей колонки. */
+.disclosure--case .ci-meta .chip{width:auto;max-width:100%;white-space:normal;line-height:1.4;}
+.disclosure--case .ci-meta{overflow-wrap:anywhere;}
+.disclosure--case .disclosure-content p{font-size:15px;line-height:1.65;
+  color:var(--ink);margin:0;max-width:660px;}
+
 /* results page — companies by sector */
 .companies-section{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px 48px;margin-top:24px;}
 .company-sector{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px;}
@@ -787,6 +814,19 @@
   .footer{grid-template-columns:1fr;text-align:left;}
   .footer-right,.footer-center{text-align:left;}
   .course-item{grid-template-columns:40px 1fr 40px;}
+  /* Базовый компонент на мобильном намеренно прячет мету —
+     .course-item .ci-meta{display:none} ниже в этом же блоке.
+     Для кейсов сектор, срок и стек это содержание, а не украшение,
+     поэтому возвращаем и кладём на вторую строку под заголовок.
+     Селектор длиннее, чем у скрывающего правила: оно идёт позже
+     и при равной специфичности выигрывало бы. */
+  .disclosure--case .course-item{grid-template-columns:40px 1fr 40px;gap:8px 16px;}
+  .disclosure--case .ci-num{grid-area:1 / 1 / 2 / 2;}
+  .disclosure--case .ci-title{grid-area:1 / 2 / 2 / 3;}
+  .disclosure--case .ci-arrow{grid-area:1 / 3 / 2 / 4;}
+  .disclosure--case .course-item .ci-meta{display:flex;grid-area:2 / 2 / 3 / 4;
+    flex-direction:row;flex-wrap:wrap;gap:6px 12px;}
+  .disclosure--case .disclosure-content{padding-left:56px;}
   .course-item .ci-meta{display:none;}
   .tl-row{grid-template-columns:80px 1fr;}
   .tl-body{grid-column:1 / -1;}
