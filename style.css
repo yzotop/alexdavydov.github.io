@@ -541,7 +541,11 @@
 /* protocol-list */
 .protocol-list{counter-reset:protocol;list-style:none;padding:0;margin:0 0 24px;}
 .protocol-list li{counter-increment:protocol;padding:14px 0 14px 52px;border-bottom:1px solid var(--line);position:relative;font-size:16px;line-height:1.6;}
-.protocol-list li::before{content:counter(protocol,"decimal-leading-zero");position:absolute;left:0;top:14px;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.06em;}
+/* Стиль счётчика — идентификатор, НЕ строка в кавычках. С кавычками
+   объявление невалидно, браузер выбрасывает его целиком при разборе,
+   и список остаётся вовсе без номеров: в CSSOM у правила нет content,
+   на экране — пустой отступ 52px. Так было в двух уроках lab/ab-decisions. */
+.protocol-list li::before{content:counter(protocol,decimal-leading-zero);position:absolute;left:0;top:14px;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600;letter-spacing:.06em;}
 
 /* takeaway */
 .takeaway{background:var(--ink);color:#fff;padding:24px 28px;margin:40px 0;}
@@ -761,6 +765,40 @@
 .article-author b{color:var(--ink);font-weight:600;font-size:14px;}
 .author-av{width:44px;height:44px;background:var(--ink);color:#fff;display:flex;align-items:center;
   justify-content:center;font-size:13px;font-weight:700;letter-spacing:-.03em;}
+/* Ссылка «← Все статьи». Класс стоял в разметке 10 статей, а правила не было
+   вовсе: ссылка выходила 16px чернилами и вплотную к блоку автора. В пяти
+   старых статьях тот же элемент задан инлайном как 14px приглушённым
+   с отступом 32px — возвращаем этот вид всем разом. */
+.article-back{margin-top:32px;}
+.article-back a{font-size:14px;color:var(--muted);text-decoration:none;}
+.article-back a:hover{color:var(--ink);}
+
+/* Якоря под липкой шапкой. .nav — position:sticky, её высоту задаёт кнопка
+   бургера: 36px плюс поля 20+20 и рамка = 77px на десктопе, 69px на мобильном
+   (поля там 16px). scroll-margin не был задан нигде, поэтому переход по любому
+   якорю ставил цель ровно под шапку и заголовок оказывался скрыт целиком.
+   96 даёт 19px просвета сверх самой высокой шапки — запас на случай, если
+   в шапку добавится ещё элемент. Правило намеренно широкое: чинит все
+   существующие якоря на сайте (глоссарий, кейсы), а не только новую статью. */
+[id]{scroll-margin-top:96px;}
+
+/* Оглавление статьи-справочника. Без JS: обычные ссылки на якоря.
+   Счётчик сквозной по всем пунктам, подзаголовки групп его не сбивают —
+   счётчик увеличивают только :not(.toc-head). */
+.toc{margin:40px 0 48px;padding:20px 24px;background:var(--soft);}
+.toc-tag{font-family:var(--mono);font-size:10px;color:var(--mute2);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.toc-group{counter-reset:toc;list-style:none;padding:0;margin:0;columns:2;column-gap:40px;}
+.toc-group li{break-inside:avoid;font-size:15px;line-height:1.5;margin:0 0 6px;}
+.toc-group li.toc-head{font-family:var(--mono);font-size:10px;color:var(--mute2);
+  letter-spacing:.12em;text-transform:uppercase;margin:14px 0 8px;}
+.toc-group li.toc-head:first-child{margin-top:0;}
+.toc-group li:not(.toc-head){counter-increment:toc;padding-left:26px;position:relative;}
+.toc-group li:not(.toc-head)::before{content:counter(toc,decimal-leading-zero);
+  position:absolute;left:0;top:2px;font-family:var(--mono);font-size:10px;
+  color:var(--accent);font-weight:600;}
+.toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-d);}
+.toc a:hover{border-bottom-color:var(--accent);}
 
 /* code download links */
 .code-downloads{display:flex;flex-wrap:wrap;gap:8px;margin:32px 0 8px;}
@@ -812,6 +850,11 @@
   .nav-cta{margin-left:auto;}
   .hero,.courses-wrap,.notes-wrap,.approach-wrap,.tests-wrap,.page,.article{padding-left:24px;padding-right:24px;}
   .stats,.companies,.portrait-row,.news,.footer,.cta-strip{margin-left:24px!important;margin-right:24px!important;}
+  /* Оглавление в одну колонку: в двух на 390 колонка выходит 151px,
+     а самый длинный пункт («Агрегаты и невоспроизводимость») занимает 163
+     и вылезает за экран. Ссылку переносить по словам нельзя — она станет
+     нечитаемой лесенкой. */
+  .toc-group{columns:1;}
   /* Полоса площадок. Пункт стал двухэтажным (название + роль), и зазор
      44px, подобранный под однострочные названия, рвёт полосу раньше
      времени: в диапазоне 769–798 последний пункт срывается на свой ряд.
