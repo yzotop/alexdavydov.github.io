@@ -143,8 +143,18 @@
   .companies{margin:0 48px;padding:28px 0;display:flex;align-items:center;
     flex-wrap:wrap;gap:16px 44px;border-bottom:1px solid var(--line);}
   .companies-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;}
-  .company{font-size:20px;font-weight:600;letter-spacing:-.02em;transition:color .15s;}
+  .company{font-size:20px;font-weight:600;letter-spacing:-.02em;transition:color .15s;line-height:1.2;}
   a.company:hover{color:var(--accent);}
+  /* Роль стоит ПОД названием, а не рядом через тире. Рядом ширина пункта
+     складывается из названия и роли: четырём пунктам нужно 1322px при
+     доступных 1184 на ширине 1280 — полоса ломается на две строки и
+     перестаёт быть полосой. Под названием пункт занимает большее из двух,
+     а не сумму: 769px, помещается с запасом.
+     Роль тише названия трижды: кегль 13 против 20, вес 400 против 600,
+     цвет muted. Трекинг -.02em у названия для мелкого текста не годится
+     и снят явно — иначе наследуется. */
+  .company-role{display:block;margin-top:3px;font-size:13px;font-weight:400;
+    letter-spacing:0;color:var(--muted);}
 
   /* portrait + manifesto */
   .portrait-row{margin:64px 48px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
@@ -802,6 +812,11 @@
   .nav-cta{margin-left:auto;}
   .hero,.courses-wrap,.notes-wrap,.approach-wrap,.tests-wrap,.page,.article{padding-left:24px;padding-right:24px;}
   .stats,.companies,.portrait-row,.news,.footer,.cta-strip{margin-left:24px!important;margin-right:24px!important;}
+  /* Полоса площадок. Пункт стал двухэтажным (название + роль), и зазор
+     44px, подобранный под однострочные названия, рвёт полосу раньше
+     времени: в диапазоне 769–798 последний пункт срывается на свой ряд.
+     28px убирают этот разрыв и держат полосу одной строкой до 768. */
+  .companies{gap:14px 28px;}
   .stats--page{margin-left:-24px!important;margin-right:-24px!important;}
   .stats{grid-template-columns:1fr 1fr;}
   .stat:nth-child(2){border-right:none;}
@@ -849,6 +864,19 @@
   .km-callout-block{padding:24px;}
 }
 @media (max-width:768px){
+  /* На телефоне метка уходит на свою строку и работает заголовком:
+     вместе с ней четыре двухэтажных пункта в один ряд уже не встают. */
+  .companies-label{flex-basis:100%;}
+  /* По верху, а не по центру: на узких экранах длинная роль переносится
+     на две строки, и центрирование разводит названия соседей по вертикали
+     (на 360 расхождение 8px). По верху названия стоят на одной линии,
+     а роли просто свисают на разную глубину. */
+  .companies{align-items:flex-start;}
+  /* Ровно два пункта в ряд, а не «сколько влезет». Сам по себе flex-wrap
+     набивает ряд до отказа и в диапазоне 431–608 даёт рваные 3+1 — ту же
+     кашу, что была на 390. Доля в 50% убирает зависимость от длины
+     названий: 2×2 на любой ширине телефона. 14px — половина зазора 28. */
+  .companies .company{flex:1 1 calc(50% - 14px);}
   .learning-path{flex-direction:column;align-items:flex-start;gap:12px;padding:16px 20px;}
   .learning-path-chain{font-size:14px;}
   .tests-grid--two-col{grid-template-columns:1fr;}
