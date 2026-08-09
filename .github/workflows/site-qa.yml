@@ -21,6 +21,22 @@ jobs:
       - name: Ensure sitemap and courses hub match generators
         run: git diff --exit-code sitemap.xml courses/index.html
 
+  verification-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Файл подтверждения владения доменом в Google Search Console.
+      # Google перепроверяет подтверждение периодически, поэтому порча
+      # или удаление файла = молчаливая потеря доступа к данным поиска
+      # через недели. Раньше файл был защищён только косвенно: массовый
+      # проход promote_articles_navbar.py по ROOT.rglob("*.html") его
+      # не трогает лишь потому, что внутри нет блока nav-links.
+      # sha256sum -c валит сборку и при изменении, и при отсутствии файла.
+      - name: Google verification file intact
+        run: |
+          echo "ddcd5ce0ab04a37986ed1edaaa1b7ce1ea764c806a52f85fdc1e21af264578c1  google9b84a06f40ea405c.html" \
+            | sha256sum -c -
+
   link-check:
     runs-on: ubuntu-latest
     steps:
