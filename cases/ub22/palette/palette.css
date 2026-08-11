@@ -1,0 +1,164 @@
+/* Исследователь палитры Ultraboost — локальные стили страницы.
+ *
+ * Грузится поверх /style.css: токены, nav, footer и типографика берутся
+ * оттуда, здесь только сам инструмент. Прецедент — about.css у симуляторов.
+ *
+ * Всё замкнуто на .palette намеренно. Имена вроде .grid, .card, .detail,
+ * .count слишком общие для глобального пространства: сегодня в /style.css
+ * их нет, но появятся — и страница сломается молча. Обёртка стоит одну
+ * строку в разметке и не требует ни одной правки в скрипте.
+ */
+
+.palette .flag {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  display: inline-block;
+  padding: 6px 11px;
+  margin: 0 0 30px;
+}
+
+/* ── фильтры ───────────────────────────────────────────────────────── */
+.palette .controls {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding: 20px 0;
+  margin-bottom: 26px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.palette .fbtn {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 8px 13px;
+  cursor: pointer;
+}
+.palette .fbtn:hover { border-color: var(--ink); color: var(--ink); }
+.palette .fbtn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.palette .fbtn.on.hot { background: var(--accent); border-color: var(--accent); }
+.palette .count { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: auto; }
+
+/* ── переключатель вида ────────────────────────────────────────────── */
+.palette .viewbar { display: flex; gap: 8px; align-items: center; margin: 0 0 22px; }
+.palette .vbtn {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  padding: 4px 2px;
+  cursor: pointer;
+}
+.palette .vbtn:hover { color: var(--ink); }
+.palette .vbtn.on { color: var(--ink); border-bottom-color: var(--accent); }
+.palette .hint { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-left: auto; }
+
+/* ── карточки ──────────────────────────────────────────────────────── */
+.palette .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2px;
+  margin-bottom: 40px;
+}
+.palette .card {
+  border: 1px solid var(--line);
+  padding: 14px;
+  cursor: pointer;
+  background: var(--bg);
+  transition: border-color .12s;
+}
+.palette .card:hover { border-color: var(--ink); }
+.palette .card.own { border-color: var(--accent); border-width: 2px; }
+.palette .swatches { display: flex; height: 34px; margin-bottom: 10px; }
+.palette .swatches div { flex: 1; }
+.palette .cname { font-size: 14px; font-weight: 700; line-height: 1.25; margin-bottom: 4px; }
+.palette .cmeta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.palette .pat { letter-spacing: .08em; }
+.palette .pat .c { color: var(--accent); font-weight: 700; }
+.palette .ownflag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-top: 6px;
+}
+
+/* ── таблица ───────────────────────────────────────────────────────── */
+/* Девять колонок на 880px — на узком экране не помещаются, поэтому
+   таблица едет в горизонтальный скролл, а не ломает страницу. */
+.palette .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 40px; }
+.palette .tbl { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+.palette .tbl th {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  text-align: left;
+  font-weight: 500;
+  padding: 0 10px 9px 0;
+  border-bottom: 1px solid var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.palette .tbl th:hover { color: var(--ink); }
+.palette .tbl th .ar { color: var(--accent); margin-left: 3px; }
+.palette .tbl td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.palette .tbl tr { cursor: pointer; }
+.palette .tbl tr:hover td { background: rgba(0, 0, 0, .025); }
+.palette .tbl tr.own td { background: rgba(230, 57, 70, .06); }
+.palette .tbl tr.own td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.palette .tbl .mn { font-family: var(--mono); font-size: 12px; }
+.palette .tsw { display: flex; width: 52px; height: 17px; border: 1px solid rgba(0, 0, 0, .08); }
+.palette .tsw div { flex: 1; }
+
+.palette .hidden { display: none; }
+
+/* ── разбор выбранной расцветки ────────────────────────────────────── */
+.palette .detail { border-top: 2px solid var(--ink); padding: 28px 0 20px; margin-top: 10px; }
+.palette .detail.empty { color: var(--muted); font-family: var(--mono); font-size: 13px; }
+.palette .detail .cname { font-size: 22px; margin-bottom: 4px; }
+.palette .dbars { display: flex; gap: 14px; margin: 20px 0 8px; flex-wrap: wrap; }
+.palette .dbar { flex: 1; min-width: 150px; }
+.palette .dbar .sw { height: 56px; margin-bottom: 8px; border: 1px solid rgba(0, 0, 0, .08); }
+.palette .dbar .n { font-family: var(--mono); font-size: 13px; margin-bottom: 3px; }
+.palette .dbar .z { font-size: 12px; color: var(--muted); }
+.palette .dbar .ty { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; }
+.palette .drow {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.palette .drow b { color: var(--ink); font-weight: 600; }
+.palette .rare { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .palette .grid { grid-template-columns: 1fr; }
+  .palette .count, .palette .hint { margin-left: 0; }
+}

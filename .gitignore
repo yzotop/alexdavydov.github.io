@@ -88,6 +88,13 @@ cases/**/requirements.txt
 !cases/llm-ab-case/analyze.py
 !cases/llm-ab-case/*.svg
 
+# ── Exceptions: ub22/palette — генератор и его источник публикуются ──
+# Без них cases/**/*.py и cases/**/*.csv молча выбрасывают из коммита
+# build_data.py и ub_final.csv, а сгенерированный data.js остаётся.
+# Правило репо — генератор и вывод едут вместе, поэтому исключения явные.
+!cases/ub22/palette/build_data.py
+!cases/ub22/palette/ub_final.csv
+
 # ── Exceptions: explicit case-level publish files ──
 !cases/**/index.html
 !cases/**/charts.js

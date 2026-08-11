@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Исследователь палитры Ultraboost · Кейсы</title>
+  <meta name="author" content="Александр Давыдов"/>
+  <link rel="canonical" href="https://davydov.my/cases/ub22/palette/"/>
+  <meta name="description" content="Все 45 расцветок Ultraboost трёх поколений: карточки и таблица с сортировкой по девяти колонкам, фильтры по паттерну, слою и поколению, разбор триплета по зонам кроссовка."/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Исследователь палитры Ultraboost"/>
+  <meta property="og:description" content="Все 45 расцветок трёх поколений: карточки, таблица с сортировкой, разбор триплета по зонам."/>
+  <meta property="og:url" content="https://davydov.my/cases/ub22/palette/"/>
+  <meta property="og:image" content="https://davydov.my/assets/og/cases.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="./palette.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/" aria-current="page">Кейсы</a>
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Приложение к кейсу</span>
+    <span class="chip">Инструмент</span>
+    <span>45 расцветок · 3 поколения</span>
+  </div>
+  <h1>Исследователь палитры Ultraboost</h1>
+  <p class="page-lead">Каждая расцветка — это триплет из трёх оттенков по зонам кроссовка. Здесь можно перебрать все и посмотреть, как устроена палитра: где монохром, где редкие полностью цветные, и куда попадают три пары из личной коллекции.</p>
+
+  <div class="palette">
+    <p class="flag">⚠ цвета плашек — приближение по названиям, adidas не публикует hex-коды</p>
+
+    <div class="controls">
+      <button class="fbtn on" data-f="all" type="button">все 45</button>
+      <button class="fbtn" data-f="NNN" type="button">монохром N·N·N</button>
+      <button class="fbtn" data-f="CCC" type="button">целиком цветные</button>
+      <button class="fbtn" data-f="collab" type="button">коллабы</button>
+      <button class="fbtn" data-f="seasonal_cold" type="button">Cold.RDY</button>
+      <button class="fbtn" data-f="seasonal_gtx" type="button">GORE-TEX</button>
+      <button class="fbtn" data-f="seasonal_heat" type="button">Heat.RDY</button>
+      <button class="fbtn hot" data-f="own" type="button">мои три</button>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="viewbar">
+      <button class="vbtn on" data-v="cards" type="button">карточки</button>
+      <button class="vbtn" data-v="table" type="button">таблица</button>
+      <span class="hint" id="hint">клик по карточке — разбор по слотам</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="tbl-wrap hidden" id="tblWrap">
+      <table class="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div class="detail empty" id="detail">Выберите расцветку, чтобы разобрать её по слотам.</div>
+  </div>
+
+  <div class="article-back">
+    <a href="/cases/ub22/">← Вернуться к разбору</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="./data.js"></script>
+<script>
+/* Исследователь палитры. Данные приходят из data.js (window.PALETTE_DATA),
+   собранного build_data.py из ub_final.csv. */
+(() => {
+  'use strict';
+
+  const HEX = {
+    "Acid Yellow":"#d4e02a","Almost Lime":"#c8e05a","Almost Yellow":"#d9c47a","Bliss Blue":"#8fb4d9",
+    "Blue Rush":"#3a5fcd","Carbon":"#4a4a48","Chalk Pearl":"#e6e0d4","Cloud White":"#f2f0ea",
+    "Collegiate Navy":"#25314f","Core Black":"#16161a","Core White":"#f7f6f2","Crystal White":"#eeece5",
+    "Dash Grey":"#b8b5ac","Flash Orange":"#f2622e","Focus Olive":"#5c5f3a","Grey Five":"#6e6e6b",
+    "Grey Four":"#7d7d79","Grey Six":"#4d4d4b","Grey Two":"#c6c4bc","Impact Orange":"#e8642a",
+    "Legacy Indigo":"#3b4a63","Legend Ink":"#2a3550","Light Aqua":"#a8d4d0","Magic Grey":"#9aa39e",
+    "Mint Rush":"#a8dcc0","Multi":"#8d7fa8","Night Metallic":"#2e3338","Non Dyed":"#e0dbcc",
+    "Olive Strata":"#6a6b4a","Orange":"#e87a2d","Orbit Grey":"#8f8e88","Pulse Mint":"#7fe0b8",
+    "Purple Rush":"#6b4ea8","Screaming Orange":"#f4642a","Silver Metallic":"#b9bcc0","Sky Rush":"#5b8fd4",
+    "Solar Red":"#e0342a","Solar Yellow":"#e8e02a","Turbo":"#e02a4a","Vivid Red":"#c8202a",
+    "White Tint":"#e9e6dd","Wonder Steel":"#5f7285","Wonder Taupe":"#b3a690"
+  };
+  const NEU = t => /black|white|grey|carbon|non dyed|chalk|steel|dash|taupe|metallic|crystal|silver|beige/i.test(t);
+  const ZONES = ["основа — вязка верха","акцент — полоски, логотип","детали — шнурки, задник"];
+
+  const src = window.PALETTE_DATA;
+  if (!Array.isArray(src) || !src.length) {
+    document.getElementById('detail').textContent =
+      'data.js не загружен. Собери его командой python3 build_data.py';
+    return;
+  }
+
+  const rows = src.map(r => {
+    const parts = r.colorway.split("/").map(s => s.trim());
+    return Object.assign({}, r, {
+      parts,
+      pat: parts.map(p => NEU(p) ? "N" : "C").join(""),
+      bright: parts.filter(p => !NEU(p)).length / 3
+    });
+  });
+  const patCount = {};
+  rows.forEach(r => { patCount[r.pat] = (patCount[r.pat] || 0) + 1; });
+  const hex = t => HEX[t] || "#bdbdb8";
+  const TOTAL = rows.length;
+
+  let filter = "all", sel = null, view = "cards", sortKey = "date", sortDir = 1;
+
+  // Слои сезонных серий разведены по трём кнопкам: за метками стоят
+  // разные цены ($200 Cold.RDY, $230 GORE-TEX, $220 Heat.RDY), и одна
+  // общая кнопка «сезонные» это различие прятала бы.
+  function match(r) {
+    if (filter === "all") return true;
+    if (filter === "own") return r.own;
+    if (filter === "collab" || filter.startsWith("seasonal")) return r.tier === filter;
+    return r.pat === filter;
+  }
+  const patHTML = p => p.split("").map(c => c === "C" ? '<span class="c">C</span>' : 'N').join(" · ");
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  function render() {
+    const list = rows.filter(match);
+    document.getElementById("count").textContent = list.length + " из " + TOTAL;
+    document.getElementById("grid").classList.toggle("hidden", view !== "cards");
+    document.getElementById("tblWrap").classList.toggle("hidden", view !== "table");
+    document.getElementById("hint").textContent = view === "cards"
+      ? "клик по карточке — разбор по слотам"
+      : "клик по заголовку — сортировка";
+    if (view === "cards") renderCards(list); else renderTable(list);
+  }
+
+  function renderCards(list) {
+    const g = document.getElementById("grid");
+    g.innerHTML = "";
+    list.forEach(r => {
+      const d = document.createElement("div");
+      d.className = "card" + (r.own ? " own" : "");
+      d.innerHTML = '<div class="swatches">' +
+        r.parts.map(p => '<div style="background:' + hex(p) + '"></div>').join("") + '</div>' +
+        '<div class="cname">' + esc(r.name) + '</div>' +
+        '<div class="cmeta"><span>' + esc(r.sku) + ' · ' + esc(r.gen) + '</span>' +
+        '<span class="pat">' + patHTML(r.pat) + '</span></div>' +
+        (r.own ? '<div class="ownflag">в коллекции</div>' : '');
+      d.onclick = () => pick(r);
+      g.appendChild(d);
+    });
+  }
+
+  const COLS = [["", "", ""], ["name","расцветка","str"], ["sku","артикул","str"],
+    ["gen","поколение","str"], ["date","дата","str"], ["pat","паттерн","str"],
+    ["bright","яркость","num"], ["tier","слой","str"], ["price","цена","num"]];
+
+  function renderTable(list) {
+    const s = [...list].sort((a, b) => {
+      const A = a[sortKey], B = b[sortKey];
+      if (typeof A === "number") return (A - B) * sortDir;
+      return String(A).localeCompare(String(B)) * sortDir;
+    });
+    document.getElementById("thead").innerHTML = "<tr>" + COLS.map(c =>
+      c[0] ? '<th data-s="' + c[0] + '">' + c[1] +
+        (sortKey === c[0] ? '<span class="ar">' + (sortDir > 0 ? "↑" : "↓") + '</span>' : '') + '</th>'
+        : "<th></th>").join("") + "</tr>";
+    document.getElementById("tbody").innerHTML = s.map(r =>
+      '<tr class="' + (r.own ? "own" : "") + '" data-sku="' + esc(r.sku) + '">' +
+      '<td><div class="tsw">' + r.parts.map(p => '<div style="background:' + hex(p) + '"></div>').join("") + '</div></td>' +
+      '<td>' + esc(r.name) + '</td>' +
+      '<td class="mn">' + esc(r.sku) + '</td><td class="mn">' + esc(r.gen) + '</td>' +
+      '<td class="mn">' + esc(r.date) + '</td>' +
+      '<td class="mn pat">' + patHTML(r.pat) + '</td>' +
+      '<td class="mn">' + r.bright.toFixed(2) + '</td>' +
+      '<td class="mn">' + esc(r.tier) + '</td><td class="mn">$' + r.price + '</td></tr>').join("");
+    document.querySelectorAll("#thead th[data-s]").forEach(th => {
+      th.onclick = () => {
+        const k = th.dataset.s;
+        if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
+        render();
+      };
+    });
+    document.querySelectorAll("#tbody tr").forEach(tr => {
+      tr.onclick = () => pick(rows.find(r => r.sku === tr.dataset.sku));
+    });
+  }
+
+  function pick(r) {
+    sel = r;
+    detail();
+    document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function detail() {
+    const el = document.getElementById("detail");
+    if (!sel) {
+      el.className = "detail empty";
+      el.textContent = "Выберите расцветку, чтобы разобрать её по слотам.";
+      return;
+    }
+    el.className = "detail";
+    const n = patCount[sel.pat];
+    const rare = n <= 4 ? ' <span class="rare">— редкий паттерн</span>' : '';
+    el.innerHTML = '<div class="cname">' + esc(sel.name) + '</div>' +
+      '<div class="cmeta"><span>' + esc(sel.sku) + ' · ' + esc(sel.gen) + ' · вышла ' + esc(sel.date) + '</span></div>' +
+      '<div class="dbars">' + sel.parts.map((p, i) =>
+        '<div class="dbar"><div class="sw" style="background:' + hex(p) + '"></div>' +
+        '<div class="n">' + esc(p) + '</div><div class="z">' + ZONES[i] + '</div>' +
+        '<div class="ty">' + (NEU(p) ? "нейтральный" : "цветной") + '</div></div>').join("") + '</div>' +
+      '<div class="drow">' +
+      '<span>паттерн <b class="pat">' + patHTML(sel.pat) + '</b> — ' + n + ' из ' + TOTAL + rare + '</span>' +
+      '<span>слой <b>' + esc(sel.tier) + '</b></span>' +
+      '<span>цена <b>$' + sel.price + '</b></span></div>';
+  }
+
+  document.querySelectorAll(".fbtn").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll(".fbtn").forEach(x => x.classList.remove("on"));
+      b.classList.add("on"); filter = b.dataset.f; render();
+    };
+  });
+  document.querySelectorAll(".vbtn").forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll(".vbtn").forEach(x => x.classList.remove("on"));
+      b.classList.add("on"); view = b.dataset.v; render();
+    };
+  });
+  render();
+})();
+</script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
