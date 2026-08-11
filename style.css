@@ -595,15 +595,73 @@
    --mute2 (#a3a3a3) спорит с --ink. Токена такой плотности в системе нет. */
 .case-chart .bar{fill:#c9c9c4;}
 .case-chart .bar-hot{fill:var(--accent);}
-.case-chart .bar-food{fill:var(--ink);}
+/* .bar-dark — то же самое, что .bar-food, только в другом кейсе. Второй
+   селектор вместо копии правила: цвет столбика один, менять его надо в
+   одном месте. Имена оставлены разные, потому что в разметке они читаются
+   по смыслу своего графика. */
+.case-chart .bar-food,.case-chart .bar-dark{fill:var(--ink);}
 .case-chart .axis{stroke:var(--line-d);stroke-width:1;}
+/* жирная ось — там, где линия несёт смысл базовой, а не разметочной */
+.case-chart .axis-b{stroke:var(--ink);stroke-width:2;}
 .case-chart .ref-line{stroke:var(--accent);stroke-width:1;stroke-dasharray:4 4;}
 .case-chart .mean-line{stroke:var(--accent);stroke-width:1.5;}
+.case-chart .dots circle{fill:#c9c9c4;}
+.case-chart .dot-hot{fill:var(--accent);}
 .case-chart .t-accent,.case-chart .t-accent text{fill:var(--accent);}
 .case-chart .t-ink,.case-chart .t-ink text{fill:var(--ink);}
 .case-chart .t-inv,.case-chart .t-inv text{fill:#fff;}
+.case-chart .t-xs,.case-chart .t-xs text{font-size:10px;}
 .case-chart .t-sm,.case-chart .t-sm text{font-size:11px;}
 .case-chart .t-md,.case-chart .t-md text{font-size:13px;}
+.case-chart .t-lg,.case-chart .t-lg text{font-size:14px;}
+
+/* моноширинная вставка в прозе — артикул, префикс, код внутри абзаца.
+   В отличие от .prose code без фоновой плашки: это не код, а имя вещи. */
+.prose .mono{font-family:var(--mono);}
+
+/* Ячейки матрицы со-встречаемости. Кодировка двумерная: прозрачность —
+   в скольких расцветках пара сошлась, цвет — идёт ли связь через Core Black
+   (акцент) или между двумя другими оттенками (чернила). Шесть классов
+   вместо сотни presentation-атрибутов: перекрасить матрицу можно из одного
+   места, а разметка перестаёт быть стеной из fill-opacity. */
+.case-chart .cell--none{fill:#eceae4;}
+.case-chart .cell--1{fill:var(--ink);fill-opacity:.25;}
+.case-chart .cell--1-hot{fill:var(--accent);fill-opacity:.25;}
+.case-chart .cell--2-hot{fill:var(--accent);fill-opacity:.55;}
+.case-chart .cell--3-hot{fill:var(--accent);fill-opacity:.85;}
+.case-chart .cell--diag{fill:none;stroke:var(--line);stroke-dasharray:2 2;}
+
+/* explorer — интерактивная врезка внутри кейса: сетка карточек с фильтрами
+   и разбором выбранного элемента. Рамки сверху и снизу как у .formula-box:
+   врезка «выходит» из текста, но в отличие от формулы её можно потрогать.
+   Сетка ограничена по высоте и скроллится — иначе три десятка карточек
+   рвут ритм чтения на середине статьи. */
+.explorer{border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:24px 0 20px;margin:40px 0;}
+.exp-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.exp-head--foot{margin:14px 0 0;}
+.exp-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.exp-count{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.exp-more{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;}
+.exp-f{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.exp-f button{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  background:none;border:1px solid var(--line);color:var(--muted);padding:6px 10px;cursor:pointer;}
+.exp-f button:hover{border-color:var(--ink);color:var(--ink);}
+.exp-f button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.exp-f button.on.hot{background:var(--accent);border-color:var(--accent);}
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;
+  max-height:340px;overflow-y:auto;padding-right:4px;}
+.ec{border:1px solid var(--line);padding:8px;cursor:pointer;background:var(--bg);}
+.ec:hover{border-color:var(--ink);}
+.ec.own{border-color:var(--accent);border-width:2px;}
+.ec .sw{display:flex;height:22px;margin-bottom:6px;}
+.ec .sw div{flex:1;}
+.ec .nm{font-size:12px;font-weight:700;line-height:1.2;}
+.ec .mt{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.ec .mt .c{color:var(--accent);font-weight:700;}
+.exp-detail{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px;
+  padding-top:12px;border-top:1px solid var(--line);min-height:20px;line-height:1.6;}
+.exp-detail b{color:var(--ink);font-weight:600;}
+.exp-detail .rare{color:var(--accent);}
 
 /* lesson footer nav */
 .lesson-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--ink);}
