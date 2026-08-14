@@ -901,6 +901,47 @@
 /* spacer before footer */
 .footer-spacer{height:96px;}
 
+/* sim-embed — интерактивный симулятор внутри статьи.
+   Первый embed-компонент в системе (design-system §7 держал
+   «интерактивные embed-блоки» в открытых вопросах).
+
+   Сплошная рамка --ink, а не левая линия как у .bridge: внутри
+   iframe чужая вёрстка со своими токенами (скругления, тени,
+   синий акцент), и рамка работает границей «здесь кончается
+   статья и начинается прибор». Без неё симулятор читается
+   как сломанная вёрстка страницы. */
+.sim-embed{border:1px solid var(--ink);margin:40px 0;}
+/* Врезка выходит из колонки текста на всю ширину .article: 48px —
+   ровно её боковой padding, поэтому рамка встаёт по краю статьи.
+   Дело не в красоте: внутренняя сетка симулятора переключается
+   на две колонки от 800px, а колонка .prose даёт фрейму 782 —
+   не хватает 18px, и он разворачивается в одну колонку высотой
+   925px вместо 732. Замерено, не прикинуто.
+
+   Селектор с .prose — не для красоты: базовое .prose figure
+   задаёт margin:32px 0 и по специфичности (0,0,1,1) бьёт
+   одиночный класс, сколько его ни двигай по файлу. */
+.prose .sim-embed{margin:40px -48px;}
+/* Шапка отделена тонкой линией, а не жирной: она часть блока,
+   а не отдельная секция. baseline вместо center — тег и ссылка
+   разной кегли, по центру их «плавает». */
+.sim-embed-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line);}
+.sim-embed-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+.sim-embed-title{font-size:16px;font-weight:600;color:var(--ink);}
+.sim-embed-note{font-size:13px;color:var(--muted);margin-top:4px;}
+.sim-embed-link{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--line-d);}
+.sim-embed-link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+/* 880px — самый высокий из двенадцати пресетов (AOV, время доставки
+   и RPM дают по три предупреждения и растягивают правую панель до
+   869px), плюс небольшой запас. Высота фиксированная, а не под
+   самый частый случай: иначе на трёх пресетах из двенадцати
+   у читателя молча обрезается вывод — ровно та часть, ради
+   которой врезка и стоит.
+   display:block убирает inline-зазор под iframe. */
+.sim-embed-frame{display:block;width:100%;height:880px;border:0;}
+/* Запасной вход показывается только там, где скрыт фрейм. */
+.sim-embed-fallback{display:none;}
+
 /* responsive tweaks */
 @media (max-width:900px){
   .nav{display:flex;align-items:center;gap:12px;padding:16px 24px;}
@@ -951,6 +992,25 @@
   .lesson{padding-left:24px;padding-right:24px;}
   .lesson-nav{grid-template-columns:1fr;}
   .lesson-nav--next{text-align:left;}
+  /* Гасим выход за колонку: ниже 900 у .article padding уже 24px,
+     и -48px увели бы рамку за край экрана — горизонтальная прокрутка
+     на всю статью из-за одной врезки. */
+  .prose .sim-embed{margin-left:0;margin-right:0;}
+  /* Симулятор на телефоне не встраиваем, а отдаём ссылкой.
+     Его собственная сетка ломается в одну колонку на 800px, и форма
+     с панелью результата вытягиваются до 925px — больше экрана,
+     да ещё со вложенной прокруткой: палец не понимает, что он
+     листает — фрейм или страницу.
+
+     Осторожно: display:none НЕ отменяет загрузку. Проверено в
+     панели — при 390px фрейм скрыт, а документ внутри загружен
+     полностью (25 КБ). Если эти килобайты на мобильном окажутся
+     важны, скрытия мало: нужно снимать src и подставлять его
+     из matchMedia. */
+  .sim-embed-frame{display:none;}
+  .sim-embed-fallback{display:block;padding:20px;font-size:14px;color:var(--ink);border-top:1px solid var(--line);}
+  .sim-embed-fallback:hover{color:var(--accent);}
+  .sim-embed-head{border-bottom:0;}
   .km-row{grid-template-columns:1fr 28px;gap:12px;}
   .km-tags{grid-column:1 / -1;margin-bottom:-4px;}
   .km-filters{grid-template-columns:1fr;}
