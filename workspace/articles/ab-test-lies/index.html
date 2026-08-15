@@ -307,6 +307,26 @@
 
   <p><strong>Что делать.</strong> Кластерная рандомизация, switchback, географические сплиты. Ортогональные слои для параллельных тестов.</p>
 
+  <p>Кластерная рандомизация чинит интерференцию и ломает анализ. ICC — это то, насколько пользователи внутри одного кластера похожи друг на друга: в одном городе они видят одну рекламу, живут при одной погоде, попадают под одни акции. Чем выше ICC, тем меньше нового приносит каждый следующий пользователь: двадцать городов остаются двадцатью наблюдениями, сколько бы человек в них ни жило.</p>
+
+  <p>Поставьте эффект в ноль, а ICC на максимум. Наивный t-тест покажет p&lt;0,001 там, где эффекта нет, и будет ошибаться так в двух случаях из трёх.</p>
+
+  <figure class="sim-embed sim-embed--cluster">
+    <figcaption class="sim-embed-head">
+      <div>
+        <div class="sim-embed-tag">Симулятор</div>
+        <div class="sim-embed-title">Кластерный эксперимент</div>
+        <div class="sim-embed-note">Наивный t-тест против кластерного при той же выборке</div>
+      </div>
+      <a class="sim-embed-link" href="/lab/ab-stat-os/simulators/cluster_simulator/" target="_blank" rel="noopener">Открыть отдельно ↗</a>
+    </figcaption>
+    <iframe class="sim-embed-frame"
+            src="/lab/ab-stat-os/simulators/cluster_simulator/"
+            title="Кластерный симулятор: как ICC и размер кластера раздувают дисперсию и ломают наивный t-тест"
+            loading="lazy"></iframe>
+    <a class="sim-embed-fallback" href="/lab/ab-stat-os/simulators/cluster_simulator/">Открыть кластерный симулятор ↗</a>
+  </figure>
+
   <p class="page-sub"><em>Термин:</em> нарушение SUTVA, interference, spillover.</p>
 
   <h2 id="chain">Как это сходится</h2>
