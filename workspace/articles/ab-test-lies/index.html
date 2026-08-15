@@ -179,9 +179,9 @@
 
   <p><strong>Что делать.</strong> Подбирать критерий под тип метрики. Для ratio — дельта-метод или бутстрап с линеаризацией на уровне пользователя.</p>
 
-  <p>Разница между «долей» и «ratio» на словах звучит как формальность, а решает выбор критерия. Возьмите пресет CTR и переключите единицу анализа с показа на пользователя — тип метрики и рекомендованный тест сменятся на глазах.</p>
+  <p>CTR — это доля или ratio? Ответ зависит от того, что считать единицей наблюдения: показ или пользователя. Переключите — и сменится не только название типа, но и критерий, которым метрику положено проверять.</p>
 
-  <figure class="sim-embed">
+  <figure class="sim-embed sim-embed--classifier">
     <figcaption class="sim-embed-head">
       <div>
         <div class="sim-embed-tag">Симулятор</div>
@@ -195,6 +195,24 @@
             title="Классификатор метрик: определение типа метрики и подходящего статкритерия"
             loading="lazy"></iframe>
     <a class="sim-embed-fallback" href="/lab/ab-stat-os/simulators/metric_classifier/">Открыть классификатор метрик ↗</a>
+  </figure>
+
+  <p>Тип метрики — половина ответа. Вторая половина в том, как распределены сами данные. У выручки длинный хвост: среднее тянут несколько китов, и t-тест начинает врать не потому, что формула неверна, а потому, что не выполнены его предпосылки. Поставьте тяжесть хвоста на максимум и посмотрите на гистограмму.</p>
+
+  <figure class="sim-embed sim-embed--distributions">
+    <figcaption class="sim-embed-head">
+      <div>
+        <div class="sim-embed-tag">Симулятор</div>
+        <div class="sim-embed-title">Playground распределений</div>
+        <div class="sim-embed-note">Форма данных и её влияние на выбор критерия</div>
+      </div>
+      <a class="sim-embed-link" href="/lab/ab-stat-os/simulators/distribution_playground/" target="_blank" rel="noopener">Открыть отдельно ↗</a>
+    </figcaption>
+    <iframe class="sim-embed-frame"
+            src="/lab/ab-stat-os/simulators/distribution_playground/"
+            title="Playground распределений: форма данных и рекомендация по статкритерию"
+            loading="lazy"></iframe>
+    <a class="sim-embed-fallback" href="/lab/ab-stat-os/simulators/distribution_playground/">Открыть playground распределений ↗</a>
   </figure>
 
     <p class="page-sub"><em>Термин:</em> предпосылки критерия, тест Уэлча, дельта-метод, линеаризация</p>
@@ -307,7 +325,7 @@
     <li>Гипотеза и метрика — до старта</li>
     <li>MDE — под свой бизнес, не из чужой статьи</li>
     <li>На выходе — решение, а не отчёт на сорок страниц</li>
-    <li>Критерий — под тип метрики</li>
+    <li>Критерий — под тип метрики (<a href="/lab/ab-stat-os/simulators/test_selection_map/">карта выбора</a>)</li>
     <li>Много метрик — поправка на множественность</li>
     <li>Решение — по доверительному интервалу, а не по точке</li>
     <li>Первым делом — SRM</li>
