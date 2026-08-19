@@ -95,6 +95,11 @@ cases/**/requirements.txt
 !cases/ub22/palette/build_data.py
 !cases/ub22/palette/ub_final.csv
 
+# ── Exceptions: telenok — датасет кейса публикуется ──
+# cases/**/*.csv выбросило бы raw-выгрузку из коммита, оставив xlsx рядом.
+# Проверено git check-ignore: без этой строки csv молча не попадает.
+!cases/telenok/assets/telenok_money_raw.csv
+
 # ── Exceptions: explicit case-level publish files ──
 !cases/**/index.html
 !cases/**/charts.js
