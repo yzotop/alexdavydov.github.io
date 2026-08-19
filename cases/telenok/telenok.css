@@ -1,0 +1,178 @@
+/* Кейс «Рога и копыта» — локальные стили страницы.
+ *
+ * Грузится поверх /style.css: токены, шрифты, nav и подвал сайта берутся
+ * оттуда. Прецедент — palette.css у /cases/ub22/palette/.
+ *
+ * Всё замкнуто на .case-telenok намеренно. В исходнике селекторы голые —
+ * body, h1, h2, p, header, footer, figure, figcaption, table, th, td, —
+ * на отдельной странице это безопасно, а на сайте переопределило бы
+ * глобальную типографику во всех кейсах сразу.
+ *
+ * Страница не обёрнута в .article: у .article своя шкала заголовков
+ * (h1 clamp 44–68px), она конфликтовала бы с авторской (34–56px) при
+ * равной специфичности, и порядок подключения решал бы вёрстку. Здесь
+ * .case-telenok — самостоятельный контейнер, конфликта нет.
+ */
+
+/* .wrap исходника и его body слиты в контейнер */
+.case-telenok {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+  color: var(--ink);
+  font: 400 17px/1.62 var(--sans);
+}
+
+.case-telenok header { padding: 92px 0 56px; border-bottom: 1px solid var(--line); }
+.case-telenok .kicker {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+/* Manrope на сайте возит 400–700, восьмисотого начертания нет.
+   Браузер молча берёт 700 и жир не синтезирует — ширина не меняется.
+   Объявляем то, что реально отрисуется, иначе появление Manrope 800
+   в assets/fonts однажды утяжелит заголовки без единой правки здесь. */
+.case-telenok h1 {
+  font-weight: 700;
+  font-size: clamp(34px, 5.4vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -.02em;
+  margin: 0 0 22px;
+}
+.case-telenok h1 em { font-style: normal; color: var(--accent); }
+.case-telenok .dek { font-size: 20px; color: #444; max-width: 60ch; margin: 0; }
+
+.case-telenok h2 {
+  font-weight: 700;
+  font-size: clamp(24px, 3.4vw, 32px);
+  line-height: 1.14;
+  letter-spacing: -.015em;
+  margin: 76px 0 14px;
+}
+.case-telenok .eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 76px 0 6px;
+}
+.case-telenok .eyebrow + h2 { margin-top: 0; }
+.case-telenok p { max-width: 64ch; margin: 0 0 18px; }
+.case-telenok .lede { font-size: 19px; }
+
+.case-telenok figure {
+  margin: 34px 0 10px;
+  padding: 26px 0 18px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+/* Врезка без рамки: в исходнике это делалось инлайновым style, атрибут
+   style в разметке запрещён (CLAUDE.md), поэтому вынесено в модификатор. */
+.case-telenok figure.bare { margin: 34px 0 26px; padding: 0; border: none; }
+.case-telenok figcaption {
+  margin-top: 14px;
+  margin-bottom: 26px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.case-telenok .chart { width: 100%; height: auto; display: block; overflow: visible; }
+/* Кегли подписей заданы отдельными свойствами, а не шорткатом font:.
+   В исходнике был шорткат с абсолютным размером, и мобильное смягчение
+   .chart{font-size:14px} до подписей не доходило — наследовать было нечего.
+   Замерено на живой странице: медиазапрос срабатывал, .chart становился
+   14px, а .cap оставался 11.5px. */
+.case-telenok .chart .lab { font-family: var(--sans); font-weight: 500; font-size: 13px; fill: var(--ink); }
+/* Geist Mono вместо JetBrains Mono из исходника: замерено — ширина знака
+   у обеих 0.6 em, латиница и цифры совпадают до 0.1 px, кириллица у Geist
+   на 0.3% уже. Подписи в графиках не разъезжаются. */
+.case-telenok .chart .num { font-family: var(--mono); font-weight: 500; font-size: 13px; fill: var(--ink); }
+.case-telenok .chart .cap { font-family: var(--mono); font-weight: 400; font-size: 11.5px; fill: var(--muted); }
+.case-telenok .chart .mid { text-anchor: middle; }
+
+.case-telenok table { width: 100%; border-collapse: collapse; margin: 30px 0; }
+.case-telenok th,
+.case-telenok td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.case-telenok th {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+}
+.case-telenok th.r { text-align: right; }
+.case-telenok td.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+.case-telenok td.ch { font-family: var(--mono); color: var(--muted); text-align: right; width: 70px; }
+
+.case-telenok .pull {
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 22px;
+  margin: 34px 0;
+  font-size: 21px;
+  line-height: 1.4;
+  font-weight: 600;
+  max-width: 56ch;
+}
+.case-telenok .note { background: #f6f6f2; padding: 22px 24px; margin: 44px 0; font-size: 15px; color: #444; }
+.case-telenok .note b { font-weight: 700; color: var(--ink); }
+.case-telenok .note p { margin: 0 0 10px; max-width: none; }
+.case-telenok .note p:last-child { margin: 0; }
+
+/* Блок датасета. Стоит после врезки про ограничения: сначала читатель
+   узнаёт, где мы могли ошибиться, потом получает возможность проверить. */
+.case-telenok .data { border-top: 1px solid var(--line); margin: 44px 0 0; padding-top: 26px; }
+.case-telenok .data h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+.case-telenok .data .data-lede { font-size: 15px; color: #444; margin: 0 0 18px; }
+.case-telenok .data-file { display: block; margin-bottom: 14px; font-size: 15px; max-width: 64ch; }
+.case-telenok .data-file:last-child { margin-bottom: 0; }
+.case-telenok .data-file a { font-family: var(--mono); font-size: 14px; }
+.case-telenok .data-file .size { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 8px; }
+.case-telenok .data-file .what { display: block; color: #444; margin-top: 3px; }
+
+.case-telenok footer {
+  border-top: 1px solid var(--line);
+  margin-top: 90px;
+  padding-top: 26px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.case-telenok footer a { color: var(--muted); border-bottom: 1px solid var(--line-d); }
+.case-telenok footer a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.case-telenok .article-back { margin-top: 40px; font-size: 15px; }
+
+/* Обёртка листается вбок. Она внутри <figure> и охватывает только <svg>:
+   если повесить overflow на сам figure, подпись уедет вбок вместе с
+   графиком, хотя в 375 она помещается целиком.
+   Паттерн взят у .table-wrap из /style.css — overflow-x + инерция на touch. */
+.case-telenok .chart-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 640px) {
+  /* Подъём кегля здесь не работает: координаты подписей проставлены руками
+     с шагом 17 единиц viewBox, последний бесконфликтный размер — 12/13,
+     это 5.2 физических px при нужных ~10, а 12.5/14 даёт уже 9 наложений.
+     Единственный рычаг, сохраняющий раскладку автора, — масштаб самого SVG.
+     При 700px подпись выходит на 10.6 px, столкновений ноль. */
+  .case-telenok .chart-wrap .chart { min-width: 700px; }
+  /* правый отступ — сигнал, что справа есть продолжение;
+     полосу прокрутки на touch не прячем, она тоже подсказка */
+  .case-telenok .chart-wrap { padding-right: 24px; }
+}
