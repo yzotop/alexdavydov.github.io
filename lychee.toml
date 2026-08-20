@@ -19,6 +19,14 @@ max_concurrency = 4
 # Timeout per request (seconds)
 timeout = 20
 
+# Настоящий браузерный агент вместо дефолтного "lychee/x.y.z".
+# Проба против 403 на karpov.courses: сайт за DDoS-Guard, из CI отдаёт
+# 403, вручную с домашнего адреса — 200 при любом агенте, включая
+# собственный агент lychee. Если после этого 403 в CI останется,
+# значит защита смотрит на репутацию IP, а не на строку агента,
+# и лечится это исключением домена, а не подбором агента.
+user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
 # Resolve root-relative links so lychee can build URLs without errors
 base_url = "https://davydov.my"
 
