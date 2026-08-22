@@ -615,9 +615,41 @@
 .case-chart .t-md,.case-chart .t-md text{font-size:13px;}
 .case-chart .t-lg,.case-chart .t-lg text{font-size:14px;}
 
+/* Кейс lego-octan. Пиктограммы человечков собраны из сотен <rect>, и их
+   заливки — это данные (какого типа фигурка), поэтому в разметке они
+   остались литералами. Сюда вынесено только оформление: кегли подписей
+   и марки графиков — кольцо, кружки, линейки. */
+.case-chart .t-2xs,.case-chart .t-2xs text{font-size:9px;}
+/* Розовый подписи «6 существ» — затемнённый вариант заливки Юникитти
+   (#e88ab8), взят ради читаемости текста на светлом фоне. Токена такой
+   плотности в системе нет, как и у .bar (#c9c9c4). */
+.case-chart .t-pink,.case-chart .t-pink text{fill:#c96a9c;}
+/* Центр кольцевой диаграммы: число и подпись под ним. Пара «.x, .x text»
+   здесь не нужна — оба класса висят прямо на <text>, а не на группе. */
+.case-chart .donut-num{font-size:44px;font-weight:700;}
+.case-chart .donut-lbl{font-size:11px;letter-spacing:.08em;}
+/* Точки диаграммы рассеяния и точечных шкал. Прозрачность осталась
+   атрибутом fill-opacity в разметке: у разных графиков она разная
+   (.5 / .55 / .9 / .95), и разносить это по четырём классам дороже,
+   чем оставить одно объявление цвета. */
+.case-chart .dot-ink{fill:var(--ink);}
+/* Линейки под группами пиктограмм и медианная черта на шкале цены
+   за деталь. Толщина 2 — как у .axis-b: линия несёт смысл, а не разметку. */
+.case-chart .rule-hot{stroke:var(--accent);stroke-width:2;}
+.case-chart .rule-mute{stroke:#c9c9c4;stroke-width:2;}
+/* Секторы кольцевой диаграммы и плашки её легенды. Отдельные имена вместо
+   .bar-hot/.bar-dark: заливка та же, но «bar» на секторе кольца читается
+   как столбик — через полгода это собьёт с толку при правке. */
+.case-chart .slice-hot{fill:var(--accent);}
+.case-chart .slice-ink{fill:var(--ink);}
+
 /* моноширинная вставка в прозе — артикул, префикс, код внутри абзаца.
    В отличие от .prose code без фоновой плашки: это не код, а имя вещи. */
 .prose .mono{font-family:var(--mono);}
+/* акцентное слово в подписи к графику — цвет как у марки, на которую
+   подпись ссылается. Область ограничена .prose, чтобы не пересечься
+   с .accent-dot в заголовках главной. */
+.prose .accent{color:var(--accent);}
 
 /* Ячейки матрицы со-встречаемости. Кодировка двумерная: прозрачность —
    в скольких расцветках пара сошлась, цвет — идёт ли связь через Core Black
@@ -793,6 +825,10 @@
 .case-metric{display:grid;grid-template-columns:1fr;gap:16px;padding-top:16px;border-top:1px solid var(--line);}
 .case-metric .m-num{font-size:28px;font-weight:500;letter-spacing:-.02em;color:var(--ink);line-height:1;}
 .case-metric .m-lbl{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono);letter-spacing:.05em;}
+/* отбивка ссылки «Открыть кейс» от блока с метрикой. Класс вместо
+   style="margin-top:12px": атрибут style запрещён (CLAUDE.md). У карточек
+   #1–#8 отбивка пока инлайновая — это долг, заведённый до этой правки. */
+.case-open{margin-top:12px;}
 
 /* article */
 .article{padding:72px 48px 0;max-width:880px;margin:0 auto;}
