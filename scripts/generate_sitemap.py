@@ -9,6 +9,21 @@ from xml.sax.saxutils import escape
 
 SITE_ORIGIN = "https://davydov.my"
 
+# Страницы, которые есть в поиске по сайту, но не должны попадать
+# в карту сайта. Карта — заявка поисковику «вот что индексировать»,
+# поиск по сайту — навигация для того, кто уже пришёл. Это разные вещи,
+# и разводятся они здесь: search-index.json остаётся полным, из карты
+# путь вычитается.
+#
+# Ветка AI-evals скрыта из навигации: карточек на хабе нет, но статьи
+# должны находиться поиском. Единственная дверь — /workspace/blind-verdict-evals/.
+# Возврат — убрать путь отсюда и вернуть карточку на хаб. См. CHANGELOG.md.
+EXCLUDED_FROM_SITEMAP = (
+    "/workspace/articles/honesty-probe-hint/",
+    "/workspace/articles/llm-decisions-two-metrics/",
+    "/workspace/articles/sgr-ab-decisions/",
+)
+
 # Paths not guaranteed to appear in search-index (add when new hubs ship).
 EXTRA_PATHS = (
     "/",
@@ -53,6 +68,20 @@ def main() -> int:
             u = row.get("url")
             if isinstance(u, str) and u.strip():
                 urls.add(u.strip())
+
+    # Ругаемся, если исключение перестало на что-то указывать: иначе опечатка
+    # или переименование статьи молча вернут её в карту, и заметить это будет
+    # нечем — карта просто станет на строку длиннее.
+    stale = [u for u in EXCLUDED_FROM_SITEMAP if u not in urls]
+    if stale:
+        print("ОШИБКА: EXCLUDED_FROM_SITEMAP указывает на пути, которых нет "
+              "в search-index.json:", file=sys.stderr)
+        for u in stale:
+            print(f"   {u}", file=sys.stderr)
+        print("Уберите их из списка или поправьте путь. Ничего не записано.",
+              file=sys.stderr)
+        return 1
+    urls -= set(EXCLUDED_FROM_SITEMAP)
 
     locs = sorted({normalize_loc(p) for p in urls})
 

@@ -10,9 +10,18 @@
 ## 2026-08-09 — ветка AI-evals скрыта из навигации
 
 Три статьи убраны из карточек хаба `/workspace/articles/` и из
-`assets/search-index.json` (значит и из `sitemap.xml`, и из поиска
-по сайту): `honesty-probe-hint`, `llm-decisions-two-metrics`,
-`sgr-ab-decisions`. Файлы на месте, `noindex` не ставился,
-перекрёстные ссылки внутри статей не тронуты.
-`/workspace/blind-verdict-evals/` оставлен видимым как единственная
-дверь в ветку. Возврат — обратной правкой.
+`sitemap.xml`: `honesty-probe-hint`, `llm-decisions-two-metrics`,
+`sgr-ab-decisions`.
+
+**В поиске по сайту они остаются.** Карта сайта и поиск разведены:
+запись живёт в `assets/search-index.json`, а путь вычитается из карты
+списком `EXCLUDED_FROM_SITEMAP` в `scripts/generate_sitemap.py`.
+Карта — заявка поисковику «вот что индексировать», поиск по сайту —
+навигация для того, кто уже пришёл; это разные вещи.
+
+Файлы на месте, `noindex` не ставился, перекрёстные ссылки внутри
+статей не тронуты. `/workspace/blind-verdict-evals/` оставлен видимым
+как единственная дверь в ветку.
+
+Возврат: убрать пути из `EXCLUDED_FROM_SITEMAP` и вернуть три
+карточки `.note` на хаб.
