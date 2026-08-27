@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как я строил AI-аналитика · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/ai-analyst-checks/"/>
+    <meta name="description" content="Учебная сборка AI-аналитика на ритейл-данных: шесть этапов, шестнадцать проверок и числа, которых я не ожидал. Описания колонок не дают ничего, весь скачок точности даёт файл с определениями метрик."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Как я строил AI-аналитика и что придумывал, чтобы ему не верить на слово — Александр Давыдов"/>
+    <meta property="og:description" content="Шесть этапов, шестнадцать проверок и числа, которых я не ожидал."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/ai-analyst-checks/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Август 2026</span>
+    <span class="chip">AI-аналитик</span>
+    <span>13 мин</span>
+  </div>
+  <h1>Как я строил AI-аналитика и что придумывал, чтобы ему не верить на слово</h1>
+  <div class="prose">
+  <p class="page-sub">Учебная сборка на ритейл-данных: шесть этапов, шестнадцать видов проверок и несколько чисел, которых я не ожидал.</p>
+
+  <p>Задача была простая: собрать сборку AI-аналитика целиком — данные, семантический слой, агент, отвечающий на вопросы естественным языком — и разобраться, как это устроено изнутри. Таких сборок много, и сама по себе она ничего не доказывает.</p>
+
+  <p>Интересным оказалось другое. Почти вся работа ушла не на то, чтобы система отвечала, а на то, чтобы <strong>понять, можно ли верить её ответам</strong>. И именно эта часть — про проверки — оказалась содержательной.</p>
+
+  <p>Ниже — что делалось на каждом этапе и какая проверка на нём появлялась.</p>
+
+  <figure class="fig">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" font-family="DejaVu Sans, sans-serif" role="img" focusable="false">
+  <defs>
+    <marker id="f1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#737373" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text x="0" y="20" font-size="14" fill="#0a0a0a">Пайплайн: шесть этапов, на каждом своя проверка</text>
+
+  
+  <rect x="0" y="46" width="252" height="200" rx="10" fill="none" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="14" y="66" font-size="10" fill="#737373">ДАННЫЕ</text>
+
+  <rect x="14" y="78" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="126" y="94" font-size="11.5" fill="#0a0a0a" text-anchor="middle">1. Генератор событий</text>
+  <text x="126" y="109" font-size="9.5" fill="#737373" text-anchor="middle">1.05 млн строк · 9 видов грязи</text>
+
+  <rect x="14" y="128" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="126" y="144" font-size="11.5" fill="#0a0a0a" text-anchor="middle">parquet + DuckDB</text>
+  <text x="126" y="159" font-size="9.5" fill="#737373" text-anchor="middle">схема на чтение</text>
+
+  <rect x="14" y="178" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="126" y="194" font-size="11.5" fill="#0a0a0a" text-anchor="middle">2. received_at + курсор</text>
+  <text x="126" y="209" font-size="9.5" fill="#737373" text-anchor="middle">что мы знали на дату X</text>
+
+  <text x="14" y="236" font-size="9.5" fill="#e63946">проверки: пересчёт мира, 38 шт.</text>
+
+  
+  <rect x="288" y="46" width="252" height="200" rx="10" fill="none" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="302" y="66" font-size="10" fill="#737373">СЕМАНТИКА</text>
+
+  <rect x="302" y="78" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="414" y="94" font-size="11.5" fill="#0a0a0a" text-anchor="middle">dbt</text>
+  <text x="414" y="109" font-size="9.5" fill="#737373" text-anchor="middle">9 моделей · staging и marts</text>
+
+  <rect x="302" y="128" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="414" y="144" font-size="11.5" fill="#0a0a0a" text-anchor="middle">metrics.yml</text>
+  <text x="414" y="159" font-size="9.5" fill="#737373" text-anchor="middle">3 метрики · решения явно</text>
+
+  <rect x="302" y="178" width="224" height="40" rx="6" fill="#737373" fill-opacity="0.09" stroke="#737373" stroke-width="0.8"/>
+  <text x="414" y="194" font-size="11.5" fill="#0a0a0a" text-anchor="middle">store_timezones.csv</text>
+  <text x="414" y="209" font-size="9.5" fill="#737373" text-anchor="middle">знания нет в данных</text>
+
+  <text x="302" y="236" font-size="9.5" fill="#e63946">проверки: 44 теста · свежесть витрин</text>
+
+  
+  <rect x="576" y="46" width="252" height="200" rx="10" fill="none" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="590" y="66" font-size="10" fill="#737373">АГЕНТ И ПРОВЕРКА ВЫВОДА</text>
+
+  <rect x="590" y="78" width="224" height="40" rx="6" fill="#e63946" fill-opacity="0.09" stroke="#e63946" stroke-width="0.8"/>
+  <text x="702" y="94" font-size="11.5" fill="#0a0a0a" text-anchor="middle">3. Retrieval → SQL → петля</text>
+  <text x="702" y="109" font-size="9.5" fill="#737373" text-anchor="middle">6 уровней контекста</text>
+
+  <rect x="590" y="128" width="224" height="40" rx="6" fill="#e63946" fill-opacity="0.09" stroke="#e63946" stroke-width="0.8"/>
+  <text x="702" y="144" font-size="11.5" fill="#0a0a0a" text-anchor="middle">4–6. Сетка измерений</text>
+  <text x="702" y="159" font-size="9.5" fill="#737373" text-anchor="middle">102 прогона</text>
+
+  <rect x="590" y="178" width="224" height="40" rx="6" fill="#e63946" fill-opacity="0.09" stroke="#e63946" stroke-width="0.8"/>
+  <text x="702" y="194" font-size="11.5" fill="#0a0a0a" text-anchor="middle">questions/ + make check</text>
+  <text x="702" y="209" font-size="9.5" fill="#737373" text-anchor="middle">5 вопросов с эталонами</text>
+
+  <text x="590" y="236" font-size="9.5" fill="#e63946">проверки: белый список · спроси трижды</text>
+
+  <line x1="256" y1="146" x2="282" y2="146" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-a)"/>
+  <line x1="544" y1="146" x2="570" y2="146" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-a)"/>
+
+  <text x="0" y="278" font-size="10" fill="#737373">Четыре этапа из шести — про данные и семантику. Агент пишется за вечер; всё остальное время уходит на то, с чем сравнивать его ответы.</text>
+</svg>
+    <figcaption>Пайплайн: шесть этапов</figcaption>
+  </figure>
+
+  <h2 id="stage-1">Этап 1. Мир с известной правдой</h2>
+
+  <p>Данные синтетические. Не потому, что реальных нет, а потому что на реальных нельзя проверить агента: когда он говорит «выручка за март — 12.4 миллиона», сверить это можно только написав запрос руками — а если бы я хотел писать руками, агент был бы не нужен.</p>
+
+  <p>Мир порождается <strong>событиями</strong>, а не сводками. Сезонность задана как параметр потока заказов в день, а не как множитель на выручку — тогда разброс появляется сам, из механизма, а не дорисовывается шумом. Заказы разыгрываются пуассоновским потоком, конверсии биномиально.</p>
+
+  <p>Получилось 1.05 миллиона позиций заказов, 425 тысяч заказов, два года. Тренд +18% в год, будни против выходных 1.23, ноябрь-декабрь к июню-июлю вдвое, промо поднимает продажи в 1.75 раза и возвраты в 1.34.</p>
+
+  <p>Хранилище — parquet плюс DuckDB, схема на чтение: база не копирует файлы внутрь себя, а держит представления поверх них. Перегенерировал данные — база уже актуальна.</p>
+
+  <p><strong>Грязь заложена намеренно.</strong> Дубли от ретрая оплаты, отменённые заказы в общей таблице, гостевые заказы без идентификатора клиента, смешанные часовые пояса. Смысл не в правдоподобии как таковом: каждый вид грязи даёт <strong>честный способ посчитать одно и то же двумя способами</strong>.</p>
+
+  <p>Вот цена трёх из них на одном датасете:</p>
+
+  <table>
+    <thead><tr><th>Как считали выручку</th><th>Сумма</th></tr></thead>
+    <tbody>
+      <tr><td>наивно</td><td>175 452 520</td></tr>
+      <tr><td>с дедупликацией</td><td>171 960 530</td></tr>
+      <tr><td>ещё и без отменённых</td><td>161 526 348</td></tr>
+      <tr><td>ещё и через связь с клиентами</td><td>139 984 328</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="fig">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525.2475 266.4" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" focusable="false">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-27T17:05:55.155503</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="f2-figure_1">
+  <g id="f2-patch_1">
+   <path d="M 0 266.4 
+L 525.2475 266.4 
+L 525.2475 0 
+L 0 0 
+L 0 266.4 
+z
+" fill="none"/>
+  </g>
+  <g id="f2-axes_1">
+   <g id="f2-patch_2">
+    <path d="M 47.2875 228.196094 
+L 518.0475 228.196094 
+L 518.0475 30.317188 
+L 47.2875 30.317188 
+L 47.2875 228.196094 
+z
+" fill="none"/>
+   </g>
+   <g id="f2-matplotlib.axis_1">
+    <g id="f2-xtick_1">
+     <g id="f2-line2d_1">
+      <defs>
+       <path id="f2-m4a173f922c" d="M 0 0 
+L 0 3.5 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f2-m4a173f922c" x="101.837794" y="228.196094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_1">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="101.837794" y="242.79375" transform="rotate(-0 101.837794 242.79375)">наивно</text>
+     </g>
+    </g>
+    <g id="f2-xtick_2">
+     <g id="f2-line2d_2">
+      <g>
+       <use xlink:href="#f2-m4a173f922c" x="222.390931" y="228.196094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_2">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="222.390931" y="242.79375" transform="rotate(-0 222.390931 242.79375)">с дедупликацией</text>
+     </g>
+    </g>
+    <g id="f2-xtick_3">
+     <g id="f2-line2d_3">
+      <g>
+       <use xlink:href="#f2-m4a173f922c" x="342.944069" y="228.196094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_3">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="342.944069" y="242.964844" transform="rotate(-0 342.944069 242.964844)">без отменённых</text>
+     </g>
+    </g>
+    <g id="f2-xtick_4">
+     <g id="f2-line2d_4">
+      <g>
+       <use xlink:href="#f2-m4a173f922c" x="463.497206" y="228.196094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_4">
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(432.658924 243.794727)">через связь</text>
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(430.350331 255.79668)">с клиентами</text>
+     </g>
+    </g>
+   </g>
+   <g id="f2-matplotlib.axis_2">
+    <g id="f2-ytick_1">
+     <g id="f2-line2d_5">
+      <path d="M 47.2875 228.196094 
+L 518.0475 228.196094 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_6">
+      <defs>
+       <path id="f2-md2f7d01e80" d="M 0 0 
+L -3.5 0 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="228.196094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_5">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="231.994922" transform="rotate(-0 40.2875 231.994922)">0</text>
+     </g>
+    </g>
+    <g id="f2-ytick_2">
+     <g id="f2-line2d_7">
+      <path d="M 47.2875 203.46123 
+L 518.0475 203.46123 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_8">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="203.46123" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_6">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="207.260059" transform="rotate(-0 40.2875 207.260059)">25</text>
+     </g>
+    </g>
+    <g id="f2-ytick_3">
+     <g id="f2-line2d_9">
+      <path d="M 47.2875 178.726367 
+L 518.0475 178.726367 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_10">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="178.726367" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_7">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="182.525195" transform="rotate(-0 40.2875 182.525195)">50</text>
+     </g>
+    </g>
+    <g id="f2-ytick_4">
+     <g id="f2-line2d_11">
+      <path d="M 47.2875 153.991504 
+L 518.0475 153.991504 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_12">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="153.991504" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_8">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="157.790332" transform="rotate(-0 40.2875 157.790332)">75</text>
+     </g>
+    </g>
+    <g id="f2-ytick_5">
+     <g id="f2-line2d_13">
+      <path d="M 47.2875 129.256641 
+L 518.0475 129.256641 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_14">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="129.256641" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_9">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="133.055469" transform="rotate(-0 40.2875 133.055469)">100</text>
+     </g>
+    </g>
+    <g id="f2-ytick_6">
+     <g id="f2-line2d_15">
+      <path d="M 47.2875 104.521777 
+L 518.0475 104.521777 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_16">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="104.521777" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_10">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="108.320605" transform="rotate(-0 40.2875 108.320605)">125</text>
+     </g>
+    </g>
+    <g id="f2-ytick_7">
+     <g id="f2-line2d_17">
+      <path d="M 47.2875 79.786914 
+L 518.0475 79.786914 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_18">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="79.786914" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_11">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="83.585742" transform="rotate(-0 40.2875 83.585742)">150</text>
+     </g>
+    </g>
+    <g id="f2-ytick_8">
+     <g id="f2-line2d_19">
+      <path d="M 47.2875 55.052051 
+L 518.0475 55.052051 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_20">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="55.052051" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_12">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="58.850879" transform="rotate(-0 40.2875 58.850879)">175</text>
+     </g>
+    </g>
+    <g id="f2-ytick_9">
+     <g id="f2-line2d_21">
+      <path d="M 47.2875 30.317188 
+L 518.0475 30.317188 
+" clip-path="url(#f2-p784a2aa670)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f2-line2d_22">
+      <g>
+       <use xlink:href="#f2-md2f7d01e80" x="47.2875" y="30.317188" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f2-text_13">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="40.2875" y="34.116016" transform="rotate(-0 40.2875 34.116016)">200</text>
+     </g>
+    </g>
+    <g id="f2-text_14">
+     <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="14.797656" y="129.256641" transform="rotate(-90 14.797656 129.256641)">млн</text>
+    </g>
+   </g>
+   <g id="f2-patch_3">
+    <path d="M 68.685682 228.196094 
+L 134.989907 228.196094 
+L 134.989907 54.606823 
+L 68.685682 54.606823 
+z
+" clip-path="url(#f2-p784a2aa670)" fill="#737373" opacity="0.85"/>
+   </g>
+   <g id="f2-patch_4">
+    <path d="M 189.238819 228.196094 
+L 255.543044 228.196094 
+L 255.543044 58.05981 
+L 189.238819 58.05981 
+z
+" clip-path="url(#f2-p784a2aa670)" fill="#737373" opacity="0.85"/>
+   </g>
+   <g id="f2-patch_5">
+    <path d="M 309.791956 228.196094 
+L 376.096181 228.196094 
+L 376.096181 68.379195 
+L 309.791956 68.379195 
+z
+" clip-path="url(#f2-p784a2aa670)" fill="#737373" opacity="0.85"/>
+   </g>
+   <g id="f2-patch_6">
+    <path d="M 430.345093 228.196094 
+L 496.649318 228.196094 
+L 496.649318 89.700647 
+L 430.345093 89.700647 
+z
+" clip-path="url(#f2-p784a2aa670)" fill="#e63946" opacity="0.85"/>
+   </g>
+   <g id="f2-patch_7">
+    <path d="M 47.2875 228.196094 
+L 47.2875 30.317188 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f2-patch_8">
+    <path d="M 47.2875 228.196094 
+L 518.0475 228.196094 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f2-text_15">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="101.837794" y="49.606823" transform="rotate(-0 101.837794 49.606823)">175.4</text>
+   </g>
+   <g id="f2-text_16">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="222.390931" y="53.05981" transform="rotate(-0 222.390931 53.05981)">172.0</text>
+   </g>
+   <g id="f2-text_17">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="342.944069" y="63.379195" transform="rotate(-0 342.944069 63.379195)">161.5</text>
+   </g>
+   <g id="f2-text_18">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="463.497206" y="84.700647" transform="rotate(-0 463.497206 84.700647)">140.0</text>
+   </g>
+   <g id="f2-patch_9">
+    <path d="M 463.497206 50.811704 
+Q 463.497206 69.256893 463.497206 86.360441 
+" fill="none" stroke="#e63946" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M 465.697206 81.960441 
+L 463.497206 86.360441 
+L 461.297206 81.960441 
+z
+" fill="#e63946" stroke="#e63946" stroke-width="1.2" stroke-linecap="round"/>
+   </g>
+   <g id="f2-text_19">
+    <text font-size="11px" font-family="DejaVu Sans" text-anchor="middle" fill="#e63946" x="463.497206" y="44.168711" transform="rotate(-0 463.497206 44.168711)">−20%</text>
+   </g>
+   <g id="f2-text_20">
+    <text font-size="12px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="47.2875" y="16.317188" transform="rotate(-0 47.2875 16.317188)">Один датасет, четыре корректных запроса</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="f2-p784a2aa670">
+   <rect x="47.2875" y="30.317188" width="470.76" height="197.878906"/>
+  </clipPath>
+ </defs>
+</svg>
+    <figcaption>Один датасет, четыре корректных запроса</figcaption>
+  </figure>
+
+  <p>Двадцать процентов между крайними. Каждый запрос корректен.</p>
+
+  <p>Всё это описано в двух файлах: <code>DIRT.md</code> для человека и <code>truth.json</code> для машины.</p>
+
+  <h3 id="stage-1-checks">Проверка этапа</h3>
+
+  <p><code>verify.py</code> — независимый пересчёт мира по данным.</p>
+
+  <p>Два решения, которые здесь важны.</p>
+
+  <p><strong>Генератор не импортируется.</strong> Проверка, которая берёт функции у проверяемого, не проверяет ничего. Но и дублировать константы во втором файле нельзя — они молча разъедутся.</p>
+
+  <p>Выход: генератор выгружает <strong>объявленные входы</strong> мира в <code>truth.json</code>, а <code>verify</code> их читает и меряет данные. Именно входы, а не измеренные выходы — иначе данные сверялись бы сами с собой, и проверка проходила бы всегда.</p>
+
+  <p><strong>Пороги допуска остаются в проверке.</strong> «12% гостевых заказов» принадлежит миру. «Расхождение до 5% приемлемо» принадлежит измерению. Смешивать нельзя.</p>
+
+  <h2 id="stage-2">Этап 2. Время регистрации и семантический слой</h2>
+
+  <p>Выяснилось, что в таблицах есть время события, но нет времени, когда строка доехала. А без него не ответить на вопрос «что мы знали на 1 марта».</p>
+
+  <p>Добавил <code>received_at</code> во все таблицы событий. Задержки разыгрываются экспоненциально — время ожидания должно иметь правый хвост.</p>
+
+  <table>
+    <thead><tr><th>Событие</th><th>Медианная задержка регистрации</th></tr></thead>
+    <tbody>
+      <tr><td>подтверждение оплаты</td><td>2.6 минуты</td></tr>
+      <tr><td>регистрация возврата</td><td>29.5 минуты</td></tr>
+      <tr><td>отмена заказа</td><td>4.3 часа</td></tr>
+      <tr><td>ночная досылка пачкой, 3 магазина</td><td>11.9% строк против 0.02% фона</td></tr>
+    </tbody>
+  </table>
+
+  <p>Из этого сразу выросли следствия, которых не было в плане. Отменённый заказ доезжает дважды — сначала позиции с оплатой, потом отмена часами позже; 62 452 позиции доехали раньше отмены своего заказа. Недоехавшая оплата выбрасывает заказ из выгрузки целиком. Недоехавшая отмена делает заказ <code>completed</code> — не пустым, не «неизвестно», а правдоподобным значением.</p>
+
+  <p>Дальше — <strong>курсор</strong>: дата, на которую мир виден. Витрины собираются на данных, доехавших к этому моменту. Отматывать можно и назад — мир зафиксирован целиком, движется только точка наблюдения.</p>
+
+  <p>Курсор живёт в UTC. Альтернатива — двадцать четыре разных момента под одной датой, и сумма перестаёт быть числом. Цена записана: отчёт «за 1 марта» расходится с кассой сдвинутого магазина на 0.7% по заказам.</p>
+
+  <p>И тут же обнаружилось важное: <strong>смещение магазина невозможно вывести из данных</strong>. Колонка наивная, по профилю часа сдвиг угадывается статистически, по одной строке — никак. Знание либо записано руками, либо не существует.</p>
+
+  <p>Отсюда ответ на вопрос, зачем нужен семантический слой. Не «чтобы переиспользовать SQL», а <strong>чтобы у знания, которого нет в данных, было место кроме головы</strong>. Когда человек уходит, данные становятся не сломанными, а неинтерпретируемыми: цифры считаются, а что они значат, не знает никто.</p>
+
+  <p>Поверх этого — dbt: 9 моделей, staging чинит шкалу и применяет отсечку по курсору, дедупликация ровно в одном месте. Отменённые и гостевые заказы <strong>не</strong> фильтруются: слой, решивший за метрику, потом не переубедить.</p>
+
+  <p>И <code>metrics.yml</code> — три метрики, каждая с явными решениями: окно, что считается активностью, как обходятся гостевые, отсечка.</p>
+
+  <h3 id="stage-2-checks">Проверки этапа</h3>
+
+  <p><strong>44 теста dbt</strong> — зерно, ссылочная целостность, отсутствие NULL.</p>
+
+  <p><strong>Проверка свежести витрин.</strong> Витрины построены на курсоре. Сдвинул курсор без пересборки — система обязана отказаться считать, иначе получишь вчерашнее знание под сегодняшней датой. Реализовано сравнением времени манифеста dbt с курсором.</p>
+
+  <p><strong>Разделение двух видов «скрытого».</strong> Проверка «есть события, случившиеся до курсора, но не доехавшие» проходила на пяти строках, то есть не проверяла ничего. Оказалось, под одним словом смешаны две разные вещи:</p>
+
+  <table>
+    <thead><tr><th></th><th>На курсоре 1 июля 2025</th></tr></thead>
+    <tbody>
+      <tr><td>событие случилось, строка в пути</td><td>17 заказов, 13 позиций, 5 возвратов</td></tr>
+      <tr><td>событие ещё не случилось, заказ уже сделан</td><td>1 379 возвратов</td></tr>
+    </tbody>
+  </table>
+
+  <p>Два порядка разницы. Первое лечится ожиданием минут, второе — тремя неделями. Проверок стало две.</p>
+
+  <p><strong>Проверка понимания семантического слоя.</strong> Меняю одну строку в определении, данные не трогаю:</p>
+
+  <pre><code>guests: exclude          → 21 580 активных клиентов
+guests: count_each_order → 25 866 активных клиентов  (+19.9%)</code></pre>
+
+  <p>Обе честные. Первая считает известных клиентов, вторая превращает человека с тремя гостевыми заказами в трёх. Настоящего числа в данных нет вовсе.</p>
+
+  <h2 id="stage-3">Этап 3. Агент</h2>
+
+  <p>Три модуля, написанные руками. Vanna, Cube и LangChain намеренно не использовались: они прячут ровно то, ради понимания чего проект и затевался.</p>
+
+  <p><strong>Retrieval</strong> — как модель узнаёт, что есть в базе. Слои включаются флагами: голая схема, отбор таблиц по вопросу, описания колонок, примеры значений категориальных полей, определения метрик. Флаги нужны, чтобы потом померить вклад каждого слоя.</p>
+
+  <p><strong>Генерация</strong> — через <code>metrics.yml</code>, а не по схеме: выбрать метрику, собрать запрос из её определения. Если подходящей метрики нет — отказаться и сказать об этом. Отказ здесь валидный ответ, а не ошибка.</p>
+
+  <p><strong>Петля исполнения</strong> — SQL упал, ошибка возвращается модели, до трёх попыток. Логируется каждая попытка: что упало, что агент поменял, стал ли запрос считать то же самое.</p>
+
+  <p>Ответ всегда показывает SQL рядом с числом.</p>
+
+  <h3 id="stage-3-checks">Проверки этапа</h3>
+
+  <p><strong>Пять вопросов с эталонами.</strong> <code>questions/</code> — вопросы, у которых известен правильный ответ, включая случаи, где правильных ответов два.</p>
+
+  <p><strong>«Спроси трижды».</strong> Один вопрос, три прогона, ответы должны сойтись. Простейшая проверка, и она поймала больше всех — об этом ниже.</p>
+
+  <p><strong>Валидатор решений с белым списком.</strong> Появился не сразу, а после случая, разобранного ниже: форма записи разбирается терпимо, но каждое значение сверяется со списком допустимых.</p>
+
+  <p><strong>Впрыск ошибки.</strong> Побочный эффект генерации через метрики — за весь этап ни один запрос не упал сам, и петля осталась непроверенной. Пришлось завести флаг, роняющий запрос специально. Две пробы: на ошибку не по адресу агент повторил план без изменений; на ошибку, толкающую убрать условие, — убрал именно тот вариант, не переписав смысл остальных.</p>
+
+  <h3 id="stage-3-checks-2">Что поймала проверка «спроси трижды»</h3>
+
+  <p>Агент передал решение строкой <code>"[completed]"</code> — со скобками, как выглядит список в питоновском выводе. Мой сборщик разложил её посимвольно:</p>
+
+  <pre><code>where status in (&#x27;[&#x27;, &#x27;c&#x27;, &#x27;o&#x27;, &#x27;m&#x27;, &#x27;p&#x27;, &#x27;l&#x27;, &#x27;e&#x27;, &#x27;t&#x27;, &#x27;d&#x27;, &#x27;]&#x27;)</code></pre>
+
+  <p>Ни одна строка не подошла, продажи стали нулём, из нуля вычлись возвраты. Ответ — минус 1 466 746 вместо 13 141 142.</p>
+
+  <p>Запрос валидный. Исключений ноль. Петля не сработала — падать было нечему. <code>dbt test</code> прошёл, данные целы. <code>verify.py</code> прошёл, мир собран правильно.</p>
+
+  <p>Отсюда вывод, который стоит отдельно:</p>
+
+  <blockquote><p><strong>Петля самопочинки бесполезна против тихой порчи по построению.</strong> Она чинит то, что падает. Метрика, посчитавшая не то, не падает никогда.</p></blockquote>
+
+  <p>И второе, менее приятное: ошибка была в моём коде, а выглядела бы как дефект модели. Не полез бы в лог — записал бы «модель нестабильна, два прогона из трёх врут».</p>
+
+  <h2 id="stage-4">Этап 4. Сколько стоит контекст</h2>
+
+  <p>Сетка: пять уровней контекста, три повтора, вопросы из <code>questions/</code>. На уровнях без <code>metrics.yml</code> агенту нечего выбирать, поэтому завёл второй путь генерации — свободный SQL.</p>
+
+  <table>
+    <thead><tr><th>уровень</th><th>что добавляется</th><th>точность</th><th>токенов</th></tr></thead>
+    <tbody>
+      <tr><td>L0\*</td><td>голый DDL</td><td>33%</td><td>2 219</td></tr>
+      <tr><td>L1</td><td>отбор таблиц</td><td>33%</td><td>1 269</td></tr>
+      <tr><td>L2</td><td>описания колонок</td><td>33%</td><td>1 396</td></tr>
+      <tr><td>L3</td><td>примеры значений</td><td>33%</td><td>1 507</td></tr>
+      <tr><td>L4</td><td><code>metrics.yml</code></td><td><strong>89%</strong></td><td>3 136</td></tr>
+    </tbody>
+  </table>
+
+  <p>\* L0 прогонялся только в четвёртом заходе; в пятом, после починки ретривера, его не повторяли. Остальные строки — пятый заход.</p>
+
+  <figure class="fig">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 568.589062 437.0475" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" focusable="false">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-27T17:05:55.104184</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="f3-figure_1">
+  <g id="f3-patch_1">
+   <path d="M 0 437.0475 
+L 568.589062 437.0475 
+L 568.589062 0 
+L 0 0 
+L 0 437.0475 
+z
+" fill="none"/>
+  </g>
+  <g id="f3-axes_1">
+   <g id="f3-patch_2">
+    <path d="M 56.789062 258.929557 
+L 561.389062 258.929557 
+L 561.389062 30.5225 
+L 56.789062 30.5225 
+L 56.789062 258.929557 
+z
+" fill="none"/>
+   </g>
+   <g id="f3-patch_3">
+    <path d="M 391.742625 258.929557 
+L 474.396188 258.929557 
+L 474.396188 30.5225 
+L 391.742625 30.5225 
+z
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="#e63946" opacity="0.07" stroke="#e63946" stroke-linejoin="miter"/>
+   </g>
+   <g id="f3-matplotlib.axis_1">
+    <g id="f3-xtick_1">
+     <g id="f3-line2d_1">
+      <defs>
+       <path id="f3-mfd54a95ff4" d="M 0 0 
+L 0 3.5 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="102.455156" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="f3-xtick_2">
+     <g id="f3-line2d_2">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="185.108719" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="f3-xtick_3">
+     <g id="f3-line2d_3">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="267.762281" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="f3-xtick_4">
+     <g id="f3-line2d_4">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="350.415844" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="f3-xtick_5">
+     <g id="f3-line2d_5">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="433.069406" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+    <g id="f3-xtick_6">
+     <g id="f3-line2d_6">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="515.722969" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="f3-matplotlib.axis_2">
+    <g id="f3-ytick_1">
+     <g id="f3-line2d_7">
+      <path d="M 56.789062 258.929557 
+L 561.389062 258.929557 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f3-line2d_8">
+      <defs>
+       <path id="f3-mdd3b04f4bf" d="M 0 0 
+L -3.5 0 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f3-mdd3b04f4bf" x="56.789062" y="258.929557" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_1">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789062" y="262.728385" transform="rotate(-0 49.789062 262.728385)">0</text>
+     </g>
+    </g>
+    <g id="f3-ytick_2">
+     <g id="f3-line2d_9">
+      <path d="M 56.789062 204.546925 
+L 561.389062 204.546925 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f3-line2d_10">
+      <g>
+       <use xlink:href="#f3-mdd3b04f4bf" x="56.789062" y="204.546925" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_2">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789062" y="208.345753" transform="rotate(-0 49.789062 208.345753)">25%</text>
+     </g>
+    </g>
+    <g id="f3-ytick_3">
+     <g id="f3-line2d_11">
+      <path d="M 56.789062 150.164292 
+L 561.389062 150.164292 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f3-line2d_12">
+      <g>
+       <use xlink:href="#f3-mdd3b04f4bf" x="56.789062" y="150.164292" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_3">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789062" y="153.96312" transform="rotate(-0 49.789062 153.96312)">50%</text>
+     </g>
+    </g>
+    <g id="f3-ytick_4">
+     <g id="f3-line2d_13">
+      <path d="M 56.789062 95.781659 
+L 561.389062 95.781659 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f3-line2d_14">
+      <g>
+       <use xlink:href="#f3-mdd3b04f4bf" x="56.789062" y="95.781659" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_4">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789062" y="99.580487" transform="rotate(-0 49.789062 99.580487)">75%</text>
+     </g>
+    </g>
+    <g id="f3-ytick_5">
+     <g id="f3-line2d_15">
+      <path d="M 56.789062 41.399027 
+L 561.389062 41.399027 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f3-line2d_16">
+      <g>
+       <use xlink:href="#f3-mdd3b04f4bf" x="56.789062" y="41.399027" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_5">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789062" y="45.197855" transform="rotate(-0 49.789062 45.197855)">100%</text>
+     </g>
+    </g>
+    <g id="f3-text_6">
+     <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="14.797656" y="144.726029" transform="rotate(-90 14.797656 144.726029)">Точность</text>
+    </g>
+   </g>
+   <g id="f3-patch_4">
+    <path d="M 56.789062 258.929557 
+L 56.789062 30.5225 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f3-patch_5">
+    <path d="M 56.789062 258.929557 
+L 561.389062 258.929557 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f3-line2d_17">
+    <path d="M 102.455156 187.144482 
+L 185.108719 187.144482 
+L 267.762281 187.144482 
+L 350.415844 187.144482 
+L 433.069406 65.327385 
+L 515.722969 65.327385 
+" clip-path="url(#f3-pd6ffa9d5f1)" fill="none" stroke="#e63946" stroke-width="2" stroke-linecap="square"/>
+    <defs>
+     <path id="f3-m19e5c90466" d="M 0 3.5 
+C 0.928211 3.5 1.81853 3.131218 2.474874 2.474874 
+C 3.131218 1.81853 3.5 0.928211 3.5 0 
+C 3.5 -0.928211 3.131218 -1.81853 2.474874 -2.474874 
+C 1.81853 -3.131218 0.928211 -3.5 0 -3.5 
+C -0.928211 -3.5 -1.81853 -3.131218 -2.474874 -2.474874 
+C -3.131218 -1.81853 -3.5 -0.928211 -3.5 0 
+C -3.5 0.928211 -3.131218 1.81853 -2.474874 2.474874 
+C -1.81853 3.131218 -0.928211 3.5 0 3.5 
+z
+" stroke="#e63946"/>
+    </defs>
+    <g clip-path="url(#f3-pd6ffa9d5f1)">
+     <use xlink:href="#f3-m19e5c90466" x="102.455156" y="187.144482" fill="#e63946" stroke="#e63946"/>
+     <use xlink:href="#f3-m19e5c90466" x="185.108719" y="187.144482" fill="#e63946" stroke="#e63946"/>
+     <use xlink:href="#f3-m19e5c90466" x="267.762281" y="187.144482" fill="#e63946" stroke="#e63946"/>
+     <use xlink:href="#f3-m19e5c90466" x="350.415844" y="187.144482" fill="#e63946" stroke="#e63946"/>
+     <use xlink:href="#f3-m19e5c90466" x="433.069406" y="65.327385" fill="#e63946" stroke="#e63946"/>
+     <use xlink:href="#f3-m19e5c90466" x="515.722969" y="65.327385" fill="#e63946" stroke="#e63946"/>
+    </g>
+   </g>
+   <g id="f3-text_7">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="102.455156" y="176.144482" transform="rotate(-0 102.455156 176.144482)">33%</text>
+   </g>
+   <g id="f3-text_8">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="185.108719" y="176.144482" transform="rotate(-0 185.108719 176.144482)">33%</text>
+   </g>
+   <g id="f3-text_9">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="267.762281" y="176.144482" transform="rotate(-0 267.762281 176.144482)">33%</text>
+   </g>
+   <g id="f3-text_10">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="350.415844" y="176.144482" transform="rotate(-0 350.415844 176.144482)">33%</text>
+   </g>
+   <g id="f3-text_11">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="433.069406" y="54.327385" transform="rotate(-0 433.069406 54.327385)">89%</text>
+   </g>
+   <g id="f3-text_12">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="515.722969" y="54.327385" transform="rotate(-0 515.722969 54.327385)">89%</text>
+   </g>
+   <g id="f3-patch_6">
+    <path d="M 412.868607 95.131126 
+Q 422.408011 81.056935 431.382857 67.815676 
+" fill="none" stroke="#737373" stroke-width="0.9" stroke-linecap="round"/>
+    <path d="M 427.873044 69.785756 
+L 431.382857 67.815676 
+L 430.853033 71.805574 
+" fill="none" stroke="#737373" stroke-width="0.9" stroke-linecap="round"/>
+   </g>
+   <g id="f3-text_13">
+    <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(375.011203 106.525627)">весь скачок</text>
+    <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(367.546125 117.327385)">на одном шаге</text>
+   </g>
+   <g id="f3-text_14">
+    <text font-size="8.5px" font-family="DejaVu Sans" fill="#737373" transform="translate(133.167922 222.624233)">между L1 и L3 разброс между повторами</text>
+    <text font-size="8.5px" font-family="DejaVu Sans" fill="#737373" transform="translate(141.954133 232.825894)">не меньше разницы между уровнями</text>
+   </g>
+   <g id="f3-text_15">
+    <text font-size="12px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="56.789062" y="16.5225" transform="rotate(-0 56.789062 16.5225)">Стоимость контекста: плоско, потом обрыв</text>
+   </g>
+  </g>
+  <g id="f3-axes_2">
+   <g id="f3-patch_7">
+    <path d="M 56.789062 390.134258 
+L 561.389062 390.134258 
+L 561.389062 275.930729 
+L 56.789062 275.930729 
+L 56.789062 390.134258 
+z
+" fill="none"/>
+   </g>
+   <g id="f3-patch_8">
+    <path d="M 79.725426 390.134258 
+L 125.184886 390.134258 
+L 125.184886 323.445408 
+L 79.725426 323.445408 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-patch_9">
+    <path d="M 162.378989 390.134258 
+L 207.838448 390.134258 
+L 207.838448 351.99629 
+L 162.378989 351.99629 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-patch_10">
+    <path d="M 245.032551 390.134258 
+L 290.492011 390.134258 
+L 290.492011 348.179488 
+L 245.032551 348.179488 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-patch_11">
+    <path d="M 327.686114 390.134258 
+L 373.145574 390.134258 
+L 373.145574 344.843543 
+L 327.686114 344.843543 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-patch_12">
+    <path d="M 410.339677 390.134258 
+L 455.799136 390.134258 
+L 455.799136 306.615414 
+L 410.339677 306.615414 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-patch_13">
+    <path d="M 492.993239 390.134258 
+L 538.452699 390.134258 
+L 538.452699 295.886293 
+L 492.993239 295.886293 
+z
+" clip-path="url(#f3-pf084f7dae3)" fill="#737373" opacity="0.35"/>
+   </g>
+   <g id="f3-matplotlib.axis_3">
+    <g id="f3-xtick_7">
+     <g id="f3-line2d_18">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="102.455156" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_16">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(97.084687 404.873027)">L0</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(87.983437 415.674785)">голый</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(93.017812 426.476543)">DDL</text>
+     </g>
+    </g>
+    <g id="f3-xtick_8">
+     <g id="f3-line2d_19">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="185.108719" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_17">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(179.73825 404.873027)">L1</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(167.577703 415.82877)">+отбор</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(168.090984 426.784512)">таблиц</text>
+     </g>
+    </g>
+    <g id="f3-xtick_9">
+     <g id="f3-line2d_20">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="267.762281" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_18">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(262.391812 404.873027)">L2</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(241.566656 415.674785)">+описания</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(248.247047 426.476543)">колонок</text>
+     </g>
+    </g>
+    <g id="f3-xtick_10">
+     <g id="f3-line2d_21">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="350.415844" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_19">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(345.045375 404.873027)">L3</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(325.348734 415.674785)">+примеры</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(328.105688 426.476543)">значений</text>
+     </g>
+    </g>
+    <g id="f3-xtick_11">
+     <g id="f3-line2d_22">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="433.069406" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_20">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(423.405656 404.873027)">L3.5</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(412.463625 415.675488)">+metrics</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(413.717297 426.477246)">текстом</text>
+     </g>
+    </g>
+    <g id="f3-xtick_12">
+     <g id="f3-line2d_23">
+      <g>
+       <use xlink:href="#f3-mfd54a95ff4" x="515.722969" y="390.134258" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f3-text_21">
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(510.3525 404.873027)">L4</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(495.616407 415.82877)">+сборка</text>
+      <text font-size="9px" font-family="DejaVu Sans" fill="#737373" transform="translate(491.691563 426.630527)">из метрик</text>
+     </g>
+    </g>
+   </g>
+   <g id="f3-matplotlib.axis_4">
+    <g id="f3-text_22">
+     <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="50.386719" y="333.032493" transform="rotate(-90 50.386719 333.032493)">Токенов</text>
+    </g>
+   </g>
+   <g id="f3-patch_14">
+    <path d="M 56.789062 390.134258 
+L 56.789062 275.930729 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f3-patch_15">
+    <path d="M 56.789062 390.134258 
+L 561.389062 390.134258 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f3-text_23">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="102.455156" y="319.445408" transform="rotate(-0 102.455156 319.445408)">2219</text>
+   </g>
+   <g id="f3-text_24">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="185.108719" y="347.99629" transform="rotate(-0 185.108719 347.99629)">1269</text>
+   </g>
+   <g id="f3-text_25">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="267.762281" y="344.179488" transform="rotate(-0 267.762281 344.179488)">1396</text>
+   </g>
+   <g id="f3-text_26">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="350.415844" y="340.843543" transform="rotate(-0 350.415844 340.843543)">1507</text>
+   </g>
+   <g id="f3-text_27">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="433.069406" y="302.615414" transform="rotate(-0 433.069406 302.615414)">2779</text>
+   </g>
+   <g id="f3-text_28">
+    <text font-size="9px" font-family="DejaVu Sans" text-anchor="middle" fill="#737373" x="515.722969" y="291.886293" transform="rotate(-0 515.722969 291.886293)">3136</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="f3-pd6ffa9d5f1">
+   <rect x="56.789062" y="30.5225" width="504.6" height="228.407057"/>
+  </clipPath>
+  <clipPath id="f3-pf084f7dae3">
+   <rect x="56.789062" y="275.930729" width="504.6" height="114.203529"/>
+  </clipPath>
+ </defs>
+</svg>
+    <figcaption>Кривая стоимости контекста</figcaption>
+  </figure>
+
+  <p>Числа стоит читать с поправкой на то, чем они измерены. Три повтора на ячейку — этого хватает, чтобы увидеть обрыв между L3 и L4, и не хватает, чтобы различить L1, L2 и L3 между собой: разброс между повторами там не меньше разницы между уровнями. По ходу работы нашёлся дефект ретривера, и после его починки те же уровни дали другие проценты — 56% вместо 33% на L2 и L3 в предыдущем заходе. Обе версии лежат в отчёте; починка точность <strong>не подняла</strong>, а в одной ячейке формально опустила. То есть 33 и 56 здесь — не два разных результата, а одно и то же число внутри собственного разброса. Твёрдым в этой таблице является только обрыв на последнем шаге.</p>
+
+  <p>Форма кривой — плоско, потом обрыв. Три описательных слоя стоят лишних 238 токенов и дают прирост в пределах шума. Отбор таблиц вообще не про точность: он <strong>вычитает</strong> 950 токенов, ничего не портя.</p>
+
+  <h3 id="stage-4-checks">Проверки этапа</h3>
+
+  <p><strong>Парный счёт вместо средних.</strong> При трёх повторах разброс неизбежен. Считать надо не средние, а сколько вопросов сменило исход между уровнями. Вышло: L1→L2 ноль, L2→L3 ноль, L3→L4 два из трёх. Про первые три шага сетка молчит — разброс между повторами не меньше разницы между уровнями, и так и написано.</p>
+
+  <p><strong>Пересчёт по сохранённым логам.</strong> Каждый раз, когда находился дефект в измерителе, пересчёт делался повторным исполнением записанного SQL, без единого нового обращения к модели. Иначе это была бы подгонка.</p>
+
+  <p><strong>Прямая проверка после починок.</strong> Метрика «агент выдумал колонку» показала ноль на всех уровнях — после того, как я трижды чинил её код. Ноль после трёх починок подозрителен, поэтому пришлось перебрать все 155 запросов вручную и убедиться, что явление действительно не воспроизводится.</p>
+
+  <p><strong>Гипотеза записывается до прогона.</strong> Иначе задним числом объясняется любой исход.</p>
+
+  <h2 id="stage-5">Этап 5. Знание или принуждение</h2>
+
+  <p>Между L3 и L4 менялись <strong>две вещи сразу</strong>: появлялись определения метрик и одновременно менялся способ генерации — со свободного SQL на сборку из определения. Обрыв кривой мог быть эффектом любого из двух.</p>
+
+  <p>Завёл промежуточный уровень: определения подаются текстом, но SQL агент пишет сам.</p>
+
+  <table>
+    <thead><tr><th>шаг</th><th>что меняется</th><th>точность</th><th>проговорил развилку</th></tr></thead>
+    <tbody>
+      <tr><td>L3 → L3.5</td><td>появляется <strong>знание</strong></td><td>33% → <strong>89%</strong></td><td>50% → <strong>100%</strong></td></tr>
+      <tr><td>L3.5 → L4</td><td>появляется <strong>принуждение</strong></td><td>89% → <strong>89%</strong></td><td>100% → 100%</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="fig">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 524.83 251.86125" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" focusable="false">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-27T17:05:55.126937</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="f4-figure_1">
+  <g id="f4-patch_1">
+   <path d="M 0 251.86125 
+L 524.83 251.86125 
+L 524.83 0 
+L 0 0 
+L 0 251.86125 
+z
+" fill="none"/>
+  </g>
+  <g id="f4-axes_1">
+   <g id="f4-patch_2">
+    <path d="M 150.95 244.66125 
+L 517.63 244.66125 
+L 517.63 30.5225 
+L 150.95 30.5225 
+L 150.95 244.66125 
+z
+" fill="none"/>
+   </g>
+   <g id="f4-patch_3">
+    <path d="M 150.95 79.954648 
+L 452.921765 79.954648 
+L 452.921765 40.25608 
+L 150.95 40.25608 
+z
+" clip-path="url(#f4-pc1a1fcf9a6)" fill="#e63946"/>
+   </g>
+   <g id="f4-patch_4">
+    <path d="M 150.95 188.223472 
+L 150.95 188.223472 
+L 150.95 148.524903 
+L 150.95 148.524903 
+z
+" clip-path="url(#f4-pc1a1fcf9a6)" fill="#e63946"/>
+   </g>
+   <g id="f4-patch_5">
+    <path d="M 150.95 126.658847 
+L 420.567647 126.658847 
+L 420.567647 86.960278 
+L 150.95 86.960278 
+z
+" clip-path="url(#f4-pc1a1fcf9a6)" fill="#a3a3a3"/>
+   </g>
+   <g id="f4-patch_6">
+    <path d="M 150.95 234.92767 
+L 150.95 234.92767 
+L 150.95 195.229102 
+L 150.95 195.229102 
+z
+" clip-path="url(#f4-pc1a1fcf9a6)" fill="#a3a3a3"/>
+   </g>
+   <g id="f4-matplotlib.axis_1"/>
+   <g id="f4-matplotlib.axis_2">
+    <g id="f4-ytick_1">
+     <g id="f4-line2d_1">
+      <defs>
+       <path id="f4-ma1f2baeccc" d="M 0 0 
+L -3.5 0 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f4-ma1f2baeccc" x="150.95" y="83.457463" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f4-text_1">
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(95.804687 81.755803)">L3 → L3.5</text>
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(43.134375 93.757756)">появляется знание</text>
+     </g>
+    </g>
+    <g id="f4-ytick_2">
+     <g id="f4-line2d_2">
+      <g>
+       <use xlink:href="#f4-ma1f2baeccc" x="150.95" y="191.726287" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f4-text_2">
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(95.804687 190.024627)">L3.5 → L4</text>
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(7.2 202.02658)">появляется принуждение</text>
+     </g>
+    </g>
+   </g>
+   <g id="f4-patch_7">
+    <path d="M 150.95 244.66125 
+L 150.95 30.5225 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f4-text_3">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="458.921765" y="63.105364" transform="rotate(-0 458.921765 63.105364)">+56</text>
+   </g>
+   <g id="f4-text_4">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="156.95" y="171.374188" transform="rotate(-0 156.95 171.374188)">+0</text>
+   </g>
+   <g id="f4-text_5">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="426.567647" y="109.809562" transform="rotate(-0 426.567647 109.809562)">+50</text>
+   </g>
+   <g id="f4-text_6">
+    <text font-size="10px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="156.95" y="218.078386" transform="rotate(-0 156.95 218.078386)">+0</text>
+   </g>
+   <g id="f4-text_7">
+    <text font-size="12px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="150.95" y="16.5225" transform="rotate(-0 150.95 16.5225)">Работает знание, не принуждение</text>
+   </g>
+   <g id="f4-legend_1">
+    <g id="f4-patch_8">
+     <path d="M 299.07625 220.898437 
+L 317.07625 220.898437 
+L 317.07625 214.598437 
+L 299.07625 214.598437 
+z
+" fill="#e63946"/>
+    </g>
+    <g id="f4-text_8">
+     <text font-size="9px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="324.27625" y="220.898437" transform="rotate(-0 324.27625 220.898437)">прирост точности, п.п.</text>
+    </g>
+    <g id="f4-patch_9">
+     <path d="M 299.07625 234.399141 
+L 317.07625 234.399141 
+L 317.07625 228.099141 
+L 299.07625 228.099141 
+z
+" fill="#a3a3a3"/>
+    </g>
+    <g id="f4-text_9">
+     <text font-size="9px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="324.27625" y="234.399141" transform="rotate(-0 324.27625 234.399141)">прирост проговорённых развилок, п.п.</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="f4-pc1a1fcf9a6">
+   <rect x="150.95" y="30.5225" width="366.68" height="214.13875"/>
+  </clipPath>
+ </defs>
+</svg>
+    <figcaption>Работает знание, не принуждение</figcaption>
+  </figure>
+
+  <p>Принуждение не даёт ничего. Семантический слой работает не как механизм, а как <strong>текст</strong>.</p>
+
+  <p>Практически это разные деньги: положить определения в промпт — час работы, строить сборку запроса из определения — другая архитектура и другой срок.</p>
+
+  <h3 id="stage-5-checks">Проверка этапа</h3>
+
+  <p><strong>Обе версии чисел стоят рядом.</strong> По ходу нашёлся дефект в моём ретривере — таблица курсора выпадала из контекста на средних уровнях. После починки точность там не выросла, а в одной ячейке стала хуже опубликованной. Соблазн подправить задним числом был максимальный.</p>
+
+  <p>Обе версии лежат в отчёте, с объяснением, что изменилось. Скрытая правка задним числом хуже, чем признанный дефект.</p>
+
+  <h2 id="stage-6">Этап 6. Когда метрики нет</h2>
+
+  <p>Все предыдущие вопросы ложились на существующие метрики. Обратный случай: данные есть, определения нет — маржа по категориям, доля повторных покупок.</p>
+
+  <table>
+    <thead><tr><th></th><th>определения текстом</th><th>сборка из определений</th></tr></thead>
+    <tbody>
+      <tr><td>посчитал</td><td>6/6</td><td>0/6</td></tr>
+      <tr><td>отказался</td><td>0/6</td><td><strong>6/6</strong></td></tr>
+      <tr><td>подставил определение молча</td><td><strong>0/6</strong></td><td><strong>0/6</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>Я ожидал, что без принуждения агент молча подставит правдоподобное определение. Не подставил ни разу: считая, он каждый раз перечислял свои решения в ярлыках — «за всё время; активность = завершённый заказ; гости исключены».</p>
+
+  <p>Разница между уровнями оказалась <strong>не в честности</strong> — она полная в обоих случаях. Разница в том, что получает организация. Свободный агент отдаёт число с оговоркой, живущей в тексте одного ответа: следующий прогон выберет другие умолчания, и сравнивать будет не с чем. Сборщик числа не отдаёт и <strong>называет пробел</strong>, превращая «ответ, которому нельзя доверять» в задачу на семантический слой.</p>
+
+  <p>Тот же класс отказов с другой стороны — со стороны эксперимента, а не данных — разобран в статье <a href="/workspace/articles/ab-test-lies/">Почему A/B-тест врёт</a>: там тринадцать способов получить правдоподобное число, которое ничего не значит.</p>
+
+  <h2 id="katalog-proverok">Каталог проверок</h2>
+
+  <p>Собственно то, ради чего писался текст. Шестнадцать проверок, сгруппированных по тому, что каждая способна поймать.</p>
+
+  <table>
+    <thead><tr><th>Группа</th><th>Сколько</th><th>Что ловит</th></tr></thead>
+    <tbody>
+      <tr><td>данные</td><td>5</td><td>мир собран не так, как объявлен</td></tr>
+      <tr><td>трансформация</td><td>3</td><td>витрины испортили данные или устарели</td></tr>
+      <tr><td>агент</td><td>4</td><td>решение вне списка, петля не проверена</td></tr>
+      <tr><td>вывод</td><td>3</td><td>посчитано не то при целых данных</td></tr>
+      <tr><td>само измерение</td><td>1</td><td>измеритель врёт в удобную сторону</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="proverki-dannyh">Проверки данных</h3>
+
+  <p><strong>1. Пересчёт мира по данным.</strong> Все объявленные параметры мира измеряются заново и сверяются.</p>
+
+  <p><strong>2. Независимость проверки от генератора.</strong> Импорт запрещён, константы не дублируются; связь идёт через файл объявленных входов.</p>
+
+  <p><strong>3. Входы, а не выходы.</strong> В файл правды попадают заказанные параметры, не измеренные результаты. Иначе данные сверяются сами с собой.</p>
+
+  <p><strong>4. Контрольная фальсификация.</strong> Проверка, которая никогда не падала, — не проверка. Сломать мир в копии вне репозитория и убедиться, что упали ровно нужные пункты и ни одного лишнего.</p>
+
+  <p><strong>5. Разделение слитых понятий.</strong> «Скрыто» оказалось двумя разными явлениями с разницей в два порядка. Проверка, проходящая слишком легко, — повод разобраться, а не радоваться.</p>
+
+  <h3 id="proverki-transformacii">Проверки трансформации</h3>
+
+  <p><strong>6. Тесты витрин.</strong> Зерно, ссылки, NULL.</p>
+
+  <p><strong>7. Свежесть.</strong> Витрины не старше курсора; иначе система отказывается считать.</p>
+
+  <p><strong>8. Проверка понимания слоя.</strong> Меняем одну строку определения при неизменных данных и смотрим, как переворачивается ответ.</p>
+
+  <h3 id="proverki-agenta">Проверки агента</h3>
+
+  <p><strong>9. Валидатор решений.</strong> Форма разбирается терпимо, значения — по белому списку.</p>
+
+  <p><strong>10. Показ SQL рядом с числом.</strong> Всегда. Стоит ноль, а без этого ошибку не увидеть в принципе.</p>
+
+  <p><strong>11. Логирование каждой попытки петли.</strong> Не служебный лог, а предмет изучения: что упало, что агент поменял, стал ли запрос считать то же самое.</p>
+
+  <p><strong>12. Впрыск ошибки.</strong> Если петля ни разу не сработала сама, она не проверена. Ронять специально.</p>
+
+  <h3 id="proverki-vyvoda">Проверки вывода</h3>
+
+  <p><strong>13. Вопросы с эталонами.</strong> Единственный уровень, который смотрит на ответ, а не на данные.</p>
+
+  <p><strong>14. «Спроси трижды».</strong> Воспроизводимость. Поймала больше всех остальных.</p>
+
+  <p><strong>15. Проверка правила, а не числа.</strong> Один вопрос сначала сверялся с конкретным эталоном и провалил верный ответ, собранный иначе. Переписан на проверку правила: варьируется ли решение, из-за которого ответ двоится.</p>
+
+  <h3 id="proverki-samogo-izmereniya">Проверки самого измерения</h3>
+
+  <p><strong>16. Пересчёт без новых вызовов, обе версии рядом, гипотеза до прогона.</strong></p>
+
+  <p>Последняя группа появилась не от аккуратности, а по необходимости. За проект я пять раз находил ошибки в собственных измерительных скриптах, и <strong>все пять смещали результат в сторону более эффектного вывода</strong>: нули точности вместо реальных 33–56%, выдумки там, где их не было, «агент не следует определению», «посчитает молча».</p>
+
+  <p>Шестой случай нашёлся уже при подготовке этого текста к публикации, когда каждое число сверялось с отчётом. Ошибок оказалось три, и все — в статье, а не в измерителе: таблица этапа 4 была склеена из двух заходов (токены и точность из четвёртого, а L4 = 89% — из пятого, где в четвёртом было 78%); объём данных округлён до 1.06 миллиона строк вместо 1.05; на схеме пайплайна стояло восемь видов грязи вместо девяти. Все три — в сторону более круглого или более эффектного. Правило сработало на тексте о самом правиле.</p>
+
+  <p>Совпадением это не выглядит. Объяснение простое: <strong>числа, подтверждающие ожидание, не вызывают желания проверить.</strong> Я лез в код каждый раз, когда результат казался странным, и не лез, когда он казался правильным.</p>
+
+  <h2 id="lestnica">Лестница</h2>
+
+  <p>Если выстроить проверки по тому, насколько тихую ошибку каждая ловит:</p>
+
+  <figure class="fig">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" font-family="DejaVu Sans, sans-serif" role="img" focusable="false">
+  <defs>
+    <marker id="f5-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#e63946" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text x="0" y="20" font-size="14" fill="#0a0a0a">Лестница проверок: что каким уровнем ловится</text>
+
+  
+  <rect x="0" y="44" width="470" height="44" rx="6" fill="#737373" fill-opacity="0.07" stroke="#e5e5e5"/>
+  <text x="18" y="62" font-size="12" fill="#0a0a0a">Петля исполнения</text>
+  <text x="18" y="79" font-size="10" fill="#737373">ловит то, что падает</text>
+
+  <rect x="0" y="96" width="470" height="44" rx="6" fill="#737373" fill-opacity="0.07" stroke="#e5e5e5"/>
+  <text x="18" y="114" font-size="12" fill="#0a0a0a">Тесты витрин · 44</text>
+  <text x="18" y="131" font-size="10" fill="#737373">ловит сломанную структуру</text>
+
+  <rect x="0" y="148" width="470" height="44" rx="6" fill="#737373" fill-opacity="0.07" stroke="#e5e5e5"/>
+  <text x="18" y="166" font-size="12" fill="#0a0a0a">Пересчёт мира · 38</text>
+  <text x="18" y="183" font-size="10" fill="#737373">ловит мир, собранный не так, как объявлен</text>
+
+  <rect x="0" y="200" width="470" height="44" rx="6" fill="#737373" fill-opacity="0.07" stroke="#e5e5e5"/>
+  <text x="18" y="218" font-size="12" fill="#0a0a0a">Валидатор решений</text>
+  <text x="18" y="235" font-size="10" fill="#737373">ловит значение не из белого списка</text>
+
+  <line x1="0" y1="258" x2="700" y2="258" stroke="#e5e5e5" stroke-width="1" stroke-dasharray="4 4"/>
+  <text x="480" y="254" font-size="9.5" fill="#737373">выше — проверка вывода</text>
+  <text x="480" y="272" font-size="9.5" fill="#737373">ниже — проверки данных</text>
+
+  <rect x="0" y="282" width="470" height="48" rx="6" fill="#e63946" fill-opacity="0.1" stroke="#e63946" stroke-width="0.9"/>
+  <text x="18" y="302" font-size="12" fill="#0a0a0a">Вопросы с эталонами · «спроси трижды»</text>
+  <text x="18" y="319" font-size="10" fill="#737373">ловит: всё в порядке, но посчитано не то</text>
+
+  
+  <path d="M 530 66 L 640 66 L 640 300 L 484 300" fill="none" stroke="#e63946" stroke-width="1.8" marker-end="url(#f5-b)"/>
+  <text x="652" y="150" font-size="10.5" fill="#e63946">−1 466 746</text>
+  <text x="652" y="167" font-size="10.5" fill="#e63946">вместо</text>
+  <text x="652" y="184" font-size="10.5" fill="#e63946">13 141 142</text>
+  <text x="652" y="208" font-size="9.5" fill="#737373">валидный SQL,</text>
+  <text x="652" y="223" font-size="9.5" fill="#737373">ноль исключений</text>
+
+  <text x="0" y="360" font-size="10" fill="#737373">Ошибка прошла четыре нижних уровня: данные целы, структура цела, мир собран правильно — а число неверно.</text>
+  <text x="0" y="378" font-size="10" fill="#737373">В сборках на реальных данных верхнего уровня обычно нет: сверять ответ не с чем.</text>
+</svg>
+    <figcaption>Лестница проверок</figcaption>
+  </figure>
+
+  <p>Всё, что ниже черты, проверяет данные. Только верхний уровень проверяет вывод. Минус полтора миллиона прошёл сквозь четыре нижних уровня, потому что данные были целы, структура цела, мир собран правильно — а число неверно.</p>
+
+  <p>В большинстве сборок верхнего уровня просто нет: сверять ответ не с чем, потому что данные реальные и правильный ответ неизвестен.</p>
+
+  <h2 id="pravilo-kotoroe-ne-sdvinulos-ni-razu">Правило, которое не сдвинулось ни разу</h2>
+
+  <blockquote><p><strong>Объявленная развилка проговаривается всегда. Необъявленная — как повезёт.</strong></p></blockquote>
+
+  <figure class="fig">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525.389063 222.878437" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" focusable="false">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-08-27T17:05:55.176062</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="f6-figure_1">
+  <g id="f6-patch_1">
+   <path d="M 0 222.878437 
+L 525.389063 222.878437 
+L 525.389063 0 
+L 0 0 
+L 0 222.878437 
+z
+" fill="none"/>
+  </g>
+  <g id="f6-axes_1">
+   <g id="f6-patch_2">
+    <path d="M 56.789063 184.67375 
+L 518.189063 184.67375 
+L 518.189063 30.317188 
+L 56.789063 30.317188 
+L 56.789063 184.67375 
+z
+" fill="none"/>
+   </g>
+   <g id="f6-matplotlib.axis_1">
+    <g id="f6-xtick_1">
+     <g id="f6-line2d_1">
+      <defs>
+       <path id="f6-m63701aeda2" d="M 0 0 
+L 0 3.5 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f6-m63701aeda2" x="139.7938" y="184.67375" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f6-text_1">
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(99.525831 200.273164)">Без metrics.yml</text>
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(115.535988 212.275117)">L1, L2, L3</text>
+     </g>
+    </g>
+    <g id="f6-xtick_2">
+     <g id="f6-line2d_2">
+      <g>
+       <use xlink:href="#f6-m63701aeda2" x="435.184325" y="184.67375" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f6-text_2">
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(400.590575 200.273164)">С metrics.yml</text>
+      <text font-size="10px" font-family="DejaVu Sans" fill="#737373" transform="translate(415.301512 212.275117)">L3.5, L4</text>
+     </g>
+    </g>
+   </g>
+   <g id="f6-matplotlib.axis_2">
+    <g id="f6-ytick_1">
+     <g id="f6-line2d_3">
+      <path d="M 56.789063 184.67375 
+L 518.189063 184.67375 
+" clip-path="url(#f6-p6d68de1f8b)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f6-line2d_4">
+      <defs>
+       <path id="f6-m0a12b5f051" d="M 0 0 
+L -3.5 0 
+" stroke="#737373" stroke-width="0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#f6-m0a12b5f051" x="56.789063" y="184.67375" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f6-text_3">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789063" y="188.472578" transform="rotate(-0 49.789063 188.472578)">0</text>
+     </g>
+    </g>
+    <g id="f6-ytick_2">
+     <g id="f6-line2d_5">
+      <path d="M 56.789063 120.358516 
+L 518.189063 120.358516 
+" clip-path="url(#f6-p6d68de1f8b)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f6-line2d_6">
+      <g>
+       <use xlink:href="#f6-m0a12b5f051" x="56.789063" y="120.358516" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f6-text_4">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789063" y="124.157344" transform="rotate(-0 49.789063 124.157344)">50%</text>
+     </g>
+    </g>
+    <g id="f6-ytick_3">
+     <g id="f6-line2d_7">
+      <path d="M 56.789063 56.043281 
+L 518.189063 56.043281 
+" clip-path="url(#f6-p6d68de1f8b)" fill="none" stroke="#e5e5e5" stroke-opacity="0.6" stroke-width="0.6" stroke-linecap="square"/>
+     </g>
+     <g id="f6-line2d_8">
+      <g>
+       <use xlink:href="#f6-m0a12b5f051" x="56.789063" y="56.043281" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+      </g>
+     </g>
+     <g id="f6-text_5">
+      <text font-size="10px" font-family="DejaVu Sans" text-anchor="end" fill="#737373" x="49.789063" y="59.842109" transform="rotate(-0 49.789063 59.842109)">100%</text>
+     </g>
+    </g>
+    <g id="f6-text_6">
+     <text font-size="10px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="14.797656" y="107.495469" transform="rotate(-90 14.797656 107.495469)">Развилка проговорена</text>
+    </g>
+   </g>
+   <g id="f6-patch_3">
+    <path d="M 77.76179 184.67375 
+L 201.82581 184.67375 
+L 201.82581 120.358516 
+L 77.76179 120.358516 
+z
+" clip-path="url(#f6-p6d68de1f8b)" fill="#737373" opacity="0.85"/>
+   </g>
+   <g id="f6-patch_4">
+    <path d="M 373.152315 184.67375 
+L 497.216335 184.67375 
+L 497.216335 56.043281 
+L 373.152315 56.043281 
+z
+" clip-path="url(#f6-p6d68de1f8b)" fill="#a3a3a3" opacity="0.85"/>
+   </g>
+   <g id="f6-patch_5">
+    <path d="M 56.789063 184.67375 
+L 56.789063 30.317188 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f6-patch_6">
+    <path d="M 56.789063 184.67375 
+L 518.189063 184.67375 
+" fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+   </g>
+   <g id="f6-text_7">
+    <text font-size="13px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="139.7938" y="114.358516" transform="rotate(-0 139.7938 114.358516)">50%</text>
+   </g>
+   <g id="f6-text_8">
+    <text font-size="13px" font-family="DejaVu Sans" text-anchor="middle" fill="#0a0a0a" x="435.184325" y="50.043281" transform="rotate(-0 435.184325 50.043281)">100%</text>
+   </g>
+   <g id="f6-text_9">
+    <text font-size="12px" font-family="DejaVu Sans" text-anchor="start" fill="#0a0a0a" x="56.789063" y="16.317188" transform="rotate(-0 56.789063 16.317188)">18 прогонов, ни одного исключения</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="f6-p6d68de1f8b">
+   <rect x="56.789063" y="30.317188" width="461.4" height="154.356562"/>
+  </clipPath>
+ </defs>
+</svg>
+    <figcaption>Объявленная развилка против необъявленной</figcaption>
+  </figure>
+
+  <p>Ровно 50% на всех уровнях без определений метрик, ровно 100% на обоих уровнях с ними. Восемнадцать прогонов, ни одного исключения.</p>
+
+  <p>Проценты точности в этом проекте менялись пять раз, пока я чинил измеритель. Это правило не сдвинулось ни разу — и по-моему, устойчивость к починке собственного прибора говорит о числе больше, чем его величина.</p>
+
+  <p>Спросил «сколько активных клиентов» — агент дал несколько чисел с явными ярлыками: гостей исключаем — 21 580, считаем каждый гостевой заказ — 25 866. Обе честные.</p>
+
+  <p>А про зерно и про дозревание, которые нигде не объявлены и точно так же двоят ответ, не сказал ни слова.</p>
+
+  <p>Агент не хранит развилки в голове. Он их читает.</p>
+
+  <h2 id="granicy">Границы</h2>
+
+  <p>Одна модель. Один домен. Три метрики, пять вопросов, 102 прогона.</p>
+
+  <p>Про первые три уровня контекста сетка молчит — разброс между повторами не меньше разницы между уровнями.</p>
+
+  <p>Дефект ретривера обнаружился только после того, как сетка была прогнана; вывод «описания не помогают» из-за этого ослаблен.</p>
+
+  <p>Это не «агенты вообще». Это один агент на одном домене, и цифры стоит читать как порядок величины.</p>
+
+  <h2 id="itog">Итог</h2>
+
+  <p>Пайплайн: генератор событий → parquet и DuckDB → курсор → dbt → определения метрик → агент с retrieval, генерацией и петлёй → вопросы с эталонами.</p>
+
+  <p>Из шести этапов четыре ушли на данные и семантику, два на агента. Пропорция кажется мне правильной: агент — самая простая часть системы, и написать его вручную занимает вечер. Всё остальное время уходит на то, чтобы было с чем сравнивать его ответы.</p>
+
+  <p>Три вещи, которые я забрал:</p>
+
+  <p><strong>Семантический слой нужен не для переиспользования,</strong> а чтобы у знания, которого нет в данных, было место кроме головы.</p>
+
+  <p><strong>Проверки данных не ловят ошибки вывода.</strong> Это отдельный уровень, и в большинстве сборок его нет.</p>
+
+  <p><strong>Самопочинка не покрывает главный класс отказов.</strong> Она чинит падающее; тихо неправильное не падает.</p>
+
+  <div class="roots">
+    <div class="roots-tag">Откуда это растёт</div>
+    <p>null, картотека математики: <a href="https://yzotop.github.io/null/essays/trust-but-verify.html" rel="noopener">доверяй, но проверяй</a> · <a href="https://yzotop.github.io/null/essays/mechanism-design.html" rel="noopener">честность по построению</a></p>
+  </div>
+
+  </div>
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
