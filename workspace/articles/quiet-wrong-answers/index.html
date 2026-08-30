@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Продакт задал двадцать вопросов AI-аналитику · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/quiet-wrong-answers/"/>
+    <meta name="description" content="Двадцать вопросов продакта к AI-аналитику на мире с известной правдой. Он не врёт — он переспрашивает. А когда ответить на уточнения, появляется тихо-неверное, и приходит оно не от модели, а от кода вокруг неё."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Продакт задал двадцать вопросов AI-аналитику — Александр Давыдов"/>
+    <meta property="og:description" content="Он не врёт — он переспрашивает. Тихо-неверное приходит не от модели, а от кода вокруг неё."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/quiet-wrong-answers/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Август 2026</span>
+    <span class="chip">AI-аналитик</span>
+    <span>12 мин</span>
+  </div>
+  <h1>Продакт задал двадцать вопросов AI-аналитику</h1>
+
+  <div class="prose">
+
+  <p>Что он унесёт неверного, откуда это берётся и что с этим делать</p>
+
+  <hr/>
+
+  <p>Я спросил у системы, какой у нас средний чек.</p>
+
+  <p>Она ответила: 353 рубля 40 копеек. Правильный ответ — 360.18.</p>
+
+  <p>Разница меньше двух процентов. Я задал тот же вопрос ещё дважды — ответ не дрогнул. Посмотрел SQL: аккуратный, колонки настоящие, ни одной ошибки при исполнении. Заказы посчитаны верно, валовая выручка сходится до копейки.</p>
+
+  <p>И этих двух процентов ровно хватает, чтобы решение перевернулось. По моему же правилу чек ниже 360 значит «идём разбираться», выше — «наблюдаем». То есть я бы пошёл разбираться с проседанием, которого нет, и не получил бы ни единого повода усомниться.</p>
+
+  <p>Дальше — как это вышло, ещё два таких же случая и что с ними делать.</p>
+
+  <hr/>
+
+  <h2 id="zachem-vse-eto">Зачем всё это</h2>
+
+  <p>Продакты хотят обходиться без аналитиков. Спросить систему напрямую, получить число, принять решение. Вендоры говорят, что уже можно. Аналитики говорят, что нельзя. Данных нет ни у кого.</p>
+
+  <p>И не появляются они по скучной технической причине: <strong>на реальных данных никто не знает правильного ответа</strong>. Система говорит «выручка за март — 12.4 миллиона», и проверить это можно ровно одним способом — написав тот же запрос руками. А если бы кто-то хотел писать руками, система была бы не нужна.</p>
+
+  <p>Поэтому мир пришлось построить. Синтетический ритейл на миллион позиций заказов за два года, где заранее известно всё: какая заложена сезонность, сколько дублей от повторных нажатий «оплатить», через сколько дней приходит возврат. Устройство сборки и семнадцать встроенных в неё проверок я разбирал отдельно — <a href="/workspace/articles/ai-analyst-checks/">Как я строил AI-аналитика</a>. Здесь важно одно: <strong>на каждый вопрос есть эталон, посчитанный независимо от агента</strong>.</p>
+
+  <p>Двадцать вопросов — те, что продакт задаёт на самом деле. Сколько заработали в марте. Выросла ли выручка год к году. Какие категории тянут больше всего. Стоит ли расширять промо. Половина ложится на определённые метрики, половина нет — в жизни ровно так и бывает.</p>
+
+  <p>Пороги я объявил до прогона, чтобы потом не подгонять: <strong>продакты правы и аналитик не нужен, если система отвечает не меньше чем на 80% вопросов, а доля тихо-неверных — тех, где число неверно, а на глаз не отличить — не выше 5%.</strong></p>
+
+  <p>И записал прогноз, тоже заранее: ответит почти на всё, ответы будут убедительными, тихо-неверных выйдет процентов двадцать.</p>
+
+  <hr/>
+
+  <h2 id="iz-chego-sdelan-mir">Из чего сделан мир</h2>
+
+  <p>Чтобы дальнейшее было предметным — вот что там внутри.</p>
+
+  <p><strong>Сырые данные</strong>, шесть таблиц. Порождаются событиями, а не сводками: заказы разыгрываются пуассоновским потоком, конверсии биномиально, сезонность задана параметром потока, а не множителем на выручку.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th>Таблица</th>
+<th>Строк</th>
+<th>Что внутри</th>
+</tr></thead>
+    <tbody>
+      <tr><td><code>order_items</code></td><td>1 053 969</td><td>позиция заказа: SKU, количество, цена, скидка</td></tr>
+      <tr><td><code>orders</code></td><td>~425 000</td><td>заказ: клиент, магазин, статус, время</td></tr>
+      <tr><td><code>returns</code></td><td>92 525</td><td>возврат: заказ, SKU, количество, дата</td></tr>
+      <tr><td><code>customers</code></td><td>60 000</td><td>клиент: канал, дата регистрации</td></tr>
+      <tr><td><code>products</code></td><td>2 200</td><td>SKU, категория, себестоимость, прайс</td></tr>
+      <tr><td><code>promotions</code></td><td>1 400</td><td>акция: SKU, период, глубина скидки</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Два года истории, восемь категорий, двадцать четыре магазина.</p>
+
+  <p><strong>Грязь заложена намеренно</strong> — десять видов. Не для правдоподобия: каждый вид даёт честный способ посчитать одно и то же двумя способами.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th>Вид</th>
+<th>Сколько</th>
+<th>Что двоится</th>
+</tr></thead>
+    <tbody>
+      <tr><td>дубли от повторной оплаты</td><td>2.0%, 20 929 строк</td><td>считать выручку с дедупликацией или без</td></tr>
+      <tr><td>отменённые заказы в общей таблице</td><td>6.0%</td><td>фильтровать или нет</td></tr>
+      <tr><td>гостевые заказы без клиента</td><td>11.9%, 50 578</td><td>сколько у нас клиентов</td></tr>
+      <tr><td>возврат приходит через 3–21 день</td><td>—</td><td>доля возвратов в свежем периоде</td></tr>
+      <tr><td>смешанные часовые пояса</td><td>6 магазинов из 24</td><td>что значит «за 1 марта»</td></tr>
+      <tr><td>цена выше прайса</td><td>1.0%, 10 264</td><td>считать ли это продажей</td></tr>
+      <tr><td>правый цензор выгрузки</td><td>—</td><td>декабрь выглядит лучше, чем есть</td></tr>
+      <tr><td>время регистрации события</td><td>—</td><td>что мы знали на дату X</td></tr>
+      <tr><td>асимметрия флагов между витринами</td><td>—</td><td><strong>породила ошибку из этой статьи</strong></td></tr>
+      <tr><td>шкала времени выгрузки</td><td>—</td><td>«данные на 1 марта» — это про какой март</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Слои над данными:</strong></p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th>Слой</th>
+<th>Объектов</th>
+</tr></thead>
+    <tbody>
+      <tr><td>сырые таблицы</td><td>6</td></tr>
+      <tr><td>модели dbt (staging + marts)</td><td>9</td></tr>
+      <tr><td>тесты витрин</td><td>35</td></tr>
+      <tr><td>определения метрик</td><td>3</td></tr>
+      <tr><td>знание вне данных (<code>store_timezones.csv</code>)</td><td>1 файл</td></tr>
+      <tr><td>проверки мира</td><td>39</td></tr>
+      <tr><td>уровни контекста для агента</td><td>6</td></tr>
+      <tr><td>вопросы с эталонами</td><td>20</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Три метрики — выручка, активные клиенты, доля возвратов. Каждая с явно объявленными решениями: окно, что считается активностью, как обходятся гостевые, отсечка по времени регистрации.</p>
+
+  <p>Один файл на весь проект содержит знание, которого <strong>нет в данных вообще</strong>: сдвиг часовых поясов по магазинам. Из таблицы его не вывести — колонка наивная, по профилю часа сдвиг угадывается только статистически. Либо записан руками, либо не существует.</p>
+
+  <hr/>
+
+  <h2 id="chto-tam-pod-kapotom">Что там под капотом</h2>
+
+  <p>Теперь про то, кто это всё обрабатывает.</p>
+
+  <figure class="fig">
+  <svg focusable="false" role="img" stroke-linejoin="round" stroke-linecap="butt" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" width="880" height="340" font-family="DejaVu Sans, sans-serif">
+    <defs>
+      <marker id="f1-s_ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M1 1 L9 5 L1 9" fill="none" stroke="#737373" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <text x="0" y="18" font-size="13.5" fill="#0a0a0a">Что под капотом: один агент и шесть слоёв кода вокруг него</text>
+    <!-- вопрос -->
+    <rect x="0" y="46" width="128" height="52" rx="8" fill="#f5f5f5" stroke="#e5e5e5"/>
+    <text x="64" y="68" font-size="11.5" fill="#0a0a0a" text-anchor="middle">Вопрос</text>
+    <text x="64" y="85" font-size="9.5" fill="#737373" text-anchor="middle">продакта</text>
+    <!-- retrieval -->
+    <rect x="160" y="46" width="152" height="52" rx="8" fill="#fafafa" stroke="#a3a3a3"/>
+    <text x="236" y="66" font-size="11.5" fill="#0a0a0a" text-anchor="middle">Отбор контекста</text>
+    <text x="236" y="83" font-size="9.5" fill="#737373" text-anchor="middle">схема · таблицы · метрики</text>
+    <!-- агент -->
+    <rect x="344" y="40" width="176" height="64" rx="8" fill="#fdeaec" stroke="#e63946" stroke-width="1.4"/>
+    <text x="432" y="63" font-size="12.5" fill="#0a0a0a" text-anchor="middle">Аналитик — LLM</text>
+    <text x="432" y="81" font-size="9.5" fill="#737373" text-anchor="middle">выбирает метрику, пишет SQL</text>
+    <text x="432" y="95" font-size="9.5" fill="#737373" text-anchor="middle">единственный, кто «думает»</text>
+    <!-- исполнение -->
+    <rect x="552" y="46" width="140" height="52" rx="8" fill="#fafafa" stroke="#a3a3a3"/>
+    <text x="622" y="66" font-size="11.5" fill="#0a0a0a" text-anchor="middle">Петля исполнения</text>
+    <text x="622" y="83" font-size="9.5" fill="#737373" text-anchor="middle">упал → чинить, до 3 раз</text>
+    <!-- ответ -->
+    <rect x="724" y="46" width="140" height="52" rx="8" fill="#f5f5f5" stroke="#e5e5e5"/>
+    <text x="794" y="66" font-size="11.5" fill="#0a0a0a" text-anchor="middle">Ответ</text>
+    <text x="794" y="83" font-size="9.5" fill="#737373" text-anchor="middle">число + SQL рядом</text>
+    <line x1="130" y1="72" x2="154" y2="72" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-s_ar)"/>
+    <line x1="314" y1="72" x2="338" y2="72" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-s_ar)"/>
+    <line x1="522" y1="72" x2="546" y2="72" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-s_ar)"/>
+    <line x1="694" y1="72" x2="718" y2="72" stroke="#737373" stroke-width="1.4" marker-end="url(#f1-s_ar)"/>
+    <!-- нижний ряд: проверки -->
+    <text x="0" y="152" font-size="10" fill="#737373">ПРОВЕРКИ — весь код, ни одного вызова модели</text>
+    <rect x="0" y="164" width="166" height="46" rx="7" fill="#fafafa" stroke="#e5e5e5"/>
+    <text x="83" y="182" font-size="10.5" fill="#0a0a0a" text-anchor="middle">Пересчёт мира</text>
+    <text x="83" y="198" font-size="9" fill="#737373" text-anchor="middle">39 проверок</text>
+    <rect x="178" y="164" width="166" height="46" rx="7" fill="#fafafa" stroke="#e5e5e5"/>
+    <text x="261" y="182" font-size="10.5" fill="#0a0a0a" text-anchor="middle">Тесты витрин</text>
+    <text x="261" y="198" font-size="9" fill="#737373" text-anchor="middle">35 тестов</text>
+    <rect x="356" y="164" width="166" height="46" rx="7" fill="#fafafa" stroke="#e5e5e5"/>
+    <text x="439" y="182" font-size="10.5" fill="#0a0a0a" text-anchor="middle">Белый список решений</text>
+    <text x="439" y="198" font-size="9" fill="#737373" text-anchor="middle">что агент вправе выбрать</text>
+    <rect x="534" y="164" width="166" height="46" rx="7" fill="#fafafa" stroke="#e5e5e5"/>
+    <text x="617" y="182" font-size="10.5" fill="#0a0a0a" text-anchor="middle">Спроси трижды</text>
+    <text x="617" y="198" font-size="9" fill="#737373" text-anchor="middle">воспроизводимость</text>
+    <rect x="712" y="164" width="152" height="46" rx="7" fill="#fdeaec" stroke="#e63946" stroke-width="1.2"/>
+    <text x="788" y="182" font-size="10.5" fill="#0a0a0a" text-anchor="middle">Разложение</text>
+    <text x="788" y="198" font-size="9" fill="#737373" text-anchor="middle">сверка составляющих</text>
+    <line x1="432" y1="106" x2="432" y2="158" stroke="#737373" stroke-width="1.2" marker-end="url(#f1-s_ar)"/>
+    <!-- эталон -->
+    <rect x="0" y="246" width="864" height="52" rx="8" fill="#fafafa" stroke="#e5e5e5" stroke-dasharray="4 3"/>
+    <text x="16" y="266" font-size="11" fill="#0a0a0a">Эталон — считается независимо, по сырым данным</text>
+    <text x="16" y="284" font-size="9.5" fill="#737373">Не через метрики и не через витрины: у правды и проверяемого не должно быть общего родителя. Агент эталона не видит никогда.</text>
+    <text x="0" y="326" font-size="10" fill="#737373">Красным — то, что связано с находками статьи: агент как единственный источник суждения и проверка, которая поймала ошибку.</text>
+  </svg>
+    <figcaption>Что под капотом</figcaption>
+  </figure>
+
+  <p>Агент здесь <strong>один</strong>. Он получает вопрос и контекст, выбирает метрику или пишет SQL сам, исполняет запрос. Всё остальное — код: отбор контекста, петля починки упавших запросов, проверки, подсчёт эталона.</p>
+
+  <p>Это не упущение, а правило. <strong>Модель там, где нужно суждение; код там, где нужна одинаковость.</strong> Каждый «умный» слой добавляет источник произвола ровно туда, где нужна воспроизводимость.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th>Роль</th>
+<th>Чем</th>
+<th>Что делает</th>
+</tr></thead>
+    <tbody>
+      <tr><td>Аналитик</td><td>LLM</td><td>выбирает метрику, пишет SQL, отвечает</td></tr>
+      <tr><td>Отбор контекста</td><td>код</td><td>решает, какие таблицы и определения показать</td></tr>
+      <tr><td>Петля исполнения</td><td>код</td><td>запрос упал → ошибка обратно модели, до трёх попыток</td></tr>
+      <tr><td>Белый список</td><td>код</td><td>сверяет выбранные решения с допустимыми</td></tr>
+      <tr><td>Проверки</td><td>код</td><td>39 на данные, 35 на витрины, плюс поверх</td></tr>
+      <tr><td>Эталон</td><td>код</td><td>считает верный ответ по сырым данным</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Одна деталь, которая потом окажется важной: <strong>эталон считается не через метрики и не через витрины</strong>. Иначе у правды и проверяемого был бы общий родитель, и мы бы сверяли систему саму с собой.</p>
+
+  <hr/>
+
+  <h2 id="raund-pervyy-on-ne-vret-on-peresprashivaet">Раунд первый: он не врёт, он переспрашивает</h2>
+
+  <p>Из двадцати вопросов агент дал число на шести. На одиннадцати попросил уточнить. На трёх отказался.</p>
+
+  <p>Покрытие — <strong>40%</strong> при пороге 80. Тихо-неверных — <strong>ноль</strong>, но это ноль от нуля: там, где он всё-таки посчитал, он совпал с эталоном до последнего знака.</p>
+
+  <p>Уточнения оказались не отговорками. На «сколько мы заработали в марте» он спрашивает: за какой год, считать выручку до вычета возвратов или после, и относить возврат к дате возврата или к дате заказа. Хороший аналитик спросил бы ровно это.</p>
+
+  <p>Так что продакт, задавший двадцать вопросов, унёс бы не двадцать неверных чисел, а <strong>одиннадцать встречных вопросов</strong>. И отвечать на них некому — аналитика-то нет.</p>
+
+  <p>Ещё пять вопросов оказались без ответа в принципе. Четверть набора. У конверсии нет знаменателя — визитов в схеме не существует. Вопрос про расширение промо причинный, а данные наблюдательные. Ни один из пяти агент не выдумал.</p>
+
+  <p>Мой прогноз не сбылся зеркально. Я ждал, что наврёт убедительно; он переспросил по делу.</p>
+
+  <hr/>
+
+  <h2 id="raund-vtoroy-ya-otvechayu">Раунд второй: я отвечаю</h2>
+
+  <p>Сел и ответил на одиннадцать уточнений так, как ответил бы аналитик. Март 2025. После возвратов. По дате возврата. Только известные клиенты. Окно 90 дней.</p>
+
+  <p>Покрытие стало <strong>девять из девяти</strong>. Разброс между тремя повторами — ноль в восьми случаях из девяти.</p>
+
+  <figure class="fig">
+  <svg focusable="false" role="img" stroke-linejoin="round" stroke-linecap="butt" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525.389063 252" xmlns="http://www.w3.org/2000/svg" version="1.1">
+   <g id="f2-figure_1">
+    <g id="f2-patch_1">
+     <path d="M 0 252 
+  L 525.389063 252 
+  L 525.389063 0 
+  L 0 0 
+  L 0 252 
+  z
+  " fill="none"/>
+    </g>
+    <g id="f2-axes_1">
+     <g id="f2-patch_2">
+      <path d="M 42.789062 213.796094 
+  L 518.189063 213.796094 
+  L 518.189063 30.317187 
+  L 42.789062 30.317187 
+  L 42.789062 213.796094 
+  z
+  " fill="none"/>
+     </g>
+     <g id="f2-matplotlib.axis_1">
+      <g id="f2-xtick_1">
+       <g id="f2-line2d_1">
+        <defs>
+         <path id="f2-m835eb9f15f" d="M 0 0 
+  L 0 3.5 
+  " stroke="#737373" stroke-width="0.8"/>
+        </defs>
+        <g>
+         <use xlink:href="#f2-m835eb9f15f" x="112.84801" y="213.796094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f2-text_1">
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(92.313635 229.394727)">Раунд 1</text>
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(51.633166 241.39668)">агент переспрашивает</text>
+       </g>
+      </g>
+      <g id="f2-xtick_2">
+       <g id="f2-line2d_2">
+        <g>
+         <use xlink:href="#f2-m835eb9f15f" x="363.058536" y="213.796094" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f2-text_2">
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(342.524161 229.394727)">Раунд 2</text>
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(304.438224 241.39668)">ответил на уточнения</text>
+       </g>
+      </g>
+     </g>
+     <g id="f2-matplotlib.axis_2">
+      <g id="f2-ytick_1">
+       <g id="f2-line2d_3">
+        <path d="M 42.789062 196.859579 
+  L 518.189063 196.859579 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke="#e5e5e5" stroke-width="0.6" stroke-linecap="square"/>
+       </g>
+       <g id="f2-line2d_4">
+        <defs>
+         <path id="f2-m7d5086d0fe" d="M 0 0 
+  L -3.5 0 
+  " stroke="#737373" stroke-width="0.8"/>
+        </defs>
+        <g>
+         <use xlink:href="#f2-m7d5086d0fe" x="42.789062" y="196.859579" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f2-text_3">
+        <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="end" fill="#737373" x="35.789062" y="200.658407" transform="rotate(-0 35.789062 200.658407)">0</text>
+       </g>
+      </g>
+      <g id="f2-ytick_2">
+       <g id="f2-line2d_5">
+        <path d="M 42.789062 126.290769 
+  L 518.189063 126.290769 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke="#e5e5e5" stroke-width="0.6" stroke-linecap="square"/>
+       </g>
+       <g id="f2-line2d_6">
+        <g>
+         <use xlink:href="#f2-m7d5086d0fe" x="42.789062" y="126.290769" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f2-text_4">
+        <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="end" fill="#737373" x="35.789062" y="130.089597" transform="rotate(-0 35.789062 130.089597)">50%</text>
+       </g>
+      </g>
+      <g id="f2-ytick_3">
+       <g id="f2-line2d_7">
+        <path d="M 42.789062 55.721959 
+  L 518.189063 55.721959 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke="#e5e5e5" stroke-width="0.6" stroke-linecap="square"/>
+       </g>
+       <g id="f2-line2d_8">
+        <g>
+         <use xlink:href="#f2-m7d5086d0fe" x="42.789062" y="55.721959" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f2-text_5">
+        <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="end" fill="#737373" x="35.789062" y="59.520787" transform="rotate(-0 35.789062 59.520787)">100%</text>
+       </g>
+      </g>
+     </g>
+     <g id="f2-line2d_9">
+      <path d="M 112.84801 140.404531 
+  L 363.058536 55.721959 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke="#0a0a0a" stroke-width="2.4" stroke-linecap="square"/>
+      <defs>
+       <path id="f2-mffcc258d24" d="M 0 4.5 
+  C 1.193414 4.5 2.338109 4.025852 3.181981 3.181981 
+  C 4.025852 2.338109 4.5 1.193414 4.5 0 
+  C 4.5 -1.193414 4.025852 -2.338109 3.181981 -3.181981 
+  C 2.338109 -4.025852 1.193414 -4.5 0 -4.5 
+  C -1.193414 -4.5 -2.338109 -4.025852 -3.181981 -3.181981 
+  C -4.025852 -2.338109 -4.5 -1.193414 -4.5 0 
+  C -4.5 1.193414 -4.025852 2.338109 -3.181981 3.181981 
+  C -2.338109 4.025852 -1.193414 4.5 0 4.5 
+  z
+  " stroke="#0a0a0a"/>
+      </defs>
+      <g clip-path="url(#f2-p3f475cd22c)">
+       <use xlink:href="#f2-mffcc258d24" x="112.84801" y="140.404531" fill="#0a0a0a" stroke="#0a0a0a"/>
+       <use xlink:href="#f2-mffcc258d24" x="363.058536" y="55.721959" fill="#0a0a0a" stroke="#0a0a0a"/>
+      </g>
+     </g>
+     <g id="f2-line2d_10">
+      <path d="M 112.84801 196.859579 
+  L 363.058536 168.632055 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke="#e63946" stroke-width="2.4" stroke-linecap="square"/>
+      <defs>
+       <path id="f2-m339e23ef21" d="M 0 4.5 
+  C 1.193414 4.5 2.338109 4.025852 3.181981 3.181981 
+  C 4.025852 2.338109 4.5 1.193414 4.5 0 
+  C 4.5 -1.193414 4.025852 -2.338109 3.181981 -3.181981 
+  C 2.338109 -4.025852 1.193414 -4.5 0 -4.5 
+  C -1.193414 -4.5 -2.338109 -4.025852 -3.181981 -3.181981 
+  C -4.025852 -2.338109 -4.5 -1.193414 -4.5 0 
+  C -4.5 1.193414 -4.025852 2.338109 -3.181981 3.181981 
+  C -2.338109 4.025852 -1.193414 4.5 0 4.5 
+  z
+  " stroke="#e63946"/>
+      </defs>
+      <g clip-path="url(#f2-p3f475cd22c)">
+       <use xlink:href="#f2-m339e23ef21" x="112.84801" y="196.859579" fill="#e63946" stroke="#e63946"/>
+       <use xlink:href="#f2-m339e23ef21" x="363.058536" y="168.632055" fill="#e63946" stroke="#e63946"/>
+      </g>
+     </g>
+     <g id="f2-line2d_11">
+      <path d="M 42.789062 83.949483 
+  L 518.189063 83.949483 
+  " clip-path="url(#f2-p3f475cd22c)" fill="none" stroke-dasharray="3.33,1.44" stroke-dashoffset="0" stroke="#a3a3a3" stroke-width="0.9"/>
+     </g>
+     <g id="f2-patch_3">
+      <path d="M 42.789062 213.796094 
+  L 42.789062 30.317187 
+  " fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+     </g>
+     <g id="f2-patch_4">
+      <path d="M 42.789062 213.796094 
+  L 518.189063 213.796094 
+  " fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+     </g>
+     <g id="f2-text_6">
+      <text font-size="11px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#0a0a0a" x="112.84801" y="128.404531" transform="rotate(-0 112.84801 128.404531)">40%</text>
+     </g>
+     <g id="f2-text_7">
+      <text font-size="11px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#0a0a0a" x="363.058536" y="43.721959" transform="rotate(-0 363.058536 43.721959)">100%</text>
+     </g>
+     <g id="f2-text_8">
+      <text font-size="11px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#e63946" x="112.84801" y="218.859579" transform="rotate(-0 112.84801 218.859579)">0%</text>
+     </g>
+     <g id="f2-text_9">
+      <text font-size="11px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#e63946" x="363.058536" y="190.632055" transform="rotate(-0 363.058536 190.632055)">20%</text>
+     </g>
+     <g id="f2-text_10">
+      <text font-size="8.5px" font-family="'DejaVu Sans'" text-anchor="start" fill="#737373" x="52.797484" y="78.303978" transform="rotate(-0 52.797484 78.303978)">порог покрытия 80%</text>
+     </g>
+     <g id="f2-text_11">
+      <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="start" fill="#0a0a0a" x="373.066957" y="58.319615" transform="rotate(-0 373.066957 58.319615)">покрытие</text>
+     </g>
+     <g id="f2-text_12">
+      <text font-size="10px" font-family="'DejaVu Sans'" fill="#e63946" transform="translate(373.066957 165.228735)">доля</text>
+      <text font-size="10px" font-family="'DejaVu Sans'" fill="#e63946" transform="translate(373.066957 177.230688)">тихо-неверных</text>
+     </g>
+     <g id="f2-text_13">
+      <text font-size="12px" font-family="'DejaVu Sans'" text-anchor="start" fill="#0a0a0a" x="42.789062" y="16.317187" transform="rotate(-0 42.789062 16.317187)">Полное покрытие покупается тихо-неверным</text>
+     </g>
+    </g>
+   </g>
+   <defs>
+    <clipPath id="f2-p3f475cd22c">
+     <rect x="42.789062" y="30.317187" width="475.4" height="183.478906"/>
+    </clipPath>
+   </defs>
+  </svg>
+    <figcaption>Полное покрытие покупается тихо-неверным</figcaption>
+  </figure>
+
+  <p>Заодно выяснилось, что два «безответных» вопроса были просто недоспрошенными: как только появилось определение, ответ нашёлся. Дело было не в данных, а в постановке.</p>
+
+  <p>И вот тут появилось первое настоящее тихо-неверное.</p>
+
+  <hr/>
+
+  <h2 id="mehanizm-pervyy-filtr-zabyli-v-odnoy-polovine-fo">Механизм первый: фильтр забыли в одной половине формулы</h2>
+
+  <p>Тот самый средний чек. Разложим ответ на составляющие:</p>
+
+  <figure class="fig">
+  <svg focusable="false" role="img" stroke-linejoin="round" stroke-linecap="butt" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 540 236.314844" xmlns="http://www.w3.org/2000/svg" version="1.1">
+   <g id="f3-figure_1">
+    <g id="f3-patch_1">
+     <path d="M 0 236.314844 
+  L 540 236.314844 
+  L 540 0 
+  L 0 0 
+  L 0 236.314844 
+  z
+  " fill="none"/>
+    </g>
+    <g id="f3-axes_1">
+     <g id="f3-patch_2">
+      <path d="M 7.2 198.110937 
+  L 532.8 198.110937 
+  L 532.8 30.317187 
+  L 7.2 30.317187 
+  L 7.2 198.110937 
+  z
+  " fill="none"/>
+     </g>
+     <g id="f3-patch_3">
+      <path d="M 31.090909 156.1625 
+  L 99.350649 156.1625 
+  L 99.350649 156.1625 
+  L 31.090909 156.1625 
+  z
+  " clip-path="url(#f3-p5fe976b531)" fill="#a3a3a3"/>
+     </g>
+     <g id="f3-patch_4">
+      <path d="M 167.61039 156.1625 
+  L 235.87013 156.1625 
+  L 235.87013 156.1625 
+  L 167.61039 156.1625 
+  z
+  " clip-path="url(#f3-p5fe976b531)" fill="#a3a3a3"/>
+     </g>
+     <g id="f3-patch_5">
+      <path d="M 304.12987 156.1625 
+  L 372.38961 156.1625 
+  L 372.38961 65.449004 
+  L 304.12987 65.449004 
+  z
+  " clip-path="url(#f3-p5fe976b531)" fill="#e63946"/>
+     </g>
+     <g id="f3-patch_6">
+      <path d="M 440.649351 156.1625 
+  L 508.909091 156.1625 
+  L 508.909091 166.125254 
+  L 440.649351 166.125254 
+  z
+  " clip-path="url(#f3-p5fe976b531)" fill="#e63946"/>
+     </g>
+     <g id="f3-matplotlib.axis_1">
+      <g id="f3-xtick_1">
+       <g id="f3-line2d_1">
+        <defs>
+         <path id="f3-m2b42477845" d="M 0 0 
+  L 0 3.5 
+  " stroke="#737373" stroke-width="0.8"/>
+        </defs>
+        <g>
+         <use xlink:href="#f3-m2b42477845" x="65.220779" y="198.110937" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f3-text_1">
+        <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#737373" x="65.220779" y="212.708594" transform="rotate(-0 65.220779 212.708594)">заказов</text>
+       </g>
+      </g>
+      <g id="f3-xtick_2">
+       <g id="f3-line2d_2">
+        <g>
+         <use xlink:href="#f3-m2b42477845" x="201.74026" y="198.110937" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f3-text_2">
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(179.673853 213.70957)">выручка</text>
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(180.455103 225.711523)">валовая</text>
+       </g>
+      </g>
+      <g id="f3-xtick_3">
+       <g id="f3-line2d_3">
+        <g>
+         <use xlink:href="#f3-m2b42477845" x="338.25974" y="198.110937" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f3-text_3">
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(316.094115 213.70957)">вычтено</text>
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(311.49099 225.711523)">возвратов</text>
+       </g>
+      </g>
+      <g id="f3-xtick_4">
+       <g id="f3-line2d_4">
+        <g>
+         <use xlink:href="#f3-m2b42477845" x="474.779221" y="198.110937" fill="#737373" stroke="#737373" stroke-width="0.8"/>
+        </g>
+       </g>
+       <g id="f3-text_4">
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(452.555002 213.70957)">средний</text>
+        <text font-size="10px" font-family="'DejaVu Sans'" fill="#737373" transform="translate(465.72844 225.711523)">чек</text>
+       </g>
+      </g>
+     </g>
+     <g id="f3-matplotlib.axis_2"/>
+     <g id="f3-line2d_5">
+      <path d="M 7.2 156.1625 
+  L 532.8 156.1625 
+  " clip-path="url(#f3-p5fe976b531)" fill="none" stroke="#737373" stroke-linecap="square"/>
+     </g>
+     <g id="f3-patch_7">
+      <path d="M 7.2 198.110937 
+  L 532.8 198.110937 
+  " fill="none" stroke="#e5e5e5" stroke-width="0.8" stroke-linejoin="miter" stroke-linecap="square"/>
+     </g>
+     <g id="f3-text_5">
+      <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#737373" x="65.220779" y="150.1625" transform="rotate(-0 65.220779 150.1625)">сошлось</text>
+     </g>
+     <g id="f3-text_6">
+      <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#737373" x="201.74026" y="150.1625" transform="rotate(-0 201.74026 150.1625)">сошлось</text>
+     </g>
+     <g id="f3-text_7">
+      <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#0a0a0a" x="338.25974" y="59.449004" transform="rotate(-0 338.25974 59.449004)">+17.3%</text>
+     </g>
+     <g id="f3-text_8">
+      <text font-size="10px" font-family="'DejaVu Sans'" text-anchor="middle" fill="#0a0a0a" x="474.779221" y="182.125254" transform="rotate(-0 474.779221 182.125254)">-1.9%</text>
+     </g>
+     <g id="f3-text_9">
+      <text font-size="12px" font-family="'DejaVu Sans'" text-anchor="start" fill="#0a0a0a" x="7.2" y="16.317188" transform="rotate(-0 7.2 16.317188)">Три составляющие из четырёх верны до копейки</text>
+     </g>
+    </g>
+   </g>
+   <defs>
+    <clipPath id="f3-p5fe976b531">
+     <rect x="7.2" y="30.317188" width="525.6" height="167.79375"/>
+    </clipPath>
+   </defs>
+  </svg>
+    <figcaption>Три составляющие из четырёх верны до копейки</figcaption>
+  </figure>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th></th>
+<th>эталон</th>
+<th>агент</th>
+<th></th>
+</tr></thead>
+    <tbody>
+      <tr><td>заказов</td><td>31 913</td><td>31 913</td><td>сошлось</td></tr>
+      <tr><td>выручка валовая</td><td>12 744 925.74</td><td>12 744 925.74</td><td>до копейки</td></tr>
+      <tr><td>вычтено возвратов</td><td>1 250 412.88</td><td>1 466 746.66</td><td><strong>+17.3%</strong></td></tr>
+      <tr><td>средний чек</td><td>360.18</td><td>353.40</td><td>−1.9%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Три величины из четырёх верны. Расходится одна.</p>
+
+  <p>Я просил считать только известных клиентов. Агент честно исключил гостевые заказы из числителя — и <strong>не исключил из вычитаемого</strong>. Возвраты гостей вычлись из выручки, в которой гостей нет. Гостевые дают около 13% стоимости возвратов, переплата того же порядка.</p>
+
+  <p>Обычная ошибка в SQL, такую делает и человек. Но интересно, <strong>почему она случилась именно здесь</strong>.</p>
+
+  <p>В витрине заказов лежит готовый флаг «гостевой». В витрине возвратов его нет — гостевой возврат опознаётся по пустому идентификатору клиента, и догадаться до этого надо самому. Агент отфильтровал там, где было имя, и не отфильтровал там, где имени не оказалось.</p>
+
+  <p>Я проверил, не подсказал ли ему это контекст. Во всём, что ему подали — а это шесть с половиной тысяч символов — <strong>ни одного примера SQL</strong>. Копировать было неоткуда.</p>
+
+  <hr/>
+
+  <h2 id="mehanizm-vtoroy-tablicu-prosto-ne-pokazali">Механизм второй: таблицу просто не показали</h2>
+
+  <p>В сборке есть слой, который отбирает таблицы по вопросу и кладёт в промпт только нужные. Экономит около тысячи токенов, и я долго считал, что даром.</p>
+
+  <p>В вопросах про выручку и про категории нет слова «возврат». Значит таблица возвратов в контекст не попала. И агент написал: возвратов в схеме нет, поэтому считаю валовую выручку.</p>
+
+  <p>Он не соврал. Он описал то, что ему показали.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th></th>
+<th>с возвратами</th>
+<th>без возвратов</th>
+</tr></thead>
+    <tbody>
+      <tr><td>рост выручки год к году</td><td>19.75%</td><td>21.02%</td></tr>
+      <tr><td>доля лидера категорий</td><td>47.4%</td><td>46.8%</td></tr>
+      <tr><td><strong>второе место</strong></td><td><strong>home</strong></td><td><strong>apparel</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Расхождение доли — чуть больше процента, глазом не поймать. Решение при этом не меняется. <strong>Меняется ранг.</strong> Продакт, спросивший «куда вкладываться», унесёт apparel вместо home и не заподозрит ничего.</p>
+
+  <hr/>
+
+  <h2 id="mehanizm-tretiy-razvilka-priehala-kak-utverzhden">Механизм третий: развилка приехала как утверждение</h2>
+
+  <p>Этот хуже двух предыдущих, потому что на него нельзя ответить.</p>
+
+  <p>На вопрос про долю выручки топ-10% клиентов агент задал уточнение — про окно расчёта. А внутри того же уточнения, между делом, <strong>утвердил</strong>: возвраты в схеме не представлены отдельной сущностью, поэтому считаю валовую.</p>
+
+  <p>Я ответил про окно. То есть ровно на то, о чём спросили. Подмена определения осталась на месте.</p>
+
+  <p>После моего ответа то же утверждение повторилось <strong>одиннадцать раз</strong> в четырёх вопросах. И совпадение с отбором таблиц идеальное: где таблица возвратов показана — посылки нет ни разу; где не показана — каждый раз. В одном и том же прогоне агент работает с этой таблицей в одном вопросе и объявляет её отсутствующей в другом.</p>
+
+  <p>Чем этот класс опасен, помимо прочего: <strong>он выглядит как компетентность</strong>. Техническое обоснование читается убедительнее, чем «не знаю».</p>
+
+  <hr/>
+
+  <h2 id="kto-sobstvenno-vinovat">Кто, собственно, виноват</h2>
+
+  <figure class="fig">
+  <svg focusable="false" role="img" stroke-linejoin="round" stroke-linecap="butt" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" width="860" height="330" font-family="DejaVu Sans, sans-serif">
+    <text x="0" y="18" font-size="13.5" fill="#0a0a0a">Три способа получить правдоподобное неверное число</text>
+    <!-- заголовки колонок -->
+    <text x="352" y="52" font-size="9.5" fill="#737373" text-anchor="middle">откуда</text>
+    <text x="470" y="52" font-size="9.5" fill="#737373" text-anchor="middle">видно в числе</text>
+    <text x="588" y="52" font-size="9.5" fill="#737373" text-anchor="middle">в тексте</text>
+    <text x="706" y="52" font-size="9.5" fill="#737373" text-anchor="middle">в повторах</text>
+    <text x="812" y="52" font-size="9.5" fill="#737373" text-anchor="middle">разложением</text>
+    <line x1="0" y1="60" x2="860" y2="60" stroke="#e5e5e5"/>
+    <!-- строка 1 -->
+    <text x="0" y="86" font-size="11.5" fill="#0a0a0a">Несогласованность запроса</text>
+    <text x="0" y="102" font-size="9.5" fill="#737373">фильтр применён к одной половине формулы</text>
+    <text x="352" y="90" font-size="10.5" fill="#0a0a0a" text-anchor="middle">модель</text>
+    <text x="470" y="90" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="588" y="90" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="706" y="90" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="812" y="90" font-size="12" fill="#e63946" text-anchor="middle">да</text>
+    <line x1="0" y1="118" x2="860" y2="118" stroke="#f0f0f0"/>
+    <!-- строка 2 -->
+    <text x="0" y="144" font-size="11.5" fill="#0a0a0a">Подмена определения</text>
+    <text x="0" y="160" font-size="9.5" fill="#737373">отбор не показал нужную таблицу</text>
+    <text x="352" y="148" font-size="10.5" fill="#e63946" text-anchor="middle">обвязка</text>
+    <text x="470" y="148" font-size="10" fill="#737373" text-anchor="middle">иногда</text>
+    <text x="588" y="148" font-size="12" fill="#0a0a0a" text-anchor="middle">да</text>
+    <text x="706" y="148" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="812" y="148" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <line x1="0" y1="176" x2="860" y2="176" stroke="#f0f0f0"/>
+    <!-- строка 3 -->
+    <text x="0" y="202" font-size="11.5" fill="#0a0a0a">Развилка как посылка</text>
+    <text x="0" y="218" font-size="9.5" fill="#737373">агент утверждает внутри уточнения, ответить нельзя</text>
+    <text x="352" y="206" font-size="10.5" fill="#e63946" text-anchor="middle">обвязка</text>
+    <text x="470" y="206" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="588" y="206" font-size="12" fill="#0a0a0a" text-anchor="middle">да</text>
+    <text x="706" y="206" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <text x="812" y="206" font-size="12" fill="#737373" text-anchor="middle">—</text>
+    <line x1="0" y1="234" x2="860" y2="234" stroke="#e5e5e5"/>
+    <text x="0" y="262" font-size="10.5" fill="#0a0a0a">Два механизма из трёх — не модель, а код вокруг неё.</text>
+    <text x="0" y="282" font-size="10" fill="#737373">Ни один не ловится повторами: они проверяют, отвечает ли модель одинаково, а не верно ли.</text>
+    <text x="0" y="302" font-size="10" fill="#737373">Проверка на воспроизводимость поймала за проект больше всех остальных — и здесь молчит во всех трёх случаях.</text>
+  </svg>
+    <figcaption>Три способа получить правдоподобное неверное число</figcaption>
+  </figure>
+
+  <p><strong>Два механизма из трёх — не модель, а код вокруг неё.</strong> Третий наполовину: ошибка в SQL агента, но случилась она там, где витрина дала имя на одной стороне формулы и промолчала на другой.</p>
+
+  <p>Про галлюцинации языковых моделей написано столько, что это уже общее место. А тихо-неверное здесь почти целиком приехало из обвязки — и её никто не проверяет, потому что она детерминированная и вроде бы просто работает.</p>
+
+  <hr/>
+
+  <h2 id="pochemu-semnadcat-proverok-molchali">Почему семнадцать проверок молчали</h2>
+
+  <p>Ни одну из трёх ошибок проверки не поймали. Их нашёл разбор руками.</p>
+
+  <p>Главная проверка на воспроизводимость — задать вопрос трижды и сравнить ответы. За проект она поймала больше всех остальных. И вот её граница:</p>
+
+  <blockquote><p><strong>Проверка на повторах ловит недетерминированность, а не неправильность.</strong></p></blockquote>
+
+  <p>Средний чек воспроизвёлся трижды с разбросом 1.8%. Это худший разброс в наборе — остальные восемь вопросов дали ровный ноль. То есть единственный вопрос с тихо-неверным показал наихудшую стабильность, и она всё равно выглядела прекрасно.</p>
+
+  <p>Три согласованных числа означали не надёжность, а то, что модель воспроизводимо пишет один и тот же неверный джойн. Устойчивость, которой я радовался абзацем выше, работала против меня.</p>
+
+  <p><strong>Поймало разложение на части.</strong> Не сравнение итогов, а сверка составляющих: заказы, валовая выручка, вычитаемое. Из тридцати семи сверенных величин разошлась одна — и ошибка оказалась не просто замечена, а локализована.</p>
+
+  <p>Это стало семнадцатой проверкой в наборе. Против детерминированной ошибки повторы бессильны, а разложение работает.</p>
+
+  <p>И тут же нашлась восемнадцатая. Считая деньги, я обнаружил, что запись в лог происходит <strong>в самом конце</strong> обработки вызова — а обрыв по потолку случается раньше и лога не оставляет вовсе. То есть суммирование логов систематически занижает счёт ровно на самых дорогих вызовах: тех, где модель сгенерировала весь потолок и всё выбросила.</p>
+
+  <p>Тот же класс, что и предыдущие: проверка не видит именно то, что должна была бы видеть в первую очередь.</p>
+
+  <hr/>
+
+  <h2 id="pobochnyy-rezultat-pravda-perestala-byt-odna">Побочный результат: правда перестала быть одна</h2>
+
+  <p>Пока продакт молчит, эталон единственный — потому что все развилки закрыл аналитик, когда писал определения метрик.</p>
+
+  <p>Как только продакт начинает отвечать на уточнения, <strong>его ответ становится таким же решением</strong>. Мои ответы разошлись с эталоном в четырёх вопросах — по пяти развилкам:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th></th>
+<th>я выбрал</th>
+<th>эталон</th>
+</tr></thead>
+    <tbody>
+      <tr><td>привязка возврата</td><td>по дате возврата</td><td>по когорте заказа</td></tr>
+      <tr><td>форма сравнения</td><td>помесячно</td><td>полугодие к полугодию</td></tr>
+      <tr><td>основа для чека</td><td>после возвратов</td><td>валовая</td></tr>
+      <tr><td>гостевые в чеке</td><td>только известные</td><td>включены</td></tr>
+      <tr><td>окно для топ-10%</td><td>90 дней</td><td>вся история</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Три из пяти меняют решение. Самая наглядная — форма сравнения: приток новых клиентов вырос на 11.31%, если сравнивать полугодие с полугодием, и на 6.91%, если считать помесячно. Порог стоит на десяти процентах, и ответ переезжает с «растём» на «наблюдать». Я выбрал разрез, а не базу сравнения, и не заметил, что выбрал вместе с ней.</p>
+
+  <p><strong>Ни одно не было ошибкой.</strong> Возврат приходит позже покупки — значит вычитать его из чека того же периода странно, и эталон прав. Чек — свойство заказа, а не клиента — значит гостевые надо включать, и эталон опять прав. Мои позиции тоже защитимы.</p>
+
+  <p>Цену диалога я собирался мерить в токенах и кругах уточнений. Она оказалась не там: после диалога <strong>единственной правды больше нет</strong>.</p>
+
+  <hr/>
+
+  <h2 id="chto-s-etim-delat">Что с этим делать</h2>
+
+  <p>Каждая починка следует из механизма, а не из общих соображений.</p>
+
+  <p><strong>Отбирать таблицы по определению метрики, а не по словам вопроса.</strong> Если в определении выручки написано «после возвратов», таблица возвратов обязана попасть в контекст — даже когда в вопросе этого слова нет.</p>
+
+  <p><strong>Дать агенту знать, что контекст отобран.</strong> Сейчас он не может отличить «в схеме этого нет» от «мне этого не показали»: видит поданное и честно описывает как полную картину. Достаточно сообщать ему сам факт отбора.</p>
+
+  <p><strong>Сверять составляющие, а не итог.</strong> Разложение ловит то, против чего бессильны повторы, и стоит ноль дополнительных вызовов — считается по уже сохранённым запросам.</p>
+
+  <p><strong>Записывать ответы продакта в семантический слой.</strong> Он сказал «март 2025, после возвратов» — это решение, и жить оно должно рядом с определением метрики, а не в переписке. Иначе следующий прогон выберет другие умолчания, и сравнивать будет не с чем.</p>
+
+  <hr/>
+
+  <h2 id="skolko-eto-stoit">Сколько это стоит</h2>
+
+  <p>Раз уж всё меряли — посчитал и деньги.</p>
+
+  <p><strong>Один ответ обходится в три цента</strong> (медиана по 33 прогонам, разброс от цента до восьми). <strong>Весь эксперимент — оба раунда, все прогоны, включая упавшие и переснятые — 4 доллара 47 центов.</strong></p>
+
+  <p>Если продакт задаёт двадцать вопросов в неделю, год работы стоит 31–36 долларов. Разброс — от того, спрашивает он подряд или раз в день: кэш промпта живёт пять минут, и на редких обращениях префикс приходится записывать заново.</p>
+
+  <p>Только это цена <strong>ответов</strong>, а не цена доверия к ним.</p>
+
+  <p>Мир с известной правдой, двадцать эталонов, посчитанных независимо, семнадцать проверок и месяц разбора в эти четыре доллара не входят. И стоили они несопоставимо больше. Отвечать дёшево — убеждаться, что ответ верный, дорого, и вся эта статья про вторую часть.</p>
+
+  <p>Аналитик, который делал бы то же самое, стоит в России порядка трёхсот тысяч в месяц. Делить одно на другое я не стану: <strong>сколько у живого человека уходит на «сколько мы заработали в марте», я не мерил</strong>. Десять минут, двадцать, полчаса — не знаю и придумывать не буду. Половины сравнения здесь нет, и ставка выше приведена как масштаб, а не как множитель.</p>
+
+  <p class="page-sub">Цены API объявлены в долларах, поэтому и счёт здесь в них: рублёвые цифры устаревают быстрее выводов. По курсу ЦБ на 29.08.2026 — 85.60 ₽ за доллар — это 2 рубля 54 копейки за ответ, 382 рубля за весь эксперимент и 2 600–3 100 рублей за год работы.</p>
+
+  <h3 id="dva-uroka-pro-samu-optimizaciyu">Два урока про саму оптимизацию</h3>
+
+  <p><strong>Мы экономили не на той стороне.</strong> Разложил счёт за медианный ответ:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr>
+<th></th>
+<th>токенов</th>
+<th>доля счёта</th>
+</tr></thead>
+    <tbody>
+      <tr><td>вход</td><td>717</td><td>4.8%</td></tr>
+      <tr><td>чтение из кэша</td><td>2 084</td><td>1.4%</td></tr>
+      <tr><td><strong>выход</strong></td><td><strong>2 784</strong></td><td><strong>93.8%</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Почти весь счёт — то, что модель написала. А оптимизировал я контекст: отбор таблиц, кэширование префикса, укладку схемы. Кэш дал десять процентов — рычаг рабочий, но приложен не к той стороне формулы.</p>
+
+  <p><strong>А одна оптимизация оказалась в минус.</strong> Я снизил потолок ответа с 16 000 токенов до 4 000, рассуждая так: медианный выход в полторы тысячи, потолок вдвое выше, экономия очевидна.</p>
+
+  <p>Платится не разрешённое, а сгенерированное. Экономии не было вовсе — зато десять вызовов упёрлись в потолок, оборвались на полуслове и были выброшены. Минус полдоллара плюс перепрогон.</p>
+
+  <p>Оптимизация без замера обошлась дороже, чем не делать ничего.</p>
+
+  <hr/>
+
+  <p>Знаменатель для доли тихо-неверных — <strong>пять случаев</strong>. «Одно из пяти» и «одно из пятидесяти» — очень разные утверждения, и первое означает гораздо меньше.</p>
+
+  <p>Одна модель, один домен, один уровень контекста. Пороги решений расставлял тот же человек, что писал эталоны. Слепую фазу проходил я — человек, который знает этот мир лучше любого продакта, — значит доля тихо-неверных здесь <strong>нижняя оценка</strong>, а не верхняя.</p>
+
+  <p>Три механизма описаны каждый на одном-двух случаях. Механизму не нужна статистика, чтобы существовать, но как часто он срабатывает — я не мерил.</p>
+
+  <hr/>
+
+  <h2 id="tak-mozhet-ili-ne-mozhet">Так может или не может</h2>
+
+  <p>Обойтись без аналитика — нет. Но не потому, что агент врёт.</p>
+
+  <p>Он переспрашивает, и переспрашивает по существу. На его вопросы нужен человек, который знает, какой март имеется в виду, что делать с гостевыми и от какой даты отсчитывать окно. Отказ отвечать оказался самой надёжной защитой и самой дорогой: ноль тихо-неверных в первом раунде куплен нулевым покрытием.</p>
+
+  <p>А когда продакт отвечает и покрытие становится полным, тихо-неверное появляется — и приходит не оттуда, откуда его ждут. Не модель фантазирует. Код вокруг неё молча меняет определение метрики, и число выходит совершенно правдоподобным.</p>
+
+  <div class="roots">
+    <div class="roots-tag">Откуда это растёт</div>
+    <p>null, картотека математики: <a href="https://yzotop.github.io/null/essays/simpson.html" rel="noopener">Парадокс Симпсона</a> · <a href="https://yzotop.github.io/null/essays/golden-set.html" rel="noopener">золотой набор</a></p>
+  </div>
+
+  </div>
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
