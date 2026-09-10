@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как устроен слой метрик для AI-аналитика · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/metrics-layer/"/>
+    <meta name="description" content="Файл на сто семь строк, где записано, как считаются метрики. Что в нём лежит, кто его читает — сборщик и модель — и почему два измерения из шести не воспроизвелись через неделю."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Как устроен слой метрик для AI-аналитика — Александр Давыдов"/>
+    <meta property="og:description" content="У файла два исполнителя. Один воспроизводим, другой нет."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/metrics-layer/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="article-meta">
+    <span>Сентябрь 2026</span>
+    <span class="chip">AI-аналитик</span>
+    <span>10 мин</span>
+  </div>
+  <h1>Как устроен слой метрик для AI-аналитика</h1>
+
+  <div class="prose">
+
+  <p>Про семантический слой пишут примерно одинаково: определи метрику один раз, используй везде. Проблема формулируется как пятнадцать определений оттока у пятнадцати авторов, лекарство — заставить всех пользоваться одним.</p>
+
+  <hr/>
+
+  <p>У слоя, который читает агент, есть особенность, которой нет у обычного: его исполняют двое. Первый — сборщик запроса, обычная функция. Второй — сама модель, которой файл уходит в промпт целиком. Они видят разное и ведут себя по-разному, и почти всё интересное растёт отсюда.</p>
+
+  <p>Файл маленький: сто семь строк, три метрики. Дальше — как он устроен, кто его читает и что из этого следует.</p>
+
+  <p><strong>О чём дальше</strong></p>
+
+  <ol>
+    <li>Как устроен файл — цепочка строка · ключ · решение</li>
+    <li>Пять слов, которые встречаются постоянно</li>
+    <li>Два исполнителя — сборщик и модель, и кто из них что читает</li>
+    <li>Что будет, если повторить через неделю — два измерения из шести</li>
+    <li>Что означают решения — виды выручки, комментарии, три дыры</li>
+    <li>Как файл живёт — три коммита, две строки из прогонов</li>
+    <li>Что происходит, когда метрик становится много — симуляция на 24</li>
+    <li>Чего нет в каноне и чего нет у меня</li>
+    <li>Границы и с чего начать у себя</li>
+  </ol>
+
+  <hr/>
+
+  <h2>Как устроен файл</h2>
+
+  <p>Сто семь строк. Но не всякая строка что-то объявляет, и не всякое объявление влияет на ответ. Отсюда три ступени, и дальше вся статья про них.</p>
+
+  <p><strong>Строка.</strong> Всего их 107.</p>
+
+  <p><strong>Ключ</strong> — строка вида <code>имя: значение</code>, где что-то объявлено. Таких 36. Остальные 71 — комментарии и пустые.</p>
+
+  <p><strong>Решение</strong> — ключ, который меняет ответ агента. Таких 15. Остальные 21 ключ — названия метрик, их описания и структура файла.</p>
+
+  <figure>
+<svg viewBox="0 0 1180 700" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="700" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">СТРОКИ · КЛЮЧИ · РЕШЕНИЯ</text><rect x="40" y="100" width="880.0" height="88" fill="#c9c9c9"/><text x="64" y="158" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="42" font-weight="500" fill="#ffffff">107</text><text x="180" y="156" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">строк в файле</text><rect x="40" y="218" width="296.0747663551402" height="88" fill="#737373"/><text x="64" y="276" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="42" font-weight="500" fill="#ffffff">36</text><text x="360.0747663551402" y="274" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">из них ключи — строки вида имя: значение</text><rect x="40" y="336" width="123.3644859813084" height="88" fill="#0a0a0a"/><text x="64" y="394" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="42" font-weight="500" fill="#ffffff">15</text><text x="187.3644859813084" y="392" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">из ключей — решения, которые меняют ответ</text><path d="M 336 188 L 336 218" stroke="#d4d4d4" stroke-width="1.4"/><path d="M 163 306 L 163 336" stroke="#d4d4d4" stroke-width="1.4"/><path d="M 40 486 L 1140 486" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><rect x="40" y="514" width="452.33644859813086" height="88" fill="#e63946"/><text x="64" y="572" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="42" font-weight="500" fill="#ffffff">55</text><text x="516.3364485981308" y="556" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">строк комментариев — ничего не объявляют,</text><text x="516.3364485981308" y="586" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">а объясняют, что будет при другом выборе</text><text x="40" y="656" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#0a0a0a">На пятнадцать решений — пятьдесят пять строк объяснений.</text></svg>
+    <figcaption>Строки, ключи, решения</figcaption>
+  </figure>
+
+  <p>Вот как это выглядит на одной метрике — я взял самую короткую из трёх и пометил каждую строку:</p>
+
+  <figure>
+<svg viewBox="0 0 1060 860" xmlns="http://www.w3.org/2000/svg"><rect width="1060" height="860" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ОДНА МЕТРИКА ЦЕЛИКОМ · 16 СТРОК</text><text x="40" y="76" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">return_rate — самая короткая из трёх</text><rect x="40" y="99" width="7" height="26" fill="#c9c9c9"/><text x="58" y="118" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#737373" letter-spacing="1.6">СТРУКТУРА</text><text x="210" y="118" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;return_rate:</text><rect x="40" y="131" width="7" height="26" fill="#9a9a9a"/><text x="58" y="150" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#737373" letter-spacing="1.6">СЛУЖЕБНОЕ</text><text x="210" y="150" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;label:&#160;Доля&#160;возвратов</text><rect x="40" y="163" width="7" height="26" fill="#9a9a9a"/><text x="210" y="182" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;description:&#160;></text><rect x="40" y="195" width="7" height="26" fill="#dcdcdc"/><text x="210" y="214" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;&#160;&#160;Какая&#160;часть&#160;проданного&#160;вернулась.&#160;Решения:&#160;считать</text><rect x="40" y="227" width="7" height="26" fill="#dcdcdc"/><text x="210" y="246" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;&#160;&#160;строками&#160;или&#160;штуками&#160;и&#160;обрезать&#160;ли&#160;окно.</text><rect x="40" y="291" width="7" height="26" fill="#0a0a0a"/><text x="58" y="310" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#0a0a0a" letter-spacing="1.6">РЕШЕНИЕ</text><text x="210" y="310" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">&#160;&#160;&#160;&#160;window_days:&#160;90</text><rect x="40" y="323" width="7" height="26" fill="#0a0a0a"/><text x="210" y="342" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">&#160;&#160;&#160;&#160;grain:&#160;line&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;#&#160;line&#160;|&#160;unit</text><rect x="40" y="387" width="7" height="26" fill="#e63946"/><text x="58" y="406" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#e63946" letter-spacing="1.6">КОММЕНТАРИЙ</text><text x="210" y="406" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;#&#160;Возврат&#160;приходит&#160;через&#160;3-21&#160;день.&#160;Заказы&#160;последних</text><rect x="40" y="419" width="7" height="26" fill="#e63946"/><text x="210" y="438" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;#&#160;21&#160;дня&#160;перед&#160;курсором&#160;ещё&#160;не&#160;дозрели.</text><rect x="40" y="451" width="7" height="26" fill="#e63946"/><text x="210" y="470" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;#&#160;21&#160;—&#160;считать&#160;только&#160;по&#160;дозревшим&#160;когортам.</text><rect x="40" y="483" width="7" height="26" fill="#e63946"/><text x="210" y="502" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;#&#160;0&#160;&#160;—&#160;считать&#160;по&#160;всему&#160;окну&#160;и&#160;получить&#160;заниженную</text><rect x="40" y="515" width="7" height="26" fill="#e63946"/><text x="210" y="534" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;#&#160;&#160;&#160;&#160;&#160;&#160;цифру,&#160;растущую&#160;задним&#160;числом.</text><rect x="40" y="547" width="7" height="26" fill="#0a0a0a"/><text x="58" y="566" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#0a0a0a" letter-spacing="1.6">РЕШЕНИЕ</text><text x="210" y="566" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">&#160;&#160;&#160;&#160;maturity_days:&#160;21</text><rect x="40" y="611" width="7" height="26" fill="#9a9a9a"/><text x="58" y="630" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="14" font-weight="400" fill="#737373" letter-spacing="1.6">СЛУЖЕБНОЕ</text><text x="210" y="630" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">&#160;&#160;&#160;&#160;tables:&#160;[fct_returns,&#160;fct_order_items]</text><path d="M 40 682 L 1020 682" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><rect x="40" y="712" width="7" height="26" fill="#0a0a0a"/><text x="58" y="730" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="500" fill="#0a0a0a">3 решения</text><text x="250" y="730" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">меняют ответ</text><rect x="40" y="754" width="7" height="26" fill="#e63946"/><text x="58" y="772" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="500" fill="#e63946">5 комментариев</text><text x="250" y="772" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">объясняют, что будет при другом выборе</text><rect x="40" y="796" width="7" height="26" fill="#9a9a9a"/><text x="58" y="814" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="500" fill="#737373">3 служебных</text><text x="250" y="814" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">название, описание, список таблиц</text><text x="58" y="860" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">плюс имя метрики, две строки описания и три пустых</text></svg>
+    <figcaption>Одна метрика целиком, с разметкой строк</figcaption>
+  </figure>
+
+  <p>И рядом с этой цепочкой — 55 строк комментариев. Они ничего не объявляют и потому в неё не входят. Но привязаны они именно к решениям: объясняют, что будет при другом выборе.</p>
+
+  <p>На пятнадцать решений — пятьдесят пять строк объяснений.</p>
+
+  <h3>Где всё это лежит</h3>
+
+  <p>Файл состоит из трёх частей:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>часть</th><th>строк</th><th>из них комментариев</th><th>решений</th></tr></thead>
+    <tbody>
+      <tr><td>шапка</td><td>12</td><td>9</td><td>—</td></tr>
+      <tr><td><code>as_of</code></td><td>8</td><td>3</td><td>3</td></tr>
+      <tr><td><code>metrics</code></td><td>87</td><td>43</td><td>12</td></tr>
+      <tr><td><strong>всего</strong></td><td><strong>107</strong></td><td><strong>55</strong></td><td><strong>15</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><strong>Шапка</strong> — версия формата и девять строк о том, зачем файл вообще нужен. Ни одного решения, но именно здесь сказано главное: строка ниже — это решение, а не настройка.</p>
+
+  <p><strong><code>as_of</code></strong> отвечает на вопрос «на какой момент мы смотрим на данные». Три решения, действуют на все метрики разом.</p>
+
+  <pre><code>as_of:
+  source: cursor
+  filter_on: received_at
+  timezone: UTC</code></pre>
+
+  <p><strong><code>metrics</code></strong> отвечает на вопрос «что именно считаем». Три метрики, у каждой свой набор:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>метрика</th><th>строк</th><th>из них комментариев</th><th>решений</th><th>служебных полей</th></tr></thead>
+    <tbody>
+      <tr><td><code>active_customers</code></td><td>28</td><td>15</td><td>3</td><td>3</td></tr>
+      <tr><td><code>revenue</code></td><td>41</td><td>23</td><td>6</td><td>3</td></tr>
+      <tr><td><code>return_rate</code></td><td>16</td><td>5</td><td>3</td><td>3</td></tr>
+      <tr><td><strong>всего</strong></td><td><strong>85</strong></td><td><strong>43</strong></td><td><strong>12</strong></td><td><strong>9</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>До восьмидесяти семи не хватает двух строк: заголовка <code>metrics:</code> и пустой строки под ним.</p>
+
+  <p>Выручка вдвое сложнее соседей и по числу решений, и по объёму объяснений. Двадцать три строки комментариев на шесть решений — больше, чем у двух других метрик вместе.</p>
+
+  <h3>Как сходятся два счёта</h3>
+
+  <p>Выше файл разложен дважды: по частям и по цепочке строка — ключ — решение. Это два разреза одних и тех же ста семи строк, и вот как они пересекаются:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>часть</th><th>комментариев</th><th>ключей</th><th>пустых</th><th>всего</th></tr></thead>
+    <tbody>
+      <tr><td>шапка</td><td>9</td><td>1</td><td>2</td><td>12</td></tr>
+      <tr><td><code>as_of</code></td><td>3</td><td>4</td><td>1</td><td>8</td></tr>
+      <tr><td><code>metrics</code></td><td>43</td><td>31</td><td>13</td><td>87</td></tr>
+      <tr><td><strong>всего</strong></td><td><strong>55</strong></td><td><strong>36</strong></td><td><strong>16</strong></td><td><strong>107</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Тридцать шесть ключей набираются как 1 + 4 + 31.</p>
+
+  <p>А внутри этих тридцати шести решения занимают меньше половины:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th></th><th>ключей</th></tr></thead>
+    <tbody>
+      <tr><td><strong>решения</strong></td><td><strong>15</strong></td></tr>
+      <tr><td>служебные поля: название, описание, список таблиц</td><td>9</td></tr>
+      <tr><td>структура: <code>version</code>, заголовки двух блоков, имена трёх метрик</td><td>6</td></tr>
+      <tr><td>продолжения многострочных описаний</td><td>6</td></tr>
+      <tr><td><strong>всего</strong></td><td><strong>36</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Служебные поля ответ не меняют: название метрики и её описание нужны человеку. Список таблиц — особый случай, о нём ниже.</p>
+
+  <p>Чего в файле нет ни на одном уровне — колонок. Ни одного места, где сказано, что физически суммировать и по какому выражению. Список таблиц есть, а как из них получить число — нет.</p>
+
+  <h3>Пять слов, которые дальше встречаются постоянно</h3>
+
+  <p><strong>Слой метрик</strong> — вот этот файл. Записано, как считается каждая метрика.</p>
+
+  <p><strong>Сборщик</strong> — код, который читает ключи по именам и собирает из них SQL-запрос.</p>
+
+  <p><strong>Модель</strong> — она получает файл целиком, вместе с комментариями, и пишет SQL сама.</p>
+
+  <p><strong>Харнесс</strong> — всё, что вокруг модели: что ей показать, как запустить, как разобрать её ответ. Сборщик — часть харнесса.</p>
+
+  <hr/>
+
+  <h2>Два исполнителя</h2>
+
+  <figure>
+<div class="table-wrap">
+<svg viewBox="0 0 1200 660" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="660" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ДВА ИСПОЛНИТЕЛЯ ОДНОГО ФАЙЛА</text><rect x="40" y="80" width="300" height="240" fill="#f5f5f5" stroke="#0a0a0a" stroke-width="2"/><text x="66" y="124" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="26" font-weight="500" fill="#0a0a0a">metrics.yml</text><text x="66" y="164" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">108 строк</text><text x="66" y="196" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">27 ключей</text><text x="66" y="228" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">55 комментариев</text><text x="66" y="282" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#e63946">уходит целиком</text><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#737373"/></marker></defs><path d="M 344 150 L 470 150" stroke="#737373" stroke-width="1.8" marker-end="url(#ar)"/><path d="M 344 250 L 470 250" stroke="#737373" stroke-width="1.8" marker-end="url(#ar)"/><rect x="480" y="80" width="330" height="180" fill="none" stroke="#0a0a0a" stroke-width="2"/><text x="508" y="124" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#0a0a0a">Сборщик</text><text x="508" y="158" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#737373">render.py</text><text x="508" y="198" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#0a0a0a">читает 10 ключей из 15</text><text x="508" y="230" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">комментарии не видит</text><rect x="480" y="300" width="330" height="180" fill="none" stroke="#e63946" stroke-width="2"/><text x="508" y="344" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#e63946">Модель</text><text x="508" y="378" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">пишет SQL сама</text><text x="508" y="418" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#0a0a0a">читает весь текст,</text><text x="508" y="450" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#0a0a0a">включая 55 комментариев</text><rect x="860" y="80" width="300" height="180" fill="#f5f5f5"/><text x="890" y="168" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="64" font-weight="500" fill="#0a0a0a">4.7%</text><text x="890" y="208" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">чисел проекта</text><rect x="860" y="300" width="300" height="180" fill="#f5f5f5"/><text x="890" y="388" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="64" font-weight="500" fill="#e63946">95.3%</text><text x="890" y="428" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">чисел проекта</text><text x="40" y="556" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="500" fill="#0a0a0a" letter-spacing="2">ОДИН ФАЙЛ · РАЗНЫЕ ЧИТАТЕЛИ · РАЗНЫЙ ОХВАТ</text><text x="40" y="598" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">Сборщик берёт значения по имени ключа. Модель читает файл как текст</text><text x="40" y="630" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">и не различает, где ключ, а где проза.</text></svg>
+</div>
+    <figcaption>Два исполнителя одного файла</figcaption>
+  </figure>
+
+  <p><strong>Сборщик.</strong> Обычная функция: читает ключи по имени и подставляет значения в шаблон запроса. Комментарии для него — символ решётки и всё, что после. Из пятнадцати решений файла он читает десять.</p>
+
+  <p><strong>Модель.</strong> Слой уходит ей в промпт целиком:</p>
+
+  <pre><code>def layer_metrics() -&gt; str:
+    return (ROOT / "metrics" / "metrics.yml").read_text().strip()</code></pre>
+
+  <p>Ни фильтра, ни выборки по метрике, ни выбрасывания комментариев. Список таблиц агенту отбирают, а слой отдают всегда целиком: агент на любом вопросе видит все три метрики и все пятьдесят пять комментариев, включая те, что к вопросу отношения не имеют. SQL при этом пишет сам.</p>
+
+  <p>Пропорция в моём проекте: сборкой получено 4.7% чисел, чтением — 95.3%.</p>
+
+  <figure>
+<div class="table-wrap">
+<svg viewBox="0 0 1240 760" xmlns="http://www.w3.org/2000/svg"><rect width="1240" height="760" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ЧТО ВИДИТ КАЖДЫЙ ИСПОЛНИТЕЛЬ</text><rect x="40" y="80" width="570" height="590" fill="none" stroke="#0a0a0a" stroke-width="2"/><text x="68" y="124" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#0a0a0a">Сборщик</text><text x="210" y="124" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">видит только ключи</text><rect x="68" y="167" width="514" height="4" fill="#ededed"/><rect x="68" y="199" width="514" height="4" fill="#ededed"/><rect x="68" y="231" width="514" height="4" fill="#ededed"/><rect x="68" y="263" width="514" height="4" fill="#ededed"/><rect x="68" y="295" width="514" height="4" fill="#ededed"/><rect x="68" y="327" width="514" height="4" fill="#ededed"/><rect x="68" y="359" width="514" height="4" fill="#ededed"/><rect x="68" y="391" width="514" height="4" fill="#ededed"/><rect x="68" y="423" width="514" height="4" fill="#ededed"/><rect x="68" y="455" width="514" height="4" fill="#ededed"/><text x="68" y="500" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">guests: include</text><text x="68" y="532" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">tables: [fct_order_items, fct_returns]</text><path d="M 68 578 L 582 578" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="68" y="636" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="32" font-weight="500" fill="#0a0a0a">2 строки</text><text x="208" y="636" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">из двенадцати</text><rect x="660" y="80" width="570" height="590" fill="none" stroke="#e63946" stroke-width="2"/><text x="688" y="124" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#e63946">Модель</text><text x="830" y="124" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">видит весь текст</text><text x="688" y="180" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># include — гостевые заказы наравне с остальными.</text><text x="688" y="212" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># exclude — только заказы известных клиентов.</text><text x="688" y="244" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">#</text><text x="688" y="276" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># Решение появилось после разбора: продакт попросил</text><text x="688" y="308" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># «выручку без гостей», а такого объекта в слое</text><text x="688" y="340" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># не было вовсе. Агент собрал комбинацию сам —</text><text x="688" y="372" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># непоследовательно: гостей отфильтровал в числителе</text><text x="688" y="404" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># и не отфильтровал в вычитаемом.</text><text x="688" y="436" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">#</text><text x="688" y="468" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373"># ВАЖНО: решение действует на ОБЕ стороны формулы.</text><text x="688" y="500" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">guests: include</text><text x="688" y="532" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#0a0a0a">tables: [fct_order_items, fct_returns]</text><path d="M 688 578 L 1202 578" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="688" y="636" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="32" font-weight="500" fill="#e63946">12 строк</text><text x="843" y="636" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">из двенадцати</text><text x="40" y="706" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="500" fill="#0a0a0a" letter-spacing="2">ОДИН И ТОТ ЖЕ КУСОК ФАЙЛА</text><text x="40" y="744" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">Для сборщика решётка и всё после неё — пустое место. Для модели это часть инструкции.</text></svg>
+</div>
+    <figcaption>Что видит каждый исполнитель</figcaption>
+  </figure>
+
+  <h3>Кто из них читает какую строку</h3>
+
+  <p>В файле есть ключ <code>revenue.guests</code> с самым длинным комментарием: двенадцать строк, история появления и приписка капсом о том, что решение действует на обе стороны формулы.</p>
+
+  <p>Кусок кода, который собирает запрос для выручки, этот ключ не читает. Ни разу. Я проверил не чтением кода, а прогоном: поменял значение на <code>exclude</code>, потом на третий вариант, потом написал в него заведомую бессмыслицу — собранный запрос совпал побайтово во всех случаях. Шесть разных состояний файла, один и тот же хеш SQL.</p>
+
+  <p>Для сборщика этот ключ всё равно что не существует — дальше я называю такие строки мёртвыми. Для модели он не мёртв: когда я снял строку вместе с комментарием, агент начал давать два варианта вместо одного, и в SQL появились четыре фильтра, по два на каждую сторону формулы. Он прочитал двенадцать строк объяснения и применил решение к обеим сторонам сразу.</p>
+
+  <p>Вот все пятнадцать и кто их читает:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>решение</th><th>сборщик</th><th>ещё кто-то</th><th>итог</th></tr></thead>
+    <tbody>
+      <tr><td><code>as_of.source</code></td><td>нет</td><td>нет</td><td>не читает никто</td></tr>
+      <tr><td><code>as_of.filter_on</code></td><td>нет</td><td>печатается в сообщении</td><td>на ответ не влияет</td></tr>
+      <tr><td><code>as_of.timezone</code></td><td>нет</td><td>нет</td><td>не читает никто</td></tr>
+      <tr><td><code>active_customers.window_days</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>active_customers.activity</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>active_customers.guests</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>revenue.window_days</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>revenue.statuses</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>revenue.basis</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>revenue.returns_attribution</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>revenue.compare_to</code></td><td>нет</td><td>расчёт цены развилки</td><td>сборщик не исполняет</td></tr>
+      <tr><td><code>revenue.guests</code></td><td>нет</td><td>расчёт цены развилки</td><td>сборщик не исполняет</td></tr>
+      <tr><td><code>return_rate.window_days</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>return_rate.grain</code></td><td>да</td><td></td><td>работает</td></tr>
+      <tr><td><code>return_rate.maturity_days</code></td><td>да</td><td></td><td>работает</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Десять из пятнадцати доходят до запроса. Три не читает никто, ещё два читает не сборщик, а вспомогательный код.</p>
+
+  <p>Мёртвых строк в файле оказалось три вида, и они разные:</p>
+
+  <figure>
+<svg viewBox="0 0 1180 560" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="560" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ТРИ ВИДА МЁРТВОЙ СТРОКИ</text><text x="700" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">СБОРЩИК</text><text x="870" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">МОДЕЛЬ</text><text x="1040" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">ЧЕЛОВЕК</text><path d="M 40 120 L 1140 120" stroke="#0a0a0a" stroke-width="2" fill="none"/><text x="66" y="170" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="500" fill="#0a0a0a">revenue.guests</text><text x="66" y="202" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">двенадцать строк объяснения</text><text x="700" y="176" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#e63946">нет</text><text x="870" y="176" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0a0a0a">да</text><text x="1040" y="176" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#d4d4d4">—</text><text x="66" y="236" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">мёртв для сборщика, работает через чтение</text><path d="M 40 270 L 1140 270" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="66" y="320" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="500" fill="#0a0a0a">as_of.filter_on</text><text x="66" y="352" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">подписывает число</text><text x="700" y="326" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#e63946">нет</text><text x="870" y="326" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#e63946">нет</text><text x="1040" y="326" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0a0a0a">да</text><text x="66" y="386" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">не влияет ни на что, но печатается рядом с ответом</text><path d="M 40 420 L 1140 420" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="66" y="470" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="500" fill="#0a0a0a">ac.guests · третий вариант</text><text x="66" y="502" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="19" font-weight="400" fill="#737373">count_each_order</text><text x="700" y="476" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#e63946">нет</text><text x="870" y="476" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#e63946">был да</text><text x="1040" y="476" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="500" fill="#d4d4d4">—</text><text x="66" y="536" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">жил только в комментарии — сняли, и он исчез</text><path d="M 40 570 L 1140 570" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="40" y="626" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="500" fill="#0a0a0a" letter-spacing="2">«ЖИВАЯ СТРОКА» — ВОПРОС, ДЛЯ КОГО</text></svg>
+    <figcaption>Три вида мёртвой строки</figcaption>
+  </figure>
+
+  <ul>
+    <li><strong>мёртвая для сборщика, живая для модели</strong> — <code>revenue.guests</code>;</li>
+    <li><strong>мёртвая для обоих, но видимая человеку</strong> — <code>as_of.filter_on</code>. Он не влияет ни на запрос, ни на число, но печатается в сообщении рядом с ответом. Рассинхронизируется с обработкой данных — будет уверенно сообщать неверную отсечку;</li>
+    <li><strong>строка, на которую агент перестал реагировать</strong> — о ней в следующем разделе.</li>
+  </ul>
+
+  <hr/>
+
+  <h2>Что будет, если повторить через неделю</h2>
+
+  <p>Различаются они не только охватом.</p>
+
+  <figure>
+<svg viewBox="0 0 1180 600" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="600" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ЧТО БУДЕТ, ЕСЛИ ПОВТОРИТЬ ЧЕРЕЗ НЕДЕЛЮ</text><text x="40" y="110" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="28" font-weight="500" fill="#0a0a0a">Сборщик</text><text x="40" y="146" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">шесть состояний файла</text><rect x="40" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="76" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><rect x="126" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="162" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><rect x="212" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="248" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><rect x="298" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="334" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><rect x="384" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="420" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><rect x="470" y="170" width="72" height="40" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="506" y="196" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="17" font-weight="400" fill="#737373">sha</text><path d="M 290 224 L 290 258" stroke="#737373" stroke-width="1.8" marker-end="url(#ar2)"/><defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#737373"/></marker></defs><rect x="40" y="266" width="516" height="72" fill="none" stroke="#0a0a0a" stroke-width="2"/><text x="66" y="312" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="500" fill="#0a0a0a">один и тот же SQL, байт в байт</text><text x="624" y="110" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="28" font-weight="500" fill="#e63946">Модель</text><text x="624" y="146" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#737373">шесть измерений недельной давности</text><rect x="624" y="170" width="72" height="40" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1.8"/><rect x="710" y="170" width="72" height="40" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1.8"/><rect x="796" y="170" width="72" height="40" fill="#ffffff" stroke="#e63946" stroke-width="1.8"/><rect x="882" y="170" width="72" height="40" fill="#ffffff" stroke="#e63946" stroke-width="1.8"/><rect x="968" y="170" width="72" height="40" fill="#ffffff" stroke="#e63946" stroke-width="1.8"/><rect x="1054" y="170" width="72" height="40" fill="#ffffff" stroke="#e63946" stroke-width="1.8"/><text x="660" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#ffffff">✓</text><text x="746" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#ffffff">✓</text><text x="832" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#e63946">✕</text><text x="918" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#e63946">✕</text><text x="1004" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#e63946">✕</text><text x="1090" y="197" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#e63946">✕</text><rect x="624" y="266" width="516" height="72" fill="none" stroke="#e63946" stroke-width="2"/><text x="650" y="312" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="500" fill="#e63946">воспроизвелось два из шести</text><path d="M 40 382 L 1140 382" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="40" y="432" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#0a0a0a">И база уезжает сама: за двое суток ответ на нетронутом файле стал</text><text x="40" y="464" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#0a0a0a">неотличим от плеча со снятым решением.</text><text x="40" y="536" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="500" fill="#0a0a0a" letter-spacing="2">ДАТА РЯДОМ С ЧИСЛОМ · БАЗА В ТОМ ЖЕ ПРОГОНЕ · МЕРИТЬ ПАРОЙ</text></svg>
+    <figcaption>Что будет, если повторить через неделю</figcaption>
+  </figure>
+
+  <p>Сборщик детерминирован по построению. Шесть разных состояний файла — шесть разных контрольных сумм — и один и тот же собранный запрос, байт в байт. Числа могли бы совпасть случайно, текст запроса нет.</p>
+
+  <p>С моделью иначе, и разброс не сводится к повторам одного прогона.</p>
+
+  <p>Первого сентября снятие строки <code>revenue.guests</code> меняло ответ: два варианта вместо одного, симметричный фильтр. Восьмого сентября на том же файле, том же промпте и неизменённом коде — один вариант трижды, и гостей в SQL нет вовсе.</p>
+
+  <p>Я перепроверил остальные пять развилок, по которым были измерения недельной давности. <strong>Воспроизвелись два из шести.</strong></p>
+
+  <p>Шесть развилок, которые я снимал первого сентября, и что вышло восьмого:</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>что снимал</th><th>1 сентября</th><th>8 сентября</th><th>воспроизвелось</th></tr></thead>
+    <tbody>
+      <tr><td>привязка возврата</td><td>1 вариант → 2</td><td>то же самое</td><td><strong>да</strong></td></tr>
+      <tr><td>что считать активностью</td><td>1 вариант → 2, трижды</td><td>то же самое</td><td><strong>да</strong></td></tr>
+      <tr><td>строками или штуками</td><td>было 1, стало 3</td><td>было 2, стало 3</td><td>нет</td></tr>
+      <tr><td>до возвратов или после</td><td>разошлись по этой оси</td><td>разошлись по длине окна</td><td>нет</td></tr>
+      <tr><td>гости в выручке</td><td>1 вариант → 2, трижды</td><td>1 вариант трижды</td><td>нет</td></tr>
+      <tr><td>гости в клиентах</td><td>2 варианта, разные числа</td><td>2 варианта, числа одинаковые</td><td>нет</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Развалились они по-разному, и это интереснее самой доли.</p>
+
+  <p><strong>Одна потеряла альтернативу, которая жила только в комментарии.</strong> У решения про гостей в метрике клиентов было три варианта, третий — считать каждый гостевой заказ отдельным человеком. Первого сентября агент его предлагал. Восьмого перестал: единственное место, где этот вариант описан, — снятый комментарий, и без него он не восстанавливается.</p>
+
+  <p><strong>Другая сохранила форму и сменила содержание.</strong> У решения про базу расчёта число вариантов совпало точь-в-точь, а расходиться они стали по длине окна вместо <code>gross</code>/<code>net</code>. Если бы я считал по числу вариантов, вердикт был бы «воспроизвелось».</p>
+
+  <p>И третье, что выяснилось попутно. Чтобы понять, подействовало ли снятие строки, ответ на изменённом файле сравнивают с ответом на нетронутом. Второй и есть точка отсчёта.</p>
+
+  <p>Так вот, она не стоит на месте. По одному из вопросов ответ на нетронутом файле давал один вариант первого сентября, два третьего, снова смесь четвёртого. За двое суток точка отсчёта стала неотличима от изменённого файла, хотя файл никто не трогал.</p>
+
+  <p>Три правила, если будете мерить своё:</p>
+
+  <ol>
+    <li>У измерения на агенте есть дата. Писать её рядом с числом.</li>
+    <li>Ответ на нетронутом файле снимается в том же запуске, что и на изменённом. Сравнивать с записями недельной давности нельзя.</li>
+    <li>Мерить надо парой: по какой оси разошлись варианты <strong>и</strong> в скольких повторах она поднялась. Ни одна мера по отдельности не работает — я убедился в этом дважды, и оба раза в разные стороны.</li>
+  </ol>
+
+  <hr/>
+
+  <h2>Что означают решения</h2>
+
+  <p>Пятнадцать решений — это по объявлению. По исполнению меньше: три ключа <code>as_of</code> не решения, а зафиксированные соглашения, они описывают то, что зашито в обработке данных.</p>
+
+  <figure>
+<svg viewBox="0 0 1180 620" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="620" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ИЗ ЧЕГО СОСТОИТ ОДНО РЕШЕНИЕ</text><rect x="40" y="100" width="1100" height="88" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/><text x="72" y="152" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">КЛЮЧ</text><text x="320" y="152" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="500" fill="#0a0a0a">guests</text><text x="1108" y="152" text-anchor="end" font-family="Manrope, system-ui, sans-serif" font-size="18" font-weight="400" fill="#0a0a0a">сборщик читает по имени</text><rect x="40" y="200" width="1100" height="88" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/><text x="72" y="252" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">ЗНАЧЕНИЕ</text><text x="320" y="252" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="500" fill="#e63946">include</text><text x="1108" y="252" text-anchor="end" font-family="Manrope, system-ui, sans-serif" font-size="18" font-weight="400" fill="#0a0a0a">сборщик подставляет в шаблон</text><rect x="40" y="300" width="1100" height="88" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="72" y="352" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">АЛЬТЕРНАТИВА</text><text x="320" y="352" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="24" font-weight="400" fill="#737373">exclude</text><text x="1108" y="352" text-anchor="end" font-family="Manrope, system-ui, sans-serif" font-size="18" font-weight="400" fill="#e63946">сборщик не видит · модель читает</text><rect x="40" y="400" width="1100" height="88" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="72" y="452" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">ОБОСНОВАНИЕ</text><text x="320" y="452" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="400" fill="#737373">«выручка есть выручка, платил её</text><text x="320" y="476" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#737373">человек с аккаунтом или без»</text><text x="1108" y="452" text-anchor="end" font-family="Manrope, system-ui, sans-serif" font-size="18" font-weight="400" fill="#e63946">сборщик не видит · модель читает</text><rect x="40" y="500" width="1100" height="88" fill="#f5f5f5" stroke="#d4d4d4" stroke-width="1.4"/><text x="72" y="552" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="18" font-weight="400" fill="#737373" letter-spacing="2">ПРОИСХОЖДЕНИЕ</text><text x="320" y="552" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="400" fill="#737373">приехало из прогона</text><text x="1108" y="552" text-anchor="end" font-family="Manrope, system-ui, sans-serif" font-size="18" font-weight="400" fill="#e63946">сборщик не видит · модель читает</text><path d="M 40 616 L 1140 616" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="40" y="672" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#0a0a0a">Сборщику достаются две строки из пяти. Остальные три существуют</text><text x="40" y="706" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#0a0a0a">только для модели — и работают, пока она их читает.</text></svg>
+    <figcaption>Из чего состоит одно решение</figcaption>
+  </figure>
+
+  <p>У восьми решений из пятнадцати рядом записаны альтернативы:</p>
+
+  <pre><code>    # completed_order — активность это завершённый заказ.
+    # any_order — отменённый заказ тоже активность: человек приходил.
+    activity: completed_order</code></pre>
+
+  <p>У остальных семи альтернативы не записаны — стоит одно значение без вариантов. Разница практическая: развилку с альтернативами можно проверить снятием, голое значение — нет. Про него неизвестно даже, был ли выбор.</p>
+
+  <p><strong>Виды выручки.</strong> Одна метрика, шесть решений, и каждое даёт своё число.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>решение</th><th>выбрано</th><th>альтернатива</th><th>что меняется</th></tr></thead>
+    <tbody>
+      <tr><td>гости</td><td><code>include</code></td><td><code>exclude</code></td><td>13&nbsp;141&nbsp;142.28 → 11&nbsp;479&nbsp;710.42 · 09-01, не воспроизвелось 09-08</td></tr>
+      <tr><td>привязка возврата</td><td><code>return_date</code></td><td><code>order_date</code></td><td>13&nbsp;141&nbsp;142.28 → 13&nbsp;402&nbsp;161.46 · 09-01, воспроизвелось 09-08</td></tr>
+      <tr><td>база</td><td><code>net_of_returns</code></td><td><code>gross</code></td><td>не измерено</td></tr>
+      <tr><td>статусы</td><td><code>[completed]</code></td><td><code>+ cancelled</code></td><td>не измерено</td></tr>
+      <tr><td>окно</td><td>90 дней</td><td>календарный месяц</td><td>измерено иначе</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Привязка возврата — самое понятное из решений. <code>return_date</code>: возврат вычитается из окна, когда он случился, месяц закрыт и больше не меняется. <code>order_date</code>: возврат вычитается из окна, где лежит заказ, и март пересчитывается ещё три недели после марта. Оба защитимы. Ни одно не является ошибкой. Числа разные.</p>
+
+  <p><strong>Комментарии.</strong> Пятьдесят пять строк комментариев на пятнадцать решений. Они не объясняют, что делает ключ. Они объясняют, что произойдёт при другом выборе.</p>
+
+  <p>Раздел выше показал, почему это не документация: единственная альтернатива, описанная только в комментарии, исчезла из ответов вместе с ним.</p>
+
+  <figure>
+<svg viewBox="0 0 1180 640" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="640" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ЧТО ОБЪЯВЛЕНО, А ЧТО НЕТ</text><text x="475.0" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373">active_customers</text><text x="745.0" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373">revenue</text><text x="1015.0" y="96" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373">return_rate</text><path d="M 40 120 L 1140 120" stroke="#0a0a0a" stroke-width="2" fill="none"/><text x="66" y="154" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">window_days</text><text x="475.0" y="154" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">90</text><text x="745.0" y="154" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">90</text><text x="1015.0" y="154" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">90</text><path d="M 40 168 L 1140 168" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="202" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">activity</text><text x="475.0" y="202" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">completed_order</text><text x="745.0" y="202" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="1015.0" y="202" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><path d="M 40 216 L 1140 216" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="250" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">guests</text><text x="475.0" y="250" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">exclude</text><text x="745.0" y="250" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">include</text><text x="1015.0" y="250" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="500" fill="#e63946">—</text><path d="M 40 264 L 1140 264" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="298" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">statuses</text><text x="475.0" y="298" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="298" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">[completed]</text><text x="1015.0" y="298" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><path d="M 40 312 L 1140 312" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="346" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">basis</text><text x="475.0" y="346" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="346" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">net_of_returns</text><text x="1015.0" y="346" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><path d="M 40 360 L 1140 360" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="394" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">returns_attribution</text><text x="475.0" y="394" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="394" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">return_date</text><text x="1015.0" y="394" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><path d="M 40 408 L 1140 408" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="442" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">compare_to</text><text x="475.0" y="442" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="442" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">year_over_year</text><text x="1015.0" y="442" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><path d="M 40 456 L 1140 456" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="490" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">grain</text><text x="475.0" y="490" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="490" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="1015.0" y="490" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">line</text><path d="M 40 504 L 1140 504" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="538" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="21" font-weight="400" fill="#0a0a0a">maturity_days</text><text x="475.0" y="538" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#d4d4d4">—</text><text x="745.0" y="538" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="500" fill="#e63946">—</text><text x="1015.0" y="538" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="20" font-weight="400" fill="#0a0a0a">21</text><path d="M 40 552 L 1140 552" stroke="#d4d4d4" stroke-width="1.2" fill="none"/><text x="66" y="608" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="26" font-weight="500" fill="#0a0a0a">27 клеток · заполнено 12</text><text x="66" y="648" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="400" fill="#e63946">красным — дыры: решение объявлено у соседей и пропущено здесь</text></svg>
+    <figcaption>Что объявлено, а что нет</figcaption>
+  </figure>
+
+  <p><strong>Три дыры.</strong> У доли возвратов нет решения про гостей — она не различает гостевые заказы вовсе, при том что у двух соседних метрик это решение объявлено и с разными значениями. У выручки нет дозревания, хотя она вычитает возвраты. Окно наблюдения стоит у всех трёх метрик голым значением — самое влиятельное решение файла и единственное, которое я ни разу не проверил снятием.</p>
+
+  <p>Отдельно, чтобы не путать: пара 353.40 против 360.18, расхождение 1.9% — это не цена развилки про гостей. Там оба варианта гостей исключают, а расходится симметричность применения: фильтр поставлен в продажах и не поставлен в вычитаемых возвратах. Цена развилки — другая пара и 12.64%.</p>
+
+  <hr/>
+
+  <h2>Как файл живёт</h2>
+
+  <p>Три коммита за восемь дней, один человек, ревью не было.</p>
+
+  <p>Большинство решений объявлено заранее. Но два приехали из прогонов, и это записано прямо в файле:</p>
+
+  <blockquote><p>Решение появилось после разбора: продакт попросил «выручку без гостей», а такого объекта в этом слое не было вовсе. <code>guests</code> стояло только у метрик о клиентах, и агент собрал комбинацию сам — непоследовательно: гостей отфильтровал в числителе и не отфильтровал в вычитаемом. Развилка, которую никто не объявил, опаснее незакрытой: спросить о ней было нельзя.</p></blockquote>
+
+  <p>Второе — форма сравнения. Строки не хватило посреди опыта, и я дописал её, не останавливая прогон.</p>
+
+  <p>Разбираться пришлось долго. Сначала казалось, что дописанная строка испортила прогон. Потом выяснилось, что она вообще ничего не исполняет: ни одна ветка сборщика этот ключ не читает. И ось, за которую он отвечает, не разошлась ни разу — агент сравнивал с прошлым годом и до того, как строка появилась.</p>
+
+  <p>Испорчено было другое. Разбор шёл по прогону, где ключа ещё не было, а цена развилки считалась по слою, где он уже был. Числа посчитаны верно, но относятся к разным состояниям файла — и сошлись в отчёте так, будто к одному.</p>
+
+  <p>Восстановить хронологию не вышло: время коммита не совпадает со временем правки, а контрольной суммы файла в записях тогда не было. Отсюда правило: <strong>у каждого прогона должна быть записана ревизия слоя.</strong> Без него через неделю нельзя сказать, к какому состоянию файла относится число. У меня 895 чисел из 897 такой привязки не имеют, и это ограничение всех выводов, а не оговорка к одному.</p>
+
+  <p>Про остальное — версионирование, названный владелец, журнал изменений, согласование правок — индустрия давно всё описала под именем управления метриками. У меня ничего этого нет, и это честнее, чем изобретать своё.</p>
+
+  <hr/>
+
+  <h2>Что происходит, когда метрик становится много</h2>
+
+  <p>Мой файл маленький. Чтобы посмотреть на масштаб, я собрал симуляцию: тот же домен, двадцать четыре метрики вместо трёх, те же конвенции записи. Это не измерение — ни один прогон на нём не гонялся, — но арифметика видна.</p>
+
+  <figure>
+<svg viewBox="0 0 1180 700" xmlns="http://www.w3.org/2000/svg"><rect width="1180" height="700" fill="#ffffff"/><text x="40" y="44" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="19" font-weight="400" fill="#737373" letter-spacing="3">ЧТО РАСТЁТ, КОГДА МЕТРИК СТАНОВИТСЯ БОЛЬШЕ</text><text x="40" y="128" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#737373">метрик</text><text x="360" y="128" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#737373">3</text><text x="400" y="128" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="400" fill="#d4d4d4">→</text><text x="520" y="128" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#0a0a0a">24</text><text x="600" y="128" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#e63946">×8</text><text x="40" y="198" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#737373">разных решений</text><text x="360" y="198" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#737373">9</text><text x="400" y="198" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="400" fill="#d4d4d4">→</text><text x="520" y="198" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#0a0a0a">18</text><text x="600" y="198" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#0a0a0a">×2</text><text x="40" y="268" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#737373">строк файла</text><text x="360" y="268" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#737373">108</text><text x="400" y="268" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="400" fill="#d4d4d4">→</text><text x="520" y="268" text-anchor="end" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#0a0a0a">448</text><text x="600" y="268" text-anchor="start" font-family="Geist Mono, ui-monospace, monospace" font-size="30" font-weight="500" fill="#0a0a0a">×4</text><path d="M 40 314 L 1140 314" stroke="#d4d4d4" stroke-width="1.4" fill="none"/><text x="40" y="374" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="500" fill="#0a0a0a">Комментарии дублируются</text><rect x="40" y="400" width="231.0" height="64" fill="#0a0a0a"/><rect x="271.0" y="400" width="869.0" height="64" fill="#e63946"/><text x="56" y="440" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#ffffff">37 уникальных</text><text x="287.0" y="440" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="20" font-weight="400" fill="#ffffff">146 повторов — 79%</text><text x="40" y="530" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="24" font-weight="500" fill="#0a0a0a">Заполненность матрицы падает</text><rect x="40" y="556" width="484.0" height="44" fill="#0a0a0a"/><text x="544.0" y="586" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#0a0a0a">44%  ·  3 метрики</text><rect x="40" y="616" width="253.0" height="44" fill="#e63946"/><text x="313.0" y="646" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="22" font-weight="400" fill="#e63946">23%  ·  24 метрики</text></svg>
+    <figcaption>Что растёт, когда метрик становится больше</figcaption>
+  </figure>
+
+  <p><strong>Две сущности растут по-разному.</strong> <code>as_of</code> не вырос вовсе: свойство мира одно на любое число метрик. <code>metrics</code> вырос в восемь раз.</p>
+
+  <p><strong>Словарь решений растёт медленнее метрик.</strong> Восьмикратный рост дал только вдвое больше разных ключей: восемнадцать против девяти. Окно понадобилось двадцати трём метрикам из двадцати четырёх, гости — одиннадцати.</p>
+
+  <p><strong>А комментарии растут вместе с употреблениями.</strong> Уникального текста тридцать семь строк, всего — сто восемьдесят три. <strong>Семьдесят девять процентов комментариев оказались дублями.</strong> Объяснение про гостей записано одиннадцать раз, слово в слово.</p>
+
+  <p>Проблема не в размере файла, а в том, что при уточнении формулировки её надо поправить в одиннадцати местах.</p>
+
+  <p><strong>И заполненность падает.</strong> У меня три метрики и девять решений: двадцать семь клеток, заполнено двенадцать. В симуляции двадцать четыре метрики и восемнадцать решений: четыреста тридцать две клетки, заполнена сто одна. С сорока четырёх процентов до двадцати трёх.</p>
+
+  <p>Чем больше метрик, тем труднее отличить «здесь решение не нужно» от «здесь про него забыли». Свои три дыры я нашёл глазами. На двадцати четырёх глазами не выйдет.</p>
+
+  <p>Напрашивается третий раздел — словарь решений, где альтернатива и объяснение лежат один раз, а метрика называет только выбранное значение. Файл сжимается примерно на треть, править надо в одном месте.</p>
+
+  <p>Я этого не делаю, и причина в разделе про двух исполнителей. Вынос объяснения из метрики убирает его оттуда, где его читает модель. А единственная альтернатива, описанная только в комментарии, исчезла из ответов ровно тогда, когда комментарий сняли.</p>
+
+  <hr/>
+
+  <h2>Чего нет в каноне и чего нет у меня</h2>
+
+  <p>Возьмите любое решение из таблицы выше и поищите ему поле в спецификации семантического слоя.</p>
+
+  <p>Привязка возврата уедет в выражение метрики. База — туда же. Дозревание не имеет соответствия вовсе. Общее у всех трёх одно: выбор превращается в кусок SQL и перестаёт быть отдельной строкой, которую можно прочитать. В файле остаётся одна формула, и то, что был выбор из двух защитимых вариантов, нигде не отражается.</p>
+
+  <p>Канон описывает структуру: по чему резать, что с чем джойнится. Выбор между двумя определениями он не описывает, потому что устроен под допущение, что верное определение одно.</p>
+
+  <p>Управление метриками, к слову, прямо советует документировать допущения. Но советует людям — чтобы не спорили на совещании. Куда положить допущение так, чтобы его прочитал исполнитель, не говорит никто.</p>
+
+  <p>Симметрично про мой файл. Ни сущностей, ни измерений, ни агрегаций. Посчитать по нему физически нельзя: там нет ни одного места, где сказано, как получить число. Это выясняет агент сам, читая схему данных.</p>
+
+  <hr/>
+
+  <h2>Границы</h2>
+
+  <p>Три метрики, пятнадцать решений, шесть таблиц. Слой заведомо помещается в контекст целиком — что будет на трёхстах метриках, я не мерил.</p>
+
+  <p>95.3% чисел получены чтением, а не сборкой. Значит выводы этой статьи — про слой как текст в промпте. Про слой как конфигурацию сборки известно мало: тринадцать ключей из пятнадцати я ни разу не менял, и теперь понятно, что не проверил их сразу по двум осям.</p>
+
+  <p>Два измерения из шести не воспроизвелись через неделю. Все числа здесь — с датами, и это не педантизм.</p>
+
+  <p>И восемь из десяти чисел получены на одном синтетическом стенде.</p>
+
+  <hr/>
+
+  <h2>С чего начать у себя</h2>
+
+  <p>Не строить слой. Взять одну метрику, которую считают чаще всего, и выписать по ней решения, которые уже принимались.</p>
+
+  <p>Отметить, у каких есть альтернативы, а какие стоят голым значением. Вторых обычно больше, и это именно те места, где никто не помнит, был ли выбор.</p>
+
+  <p>У меня на это ушло сто семь строк и три вечера.</p>
+
+  <hr/>
+
+  <h2>Приложение: файл целиком</h2>
+
+  <p>Сто семь строк, как есть.</p>
+
+  <p>Дальше файл целиком — он нужен, чтобы сверить любое число из статьи, читать его подряд не обязательно.</p>
+
+  <pre><code># Семантический слой. Написан руками и читается построчно — в этом весь смысл.
+#
+# Каждая строка ниже — решение, а не настройка. Метрика без владельца этих
+# решений не метрика, а число, о происхождении которого никто не спорил,
+# потому что никто его не формулировал.
+#
+# Проверка понимания: поменяй ОДНУ строку, не трогая данные, и посмотри,
+# как переворачивается ответ. Обе цифры — в NOTES.md.
+
+version: 1
+
+# Общая отсечка. Действует на все метрики без исключения.
+as_of:
+  source: cursor          # момент из state/cursor.txt, он же world_cursor
+  filter_on: received_at  # НЕ бизнес-дата: событие, доехавшее после курсора,
+                          # не видно, даже если случилось до него. Иначе мир
+                          # всеведущ и прошлое переписывается задним числом.
+  timezone: UTC           # шесть магазинов пишут в локальной шкале;
+                          # приведение делает staging, см. NOTES.md
+
+metrics:
+
+  active_customers:
+    label: Активные клиенты
+    description: &gt;
+      Сколько покупателей были активны в окне. Три решения, каждое меняет
+      ответ: длина окна, что считать активностью, что делать с гостями.
+    window_days: 90
+
+    # completed_order — активность это завершённый заказ.
+    # any_order — отменённый заказ тоже активность: человек приходил.
+    activity: completed_order
+
+    # exclude          — гостевые заказы не считаем вовсе. Нижняя граница:
+    #                    отвечает на «сколько ИЗВЕСТНЫХ нам клиентов».
+    # count_each_order — каждый гостевой заказ считаем отдельным человеком.
+    #                    Верхняя граница: один и тот же человек с тремя
+    #                    гостевыми заказами превращается в трёх.
+    # ignore_guests_exist — то же, что exclude, но честно называется:
+    #                    гостей нет в знаменателе НИ ОДНОЙ метрики о клиентах.
+    guests: exclude
+
+    # Сущности, без которых метрику не посчитать. Список нужен не агенту,
+    # а ОТБОРУ КОНТЕКСТА: он раньше подбирал таблицы по словам вопроса,
+    # и в вопросе про выручку слова «возврат» нет — fct_returns не
+    # попадала в промпт, агент честно докладывал, что возвратов в схеме
+    # нет, и считал gross вместо net_of_returns. Определение метрики
+    # знает, что ей нужно; вопрос — не знает.
+    tables: [dim_customers, fct_order_items]
+
+  revenue:
+    label: Выручка
+    description: &gt;
+      Сумма продаж в окне. Решения: какие статусы считаем, вычитаем ли
+      возвраты и по какой дате их относим.
+    window_days: 90
+    statuses: [completed]      # добавь 'cancelled' — получишь спрос, а не выручку
+
+    # gross          — до возвратов.
+    # net_of_returns — за вычетом возвратов.
+    basis: net_of_returns
+
+    # return_date — возврат вычитается из того окна, КОГДА он случился.
+    #               Операционный взгляд: месяц закрыт и больше не меняется.
+    # order_date  — возврат вычитается из окна, где лежит ЗАКАЗ.
+    #               Взгляд на качество продаж: март пересчитывается ещё три
+    #               недели после марта.
+    returns_attribution: return_date
+
+    # previous_period — сравнивать окно с предыдущим таким же окном.
+    # year_over_year  — сравнивать окно с тем же окном год назад.
+    compare_to: year_over_year
+
+    # include — гостевые заказы считаются наравне с остальными: выручка
+    #           есть выручка, платил её человек с аккаунтом или без.
+    # exclude — только заказы известных клиентов.
+    #
+    # Решение появилось после разбора: продакт попросил «выручку без
+    # гостей», а такого объекта в этом слое не было вовсе. guests стояло
+    # только у метрик о КЛИЕНТАХ, и агент собрал комбинацию сам —
+    # непоследовательно: гостей отфильтровал в числителе и не
+    # отфильтровал в вычитаемом. Развилка, которую никто не объявил,
+    # опаснее незакрытой: спросить о ней было нельзя.
+    #
+    # ВАЖНО: решение действует на ОБЕ стороны формулы — и на продажи,
+    # и на вычитаемые возвраты. Иначе получится тот самый чек 353.40
+    # вместо 360.18.
+    guests: include
+
+    tables: [fct_order_items, fct_returns]
+
+  return_rate:
+    label: Доля возвратов
+    description: &gt;
+      Какая часть проданного вернулась. Решения: считать строками или
+      штуками и обрезать ли окно на дозревание.
+    window_days: 90
+    grain: line                # line | unit
+
+    # Возврат приходит через 3-21 день. Заказы последних 21 дня перед
+    # курсором ещё не дозрели: часть их возвратов не случилась.
+    # 21 — считать только по дозревшим когортам.
+    # 0  — считать по всему окну и получить заниженную цифру, которая
+    #      растёт задним числом при каждом сдвиге курсора.
+    maturity_days: 21
+
+    tables: [fct_returns, fct_order_items]</code></pre>
+
+  </div>
+  <div class="article-author">
+    <p class="page-sub">Если интересно обсудить — <a href="https://t.me/Datalake">напишите в Telegram</a>.</p>
+  </div>
+  <div class="article-back">
+    <a href="/workspace/articles/">← Все статьи</a>
+  </div>
+</article>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
