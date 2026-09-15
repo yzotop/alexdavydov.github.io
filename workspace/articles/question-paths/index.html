@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Что бывает у AI-аналитика с вопросом по дороге к ответу · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/question-paths/"/>
+    <meta name="description" content="Тридцать пять вопросов на стенде, где данные сгенерированы, а эталонные запросы написаны отдельно. Каждый вопрос задан трижды. Верное число получилось в двадцати случаях из ста пяти."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Что бывает у AI-аналитика с вопросом по дороге к ответу — Александр Давыдов"/>
+    <meta property="og:description" content="Тридцать пять вопросов на стенде, где данные сгенерированы, а эталонные запросы написаны отдельно. Каждый вопрос задан трижды. Верное число получилось в двадцати случаях из ста пяти."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/question-paths/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+<style>
+.qp{--sec:var(--muted);--rule:var(--line-d);--fill:var(--soft);--acc:var(--accent);--ok:var(--ink);--bad:var(--accent);--unver:#9a9a9a;--noref:#cfcfcf;--ask:#525252;--ref:#f0b3b7}
+.qp *{box-sizing:border-box}
+.qp .wrap>*{min-width:0}
+.qp{margin:0;background:#fff;color:var(--ink);font-family:var(--sans);
+ font-size:19px;line-height:1.62}
+.qp .wrap{max-width:1120px;margin:0 auto;padding:0 24px 130px;
+ display:grid;grid-template-columns:1fr 232px;gap:0 56px}
+.qp header,.qp .body{grid-column:1}
+.qp header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}
+.qp .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.qp h1{font-size:clamp(28px,4.8vw,50px);line-height:1.08;letter-spacing:-.02em;
+ margin:24px 0 0;font-weight:500;max-width:18ch}
+.qp .lede{font-size:21px;color:var(--sec);margin:20px 0 4px;max-width:60ch}
+.qp h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:70px 0 14px;padding-top:22px;
+ border-top:1.5px solid var(--ink);scroll-margin-top:20px}
+.qp h2 .cnt{font-family:var(--mono);font-size:.62em;color:var(--acc);margin-left:12px}
+.qp p{margin:0 0 17px;max-width:66ch}
+.qp b,.qp strong{font-weight:700}
+.qp code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}
+.qp nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;
+ padding-top:34px;font-size:14.5px}
+.qp nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);padding-bottom:9px;border-bottom:1.5px solid var(--ink);margin-bottom:6px}
+.qp nav ol{list-style:none;margin:0;padding:0}
+.qp nav a{display:flex;gap:10px;padding:6px 0;color:var(--sec);text-decoration:none;line-height:1.3}
+.qp nav a:hover{color:var(--ink)}
+.qp nav a.on{color:var(--ink);font-weight:500}
+.qp nav a.on .tn{color:var(--acc)}
+.qp nav .tn{font-family:var(--mono);font-size:11.5px;flex:0 0 20px;padding-top:2px}
+.qp .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px;
+ margin:28px 0 34px;border-top:1.5px solid var(--ink);padding-top:16px}
+.qp .big div b{font-family:var(--mono);font-size:34px;display:block;line-height:1.05}
+.qp .big div span{font-size:14.5px;color:var(--sec);line-height:1.35;display:block;margin-top:5px}
+.qp .big div.hot b{color:var(--acc)}
+.qp .bar{display:flex;height:36px;margin:24px 0 8px}
+.qp .bar i{display:block;height:100%}
+.qp .barlbl{font-family:var(--mono);font-size:12px;color:var(--sec);margin-bottom:8px}
+.qp table{border-collapse:collapse;width:100%;margin:22px 0;font-size:16.5px}
+.qp th,.qp td{text-align:left;padding:11px 14px 11px 0;border-bottom:1px solid var(--rule);
+ vertical-align:top}
+.qp th{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--sec);font-weight:500;border-bottom:1.5px solid var(--ink)}
+.qp td.num,.qp th.num{text-align:right;font-family:var(--mono);padding-right:0;white-space:nowrap}
+.qp tr:last-child td{border-bottom:1.5px solid var(--ink)}
+.qp .tw{overflow-x:auto}
+.qp .sw{display:inline-block;width:11px;height:11px;margin-right:9px}
+.qp .say{border-left:3px solid var(--acc);padding:2px 0 2px 20px;margin:20px 0;
+ font-size:17px;line-height:1.5;max-width:64ch}
+.qp .say.grey{border-left-color:var(--rule);color:var(--sec)}
+.qp .lab{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+ color:var(--sec);margin:22px 0 6px}
+.qp pre{background:var(--fill);padding:17px 19px;overflow-x:auto;font-family:var(--mono);
+ font-size:12.5px;line-height:1.55;margin:12px 0}
+.qp .pull{border-left:3px solid var(--acc);padding:4px 0 4px 22px;margin:32px 0;max-width:62ch}
+.qp .pull p{font-size:21px;line-height:1.45;margin:0}
+.qp .kv{display:grid;grid-template-columns:118px 1fr;gap:8px 18px;background:var(--fill);
+ padding:18px 20px;margin:18px 0;font-size:16px;max-width:64ch}
+.qp .kv dt{font-family:var(--mono);font-size:12px;color:var(--sec);padding-top:3px}
+.qp .kv dd{margin:0}
+.qp .cta{border:1.5px solid var(--ink);padding:24px 26px;margin:34px 0;max-width:64ch}
+.qp .cta b{display:block;font-size:20px;margin-bottom:6px}
+.qp .cta a{color:var(--acc);text-decoration:none;border-bottom:1px solid var(--acc)}
+.qp .checks{list-style:none;padding:0;margin:24px 0;counter-reset:c}
+.qp .checks li{border-top:1px solid var(--rule);padding:15px 0 15px 44px;position:relative;max-width:66ch}
+.qp .checks li:last-child{border-bottom:1px solid var(--rule)}
+.qp .checks li::before{counter-increment:c;content:counter(c);position:absolute;left:0;top:15px;
+ font-family:var(--mono);font-size:14px;color:var(--acc)}
+.qp .checks b{display:block;margin-bottom:2px}
+.qp .checks span{color:var(--sec);font-size:16.5px;line-height:1.5}
+.qp .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}
+.qp .notes p{margin:0 0 12px;max-width:none}
+.qp .notes p:last-child{margin:0}
+.qp .series{margin:64px 0 0;grid-column:1}
+.qp .series h2{margin-top:0}
+.qp .series ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;border-top:1.5px solid var(--ink)}
+.qp .series li{border-bottom:1px solid var(--rule)}
+.qp .series li:last-child{border-bottom:1.5px solid var(--ink)}
+.qp .series a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
+ padding:19px 18px 19px 0;border:0;text-decoration:none;transition:background .12s,padding .12s}
+.qp .series a:hover{background:var(--fill);padding-left:18px;padding-right:0}
+.qp .series a:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.qp .series .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--acc);letter-spacing:.06em}
+.qp .series .idx::before{content:"№ " counter(s,decimal-leading-zero)}
+.qp .series .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;margin-bottom:4px;color:var(--ink)}
+.qp .series a:hover .ttl{color:var(--acc)}
+.qp .series .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--sec);
+ display:block;margin-bottom:3px}
+.qp .series .sub{color:var(--sec);font-size:16px;line-height:1.45;display:block}
+.qp .series .this{background:var(--fill);display:grid;grid-template-columns:62px 1fr;gap:0 8px;
+ align-items:baseline;padding:19px 18px}
+.qp .series .this .idx{color:var(--ink)}
+.qp .series .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px}
+.qp .series .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sec)}
+@media(max-width:560px){.qp .series a,.qp .series .this{grid-template-columns:1fr;gap:5px}}
+.qp footer{grid-column:1;margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
+ font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec)}
+@media(max-width:900px){.qp .wrap{grid-template-columns:1fr;gap:0}
+.qp nav{grid-column:1;grid-row:auto;position:static;padding:0;margin:0 0 30px;
+  border:1.5px solid var(--rule);padding:16px 18px}
+.qp nav ol{columns:2;column-gap:22px}
+.qp{font-size:17.5px}
+
+}
+
+
+.qp .qp-meta{grid-column:1;padding-top:28px;margin-bottom:0}
+.qp .wrap>*{min-width:0}
+.qp .note{display:block;grid-template-columns:none;gap:0;padding:0;border:0;cursor:auto;transition:none}
+.qp .note:hover{padding:0}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="qp">
+<div class="wrap">
+<div class="article-meta qp-meta"><span>Сентябрь 2026</span><span class="chip">AI-аналитик</span><span>8 мин</span></div>
+
+
+<header>
+  <div class="kick"><span>AI-аналитик · разбор шестой</span><span>davydov.my</span></div>
+  <h1>Что бывает у AI-аналитика с вопросом по дороге к ответу</h1>
+</header>
+
+<nav>
+  <div class="h">Разделы</div>
+  <ol>
+    <li><a href="#s1"><span class="tn">01</span>Тридцать пять вопросов</a></li>
+    <li><a href="#s2"><span class="tn">02</span>Шесть исходов</a></li>
+    <li><a href="#s3"><span class="tn">03</span>Ответил и сошёлся</a></li>
+    <li><a href="#s4"><span class="tn">04</span>Ответил и не сошёлся</a></li>
+    <li><a href="#s5"><span class="tn">05</span>Ответил, но проверить нельзя</a></li>
+    <li><a href="#s6"><span class="tn">06</span>Ответил, а верного ответа нет</a></li>
+    <li><a href="#s7"><span class="tn">07</span>Переспросил</a></li>
+    <li><a href="#s8"><span class="tn">08</span>Отказался</a></li>
+    <li><a href="#s9"><span class="tn">09</span>Что видно на карте</a></li>
+    <li><a href="#s10"><span class="tn">10</span>Что проверить у себя</a></li>
+    <li><a href="#s11"><span class="tn">11</span>Как я это мерил</a></li>
+  </ol>
+</nav>
+
+<div class="body">
+
+<p class="lede">Тридцать пять вопросов на стенде, где данные сгенерированы, а эталонные запросы написаны отдельно. Каждый вопрос задан трижды. Верное число получилось в двадцати случаях из ста пяти.</p>
+
+<h2 id="s1">Тридцать пять вопросов</h2>
+
+<p>Стенд устроен так, что правильный ответ известен заранее: данные сгенерированы, беспорядок в них заложен намеренно, эталонные запросы написаны отдельно от того, что видит агент. Сверять есть с чем.</p>
+
+<div class="big">
+  <div><b>35</b><span>вопросов, у 29 из них есть верный ответ</span></div>
+  <div><b>105</b><span>ячеек: каждый вопрос задан трижды</span></div>
+  <div class="hot"><b>20</b><span>ячеек с верным числом</span></div>
+  <div><b>6</b><span>исходов, в которые попадает остальное</span></div>
+</div>
+
+<p>У шести вопросов из тридцати пяти верного ответа нет вовсе — так они и помечены в файле задания. Это вопросы вроде «стоит ли расширять промо» или «когда клиент считается ушедшим»: на них нет числа, которое можно было бы назвать правильным.</p>
+
+<h2 id="s2">Шесть исходов</h2>
+
+<p>Остальные восемьдесят пять ячеек — не поломки модели. Это шесть разных мест, где обрывается путь от вопроса к ответу, и только часть из них вообще про агента.</p>
+
+<div class="bar">
+  <i style="width:19.05%;background:var(--ok)" title="сошёлся"></i>
+  <i style="width:8.57%;background:var(--bad)" title="не сошёлся"></i>
+  <i style="width:9.52%;background:var(--unver)" title="проверить нельзя"></i>
+  <i style="width:3.81%;background:var(--noref)" title="эталона нет"></i>
+  <i style="width:47.62%;background:var(--ask)" title="переспросил"></i>
+  <i style="width:11.43%;background:var(--ref)" title="отказался"></i>
+</div>
+<div class="barlbl">все 105 ячеек по исходам</div>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Исход</th><th class="num">Ячеек</th><th>Что это значит</th></tr></thead>
+  <tbody>
+    <tr><td><i class="sw" style="background:var(--ok)"></i>Ответил и сошёлся</td><td class="num">20</td><td>число совпало с эталоном</td></tr>
+    <tr><td><i class="sw" style="background:var(--bad)"></i>Ответил и не сошёлся</td><td class="num">9</td><td>число или тип результата не тот</td></tr>
+    <tr><td><i class="sw" style="background:var(--unver)"></i>Ответил, проверить нельзя</td><td class="num">10</td><td>сверка была, привязки к повтору нет</td></tr>
+    <tr><td><i class="sw" style="background:var(--noref)"></i>Ответил, эталона нет</td><td class="num">4</td><td>верного ответа не существует</td></tr>
+    <tr><td><i class="sw" style="background:var(--ask)"></i>Переспросил</td><td class="num">50</td><td>не стал считать, назвал что мешает</td></tr>
+    <tr><td><i class="sw" style="background:var(--ref)"></i>Отказался</td><td class="num">12</td><td>в данных нет нужного объекта</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="s3">Ответил и сошёлся<span class="cnt">20</span></h2>
+
+<p>То, ради чего всё затевалось. Вопрос «Сколько активных клиентов сейчас», ответ в одну строку.</p>
+
+<pre><code>WITH cur AS (SELECT ts FROM world_cursor) SELECT COUNT(DISTINCT foi.customer_id) AS active_customers FROM fct_order_items foi, cur WHERE foi.status = &#x27;completed&#x27; AND foi.is_guest_order = false AND foi.received_at_utc &lt;= cur.ts AND foi.ordered_at_utc &gt; cur.ts - INTERVAL &#x27;90 days&#x27; AND foi.ordered_at_utc &lt;= cur.ts</code></pre>
+
+<p>Результат 21580, эталон 21580.</p>
+
+<p>Двадцать ячеек — это восемь вопросов. У пяти сошлись все три повтора, у двух — два из трёх, у одного — один.</p>
+
+<p>Рассуждение агента в этой ячейке короткое, и это тоже показатель:</p>
+
+<div class="say grey">Метрика active_customers полностью определена в metrics.yml: окно 90 дней от world_cursor, активность = завершённый заказ (status=&#x27;completed&#x27;), гости исключены (is_guest_order=false), отсечка видимости — по received_at_utc &lt;= курсор. Все три решения уже зафиксированы, поэтому вариантов не требуется — один корректный запрос.</div>
+
+<h2 id="s4">Ответил и не сошёлся<span class="cnt">9</span></h2>
+
+<p>Вопрос «Выросла ли выручка год к году». Три попытки, в каждой по два варианта — шесть запросов, ноль попаданий.</p>
+
+<div class="say grey">«Год к году» можно понимать двумя способами, дающими разные ответы: (1) сравнение календарных лет по дате заказа, (2) скользящее окно 365 дней от текущего курсора против предыдущих 365 дней. Метрика revenue из metrics.yml задаёт окно 90 дней по умолчанию — оно здесь не подходит, т.к. вопрос явно про годовое сравнение, поэтому окно переопределено, но остальные решения метрики (basis=net_of_returns, returns_attribution=return_date, guests=include, statuses=[completed], отсечка по received_at_utc относительно world_cursor) сохранены в обоих вариантах. Выбор между календарными годами и скользящим окном меняет, какие месяцы попадают в сравнение, и может изменить знак ответа (рост/падение), поэтому дан выбор, а не одно число.</div>
+
+<p>Рассуждение аккуратное. Промах в другом.</p>
+
+<div class="kv">
+  <dt>эталон</dt><dd>19.75 — процент роста</dd>
+  <dt>вернул</dt><dd><code>2024-01-01 00:00:00</code> — метка периода</dd>
+</div>
+
+<p>Спрашивали процент, ответил суммами по годам с метками. Процента среди шести вариантов нет вообще. Это промах не в числе, а в форме результата — и заметить его можно только зная, чего ждали.</p>
+
+<h2 id="s5">Ответил, но проверить нельзя<span class="cnt">10</span></h2>
+
+<p>Вопрос «Сколько заказов в среднем на клиента». Эталон 5.77, агент дал три варианта, первый — 5.16.</p>
+
+<div class="say grey">Метрика &#x27;заказы на клиента&#x27; не определена в metrics.yml, поэтому ключевые развилки (гости, статус заказа, окно) не закрыты явно — дал три варианта, покрывающих основные комбинации, вместо того чтобы выбрать молча.</div>
+
+<p>В записях сверки сказано, что у этого вопроса верным оказался один повтор из трёх. Какой именно — не записано. Вердикт привязан к вопросу, а не к ячейке.</p>
+
+<div class="pull"><p>Это единственный из шести исходов, который целиком про измеритель, а не про агента. Десять ячеек лежат отдельным классом, а не угаданы.</p></div>
+
+<h2 id="s6">Ответил, а верного ответа нет<span class="cnt">4</span></h2>
+
+<p>Вопрос «Есть ли смысл в гостевых заказах или они разовые». Эталона у него нет по построению — это исследовательский вопрос, а не метрика.</p>
+
+<p>Агент это заметил и всё равно посчитал:</p>
+
+<div class="say grey">Вопрос не метрика из семантического слоя, а исследовательский: &#x27;разовость&#x27; гостей = повторяют ли гостевые заказы один и тот же customer_id. Ключевая развилка — что считать активностью (только completed или любой заказ, включая отменённые), она как в active_customers меняет ответ. Окно не применяю: вопрос про повторность покупки в принципе, а не про активность за последние 90 дней. Важное допущение: предполагаю, что customer_id у гостевых заказов — стабильный идентификатор одного и того же человека (например, email/телефон), а не генерируется заново на каждый заказ; если это не так, оба запроса покажут искусственно 100% &#x27;разовых&#x27; и вопрос нужно переформулировать.</div>
+
+<p>Четыре ячейки на двух вопросах. Отсутствие верного ответа не мешает выдать число — мешает только проверить его.</p>
+
+<h2 id="s7">Переспросил<span class="cnt">50</span></h2>
+
+<p>Самый частый исход. Почти половина всех ячеек: агент останавливается и говорит, чего не хватает.</p>
+
+<p>Вопрос «Какой средний чек». Метрики с таким именем в слое нет, поэтому открыты все решения сразу.</p>
+
+<div class="say">«Средний чек» не описан в семантическом слое как отдельная метрика, поэтому есть развилки, которые меняют ответ в разы: 1) период — последние 90 дней от курсора (как у revenue) или всё время; 2) какие заказы включать в знаменатель — только completed или все (включая cancelled); 3) выручка в числителе — gross или net_of_returns (за вычетом возвратов, и если net — по дате возврата или дате заказа); 4) гостевые заказы — включать наравне с обычными или исключать; 5) считать чек по заказу (order_id) целиком или по строке позиции (order_id, sku). Уточните, пожалуйста, эти пункты, иначе я могу посчитать три разных «средних чека», отличающихся заметно.</div>
+
+<p>Пятьдесят ячеек делятся дальше: в восемнадцати агент назвал ровно ту развилку, которая заложена в вопрос; в шести не назвал ожидаемую; в двадцати шести у вопроса не было размеченных развилок, поэтому сравнивать оказалось не с чем. Последнее — свойство разметки, а не поведения агента.</p>
+
+<h2 id="s8">Отказался<span class="cnt">12</span></h2>
+
+<p>Двенадцать ячеек на шести вопросах. Ни один отказ не про то, что чего-то не донесли в контекст.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Вопрос</th><th class="num">Ячеек</th><th>Почему</th></tr></thead>
+  <tbody>
+    <tr><td>Просела ли конверсия после ноябрьского промо?</td><td class="num">3</td><td>в данных нет трафика — у конверсии нет знаменателя</td></tr>
+    <tr><td>Что выгоднее — удерживать старых или привлекать новых?</td><td class="num">3</td><td>нет затрат на привлечение и удержание</td></tr>
+    <tr><td>Сколько у нас будет активных клиентов к концу года?</td><td class="num">3</td><td>это прогноз, а в базе только факт до курсора</td></tr>
+    <tr><td>Мобильные покупают иначе, чем с десктопа?</td><td class="num">1</td><td>признака устройства нет, есть канал регистрации</td></tr>
+    <tr><td>Стоит ли расширять промо на все категории?</td><td class="num">1</td><td>это решение, а не метрика</td></tr>
+    <tr><td>Когда клиент считается ушедшим?</td><td class="num">1</td><td>определения оттока нет в слое</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Четыре причины: нет объекта в данных, нет определения в слое, вопрос требует решения, а не числа, и вопрос про будущее. Разбивка моя, по чтению двенадцати текстов.</p>
+
+<p>Отказывается агент не молча — в каждом тексте сказано, что посчитать всё-таки можно и почему это не будет ответом. А один отказ устроен иначе: там он нашёл поле, которое напрашивается, и объяснил, почему брать его нельзя.</p>
+
+<div class="say">В схеме нет признака устройства покупки (мобильный/десктоп) на уровне заказа. Есть только dim_customers.channel (android, ios, partner, store, web) — это канал регистрации/привлечения клиента, а не устройство, с которого сделан конкретный заказ. Приравнивать android+ios к &#x27;мобильным&#x27;, а web к &#x27;десктопу&#x27; — произвольное и ненадёжное допущение (web тоже может открываться с телефона, partner/store вообще не про устройство). Достоверно ответить на вопрос о различиях в поведении мобильных и десктопных покупателей на этих данных нельзя.</div>
+
+<p>Это уже не отказ от нехватки данных, а разбор подмены: поле похоже на нужное и называется почти как нужное, поэтому его легко взять по ошибке.</p>
+
+<h2 id="s9">Что видно на карте</h2>
+
+<p><b>Семнадцать вопросов из тридцати пяти не дали ни одного запроса.</b> Ни в одном из трёх повторов. Это не «иногда не справляется» — это половина сетки, на которой агент до SQL не доходит вовсе.</p>
+
+<p><b>Ошибка — свойство вопроса, а не случайность.</b> Девять ячеек с неверным числом приходятся ровно на три вопроса, по три ячейки каждый. Не «ошибается в девяти процентах случаев», а «есть три вопроса, на которых ошибается всегда».</p>
+
+<p><b>Двадцать четыре вопроса однородны:</b> три повтора дают один и тот же исход. У одиннадцати повторы разошлись — это вопросы на границе, где поведение неустойчиво. Доля таких вопросов — готовая мера, её можно считать на любом стенде и сравнивать между прогонами.</p>
+
+<p><b>Промах отбора контекста агент замечает и называет вслух.</b> В тринадцати ячейках он пишет, что нужной таблицы нет в схеме. На стенде она есть — её не подали в контекст. Это нижняя оценка: столько раз он захотел таблицу, которой ему не дали, и сказал об этом. Сколько раз не захотел или не сказал — неизвестно.</p>
+
+<div class="cta">
+  <b>Карта всех ста пяти ячеек</b>
+  Каждый квадрат кликается: текст агента, запрос, сверка с эталоном, разнесение развилок. <a href="/workspace/articles/question-paths/map/">Открыть интерактив</a>
+</div>
+
+<h2 id="s10">Что проверить у себя</h2>
+
+<ol class="checks">
+  <li><b>Разложите свои вопросы по шести исходам</b><span>Прежде чем чинить агента, посмотрите, чего у вас больше. Половина исходов не про модель.</span></li>
+  <li><b>Посчитайте, на скольких вопросах он не доходит до запроса</b><span>У меня таких половина сетки. Это другая проблема, чем неверные числа, и чинится иначе.</span></li>
+  <li><b>Задавайте каждый вопрос больше одного раза</b><span>Однородность повторов показывает, где поведение устойчиво, а где вопрос лежит на границе.</span></li>
+  <li><b>Привязывайте вердикт к ячейке, а не к вопросу</b><span>Иначе часть результатов окажется непроверяемой задним числом, как у меня десять из сорока трёх.</span></li>
+  <li><b>Читайте, что агент пишет рядом с ответом</b><span>В половине случаев он сам называет развилку, которую закрыл за вас.</span></li>
+</ol>
+
+<h2 id="s11">Как я это мерил</h2>
+
+<p>Правило разнесения по классам записано и закоммичено до счёта, классы не пересекаются, сумма сходится к ста пяти. Каждая ячейка имеет адрес записи, все выдержки скопированы программой, а не набраны руками.</p>
+
+<p>Два долга, о которых стоит знать. Вердикт «сошлось с эталоном» привязан к предмету, а не к ячейке: для десяти ячеек восстановить, какой повтор сошёлся, нельзя. И имя файла лога строилось из времени с точностью до секунды, поэтому пять ячеек, запущенных в одну секунду, затёрли друг друга — эти записи потеряны.</p>
+
+<div class="notes">
+  <p>Один стенд, одна предметная область, двадцать одна таблица. Числа отсюда не переносятся, переносится устройство.</p>
+  <p>Классификация исходов моя. В рабочих записях классов восемь: три подвида уточнения разведены отдельно. Здесь они сведены в один исход, поэтому счёт однородных вопросов отличается на единицу.</p>
+  <p>Группировка причин отказа — тоже моё чтение двенадцати текстов, автоматической разметки причин нет.</p>
+</div>
+
+</div>
+
+<section class="series">
+<h2>Вся серия про AI-аналитика</h2>
+<ol>
+  <li><a href="https://davydov.my/workspace/articles/ai-analyst-checks/"><span class="idx"></span><span><span class="ttl">Как я строил AI-аналитика</span><span class="meta">2026.08 · 13 мин</span><span class="sub">Учебная сборка: шесть этапов и семнадцать проверок</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/quiet-wrong-answers/"><span class="idx"></span><span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span><span class="sub">Что он унесёт неверного и почему это не видно по числу</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/declare-and-extract/"><span class="idx"></span><span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span><span class="sub">Семь шагов между задачей и числом</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/metrics-layer/"><span class="idx"></span><span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span><span class="sub">Файл на сто семь строк и два его исполнителя</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/task-brief/"><span class="idx"></span><span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span><span class="sub">Семь сущностей задачи и три вида влияния шаблона</span></span></a></li>
+  <li><div class="this"><span class="idx"></span><span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="meta">2026.09 · 8 мин</span><span class="sub">Вы здесь</span></span></div></li>
+  <li><a href="/workspace/articles/question-paths/map/"><span class="idx"></span><span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span><span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
+</ol>
+</section>
+
+<footer>davydov.my · AI-аналитик · разбор шестой</footer>
+</div>
+
+<script>
+const links=[...document.querySelectorAll(".qp nav a")];
+const secs=links.map(a=>document.getElementById(a.getAttribute("href").slice(1)));
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){
+    links.forEach(a=>a.classList.remove("on"));
+    const i=secs.indexOf(e.target); if(i>-1) links[i].classList.add("on");
+  }});
+},{rootMargin:"-10% 0px -80% 0px"});
+secs.forEach(s=>s&&io.observe(s));
+</script>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
