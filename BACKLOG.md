@@ -153,9 +153,9 @@
 
 ---
 
-## `canonical` и `og:*` трём кейсам
+## `canonical` и `og:*` двум кейсам
 
-`cases/macbook-market/`, `cases/nikifilini/`, `cases/solvery-mentors/` —
+`cases/macbook-market/`, `cases/nikifilini/` —
 в `<head>` только `<title>` и `<meta name="description">` (описания
 добавлены в 8f42c2a). Нет `canonical`, нет ни одного `og:`.
 

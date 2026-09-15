@@ -17,7 +17,6 @@ Scope: publish-слой `alexdavydov.github.io`
 | --- | --- | --- | --- | --- | --- | --- |
 | macbook-market | case | `/cases/macbook-market/` | `cases/macbook-market/` | - | active | Canonical case |
 | nikifilini | case | `/cases/nikifilini/` | `cases/nikifilini/` | `/cases/nikifilini/story_v1..v43/*` | active | Redirects configured |
-| solvery-mentors | case | `/cases/solvery-mentors/` | `cases/solvery-mentors/` | - | active | Canonical case |
 | ab-test | simulator | `/simulators/ab-test/` | `simulators/ab-test/` | - | active | Canonical simulator |
 | ad-fatigue | simulator | `/simulators/ad-fatigue/` | `simulators/ad-fatigue/` | `/simulators/ad-fatigue-live/` | active | Live variant exists |
 | ad-auction | simulator | `/simulators/ad-auction/` | `simulators/ad-auction/` | `/simulators/ad-auction-pressure/` | active | Pressure variant exists |
