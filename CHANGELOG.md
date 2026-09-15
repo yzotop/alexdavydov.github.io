@@ -7,6 +7,18 @@
 
 ---
 
+## 2026-09-15 — сняты кейс solvery-mentors и system-map
+
+`/cases/solvery-mentors/` публиковал данные о третьих лицах: имена,
+ссылки на профили и ставки менторов Solvery. `/system-map/` вместе со
+`scripts/enrich_library.sh` публиковал карту локальной машины: пути
+`/Users/involute`, корни данных, расположение `data/_secrets`.
+Удалены из дерева, из навигации, поиска и карты сайта; копии —
+в `~/projects/_archive/`. В истории git файлы остались, план чистки —
+`~/projects/_archive/history-cleanup-todo.md`.
+
+---
+
 ## 2026-08-31 — главная больше не едет вбок на телефоне
 
 `@media (max-width:900px)`: `.sec-head` переведён в `display:block`,
