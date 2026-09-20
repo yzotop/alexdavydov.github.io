@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как AI-аналитик видит решения и почему этого мало · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/how-agent-sees-decisions/"/>
+    <meta name="description" content="Витрина — результат решений, принятых до вопроса. Сорок четыре решения в коде сборки, до модели доходит девять."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Как AI-аналитик видит решения и почему этого мало — Александр Давыдов"/>
+    <meta property="og:description" content="Слова можно понять двояко. Поле либо есть, либо нет."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/how-agent-sees-decisions/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+<style>
+.ags{--sec:var(--muted);--rule:var(--line-d);--fill:var(--soft);--acc:var(--accent)}.ags *{box-sizing:border-box}.ags .wrap>*{min-width:0}.ags{margin:0;background:#fff;color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1.62}.ags .wrap{max-width:1120px;margin:0 auto;padding:0 24px 130px;display:grid;
+ grid-template-columns:1fr 232px;gap:0 56px}.ags header,.ags .body,.ags footer,.ags .series{grid-column:1}.ags header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}.ags .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.ags h1{font-size:clamp(28px,4.8vw,50px);line-height:1.08;letter-spacing:-.02em;margin:24px 0 0;
+ font-weight:500;max-width:18ch}.ags .lede{font-size:21px;color:var(--sec);margin:20px 0 4px;max-width:60ch}.ags h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:70px 0 14px;padding-top:22px;
+ border-top:1.5px solid var(--ink);scroll-margin-top:20px}.ags h3{font-size:21px;font-weight:700;margin:40px 0 10px}.ags p{margin:0 0 17px;max-width:66ch}.ags code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}.ags nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;padding-top:34px;font-size:14.5px}.ags nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);padding-bottom:9px;border-bottom:1.5px solid var(--ink);margin-bottom:6px}.ags nav ol{list-style:none;margin:0;padding:0}.ags nav a{display:flex;gap:10px;padding:6px 0;color:var(--sec);text-decoration:none;line-height:1.3}.ags nav a:hover{color:var(--ink)}.ags nav a.on{color:var(--ink);font-weight:500}.ags nav a.on .tn{color:var(--acc)}.ags nav .tn{font-family:var(--mono);font-size:11.5px;flex:0 0 20px;padding-top:2px}.ags .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px;
+ margin:28px 0 34px;border-top:1.5px solid var(--ink);padding-top:16px}.ags .big div b{font-family:var(--mono);font-size:34px;display:block;line-height:1.05}.ags .big div span{font-size:14.5px;color:var(--sec);line-height:1.35;display:block;margin-top:5px}.ags .big div.hot b{color:var(--acc)}.ags table{border-collapse:collapse;width:100%;margin:24px 0;font-size:16.5px}.ags th,.ags td{text-align:left;padding:11px 14px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}.ags th{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--sec);font-weight:500;border-bottom:1.5px solid var(--ink)}.ags td.num,.ags th.num{text-align:right;font-family:var(--mono);padding-right:0;white-space:nowrap}.ags tr:last-child td{border-bottom:1.5px solid var(--ink)}.ags .tw{overflow-x:auto}.ags .split{margin:26px 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}.ags .split div{display:flex;align-items:baseline;gap:20px;padding:13px 0;
+ border-bottom:1px solid var(--rule);font-size:17px}.ags .split div:last-child{border-bottom:none}.ags .split .n{font-family:var(--mono);font-size:19px;width:46px;flex:0 0 46px;text-align:right}.ags .split .lvl2{padding-left:46px}.ags .split .lvl2 .n{font-size:17px;color:var(--sec)}.ags .split .sum{border-top:1.5px solid var(--ink);font-weight:700}.ags .split .sum .n{color:var(--acc)}.ags .sieve{display:grid;gap:0;margin:26px 0;border-top:1.5px solid var(--ink)}.ags .sieve .row{display:grid;grid-template-columns:76px 1fr;gap:0 20px;align-items:center;
+ padding:15px 0;border-bottom:1px solid var(--rule)}.ags .sieve .row:last-child{border-bottom:1.5px solid var(--ink)}.ags .sieve .num{font-family:var(--mono);font-size:26px;text-align:right}.ags .sieve .bar{height:26px;background:var(--fill);position:relative}.ags .sieve .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);display:block}.ags .sieve .lbl{font-size:16.5px;line-height:1.4;margin-top:7px;color:var(--sec)}.ags .sieve .row.hot .num{color:var(--acc)}.ags .sieve .row.hot .bar i{background:var(--acc)}.ags .say{border-left:3px solid var(--acc);padding:2px 0 2px 20px;margin:22px 0;font-size:17px;
+ line-height:1.5;max-width:64ch}.ags .say.grey{border-left-color:var(--rule);color:var(--sec)}.ags pre{background:var(--fill);padding:17px 19px;overflow-x:auto;font-family:var(--mono);
+ font-size:12.5px;line-height:1.6;margin:16px 0}.ags .flow{background:var(--fill);padding:24px 26px;margin:26px 0;overflow-x:auto}.ags .flow pre{background:none;padding:0;margin:0;font-size:13.5px;line-height:1.75;white-space:pre}.ags .flow .h{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+ color:var(--sec);margin:0 0 14px}.ags .flow .h:not(:first-child){margin-top:26px}.ags .gen{background:var(--fill);padding:16px 20px;margin:20px 0;font-size:16px;
+ line-height:1.5;max-width:64ch;border-left:3px solid var(--rule)}.ags .gen b{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+ color:var(--sec);font-weight:500}.ags .pull{border-left:3px solid var(--acc);padding:4px 0 4px 22px;margin:32px 0;max-width:62ch}.ags .pull p{font-size:21px;line-height:1.45;margin:0}.ags .checks{list-style:none;padding:0;margin:24px 0;counter-reset:c}.ags .checks li{border-top:1px solid var(--rule);padding:15px 0 15px 44px;position:relative;max-width:66ch}.ags .checks li:last-child{border-bottom:1px solid var(--rule)}.ags .checks li::before{counter-increment:c;content:counter(c);position:absolute;left:0;top:15px;
+ font-family:var(--mono);font-size:14px;color:var(--acc)}.ags .checks b{display:block;margin-bottom:2px}.ags .checks span{color:var(--sec);font-size:16.5px;line-height:1.5}.ags .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}.ags .notes p{margin:0 0 12px;max-width:none}.ags .notes p:last-child{margin:0}.ags a{color:var(--ink);border-bottom:1px solid var(--acc);text-decoration:none}.ags a:hover{color:var(--acc)}.ags .series{margin:64px 0 0}.ags .series h2{margin-top:0}.ags .series ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;border-top:1.5px solid var(--ink)}.ags .series li{border-bottom:1px solid var(--rule)}.ags .series li:last-child{border-bottom:1.5px solid var(--ink)}.ags .series a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
+ padding:19px 18px 19px 0;border:0;transition:background .12s,padding .12s}.ags .series a:hover{background:var(--fill);padding-left:18px;padding-right:0}.ags .series .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--acc)}.ags .series .idx::before{content:"№ " counter(s,decimal-leading-zero)}.ags .series .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;margin-bottom:4px;color:var(--ink)}.ags .series a:hover .ttl{color:var(--acc)}.ags .series .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--sec);
+ display:block;margin-bottom:3px}.ags .series .sub{color:var(--sec);font-size:16px;line-height:1.45;display:block}.ags .series .this{background:var(--fill);display:grid;grid-template-columns:62px 1fr;gap:0 8px;
+ align-items:baseline;padding:19px 18px}.ags .series .this .idx{color:var(--ink)}.ags .series .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px}.ags .series .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--sec)}.ags footer{margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
+ font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec)}
+@media(max-width:900px){.ags .wrap{grid-template-columns:1fr;gap:0}.ags nav{grid-column:1;grid-row:auto;position:static;padding:16px 18px;margin:0 0 30px;border:1.5px solid var(--rule)}.ags nav ol{columns:2;column-gap:22px}.ags{font-size:17.5px}.ags .series a,.ags .series .this{grid-template-columns:1fr;gap:5px}}
+.ags .ags-meta{grid-column:1;padding-top:28px;margin-bottom:0}
+.ags td.mid{vertical-align:middle}
+.ags .notes h3{margin:0 0 10px;font-size:18px}
+@media(max-width:900px){.ags nav li{break-inside:avoid}}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/" aria-current="page">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="ags">
+<div class="wrap">
+<div class="article-meta ags-meta"><span>Сентябрь 2026</span><span class="chip">AI-аналитик</span><span>13 мин</span></div>
+
+<header>
+  <div class="kick"><span>AI-аналитик · разбор седьмой</span><span>davydov.my</span></div>
+  <h1>Как AI-аналитик видит решения и почему этого мало</h1>
+</header>
+
+<nav>
+  <div class="h">Разделы</div>
+  <ol>
+    <li><a href="#s1"><span class="tn">01</span>Шесть артефактов</a></li>
+    <li><a href="#s2"><span class="tn">02</span>Откуда берётся промпт</a></li>
+    <li><a href="#s3"><span class="tn">03</span>Витрины собраны заранее</a></li>
+    <li><a href="#s4"><span class="tn">04</span>Сколько решений в коде сборки</a></li>
+    <li><a href="#s5"><span class="tn">05</span>Что из них попадает в промпт</a></li>
+    <li><a href="#s6"><span class="tn">06</span>Один вопрос, два пути</a></li>
+    <li><a href="#s7"><span class="tn">07</span>Словами и полем</a></li>
+    <li><a href="#s8"><span class="tn">08</span>Что проверить у себя</a></li>
+    <li><a href="#s9"><span class="tn">09</span>Путь целиком</a></li>
+    <li><a href="#s10"><span class="tn">10</span>Как я это мерил</a></li>
+  </ol>
+</nav>
+
+<div class="body">
+
+<p class="lede">Модель отвечает по витринам. Витрина — не данные, а результат чьих-то решений, принятых задолго до вопроса. Я пошёл считать, сколько их и видит ли их модель.</p>
+
+<h2 id="s1">Семь артефактов</h2>
+
+<p>Чтобы AI-аналитик посчитал число, человек до него пишет семь вещей. Вот они, с путями — чтобы не путать похожее.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>артефакт</th><th>где лежит</th><th>что это</th><th>зачем</th></tr></thead>
+  <tbody>
+    <tr><td>задача</td><td>трекер</td><td>текст</td><td>с этого всё начинается</td></tr>
+    <tr><td>вопрос</td><td>—</td><td>одна строка текста</td><td>аналитик выводит его из задачи</td></tr>
+    <tr><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td>девять файлов: три строят витрины, шесть — промежуточные таблицы под них</td><td>превращают сырые таблицы в витрины, по расписанию</td></tr>
+    <tr><td>описания витрин</td><td><code>dbt/models/schema.yml</code></td><td>YAML: строка текста на таблицу</td><td>что в таблице лежит, человеческими словами</td></tr>
+    <tr><td>тесты сборки</td><td><code>dbt/tests/</code></td><td>тридцать пять SQL-проверок</td><td>ловят, если сборка сломалась; стоят и на витринах, и на промежуточных</td></tr>
+    <tr><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td>YAML: пятнадцать решений и комментарии к ним</td><td>что и как считать</td></tr>
+    <tr><td>эталонный запрос</td><td><code>truth_sql/*.sql</code></td><td>SQL <b>по сырым таблицам</b>, не по витринам</td><td>правда, с которой сверяют ответ; витрины не читает намеренно — иначе у правды и у проверяемого был бы общий родитель</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Все семь написаны руками. На каждый потрачено время.</p>
+
+<p class="gen"><b>Два YAML, которые легко спутать.</b> <code>metrics/metrics.yml</code> — <b>файл определений метрик</b>: что считать метрикой и какие решения в ней приняты. <code>dbt/models/schema.yml</code> — <b>описания витрин</b>: что лежит в таблице. Первый про смысл метрики, второй про содержимое таблицы. В промпт попадают оба, но разными путями.</p>
+
+<p class="gen"><b>Как я называю вещи в этом тексте.</b> <b>Код сборки витрин</b> — девять SQL-файлов. В dbt они называются моделями, но слово «модель» здесь занято языковой. Запускаются отдельно от агента: <code>dbt run</code> читает сырые таблицы и записывает результат. <b>Витрина</b> — готовая таблица <code>fct_*</code> или <code>dim_*</code>. <b>Модель</b> — только языковая. <b>Агент</b> — модель плюс обвязка вокруг неё. <b>Отбор контекста</b> — та часть обвязки, что собирает промпт.</p>
+
+<p class="gen"><b>Два слова, которые нельзя путать.</b> <b>Артефакт</b> — то, что пишет человек: файл, текст, запрос. Их семь. <b>Блок</b> — часть собранного промпта. Их шесть. Соответствия между ними нет: три артефакта дают блоки, три блока человек не писал вовсе.</p>
+
+<h2 id="s2">Откуда берётся промпт</h2>
+
+<p>Модель не получает ваш репозиторий. У неё окно, и весь проект в него не помещается — поэтому перед каждым вопросом отбор контекста собирает промпт: решает, что положить, и кладёт.</p>
+
+<p>Я пересобрал этот промпт тем же кодом и сверил отпечатки блоков с логом. Совпали. Значит ниже — не реконструкция, а то, что реально ушло модели.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>блок промпта</th><th>источник</th><th>что именно</th><th>на нашем вопросе</th></tr></thead>
+  <tbody>
+    <tr><td>инструкция</td><td>код обвязки</td><td>константа в <code>agent/sql_gen.py</code></td><td>три правила</td></tr>
+    <tr><td>файл определений метрик</td><td><b>файл</b></td><td><code>metrics/metrics.yml</code> целиком, с комментариями</td><td>4688 знаков</td></tr>
+    <tr><td>схема базы</td><td>база</td><td>запрос к <code>information_schema</code></td><td>3 объекта из 15</td></tr>
+    <tr><td>описания витрин</td><td><b>файл</b></td><td><code>dbt/target/manifest.json</code>, только поля <code>description</code></td><td>2 строки</td></tr>
+    <tr><td>примеры значений из базы</td><td>база</td><td><code>SELECT DISTINCT … LIMIT 12</code> по поданным таблицам</td><td>4 пары колонок</td></tr>
+    <tr><td>вопрос</td><td>снаружи</td><td>пришёл вместе с задачей</td><td>одна строка</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Шесть блоков, четыре источника. Два блока берутся с диска, два спрашиваются у самой базы, инструкция лежит константой в коде обвязки, вопрос приходит снаружи.</p>
+
+<p>Файлов проекта отбор контекста открывает ровно два.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>что за файл</th><th>путь</th><th>открывается</th></tr></thead>
+  <tbody>
+    <tr><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td class="num"><b>да</b></td></tr>
+    <tr><td>манифест сборки</td><td><code>dbt/target/manifest.json</code></td><td class="num"><b>да</b></td></tr>
+    <tr><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num">нет</td></tr>
+    <tr><td>описания витрин</td><td><code>dbt/models/schema.yml</code></td><td class="num">нет</td></tr>
+    <tr><td>тесты сборки</td><td><code>dbt/tests/*.sql</code></td><td class="num">нет</td></tr>
+    <tr><td>эталонные запросы</td><td><code>truth_sql/*.sql</code></td><td class="num">нет</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Описания витрин в списке дважды и это не ошибка: файл <code>schema.yml</code>, куда вы их пишете, не открывается. Их содержимое попадает в промпт из манифеста, куда dbt перенёс его при сборке. Правка в <code>schema.yml</code> доедет до модели только после следующего <code>dbt run</code>.</p>
+
+<p>Манифест — это JSON, который dbt пишет при компиляции: в нём описание каждой витрины, список колонок и — отдельным полем <code>compiled_code</code> — сам скомпилированный SQL. Отбор берёт оттуда только описания.</p>
+
+<p>Теперь свяжем одно с другим: какой артефакт человека даёт какой блок промпта.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>артефакт человека</th><th class="num">в промпт</th><th>каким блоком и как</th></tr></thead>
+  <tbody>
+    <tr><td>задача</td><td class="num">нет</td><td>—</td></tr>
+    <tr><td>вопрос</td><td class="num"><b>да</b></td><td>блок «вопрос», напрямую</td></tr>
+    <tr><td>код сборки витрин</td><td class="num">нет</td><td>—</td></tr>
+    <tr><td>описания витрин</td><td class="num"><b>да</b></td><td>блок «описания» — но не из <code>schema.yml</code>, а из манифеста, куда их перенёс dbt</td></tr>
+    <tr><td>тесты сборки</td><td class="num">нет</td><td>—</td></tr>
+    <tr><td>файл определений метрик</td><td class="num"><b>да</b></td><td>одноимённым блоком, целиком, напрямую</td></tr>
+    <tr><td>эталонный запрос</td><td class="num">нет</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="pull"><p>Из семи артефактов человека блоки дают три. Остальные три блока промпта человек не писал: инструкция лежит в коде обвязки, схема и примеры значений спрашиваются у базы.</p></div>
+
+<h2 id="s3">Витрины собраны заранее</h2>
+
+<p>Здесь важна последовательность во времени, и её легко упустить.</p>
+
+<p>Витрины не собираются в момент вопроса. Команда <code>dbt run</code> выполняет девять файлов кода сборки, читает сырые таблицы и записывает результат — шесть промежуточных таблиц и три витрины. Запускается это по расписанию, раз в сутки или чаще, и к моменту, когда приходит вопрос, витрины уже лежат готовые.</p>
+
+<p>Модель их не собирает и не пересобирает. Она читает результат.</p>
+
+<div class="pull"><p>Решения, закрытые в витрине, приняты заранее — другим человеком, в другой день, и заморожены в колонках.</p></div>
+
+<p>Отсюда и вопрос, ради которого я полез в код сборки. Витрина — не данные, а чей-то выбор: кто-то решил, какое поле считать датой и кого считать гостем. Значит часть ответа определена до всякой модели и до всякого определения метрики.</p>
+
+<p>Сколько этих решений — и видит ли их модель.</p>
+
+<h2 id="s4">Сколько решений в коде сборки</h2>
+
+<p>Открываете код сборки. Видите SQL. Кажется, что он просто переносит данные из одного места в другое.</p>
+
+<p>Отличить решение от реализации можно формально: <strong>решение — это место, где можно поставить другое и запрос останется рабочим.</strong></p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>строка в коде сборки</th><th>альтернатива</th><th>решение?</th></tr></thead>
+  <tbody>
+    <tr><td><code>customer_id is null as is_guest_order</code></td><td>флаг <code>is_guest</code> в таблице клиентов</td><td>да — обе исполнимы, результат разный</td></tr>
+    <tr><td><code>status = 'cancelled'</code></td><td><code>status &lt;&gt; 'completed'</code></td><td>да — при трёх статусах результат разный</td></tr>
+    <tr><td><code>received_at</code> позиции</td><td><code>received_at</code> заказа</td><td>да — у отменённых оно часами позже</td></tr>
+    <tr><td>соединение по <code>order_id</code></td><td>—</td><td>нет — заменить нечем</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Я прошёл по всем девяти файлам — шести промежуточным <code>stg_*.sql</code> и трём витринным <code>fct_order_items.sql</code>, <code>fct_returns.sql</code>, <code>dim_customers.sql</code> — и выписал такие места: что решалось, что выбрано, что было бы при другом выборе, и объявлено ли это где-нибудь, кроме самого SQL.</p>
+
+<p>Получилось сорок четыре.</p>
+
+<p>Сорок четыре — это всё подряд, включая соединения, где вряд ли кто-то сделает иначе. Поэтому я посчитал второй раз, по правилу, объявленному до счёта: альтернатива должна быть выполнима на данных и встречаться как чей-то реальный выбор в материалах проекта. Таких двадцать.</p>
+
+<h2 id="s5">Что из них попадает в промпт</h2>
+
+<p>Теперь главный переход. Сорок четыре решения приняты. Модель читает два файла. Что из этих сорока четырёх до неё доезжает?</p>
+
+<div class="split">
+  <div><span class="n">23</span><span><b>описаны где-то</b> — в комментарии кода сборки, в тесте, в описании таблицы</span></div>
+  <div class="lvl2"><span class="n">9</span><span>попадают в промпт</span></div>
+  <div class="lvl2"><span class="n">14</span><span>не попадают</span></div>
+  <div><span class="n">17</span><span><b>не описаны нигде</b> — живут только в SQL сборки</span></div>
+  <div><span class="n">4</span><span><b>намерение не восстановлено</b> — выбор сделан, но был ли он осознанным, из кода не видно</span></div>
+</div>
+
+<p>Разберём точнее, что именно из кода сборки доезжает.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>где записано решение</th><th>сущность</th><th>путь</th><th class="num">в промпт</th><th class="num">штук</th></tr></thead>
+  <tbody>
+    <tr><td>в описании витрины</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num"><b>да</b></td><td class="num mid" rowspan="2"><b>9</b></td></tr>
+    <tr><td>в файле определений</td><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td class="num"><b>да</b></td></tr>
+    <tr><td>в описании промежуточной таблицы</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num">только при выключенном отборе таблиц</td><td class="num">2</td></tr>
+    <tr><td>в комментарии рядом с кодом</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num">нет</td><td class="num mid" rowspan="2">12</td></tr>
+    <tr><td>в тесте</td><td>тесты сборки</td><td><code>dbt/tests/*.sql</code></td><td class="num">нет</td></tr>
+    <tr><td>нигде, только в самом SQL</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num">нет</td><td class="num">17</td></tr>
+    <tr><td>намерение не восстановлено</td><td>—</td><td>—</td><td class="num">нет</td><td class="num">4</td></tr>
+    <tr><td><b>всего</b></td><td></td><td></td><td class="num"><b>9</b></td><td class="num"><b>44</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Сам код сборки в промпт не попадает совсем</strong> — ни одной строки SQL, ни одного комментария. Решение доезжает до модели только тогда, когда кто-то <em>отдельно, другими словами, в другом файле</em> написал, что оно принято.</p>
+
+<p>Тесты — обидный случай. В них записано ровно то, что нужно: например, что зерно таблицы позиций проверяется отдельно. Это объяснение существует, оно верное, и отбор его не открывает.</p>
+
+<p>А две строки про промежуточные таблицы доезжают не всегда. Они лежат в описаниях, но отбор таблиц их отфильтровывает: когда он включён, в промпт идут описания только тех таблиц, что связаны с метрикой, а промежуточные в этот список не попадают.</p>
+
+<p>Четырнадцать описаны правильно и подробно — и не доезжают. Кто-то потратил время, объяснил, почему считаем именно так, и записал объяснение в комментарий кода сборки или в тест. Ни то ни другое в промпт не попадает.</p>
+
+<p>Это не «мы поленились». Это «мы написали не туда».</p>
+
+<p class="gen"><b>Общее:</b> документация, которую не читает исполнитель, не работает, даже если она верная.<br><b>Частное:</b> девять из двадцати трёх — доля моего проекта. Свою можно узнать за час: собрать промпт и поискать в нём свои объяснения.</p>
+
+<h2 id="s6">Один вопрос, два пути</h2>
+
+<p>До сих пор речь шла о доставке: объяснение есть, но не доехало. Дальше выяснилось, что есть и вторая беда, и она другой природы.</p>
+
+<p>Я взял вопрос «сколько активных клиентов сейчас» и задал его дважды. Первый раз — как обычно, по витринам. Второй — по сырым таблицам, с тем же файлом определений.</p>
+
+<div class="big">
+  <div><b>21 580</b><span>по витринам · сошлось с эталоном</span></div>
+  <div class="hot"><b>15 030</b><span>по сырым таблицам · мимо</span></div>
+</div>
+
+<p>Модель в обоих случаях ответила с первой попытки, без уточнений и отказов. На сыром пути она сама написала запрос на пятьсот семьдесят шесть знаков: привела время к UTC, обрезала по курсору, сделала три соединения. Технически справилась.</p>
+
+<p>Разрыв — 6550. Я разложил его исполнением, без обращения к модели: менял в запросе по одному условию и смотрел, как двигается число.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>что меняли</th><th class="num">даёт</th></tr></thead>
+  <tbody>
+    <tr><td>какое поле значит «гость»</td><td class="num"><b>6549</b></td></tr>
+    <tr><td>забытое приведение времени к UTC</td><td class="num">1</td></tr>
+    <tr><td>граница окна: строгое сравнение или нет</td><td class="num">0</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Одна развилка дала весь разрыв.</p>
+
+<h2 id="s7">Словами и полем</h2>
+
+<p>В файле определений написано: гостевые заказы не считаем вовсе. Эта фраза доехала до модели — она в первых двух файлах, ничего не потерялось.</p>
+
+<p>Но какое поле она значит, не написано. И на витрине вопрос не возникает: там поле одно, <code>is_guest_order</code>, посчитанное при сборке как «заказ без идентификатора клиента».</p>
+
+<p>А в сырых таблицах способов два, и это две разные популяции:</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>способ</th><th class="num">сколько</th></tr></thead>
+  <tbody>
+    <tr><td>заказы без <code>customer_id</code></td><td class="num">50 578</td></tr>
+    <tr><td>клиенты с флагом <code>is_guest</code></td><td class="num">18 096</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Модель взяла вторую.</p>
+
+<p>Причём гостей она назвала вслух — перечислила эту развилку среди открытых. И всё равно выбрала не ту. А в конце написала, что все решения заданы слоем и потому вариант один. В сыром пути это неправда, и она этого не заметила.</p>
+
+<h3>Две беды, и лечатся они по-разному</h3>
+
+<p><strong>Доставка.</strong> Объяснение написано, но в промпт не попало. Лежит в комментарии кода сборки или в тесте. Чинится переносом: тот же текст, но в другом месте.</p>
+
+<p><strong>Неоднозначность.</strong> Объяснение попало, модель его прочитала — и всё равно ошиблась, потому что текст допускает два исполнения. Переносом не чинится вообще: сколько ни переноси двусмысленную фразу, она останется двусмысленной.</p>
+
+<div class="pull"><p>Файл определений закрывает решение словами. Витрина закрывает его полем. Слова можно понять двояко — поле либо есть, либо нет.</p></div>
+
+<p>Вот что на самом деле делает витрина. Не ускоряет запрос и не прячет сложность. Она делает решение неоткрываемым заново.</p>
+
+<h3>И оборотная сторона</h3>
+
+<p>Витрина принимает решение за всех. Если она закрыла развилку неверно, ни одна метрика её уже не переубедит — только пересборка.</p>
+
+<p>Поэтому выбор между словами и полем — не «что лучше», а что чем платится. Слова оставляют метрике свободу и рискуют неоднозначностью. Поле убирает неоднозначность и забирает свободу.</p>
+
+<p>В этом же стенде есть пример обратного решения: витрина возвратов держит обе даты — когда возврат случился и когда о нём узнали, — и в её описании прямо сказано, что выбор между ними принадлежит метрике. Развилка оставлена открытой сознательно.</p>
+
+<h2 id="s8">Что проверить у себя</h2>
+
+<ol class="checks">
+  <li><b>Соберите промпт, который реально уходит вашей модели</b><span>И посмотрите, что в нём лежит. Не «есть ли документация», а видит ли её модель.</span></li>
+  <li><b>Поищите в нём свои объяснения</b><span>Те, которыми вы гордитесь. У меня из двадцати трёх дошло девять.</span></li>
+  <li><b>Возьмите три определения метрик и проверьте, исполнимы ли они одним способом</b><span>Если написано «не считаем гостевые», а в данных два способа определить гостя — определение не работает. Оно выглядит закрытым, а решение всё равно принимает модель.</span></li>
+  <li><b>По каждой неоднозначности решите, чем закрывать</b><span>Доуточнить словами — дёшево, но остаётся текстом. Закрыть полем в витрине — прочнее, но вы решаете за всех.</span></li>
+  <li><b>Там, где развилку оставляете открытой, скажите это вслух</b><span>В описании таблицы. Иначе модель решит, что решение принято, и не станет спрашивать.</span></li>
+</ol>
+
+<h2 id="s9">Путь целиком</h2>
+
+<p>Теперь всё вместе. Слева то, что существует, справа — доезжает ли оно до модели.</p>
+
+<div class="flow">
+<div class="h">Семь артефактов человека</div>
+<pre>задача                    трекер ────────────────  нет
+   ↓
+вопрос                    ───────────────────────  ДА, напрямую
+
+код сборки витрин         dbt/models/*.sql ──────  нет, ни строки
+   ↓  44 решения                                   ├─  9 доезжают текстом
+витрины ← собраны заранее, dbt run                 └─ 35 не доезжают никак
+
+описания витрин           dbt/models/schema.yml ─  ДА, через манифест
+тесты сборки              dbt/tests/ ────────────  нет
+файл определений метрик   metrics/metrics.yml ───  ДА, целиком, напрямую
+эталонный запрос          truth_sql/*.sql ───────  нет, его читает измеритель
+                          по сырым таблицам</pre>
+
+<div class="h">Три блока, которых человек не писал</div>
+<pre>инструкция                код обвязки ───────────  три правила
+схема базы                запрос к базе ─────────  3 объекта из 15
+примеры значений из базы  запрос к базе ─────────  12 значений</pre>
+</div>
+
+<p>Шесть блоков промпта: <b>три</b> пришли от человека — вопрос, файл определений метрик, описания витрин. <b>Три</b> порождаются: инструкция лежит в коде обвязки, схема и примеры значений спрашиваются у базы.</p>
+
+<p>И сорок четыре решения кода сборки, из которых до модели добирается девять — не как код, а как текст описаний.</p>
+
+<h2 id="s10">Как я это мерил</h2>
+
+<p>Промпт нигде не сохраняется, он собирается на лету. Но в лог пишутся отпечатки блоков. Я пересобрал промпт тем же кодом и сверил: отпечатки совпали с записью от восьмого сентября. Поэтому приведённый состав — факт, а не реконструкция.</p>
+
+<p>Реестр решений собран скриптом, не глазами. Строка не записывается, пока не подтвердится, что по указанному адресу стоит нужный код и что объявление лежит там, где сказано.</p>
+
+<p>Разрыв между путями разложен исполнением запросов, без обращения к модели: в SQL менялось по одному условию.</p>
+
+<div class="notes">
+  <h3>Оговорки</h3>
+  <p>Один стенд, одна предметная область, двадцать одна таблица. Числа отсюда не переносятся, переносится устройство.</p>
+  <p>Проба двух путей сделана на одном вопросе. Она показывает механизм, а не долю: повторяется ли он, я не проверял.</p>
+  <p>Пути отличаются не только формой таблиц. В сыром пути пришлось добавить таблицу часовых поясов — без неё запрос неисполним, — и описания там берутся из другой секции манифеста, где их всего два. Оба различия дают сырому пути небольшую фору.</p>
+  <p>Файл определений в обоих путях один и тот же, и он называет витрины, которых в сыром пути нет. Модель молча подставила сырые эквиваленты и не сообщила об этом.</p>
+  <p>Правило «не выбирай молча» записано в инструкции. То, что модель перечисляет развилки, — исполнение правила, а не её инициатива. Само поле для этого нигде не описано.</p>
+  <p>Все замеры сделаны на одноходовом агенте: один план, перезапуск только при падении. Следующий запрос по результату предыдущего он не пишет.</p>
+</div>
+
+</div>
+
+<section class="series">
+<h2>Вся серия про AI-аналитика</h2>
+<ol>
+  <li><a href="https://davydov.my/workspace/articles/ai-analyst-checks/"><span class="idx"></span>
+    <span><span class="ttl">Как я строил AI-аналитика</span><span class="meta">2026.08 · 13 мин</span>
+    <span class="sub">Учебная сборка: шесть этапов и семнадцать проверок</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/quiet-wrong-answers/"><span class="idx"></span>
+    <span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span>
+    <span class="sub">Что он унесёт неверного и почему это не видно по числу</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/declare-and-extract/"><span class="idx"></span>
+    <span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Семь шагов между задачей и числом</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/metrics-layer/"><span class="idx"></span>
+    <span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Файл на сто семь строк и два его исполнителя</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/task-brief/"><span class="idx"></span>
+    <span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span>
+    <span class="sub">Семь сущностей задачи и три вида влияния шаблона</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/question-paths/"><span class="idx"></span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="meta">2026.09 · 8 мин</span>
+    <span class="sub">Шесть исходов одного вопроса</span></span></a></li>
+  <li><a href="/workspace/articles/question-paths/map/"><span class="idx"></span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span>
+    <span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
+  <li><div class="this"><span class="idx"></span>
+    <span><span class="ttl">Как AI-аналитик видит решения и почему этого мало</span><span class="sub">Вы здесь</span></span></div></li>
+</ol>
+</section>
+
+<footer>davydov.my · AI-аналитик · разбор седьмой</footer>
+</div>
+<script>
+const links=[...document.querySelectorAll(".ags nav a")];
+const secs=links.map(a=>document.getElementById(a.getAttribute("href").slice(1)));
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){
+    links.forEach(a=>a.classList.remove("on"));
+    const i=secs.indexOf(e.target); if(i>-1) links[i].classList.add("on");
+  }});
+},{rootMargin:"-10% 0px -80% 0px"});
+secs.forEach(s=>s&&io.observe(s));
+</script>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
