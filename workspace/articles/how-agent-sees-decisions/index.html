@@ -45,6 +45,11 @@
 .ags td.mid{vertical-align:middle}
 .ags .notes h3{margin:0 0 10px;font-size:18px}
 @media(max-width:900px){.ags nav li{break-inside:avoid}}
+.ags th.num:not(:last-child),.ags td.num:not(:last-child){padding-right:14px}
+.ags td.num.txt,.ags th.num.txt{white-space:normal;text-align:left;font-family:var(--sans)}
+.ags table code{white-space:nowrap}
+@media(max-width:560px){.ags table code{white-space:normal}}
+.ags table:has(thead th:nth-child(2)):not(:has(thead th:nth-child(3))){width:auto;min-width:55%}
 </style>
 </head>
 <body>
@@ -116,18 +121,20 @@
 
 <div class="tw">
 <table>
-  <thead><tr><th>артефакт</th><th>где лежит</th><th>что это</th><th>зачем</th></tr></thead>
+  <thead><tr><th>артефакт</th><th>где лежит</th><th>что это</th></tr></thead>
   <tbody>
-    <tr><td>задача</td><td>трекер</td><td>текст</td><td>с этого всё начинается</td></tr>
-    <tr><td>вопрос</td><td>—</td><td>одна строка текста</td><td>аналитик выводит его из задачи</td></tr>
-    <tr><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td>девять файлов: три строят витрины, шесть — промежуточные таблицы под них</td><td>превращают сырые таблицы в витрины, по расписанию</td></tr>
-    <tr><td>описания витрин</td><td><code>dbt/models/schema.yml</code></td><td>YAML: строка текста на таблицу</td><td>что в таблице лежит, человеческими словами</td></tr>
-    <tr><td>тесты сборки</td><td><code>dbt/tests/</code></td><td>тридцать пять SQL-проверок</td><td>ловят, если сборка сломалась; стоят и на витринах, и на промежуточных</td></tr>
-    <tr><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td>YAML: пятнадцать решений и комментарии к ним</td><td>что и как считать</td></tr>
-    <tr><td>эталонный запрос</td><td><code>truth_sql/*.sql</code></td><td>SQL <b>по сырым таблицам</b>, не по витринам</td><td>правда, с которой сверяют ответ; витрины не читает намеренно — иначе у правды и у проверяемого был бы общий родитель</td></tr>
+    <tr><td>задача</td><td>трекер</td><td>текст, с которого всё начинается</td></tr>
+    <tr><td>вопрос</td><td>—</td><td>одна строка; аналитик выводит её из задачи</td></tr>
+    <tr><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td>девять SQL-файлов: превращают сырые таблицы в витрины, по расписанию</td></tr>
+    <tr><td>описания витрин</td><td><code>dbt/models/schema.yml</code></td><td>YAML, строка текста на таблицу: что в ней лежит</td></tr>
+    <tr><td>тесты сборки</td><td><code>dbt/tests/</code></td><td>тридцать пять SQL-проверок: ловят, если сборка сломалась</td></tr>
+    <tr><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td>YAML: пятнадцать решений о том, что и как считать</td></tr>
+    <tr><td>эталонный запрос</td><td><code>truth_sql/*.sql</code></td><td>SQL по сырым таблицам — правда, с которой сверяют ответ</td></tr>
   </tbody>
 </table>
 </div>
+
+<p>Эталон пишется по сырым таблицам и витрины не читает намеренно: иначе у правды и у проверяемого был бы общий родитель.</p>
 
 <p>Все семь написаны руками. На каждый потрачено время.</p>
 
@@ -183,15 +190,15 @@
 
 <div class="tw">
 <table>
-  <thead><tr><th>артефакт человека</th><th class="num">в промпт</th><th>каким блоком и как</th></tr></thead>
+  <thead><tr><th>артефакт человека</th><th class="num txt">в промпт</th><th>каким блоком и как</th></tr></thead>
   <tbody>
-    <tr><td>задача</td><td class="num">нет</td><td>—</td></tr>
-    <tr><td>вопрос</td><td class="num"><b>да</b></td><td>блок «вопрос», напрямую</td></tr>
-    <tr><td>код сборки витрин</td><td class="num">нет</td><td>—</td></tr>
-    <tr><td>описания витрин</td><td class="num"><b>да</b></td><td>блок «описания» — но не из <code>schema.yml</code>, а из манифеста, куда их перенёс dbt</td></tr>
-    <tr><td>тесты сборки</td><td class="num">нет</td><td>—</td></tr>
-    <tr><td>файл определений метрик</td><td class="num"><b>да</b></td><td>одноимённым блоком, целиком, напрямую</td></tr>
-    <tr><td>эталонный запрос</td><td class="num">нет</td><td>—</td></tr>
+    <tr><td>задача</td><td class="num txt">нет</td><td>—</td></tr>
+    <tr><td>вопрос</td><td class="num txt"><b>да</b></td><td>блок «вопрос», напрямую</td></tr>
+    <tr><td>код сборки витрин</td><td class="num txt">нет</td><td>—</td></tr>
+    <tr><td>описания витрин</td><td class="num txt"><b>да</b></td><td>блок «описания» — но не из <code>schema.yml</code>, а из манифеста, куда их перенёс dbt</td></tr>
+    <tr><td>тесты сборки</td><td class="num txt">нет</td><td>—</td></tr>
+    <tr><td>файл определений метрик</td><td class="num txt"><b>да</b></td><td>одноимённым блоком, целиком, напрямую</td></tr>
+    <tr><td>эталонный запрос</td><td class="num txt">нет</td><td>—</td></tr>
   </tbody>
 </table>
 </div>
@@ -252,16 +259,16 @@
 
 <div class="tw">
 <table>
-  <thead><tr><th>где записано решение</th><th>сущность</th><th>путь</th><th class="num">в промпт</th><th class="num">штук</th></tr></thead>
+  <thead><tr><th>где записано решение</th><th>сущность</th><th>путь</th><th class="num txt">в промпт</th><th class="num">штук</th></tr></thead>
   <tbody>
-    <tr><td>в описании витрины</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num"><b>да</b></td><td class="num mid" rowspan="2"><b>9</b></td></tr>
-    <tr><td>в файле определений</td><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td class="num"><b>да</b></td></tr>
-    <tr><td>в описании промежуточной таблицы</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num">только при выключенном отборе таблиц</td><td class="num">2</td></tr>
-    <tr><td>в комментарии рядом с кодом</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num">нет</td><td class="num mid" rowspan="2">12</td></tr>
-    <tr><td>в тесте</td><td>тесты сборки</td><td><code>dbt/tests/*.sql</code></td><td class="num">нет</td></tr>
-    <tr><td>нигде, только в самом SQL</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num">нет</td><td class="num">17</td></tr>
-    <tr><td>намерение не восстановлено</td><td>—</td><td>—</td><td class="num">нет</td><td class="num">4</td></tr>
-    <tr><td><b>всего</b></td><td></td><td></td><td class="num"><b>9</b></td><td class="num"><b>44</b></td></tr>
+    <tr><td>в описании витрины</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num txt"><b>да</b></td><td class="num mid" rowspan="2"><b>9</b></td></tr>
+    <tr><td>в файле определений</td><td>файл определений метрик</td><td><code>metrics/metrics.yml</code></td><td class="num txt"><b>да</b></td></tr>
+    <tr><td>в описании промежуточной таблицы</td><td>описания витрин</td><td><code>schema.yml</code> → манифест</td><td class="num txt">только при выключенном отборе таблиц</td><td class="num">2</td></tr>
+    <tr><td>в комментарии рядом с кодом</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num txt">нет</td><td class="num mid" rowspan="2">12</td></tr>
+    <tr><td>в тесте</td><td>тесты сборки</td><td><code>dbt/tests/*.sql</code></td><td class="num txt">нет</td></tr>
+    <tr><td>нигде, только в самом SQL</td><td>код сборки витрин</td><td><code>dbt/models/*.sql</code></td><td class="num txt">нет</td><td class="num">17</td></tr>
+    <tr><td>намерение не восстановлено</td><td>—</td><td>—</td><td class="num txt">нет</td><td class="num">4</td></tr>
+    <tr><td><b>всего</b></td><td></td><td></td><td class="num txt"><b>9</b></td><td class="num"><b>44</b></td></tr>
   </tbody>
 </table>
 </div>
