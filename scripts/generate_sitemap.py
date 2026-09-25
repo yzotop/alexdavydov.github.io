@@ -30,13 +30,14 @@ EXTRA_PATHS = (
     "/approach/",
     "/cases/",
     "/cases/macbook-market/",
-    "/workspace/glossary/",
     "/workspace/articles/",
     "/search/",
     "/workspace/simulators/",
-    "/workspace/calculators/",
     "/site-map/",
     "/workspace/",
+    "/ai-analyst/",
+    "/talks/",
+    "/teaching/",
 )
 
 
