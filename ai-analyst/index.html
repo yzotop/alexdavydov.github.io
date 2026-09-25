@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-аналитик — Alex Davydov</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/ai-analyst/"/>
+    <meta name="description" content="Сколько работы аналитика можно отдать агенту и чем это проверять: семь разборов по порядку, стенды с известной правдой и четыре способа проверки."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="AI-аналитик — Alex Davydov"/>
+    <meta property="og:description" content="Сколько работы аналитика можно отдать агенту и чем это проверять: семь разборов по порядку, стенды с известной правдой и четыре способа проверки."/>
+    <meta property="og:url" content="https://davydov.my/ai-analyst/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/ai-analyst.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/" aria-current="page">Кейсы</a>
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/courses/">Курсы</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/approach/">Подход</a>
+    <a href="/career/">Менторство</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/about/">Обо мне</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="page">
+  <h1 class="page-title">AI-аналитик<span class="accent-dot">.</span></h1>
+  <p class="page-lead">Сколько работы аналитика можно отдать агенту и чем это проверять.</p>
+  <p class="page-sub">Передаваемость задачи зависит не от сложности, а от того, объявлены ли решения. Необъявленное решение всё равно примет модель.</p>
+
+  <div class="prose">
+    <section>
+      <h2>Серия, по порядку</h2>
+      <p>Семь разборов: от сборки агента целиком до того, что он на самом деле видит вместо вашего проекта. Читать лучше подряд — каждый следующий опирается на предыдущий.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/articles/ai-analyst-checks/">
+          <div class="course-meta"><span class="course-num">01</span><span>Август 2026</span></div>
+          <h3>Как я строил AI-аналитика и что придумывал, чтобы ему не верить на слово</h3>
+          <p>Учебная сборка на ритейл-данных: шесть этапов, семнадцать проверок и числа, которых я не ожидал.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/quiet-wrong-answers/">
+          <div class="course-meta"><span class="course-num">02</span><span>Август 2026</span></div>
+          <h3>Продакт задал двадцать вопросов AI-аналитику</h3>
+          <p>Он не врёт — он переспрашивает. А когда ответить на уточнение некому, отвечает сам себе.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/declare-and-extract/">
+          <div class="course-meta"><span class="course-num">03</span><span>Сентябрь 2026</span></div>
+          <h3>Как получить от AI-аналитика ответ на задачу</h3>
+          <p>Задача из шести слов и пять решений внутри неё. Семь шагов между задачей и принятым числом.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/metrics-layer/">
+          <div class="course-meta"><span class="course-num">04</span><span>Сентябрь 2026</span></div>
+          <h3>Как устроен слой метрик для AI-аналитика</h3>
+          <p>Файл на сто семь строк, где записано, как считаются метрики. Кто его читает — сборщик и модель — и почему два измерения расходятся.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/task-brief/">
+          <div class="course-meta"><span class="course-num">05</span><span>Сентябрь 2026</span></div>
+          <h3>AI-аналитику нужна не длинная задача, а точная</h3>
+          <p>Четыре команды, почти четыре тысячи задач за двадцать месяцев. Семь вещей, без которых задачу нельзя посчитать.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/question-paths/">
+          <div class="course-meta"><span class="course-num">06</span><span>Сентябрь 2026</span></div>
+          <h3>Что бывает у AI-аналитика с вопросом по дороге к ответу</h3>
+          <p>Тридцать пять вопросов на стенде с известной правдой, каждый задан трижды. Шесть мест, где путь обрывается.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/how-agent-sees-decisions/">
+          <div class="course-meta"><span class="course-num">07</span><span>Сентябрь 2026</span></div>
+          <h3>AI-аналитик видит не ваш проект, а промпт</h3>
+          <p>Модель отвечает не по вашему проекту, а по тексту, который для неё собрали. Что в него попадает, а что нет.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Чем это проверять</h2>
+      <p>Стенды с известной правдой, корпус ловушек и метод вердикта вслепую. То, на чём проверялось всё написанное выше.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/blind-verdict-evals/">
+          <div class="course-meta"><span class="course-num">01</span><span>Метод и стенды</span></div>
+          <h3>Blind Verdict Evals</h3>
+          <p>Метод: модель видит контракт эксперимента и таблицу результатов, выносит вердикт вслепую к правильному ответу.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/ab-traps-factory/">
+          <div class="course-meta"><span class="course-num">02</span><span>Метод и стенды</span></div>
+          <h3>33 способа запороть A/B-тест</h3>
+          <p>Каталог ловушек по семи категориям и фабрика, которая генерирует кейс любого типа с известным ответом.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/sgr-ab-decisions/">
+          <div class="course-meta"><span class="course-num">03</span><span>Метод и стенды</span></div>
+          <h3>Когда «думай по схеме» делает модель глупее</h3>
+          <p>Schema-Guided Reasoning на ста A/B-решениях и четырёх моделях: схема снизила точность у сильной модели.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/llm-decisions-two-metrics/">
+          <div class="course-meta"><span class="course-num">04</span><span>Метод и стенды</span></div>
+          <h3>Точность и безопасность</h3>
+          <p>По одной метрике слабая модель обходит сильную, по другой — пропасть. Почему одного числа мало.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/honesty-probe-hint/">
+          <div class="course-meta"><span class="course-num">05</span><span>Метод и стенды</span></div>
+          <h3>Проба на честность измеряла чтение подсказки</h3>
+          <p>Обе модели проходили блок идеально. Одна убранная строка из промпта показала, что именно он мерил.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/ai-evals-production/">
+          <div class="course-meta"><span class="course-num">06</span><span>Метод и стенды</span></div>
+          <h3>AI-evals в продакшене на маркетплейсе</h3>
+          <p>Что измерять, какие методологические ошибки подстерегают и почему нельзя верить cumulative-числу.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/tools-map/">
+          <div class="course-meta"><span class="course-num">07</span><span>Метод и стенды</span></div>
+          <h3>Карта инструментов</h3>
+          <p>Что делает каждый инструмент, какая у него модель расчёта и где он ломается.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/cases/llm-ab-case/">
+          <div class="course-meta"><span class="course-num">08</span><span>Метод и стенды</span></div>
+          <h3>Один кейс, три процесса</h3>
+          <p>Дефект LLM-классификатора превращается в ложный A/B-результат: +20.9% выручки, из которых часть фальшивая.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/articles/question-paths/map/">
+          <div class="course-meta"><span class="course-num">09</span><span>Метод и стенды</span></div>
+          <h3>Шесть мест, где обрывается путь</h3>
+          <p>Приложение к шестому разбору: карта обрывов от вопроса к ответу.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Потрогать руками</h2>
+      <p>Четыре интерактивных стенда: решение по контракту, планирование выборки для LLM, смещение судьи и оценка классификатора.</p>
+      <div class="courses-grid">
+        <a class="course" href="/workspace/simulators/ab-trap-trainer/">
+          <div class="course-meta"><span class="course-num">01</span><span>Симулятор</span></div>
+          <h3>Тренажёр A/B-решений</h3>
+          <p>20 кейсов из фабрики: катить, не катить, разобраться. Затем разбор и сравнение с моделями.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/ai-evals-llm-ab-test/">
+          <div class="course-meta"><span class="course-num">02</span><span>Симулятор</span></div>
+          <h3>Замена LLM-модели в чат-боте</h3>
+          <p>Планирование выборки для продакшен A/B с учётом стохастичности модели.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/ai-evals-llm-judge-bias/">
+          <div class="course-meta"><span class="course-num">03</span><span>Симулятор</span></div>
+          <h3>LLM-as-Judge: position bias</h3>
+          <p>Mirror correction для попарного сравнения ответов.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+        <a class="course" href="/workspace/simulators/ai-evals-category-matching/">
+          <div class="course-meta"><span class="course-num">04</span><span>Симулятор</span></div>
+          <h3>Price index на маркетплейсе</h3>
+          <p>Скрытая ошибка в оценке LLM-классификатора: средняя точность прячет провал на сегментах.</p>
+          <span class="course-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div class="cta-strip">
+    <h3>Доклад 26 ноября</h3>
+    <p>Матемаркетинг’26, 26–27 ноября, Москва, ИНТЦ Кластер Ломоносов. «Сколько работы аналитика можно отдать агенту и чем это проверять».</p>
+    <div class="ctas"><a href="/talks/" class="btn btn-primary">О докладе →</a></div>
+  </div>
+</div>
+
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
