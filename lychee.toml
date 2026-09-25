@@ -20,18 +20,25 @@ max_concurrency = 4
 timeout = 20
 
 # Настоящий браузерный агент вместо дефолтного "lychee/x.y.z".
-# Проба против 403 на karpov.courses: сайт за DDoS-Guard, из CI отдаёт
-# 403, вручную с домашнего адреса — 200 при любом агенте, включая
-# собственный агент lychee. Если после этого 403 в CI останется,
-# значит защита смотрит на репутацию IP, а не на строку агента,
-# и лечится это исключением домена, а не подбором агента.
+# Поставлен против 403 на karpov.courses: сайт за DDoS-Guard, из CI отдавал
+# 403, вручную с домашнего адреса — 200 при любом агенте. Сработало
+# с первого прогона: дело было в строке агента, а не в репутации адреса.
+# Предположение об IP не подтвердилось — проверка это и решила.
 user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
-# Resolve root-relative links so lychee can build URLs without errors
-base_url = "https://davydov.my"
+# Корень сайта на диске: адрес вида /cases/foo/ разрешается в файл
+# cases/foo/index.html, а не превращается в URL. Значение относительное,
+# поэтому lychee нужно запускать ИЗ КОРНЯ репозитория — и локально,
+# и в CI (там рабочий каталог и есть корень checkout).
+#
+# Раньше здесь стоял base_url = "https://davydov.my". Он превращал
+# внутренние адреса в абсолютные URL, которые тут же отсеивало правило
+# ^https://davydov\.my в exclude. Внутренние ссылки не проверялись вообще —
+# ни локально, ни в CI. Так прошла ссылка на /cases/ub22/palette/,
+# которого ещё не существовало.
+root_dir = "."
 
-# Check only external https URLs — skip relative internal links (CSS, images, nav)
-scheme = ["https"]
+# scheme не ограничиваем: с root_dir проверяются и file:, и внешние адреса.
 
 # Accept standard codes + redirects + 999 (LinkedIn bot-block)
 accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
@@ -40,8 +47,12 @@ accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
 
 # Exclude URLs from checking (values are regular expressions)
 exclude = [
-  "^https://davydov\\.my",            # skip all self-referential URLs (internal links
-                                       # resolved via base_url — always false-positives)
+  # Собственный домен в абсолютной форме: canonical и og:url на каждой
+  # странице. Проверять их — значит спрашивать прод о странице, которой
+  # там ещё нет: новая страница в коммите валила бы CI до выкладки.
+  # Относительные внутренние ссылки это правило НЕ затрагивает — они
+  # разрешаются в файлы через root_dir и проверяются полностью.
+  "^https://davydov\\.my",
   "^https?://t\\.me",                 # Telegram (bot-blocked)
   "^mailto:",                          # mailto links
   "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)
@@ -58,13 +69,12 @@ exclude = [
 ]
 
 # Exclude paths from checking (values are regular expressions)
+# Четыре курса из пяти были заглушены здесь целиком. Пока это стояло,
+# их битые ссылки не видел никто: единственный непроглушённый курс,
+# lab/ab-decisions, дал 16 из 17 найденных потом битых адресов.
 exclude_path = [
   "_archive",
   "_staging",
   "\\.claude",       # escaped dot — matches ".claude"
   "node_modules",
-  "lab/monetization",
-  "lab/product-analytics",
-  "lab/quasi-experiments",
-  "lab/ab-stat-os",
 ]
