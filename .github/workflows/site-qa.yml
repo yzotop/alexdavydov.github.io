@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Regenerate sitemap and courses hub
-        run: |
-          python3 scripts/generate_sitemap.py
-          python3 scripts/render_courses_hub.py
-      - name: Ensure sitemap and courses hub match generators
-        run: git diff --exit-code sitemap.xml courses/index.html
+      # courses/index.html больше не генерируется: пять курсов уехали
+      # в архив, страница стала заглушкой на /teaching/, а генератор
+      # render_courses_hub.py удалён. Остался один генератор — карты сайта.
+      - name: Regenerate sitemap
+        run: python3 scripts/generate_sitemap.py
+      - name: Ensure sitemap matches generator
+        run: git diff --exit-code sitemap.xml
 
   verification-file:
     runs-on: ubuntu-latest
@@ -36,6 +37,17 @@ jobs:
         run: |
           echo "ddcd5ce0ab04a37986ed1edaaa1b7ce1ea764c806a52f85fdc1e21af264578c1  google9b84a06f40ea405c.html" \
             | sha256sum -c -
+
+  redirect-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # lychee читает <a href> и не читает <meta http-equiv="refresh">:
+      # заглушка, ведущая в 404, и цепочка из двух заглушек для него
+      # выглядят как обычные живые ссылки. Этот скрипт смотрит на url=
+      # внутри meta refresh — то, по чему на самом деле уезжает браузер.
+      - name: Redirect stubs resolve in one hop
+        run: python3 scripts/check_redirects.py
 
   link-check:
     runs-on: ubuntu-latest
@@ -62,9 +74,10 @@ jobs:
       - name: Lighthouse (production sample)
         uses: treosh/lighthouse-ci-action@v12
         with:
+          # /courses/ и /lab/ стали заглушками — мерить на них нечего.
           urls: |
             https://davydov.my/
-            https://davydov.my/courses/
-            https://davydov.my/lab/
+            https://davydov.my/ai-analyst/
+            https://davydov.my/cases/
           uploadArtifacts: true
         continue-on-error: true
