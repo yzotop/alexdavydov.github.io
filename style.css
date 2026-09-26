@@ -51,7 +51,10 @@
   .logo:hover .logo-mark::after{transform:translateY(0);}
   .logo-mark span{position:relative;z-index:1;}
   .nav-links{display:flex;gap:28px;justify-content:center;color:var(--muted);}
-  .nav-links a{position:relative;transition:color .15s;}
+  /* Подпись пункта не переносится по словам: «AI-аналитик» или «Обо мне»
+     в две строки ломают высоту шапки. С седьмым пунктом (∅ Сад) на ширине
+     901–1000 подписи начали переноситься — замерено: высота 36 вместо 18. */
+  .nav-links a{position:relative;transition:color .15s;white-space:nowrap;}
   .nav-links a:hover{color:var(--ink);}
   .nav-links a[aria-current="page"]{color:var(--ink);}
   .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;
@@ -1005,6 +1008,13 @@
 .sim-embed-fallback{display:none;}
 
 /* responsive tweaks */
+/* Между 900 и 1000 в строку не влезают семь пунктов с промежутком 28:
+   без переноса последний упирается в кнопку меню с зазором 12px.
+   Промежуток 20 даёт запас около 60px. Ниже 900 меню и так прячется. */
+@media (max-width:1000px){
+  .nav-links{gap:20px;}
+}
+
 @media (max-width:900px){
   .nav{display:flex;align-items:center;gap:12px;padding:16px 24px;}
   .nav-links{display:none;}
