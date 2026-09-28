@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Под каждую задачу AI-аналитику нужна своя обвязка · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/articles/harness-by-type/"/>
+    <meta name="description" content="Правка отчёта, выгрузка, число, A/B-тест: половина обвязки AI-аналитика общая, половина меняется от типа задачи. Что даём агенту, что он может вернуть, сколько ходов и чем принимать."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Под каждую задачу AI-аналитику нужна своя обвязка — Александр Давыдов"/>
+    <meta property="og:description" content="Правка отчёта, выгрузка, число, A/B-тест: половина обвязки AI-аналитика общая, половина меняется от типа задачи. Что даём агенту, что он может вернуть, сколько ходов и чем принимать."/>
+    <meta property="og:url" content="https://davydov.my/workspace/articles/harness-by-type/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+<style>
+.ags{--sec:var(--muted);--rule:var(--line-d);--fill:var(--soft);--acc:var(--accent)}.ags *{box-sizing:border-box}.ags .wrap>*{min-width:0}.ags{margin:0;background:#fff;color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1.62}.ags .wrap{max-width:1120px;margin:0 auto;padding:0 24px 130px;display:grid;
+ grid-template-columns:1fr 232px;gap:0 56px}.ags header,.ags .body,.ags footer,.ags .series{grid-column:1}.ags header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}.ags .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.ags h1{font-size:clamp(28px,4.8vw,50px);line-height:1.08;letter-spacing:-.02em;margin:24px 0 0;
+ font-weight:500;max-width:18ch}.ags .lede{font-size:21px;color:var(--sec);margin:20px 0 4px;max-width:60ch}.ags h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:70px 0 14px;padding-top:22px;
+ border-top:1.5px solid var(--ink);scroll-margin-top:20px}.ags h3{font-size:21px;font-weight:700;margin:40px 0 10px}.ags p{margin:0 0 17px;max-width:66ch}.ags code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}.ags nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;padding-top:34px;font-size:14.5px}.ags nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--sec);padding-bottom:9px;border-bottom:1.5px solid var(--ink);margin-bottom:6px}.ags nav ol{list-style:none;margin:0;padding:0}.ags nav a{display:flex;gap:10px;padding:6px 0;color:var(--sec);text-decoration:none;line-height:1.3}.ags nav a:hover{color:var(--ink)}.ags nav a.on{color:var(--ink);font-weight:500}.ags nav a.on .tn{color:var(--acc)}.ags nav .tn{font-family:var(--mono);font-size:11.5px;flex:0 0 20px;padding-top:2px}.ags .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px;
+ margin:28px 0 34px;border-top:1.5px solid var(--ink);padding-top:16px}.ags .big div b{font-family:var(--mono);font-size:34px;display:block;line-height:1.05}.ags .big div span{font-size:14.5px;color:var(--sec);line-height:1.35;display:block;margin-top:5px}.ags .big div.hot b{color:var(--acc)}.ags table{border-collapse:collapse;width:100%;margin:24px 0;font-size:16.5px}.ags th,.ags td{text-align:left;padding:11px 14px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}.ags th{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--sec);font-weight:500;border-bottom:1.5px solid var(--ink)}.ags td.num,.ags th.num{text-align:right;font-family:var(--mono);padding-right:0;white-space:nowrap}.ags tr:last-child td{border-bottom:1.5px solid var(--ink)}.ags .tw{overflow-x:auto}.ags .split{margin:26px 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}.ags .split div{display:flex;align-items:baseline;gap:20px;padding:13px 0;
+ border-bottom:1px solid var(--rule);font-size:17px}.ags .split div:last-child{border-bottom:none}.ags .split .n{font-family:var(--mono);font-size:19px;width:46px;flex:0 0 46px;text-align:right}.ags .split .lvl2{padding-left:46px}.ags .split .lvl2 .n{font-size:17px;color:var(--sec)}.ags .split .sum{border-top:1.5px solid var(--ink);font-weight:700}.ags .split .sum .n{color:var(--acc)}.ags .sieve{display:grid;gap:0;margin:26px 0;border-top:1.5px solid var(--ink)}.ags .sieve .row{display:grid;grid-template-columns:76px 1fr;gap:0 20px;align-items:center;
+ padding:15px 0;border-bottom:1px solid var(--rule)}.ags .sieve .row:last-child{border-bottom:1.5px solid var(--ink)}.ags .sieve .num{font-family:var(--mono);font-size:26px;text-align:right}.ags .sieve .bar{height:26px;background:var(--fill);position:relative}.ags .sieve .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);display:block}.ags .sieve .lbl{font-size:16.5px;line-height:1.4;margin-top:7px;color:var(--sec)}.ags .sieve .row.hot .num{color:var(--acc)}.ags .sieve .row.hot .bar i{background:var(--acc)}.ags .say{border-left:3px solid var(--acc);padding:2px 0 2px 20px;margin:22px 0;font-size:17px;
+ line-height:1.5;max-width:64ch}.ags .say.grey{border-left-color:var(--rule);color:var(--sec)}.ags pre{background:var(--fill);padding:17px 19px;overflow-x:auto;font-family:var(--mono);
+ font-size:12.5px;line-height:1.6;margin:16px 0}.ags .flow{background:var(--fill);padding:24px 26px;margin:26px 0;overflow-x:auto}.ags .flow pre{background:none;padding:0;margin:0;font-size:13.5px;line-height:1.75;white-space:pre}.ags .flow .h{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+ color:var(--sec);margin:0 0 14px}.ags .flow .h:not(:first-child){margin-top:26px}.ags .gen{background:var(--fill);padding:16px 20px;margin:20px 0;font-size:16px;
+ line-height:1.5;max-width:64ch;border-left:3px solid var(--rule)}.ags .gen b{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+ color:var(--sec);font-weight:500}.ags .pull{border-left:3px solid var(--acc);padding:4px 0 4px 22px;margin:32px 0;max-width:62ch}.ags .pull p{font-size:21px;line-height:1.45;margin:0}.ags .checks{list-style:none;padding:0;margin:24px 0;counter-reset:c}.ags .checks li{border-top:1px solid var(--rule);padding:15px 0 15px 44px;position:relative;max-width:66ch}.ags .checks li:last-child{border-bottom:1px solid var(--rule)}.ags .checks li::before{counter-increment:c;content:counter(c);position:absolute;left:0;top:15px;
+ font-family:var(--mono);font-size:14px;color:var(--acc)}.ags .checks b{display:block;margin-bottom:2px}.ags .checks span{color:var(--sec);font-size:16.5px;line-height:1.5}.ags .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}.ags .notes p{margin:0 0 12px;max-width:none}.ags .notes p:last-child{margin:0}.ags a{color:var(--ink);border-bottom:1px solid var(--acc);text-decoration:none}.ags a:hover{color:var(--acc)}.ags .series{margin:64px 0 0}.ags .series h2{margin-top:0}.ags .series ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;border-top:1.5px solid var(--ink)}.ags .series li{border-bottom:1px solid var(--rule)}.ags .series li:last-child{border-bottom:1.5px solid var(--ink)}.ags .series a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
+ padding:19px 18px 19px 0;border:0;transition:background .12s,padding .12s}.ags .series a:hover{background:var(--fill);padding-left:18px;padding-right:0}.ags .series .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--acc)}.ags .series .idx::before{content:"№ " counter(s,decimal-leading-zero)}.ags .series .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;margin-bottom:4px;color:var(--ink)}.ags .series a:hover .ttl{color:var(--acc)}.ags .series .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--sec);
+ display:block;margin-bottom:3px}.ags .series .sub{color:var(--sec);font-size:16px;line-height:1.45;display:block}.ags .series .this{background:var(--fill);display:grid;grid-template-columns:62px 1fr;gap:0 8px;
+ align-items:baseline;padding:19px 18px}.ags .series .this .idx{color:var(--ink)}.ags .series .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px}.ags .series .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--sec)}.ags footer{margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
+ font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec)}
+@media(max-width:900px){.ags .wrap{grid-template-columns:1fr;gap:0}.ags nav{grid-column:1;grid-row:auto;position:static;padding:16px 18px;margin:0 0 30px;border:1.5px solid var(--rule)}.ags nav ol{columns:2;column-gap:22px}.ags{font-size:17.5px}.ags .series a,.ags .series .this{grid-template-columns:1fr;gap:5px}}
+.ags .ags-meta{grid-column:1;padding-top:28px;margin-bottom:0}
+.ags td.mid{vertical-align:middle}
+.ags .notes h3{margin:0 0 10px;font-size:18px}
+@media(max-width:900px){.ags nav li{break-inside:avoid}}
+.ags th.num:not(:last-child),.ags td.num:not(:last-child){padding-right:14px}
+.ags td.num.txt,.ags th.num.txt{white-space:normal;text-align:left;font-family:var(--sans)}
+.ags table code{white-space:nowrap}
+@media(max-width:560px){.ags table code{white-space:normal}}
+.ags table:has(thead th:nth-child(2)):not(:has(thead th:nth-child(3))){width:auto;min-width:55%}
+</style>
+<style>
+.ags figure{margin:30px 0 34px}
+.ags .fig-scroll{overflow-x:auto}
+.ags figure svg{display:block;width:100%;height:auto;min-width:600px}
+.ags figcaption{font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--sec);margin-top:11px;max-width:74ch}
+.ags .say .src{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--sec);margin-top:7px}
+.ags .after-checks{margin-top:26px}
+.ags .gen p{margin:6px 0 0}
+.ags svg text{font-family:var(--sans);fill:var(--ink)}
+.ags svg .t{font-family:var(--sans);fill:var(--ink)}
+.ags svg .m{font-family:var(--mono);fill:var(--sec);letter-spacing:.04em}
+.ags svg .g{fill:var(--sec)}
+.ags svg .r{fill:var(--acc)}
+.ags svg .w{fill:#fff}
+.ags svg .fi{fill:var(--ink)}
+.ags svg .fl{fill:var(--rule)}
+.ags svg .fs{fill:var(--fill)}
+.ags svg .fa{fill:var(--acc)}
+.ags svg .fw{fill:#fff}
+.ags svg .si{stroke:var(--ink)}
+.ags svg .sl{stroke:var(--rule)}
+.ags svg .sm{stroke:var(--sec)}
+.ags svg .sa{stroke:var(--acc)}
+.ags svg .sw{stroke:#fff}
+@media(max-width:560px){
+.ags figcaption{font-size:11.5px}
+/* Пути и идентификаторы в таблицах не ломаются по слэшу, и из-за одного
+   dbt/target/manifest.json трёхколоночная таблица уезжала на 150px. */
+.ags .tw code{overflow-wrap:anywhere}
+.ags .tw table{font-size:15.5px}
+.ags .tw th,.ags .tw td{padding-right:10px}
+}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/ai-analyst/">AI-аналитик</a>
+    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    <a href="/talks/">Доклад</a>
+    <a href="/teaching/">Преподаю</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Менторство</a>
+    <a href="/about/">Обо мне</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/ai-analyst/">AI-аналитик</a>
+    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    <a href="/talks/">Доклад</a>
+    <a href="/teaching/">Преподаю</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Менторство</a>
+    <a href="/about/">Обо мне</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/workspace/simulators/">Симуляторы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="ags">
+<div class="wrap">
+<div class="article-meta ags-meta"><span>Сентябрь 2026</span><span class="chip">AI-аналитик</span><span>14 мин</span></div>
+
+<header>
+  <div class="kick"><span>AI-аналитик · разбор восьмой</span><span>davydov.my</span></div>
+  <h1>Под каждую задачу AI-аналитику нужна своя обвязка</h1>
+</header>
+
+<nav>
+  <div class="h">Разделы</div>
+  <ol>
+    <li><a href="#s1"><span class="tn">01</span>Что такое обвязка</a></li>
+    <li><a href="#s2"><span class="tn">02</span>Общее ядро и сменная часть</a></li>
+    <li><a href="#s3"><span class="tn">03</span>Правка отчёта</a></li>
+    <li><a href="#s4"><span class="tn">04</span>Выгрузка</a></li>
+    <li><a href="#s5"><span class="tn">05</span>Число</a></li>
+    <li><a href="#s6"><span class="tn">06</span>A/B-тест</a></li>
+    <li><a href="#s7"><span class="tn">07</span>Исследование</a></li>
+    <li><a href="#s8"><span class="tn">08</span>Что обвязка решает за вас</a></li>
+    <li><a href="#s9"><span class="tn">09</span>Чего обвязка не может</a></li>
+    <li><a href="#s10"><span class="tn">10</span>Что проверить у себя</a></li>
+    <li><a href="#s11"><span class="tn">11</span>Как я это мерил</a></li>
+  </ol>
+</nav>
+
+<div class="body">
+<p class="lede">Когда говорят про обвязку AI-аналитика, представляют одну машину: на входе вопрос, на выходе число. Но аналитик отдаёт не только вопросы. Я прогнал агента на четырёх типах задач — число, правка отчёта, выгрузка, A/B-тест — и увидел, что общая у обвязки примерно половина. Вторая половина меняется от типа к типу, и от неё зависит, можно ли задачу отдавать.</p>
+
+<h2 id="s1">Что такое обвязка</h2>
+
+<p>Агент — это модель плюс обвязка. Модель пишет запрос или выносит вердикт. Всё остальное делает обвязка: решает, что модель увидит, в каком виде она может ответить, сколько раз посмотрит на результат, что останется в записи.</p>
+
+<p>Из чего собирается промпт и что в него не попадает, я разбирал в прошлой статье — <a href="https://davydov.my/workspace/articles/how-agent-sees-decisions/">«AI-аналитик видит не ваш проект, а промпт»</a>. Здесь другой вопрос: что в обвязке меняется, когда меняется сама задача.</p>
+
+<p>Термины и файлы, на которые я дальше ссылаюсь:</p>
+<div class="tw">
+<table>
+<thead><tr><th>термин</th><th>что это</th><th>где лежит</th></tr></thead>
+<tbody>
+<tr><td>промежуточная таблица</td><td>почищенные сырые данные</td><td><code>stg_*</code></td></tr>
+<tr><td>код сборки витрин</td><td>SQL, который строит витрины</td><td><code>dbt/models/*.sql</code></td></tr>
+<tr><td>витрина</td><td>результат кода сборки</td><td><code>fct_*</code>, <code>dim_*</code></td></tr>
+<tr><td>описания витрин</td><td>текст к таблицам и колонкам; до агента доезжает через манифест, после пересборки</td><td><code>schema.yml</code> → <code>dbt/target/manifest.json</code></td></tr>
+<tr><td>файл определений метрик</td><td>записанные решения: окна, статусы, гости, сравнения</td><td><code>metrics/metrics.yml</code></td></tr>
+<tr><td>отбор контекста</td><td>часть обвязки: что положить в промпт</td><td><code>agent/retrieval.py</code></td></tr>
+<tr><td>эталонный запрос</td><td>верный ответ, написанный по сырым таблицам</td><td><code>truth_sql/*.sql</code></td></tr>
+<tr><td>модель</td><td>только языковая модель</td><td>—</td></tr>
+<tr><td>агент</td><td>модель плюс обвязка</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s2">Общее ядро и сменная часть</h2>
+
+<p>У всех типов задач одно ядро. Оно отвечает на вопрос «что агент знает о данных»: доступ к базе, список объектов, описания витрин и примеры значений, файл определений метрик <code>metrics/metrics.yml</code>, склейка промпта в <code>agent/retrieval.py</code>, лог с отпечатками блоков из <code>agent/loop.py</code>. От типа задачи ядро не зависит, его строят один раз.</p>
+
+<p>Над ядром — сменная часть. Она отвечает на другой вопрос: что от агента хотят и как понять, что он справился.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 330" role="img" aria-labelledby="f1t">
+<title id="f1t">Схема: пять сменных модулей по типам задач над общим ядром</title>
+<g class="m" font-size="11">
+  <text x="0" y="66">ВХОД</text>
+  <text x="0" y="96">ОТВЕТ</text>
+  <text x="0" y="126">ХОДЫ</text>
+  <text x="0" y="156">ПРИЁМКА</text>
+</g>
+<!-- modules: x = 110 + i*124, w=114 -->
+<g>
+  <rect class="si" x="110" y="0" width="114" height="176" fill="none"/>
+  <rect class="si" x="234" y="0" width="114" height="176" fill="none"/>
+  <rect class="si" x="358" y="0" width="114" height="176" fill="none"/>
+  <rect class="si" x="482" y="0" width="114" height="176" fill="none"/>
+  <rect class="sm" x="606" y="0" width="114" height="176" fill="none" stroke-dasharray="4 4"/>
+</g>
+<g class="t" font-size="14" font-weight="600">
+  <text x="120" y="26">число</text>
+  <text x="244" y="26">правка</text>
+  <text x="368" y="26">выгрузка</text>
+  <text x="492" y="26">A/B</text>
+  <text x="614" y="26" class="g" font-size="12.5">исследование</text>
+</g>
+<g class="t" font-size="12.5">
+  <text x="120" y="66">вопрос</text><text x="120" y="96">3 исхода</text><text x="120" y="126">1 ход</text><text x="120" y="156">сверка</text>
+  <text x="244" y="66">старый запрос</text><text x="244" y="96">один запрос</text><text x="244" y="126">1 ход</text><text x="244" y="156">регрессия</text>
+  <text x="368" y="66">заказ словами</text><text x="368" y="96">один запрос</text><text x="368" y="126">1–2 хода</text><text x="368" y="156">две сверки</text>
+  <text x="492" y="66">сводка теста</text><text x="492" y="96">4 вердикта</text><text x="492" y="126">1 ход</text><text x="492" y="156">вердикт</text>
+  <g class="g"><text x="616" y="66">«почему»</text><text x="616" y="96">вывод / уточнение</text><text x="616" y="126">много ходов</text><text x="616" y="156">устойчивость</text></g>
+</g>
+<g class="si">
+  <line x1="167" y1="176" x2="167" y2="206"/><line x1="291" y1="176" x2="291" y2="206"/>
+  <line x1="415" y1="176" x2="415" y2="206"/><line x1="539" y1="176" x2="539" y2="206"/>
+  <line class="sm" x1="663" y1="176" x2="663" y2="206" stroke-dasharray="3 3"/>
+</g>
+<rect class="fs" x="0" y="206" width="720" height="118"/>
+<text class="t" x="20" y="236" font-size="15" font-weight="600">Ядро — одно на все типы</text>
+<g class="t" font-size="13">
+  <text x="20" y="270">доступ к базе</text><text x="260" y="270">список объектов</text><text x="500" y="270">описания и примеры</text>
+  <text x="20" y="302">файл определений метрик</text><text x="260" y="302">склейка промпта</text><text x="500" y="302">лог и отпечатки</text>
+</g>
+</svg></div>
+<figcaption>Сменная часть — вход, контракт ответа, число ходов и приёмка. Исследование пунктиром: на стенде не измерено.</figcaption>
+</figure>
+
+<p>Та же картина таблицей, с тем, что измерено:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th></th><th>число</th><th>правка отчёта</th><th>выгрузка</th><th>A/B-тест</th><th>исследование</th></tr></thead>
+<tbody>
+<tr><td><strong>что даём</strong></td><td>вопрос</td><td>действующий запрос и что поменять</td><td>заказ словами</td><td>сводка по тесту</td><td>вопрос «почему»</td></tr>
+<tr><td><strong>что видит</strong></td><td>отбор контекста со слоем <code>tables</code>: на одном из вопросов — 3 объекта из 15</td><td>вся схема, слоя <code>tables</code> нет</td><td>вся схема, слоя <code>tables</code> нет</td><td>только сводку</td><td>—</td></tr>
+<tr><td><strong>раннер</strong></td><td><code>grid_subjects.py</code>, <code>two_arms.py</code></td><td><code>edit_run.py</code></td><td><code>extract_run.py</code></td><td><code>run_verdicts.py</code></td><td>нет</td></tr>
+<tr><td><strong>что может вернуть</strong></td><td>ответ, уточнение или отказ</td><td>один запрос</td><td>один запрос</td><td>один из четырёх вердиктов</td><td>вывод или уточнение</td></tr>
+<tr><td><strong>может спросить</strong></td><td>да</td><td>нет</td><td>нет</td><td>нет</td><td>да</td></tr>
+<tr><td><strong>сколько ходов</strong></td><td>один</td><td>один</td><td>один, лучше два</td><td>один на сводке</td><td>много</td></tr>
+<tr><td><strong>чем принимать</strong></td><td>сверка с эталоном</td><td>регрессия против прошлой версии</td><td>внутренние проверки и сверка ключей и значений</td><td>вердикт против заложенного</td><td>устойчивость вывода</td></tr>
+<tr><td><strong>измерено</strong></td><td>105 + 18 попыток</td><td>18 попыток</td><td>15 попыток</td><td>15 в счёте, 20 всего</td><td>одна задача, три повтора</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s3">Правка отчёта: вход, который всё решает</h2>
+
+<p><strong>Что даём.</strong> Текст действующего запроса и одну фразу правки: убрать фильтр, расширить период, добавить колонку. Действующий запрос — это эталонный запрос <code>truth_sql/v1.sql</code>…<code>v5.sql</code>, правка сверяется с <code>v1_rev.sql</code>…<code>v6.sql</code>. Раннер — <code>experiments/edit_run.py</code>.</p>
+
+<p>Этот вход делает для агента больше, чем кажется. В старом запросе уже закрыты все решения: какие статусы считать, какой период, как считается сумма. Агенту не нужно их угадывать — он читает их в коде.</p>
+
+<p><strong>Что вышло.</strong> Восемнадцать правок из восемнадцати верны. Во всех восемнадцати агент сам назвал в замечаниях решения, которые не трогал или принял сам. В семи поменял в запросе больше, чем просили — чаще всего удалил неиспользуемый кусок. На результат это не повлияло.</p>
+
+<p>В правке «добавить колонку скидки» есть два пути: взять готовую колонку <code>order_items.discount</code> или пересчитать скидку через таблицу акций <code>promotions</code>. По числам они почти неотличимы — 11 заказов из 16&nbsp;019 на копейку, из-за разного округления. Какой путь выбрал агент, видно только по тексту запроса.</p>
+
+<div class="say">«В заказе не было явного правила, как связывать discount с promotions — это моё решение, а не факт из данных».<span class="src">агент, правка «добавить колонку скидки», попытка 1</span></div>
+
+<p><strong>Чем принимать.</strong> Прошлая версия отчёта — готовый эталон, и есть она в любой компании. Но правки бывают двух видов, и проверяются они по-разному.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 250" role="img" aria-labelledby="f2t">
+<title id="f2t">Два вида правки: снятие фильтра сохраняет старые строки, правка агрегата сохраняет ключи и меняет значения</title>
+<text class="t" x="0" y="20" font-size="15" font-weight="600">Сняли фильтр</text>
+<rect class="si" x="0" y="40" width="320" height="170" fill="none"/>
+<rect class="fs si" x="16" y="56" width="288" height="118"/>
+<text class="t" x="32" y="104" font-size="14">старые строки: 16 019</text>
+<text class="t g" x="32" y="128" font-size="13">обязаны остаться как были</text>
+<text class="t" x="16" y="198" font-size="14">новый результат: 17 003</text>
+<text class="t" x="400" y="20" font-size="15" font-weight="600">Поменяли агрегат</text>
+<g class="m" font-size="11"><text x="400" y="50">КЛЮЧ</text><text x="480" y="50">БЫЛО</text><text x="600" y="50">СТАЛО</text></g>
+<g>
+  <rect class="fi" x="400" y="60" width="60" height="14"/><rect class="fl" x="480" y="60" width="40" height="14"/><rect class="fi" x="600" y="60" width="104" height="14"/>
+  <rect class="fi" x="400" y="80" width="60" height="14"/><rect class="fl" x="480" y="80" width="28" height="14"/><rect class="fi" x="600" y="80" width="84" height="14"/>
+  <rect class="fi" x="400" y="100" width="60" height="14"/><rect class="fl" x="480" y="100" width="34" height="14"/><rect class="fi" x="600" y="100" width="96" height="14"/>
+  <rect class="fi" x="400" y="120" width="60" height="14"/><rect class="fl" x="480" y="120" width="18" height="14"/><rect class="fi" x="600" y="120" width="62" height="14"/>
+  <rect class="fi" x="400" y="140" width="60" height="14"/><rect class="fl" x="480" y="140" width="24" height="14"/><rect class="fi" x="600" y="140" width="70" height="14"/>
+  <rect class="fi" x="400" y="160" width="60" height="14"/><rect class="fl" x="480" y="160" width="12" height="14"/><rect class="fi" x="600" y="160" width="46" height="14"/>
+  <rect class="fi" x="400" y="180" width="60" height="14"/><rect class="fl" x="480" y="180" width="30" height="14"/><rect class="fi" x="600" y="180" width="90" height="14"/>
+  <rect class="fi" x="400" y="200" width="60" height="14"/><rect class="fl" x="480" y="200" width="20" height="14"/><rect class="fi" x="600" y="200" width="66" height="14"/>
+</g>
+<text class="t" x="400" y="240" font-size="13">8 ключей те же · 8 из 8 значений другие</text>
+</svg></div>
+<figcaption>Одна регрессия на оба случая не годится. Слева правка обязана сохранить строки и не тронуть значения, справа — сохранить ключи и изменить все значения.</figcaption>
+</figure>
+
+<p>И сравнивать надо с допуском. Побайтовое сравнение дало бы 1&nbsp;206 ложных «строка пропала» из 16&nbsp;019 — это шум сложения дробных чисел, максимум 9·10<sup>−13</sup>.</p>
+
+<div class="gen"><b>Урок для обвязки</b><p>Подавайте агенту действующий запрос целиком — это и объяснение решений, и эталон для проверки. И смотрите не только на результат, но и на изменения в коде.</p></div>
+
+<h2 id="s4">Выгрузка: проверка должна быть внутри</h2>
+
+<p><strong>Что даём.</strong> Заказ словами и всю схему.</p>
+
+<p>Вся схема оказалась важнее, чем я думал. По карте, составленной до прогона, из девяти решений, которые требовали пять заказов, восемь были записаны там, где агент их видит. Но одно из восьми — правило про повторные записи при оплате — лежит в описании промежуточной таблицы <code>stg_order_items</code>, в <code>dbt/models/staging/schema.yml</code>. Раннер выгрузки <code>experiments/extract_run.py</code> работает без слоя <code>tables</code>, поэтому описания <code>stg_*</code> доходят. При отборе контекста со слоем <code>tables</code> это описание отфильтровалось бы. Дойдёт ли решение до агента, зависит не от того, в каком файле оно лежит, а от того, как настроена обвязка.</p>
+
+<p>А после прогона выяснилось, что карта была неполной: незаписанных решений оказалось не одно, а два — какое поле значит «гость» и какие статусы входят в долю возвратов. Второе нашёл сам агент, уже отвечая на заказ.</p>
+
+<p><strong>Что вышло.</strong> Пятнадцать выгрузок, семь помечены неверными.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 172" role="img" aria-labelledby="f3t">
+<title id="f3t">Пятнадцать выгрузок: 8 верно, 3 ложные тревоги проверки, 3 ошибки на незаписанном решении, названном до прогона, 1 на решении, найденном агентом</title>
+<text class="t" x="0" y="20" font-size="14">На записанных и дошедших решениях ошибок: <tspan font-weight="600">0</tspan></text>
+<rect class="fi" x="0" y="40" width="384" height="40"/>
+<rect class="fl" x="384" y="40" width="144" height="40"/>
+<rect class="fa" x="528" y="40" width="144" height="40"/>
+<rect class="fa" x="672" y="40" width="48" height="40" fill-opacity=".45"/>
+<g class="sw" stroke-width="2">
+  <line x1="48" y1="40" x2="48" y2="80"/><line x1="96" y1="40" x2="96" y2="80"/><line x1="144" y1="40" x2="144" y2="80"/><line x1="192" y1="40" x2="192" y2="80"/>
+  <line x1="240" y1="40" x2="240" y2="80"/><line x1="288" y1="40" x2="288" y2="80"/><line x1="336" y1="40" x2="336" y2="80"/><line x1="384" y1="40" x2="384" y2="80"/>
+  <line x1="432" y1="40" x2="432" y2="80"/><line x1="480" y1="40" x2="480" y2="80"/><line x1="528" y1="40" x2="528" y2="80"/>
+  <line x1="576" y1="40" x2="576" y2="80"/><line x1="624" y1="40" x2="624" y2="80"/><line x1="672" y1="40" x2="672" y2="80"/>
+</g>
+<g class="t" font-size="13">
+  <rect class="fi" x="0" y="100" width="12" height="12"/><text x="20" y="111">8 верно</text>
+  <rect class="fl" x="0" y="126" width="12" height="12"/><text x="20" y="137">3 ложная тревога проверки: дата со временем, округление</text>
+  <rect class="fa" x="0" y="152" width="12" height="12"/><text x="20" y="163" class="r">3 не записано — названо до прогона</text>
+  <rect class="fa" x="330" y="152" width="12" height="12" fill-opacity=".45"/><text x="350" y="163" class="r">1 не записано — нашёл агент</text>
+</g>
+</svg></div>
+<figcaption>Каждый квадрат — одна попытка. Красное — ошибки агента, и все они на решениях, которых нет там, где он может их прочитать.</figcaption>
+</figure>
+
+<p><strong>Главный кадр.</strong> Заказ: выгрузить заказы гостей с каналом. Кого считать гостем, агенту нигде не записано. Верное решение — заказ без <code>customer_id</code> — живёт в коде сборки <code>stg_orders.sql</code>, а код сборки в промпт не попадает. В данных два способа: колонка <code>is_guest_order</code> в витрине <code>fct_order_items</code> и флаг <code>is_guest</code> в срезе клиентов <code>customers_asof</code>. Агент взял оба сразу, через «и».</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 210" role="img" aria-labelledby="f4t">
+<title id="f4t">Два определения гостя не пересекаются, поэтому их пересечение пусто: ноль строк вместо 11 475</title>
+<circle class="fs si" cx="120" cy="105" r="92"/>
+<circle class="fs si" cx="340" cy="105" r="92"/>
+<g class="t" font-size="14" text-anchor="middle">
+  <text x="120" y="100">is_guest_order</text><text x="120" y="120">заказ без клиента</text>
+  <text x="340" y="100">is_guest</text><text x="340" y="120">клиент-гость</text>
+</g>
+<text class="r" x="230" y="112" font-size="22" font-weight="600" text-anchor="middle" font-family="Manrope,sans-serif">∩</text>
+<g class="t" font-size="14">
+  <text x="470" y="70">эталон</text>
+  <text x="470" y="96" font-size="22" font-weight="600">11 475 строк</text>
+  <text x="470" y="140" class="r">агент: оба условия через «и»</text>
+  <text x="470" y="166" font-size="22" font-weight="600" class="r">0 строк</text>
+</g>
+</svg></div>
+<figcaption>Две популяции не пересекаются: у заказа без идентификатора клиента нет строки в таблице клиентов.</figcaption>
+</figure>
+
+<p>И пустая таблица прошла все внутренние проверки: ключ уникален, дублей нет, лишних колонок нет. Всё верно — потому что строк нет.</p>
+
+<p>Запрос агента фильтровал двумя условиями сразу: <code>WHERE foi.is_guest_order = TRUE AND c.is_guest = TRUE</code>.</p>
+
+<div class="say">«Дополнительно проверено c.is_guest = TRUE, чтобы взять именно гостевой профиль».<span class="src">агент, выгрузка гостей — развилку назвал и закрыл неверно в одной фразе</span></div>
+
+<div class="gen"><b>Урок для обвязки</b><p>Внутренних проверок мало, нужна сверка с чем-то внешним. И проверка должна стоять в обвязке до того, как результат уйдёт заказчику, а не шагом «потом посмотрим».</p></div>
+
+<h2 id="s5">Число: право спросить меняет поведение</h2>
+
+<p><strong>Что даём.</strong> Вопрос. Агент может ответить, переспросить или отказаться.</p>
+
+<p><strong>Что вышло.</strong> Из 105 попыток верное число дали 20, в девяти агент ответил, но число не сошлось. Я разобрал все девять: все на решениях, которых агент не мог прочитать нигде — какие периоды сравнивать, в каком виде нужен ответ, делать ли поправку на категории.</p>
+
+<p>Тогда я записал эти решения в новую ревизию <code>metrics/metrics.yml</code> — например, <code>compare_periods: calendar_half</code> для сравнения год к году и <code>basis: new_registered</code> для «базы клиентов» — и задал те же вопросы, по три раза каждый. Раннер — <code>experiments/two_arms.py</code>: два плеча с одинаковой подачей, разница только в блоке файла определений, а отпечаток <code>layer_sha</code> подтверждает, какой файл видела модель.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 250" role="img" aria-labelledby="f5t">
+<title id="f5t">Без записи развилка взята 0 из 9, с записью 9 из 9; число сошлось 0 и 2 из 9</title>
+<g class="m" font-size="11"><text x="0" y="16">РАЗВИЛКА ВЗЯТА</text><text x="0" y="126">ЧИСЛО СОШЛОСЬ</text></g>
+<g class="t" font-size="13.5">
+  <text x="0" y="50">без записи</text><text x="0" y="90">с записью</text>
+  <text x="0" y="160">без записи</text><text x="0" y="200">с записью</text>
+</g>
+<!-- scale: 9 units = 405px from x=120 -->
+<rect class="sl" x="120" y="32" width="405" height="26" fill="none"/>
+<text class="r" x="540" y="50" font-size="14" font-weight="600">0 из 9</text>
+<rect class="fi" x="120" y="72" width="405" height="26"/>
+<text class="t" x="540" y="90" font-size="14" font-weight="600">9 из 9</text>
+<rect class="sl" x="120" y="142" width="405" height="26" fill="none"/>
+<text class="r" x="540" y="160" font-size="14" font-weight="600">0 из 9</text>
+<rect class="fi" x="120" y="182" width="90" height="26"/>
+<rect class="fl" x="210" y="182" width="180" height="26"/>
+<rect class="fs sl" x="390" y="182" width="135" height="26"/>
+<text class="t" x="540" y="200" font-size="14" font-weight="600">2 из 9</text>
+<g class="t" font-size="12.5">
+  <rect class="fi" x="120" y="226" width="12" height="12"/><text x="138" y="237">сошлось</text>
+  <rect class="fl" x="220" y="226" width="12" height="12"/><text x="238" y="237">форма ответа: 4</text>
+  <rect class="fs sl" x="370" y="226" width="12" height="12"/><text x="388" y="237">другое определение «промо»: 3</text>
+</g>
+</svg></div>
+<figcaption>Три вопроса, три повтора, одинаковая подача. Различие — только записанные решения в файле определений.</figcaption>
+</figure>
+
+<p>В четырёх случаях агент посчитал верно, но выдал два числа вместо процента — форму ответа я не записывал. В трёх разошлось определение «промо»: в витрине <code>fct_order_items</code> поле <code>on_promo</code> — это <code>discount &gt; 0</code>, была скидка; в эталонном запросе <code>truth_sql/s11a.sql</code> — на товар действовала акция из <code>promotions</code>. Агент посчитал по полю витрины.</p>
+
+<p>И обратный случай: без новой записи агент взял из <code>metrics.yml</code> окно <code>window_days: 90</code> и честно посчитал на нём год к году. Решение было записано, но не для этого вопроса.</p>
+
+<div class="say">«Все развилки для метрики revenue (… compare_to=year_over_year с compare_periods=calendar_half) уже явно зафиксированы в metrics.yml, поэтому вариант один».<span class="src">агент, вопрос о росте выручки, с записью</span></div>
+
+<p>Решения я записывал, уже зная эталон. Запись делает верный ответ доступным агенту — она его не находит.</p>
+
+<div class="gen"><b>Урок для обвязки</b><p>С правом спросить агент на одном из вопросов в двух попытках из трёх остановился и переспросил — про то самое определение, которое я потом записал. Без права он выбрал бы сам. Контракт ответа — не формальность: он решает, увидите ли вы развилку.</p></div>
+
+<h2 id="s6">A/B-тест: вход решает, что вообще можно увидеть</h2>
+
+<p><strong>Что даём.</strong> Сводку по тесту: дизайн — метрика, единица рандомизации, длительность, альфа, практический порог, охранные метрики — и таблицу результатов по группам. Кейсы взяты из синтетического корпуса <code>ab-factory</code>. У каждого три файла: <code>contract.json</code> — дизайн, <code>data.csv</code> — результаты по группам, <code>truth.json</code> — эталон, поле <code>expected_decision</code>. Сводку собирает <code>build_case()</code> из <code>tools/build_trainer_pool.py</code>.</p>
+
+<p>У эталона три значения, а у агента четыре вердикта. <code>ship</code> — раскатывать, <code>do_not_ship</code> — не раскатывать, а <code>investigate</code> принимает и «не готов», и «тест сломан». Делить <code>investigate</code> самому значило бы принять за корпус незаписанное решение, поэтому главный счёт — по эталону корпуса.</p>
+
+<p>Сначала пришлось решить, чего агенту <strong>не</strong> давать. В корпусе почти в каждом поле кейса лежит подсказка к ответу.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>поле кейса</th><th>что в нём</th><th>что сделали</th></tr></thead>
+<tbody>
+<tr><td><code>notes</code> — заметки автора</td><td>прямо называют проблему: «Underpowered — cannot conclude»</td><td>убрали</td></tr>
+<tr><td><code>title</code> — заголовок</td><td>у 21 кейса выдаёт вид ловушки</td><td>убрали</td></tr>
+<tr><td><code>segments</code> — разбивка по сегментам</td><td>есть только у четырёх видов ловушек — само присутствие подсказывает</td><td>не подаём никому</td></tr>
+<tr><td><code>randomization.target_split</code> — целевая доля групп</td><td>указана только у кейсов со сломанным делением</td><td>подаём всем, по умолчанию 50/50</td></tr>
+<tr><td><code>case_id</code> — номер кейса</td><td>корпус публичный, номер — крючок для узнавания</td><td>убрали</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>Что может вернуть.</strong> Один из четырёх вердиктов: раскатывать, не раскатывать, не готов, тест сломан. «Не готов» — законный ответ, а не уход от ответа, и обвязка обязана его позволять.</p>
+
+<p><strong>Что вышло.</strong> Четырнадцать верных из пятнадцати. Правило, которое по умолчанию раскатывает всё значимое и в плюс (<code>decision_agent.py</code>), на тех же кейсах — девять. Ложных выкаток у агента ни одной.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 364" role="img" aria-labelledby="f6t">
+<title id="f6t">Вердикты правила и агента по шести сценариям, три повтора агента</title>
+<g class="m" font-size="11">
+  <text x="245" y="22">ПРАВИЛО</text><text x="375" y="22">АГЕНТ · 1</text><text x="490" y="22">АГЕНТ · 2</text><text x="605" y="22">АГЕНТ · 3</text>
+</g>
+<g class="t" font-size="13.5">
+  <text x="0" y="66">чистый эффект</text>
+  <text x="0" y="114">мало данных</text>
+  <text x="0" y="162">эффект ниже порога</text>
+  <text x="0" y="210">сломанное деление групп</text>
+  <text x="0" y="258">множественные сравнения</text>
+  <text x="0" y="306" class="g">новизна — вне счёта</text>
+</g>
+<!-- cells: ok -->
+<g class="fs">
+  <rect x="240" y="40" width="110" height="40"/><rect x="370" y="40" width="110" height="40"/><rect x="485" y="40" width="110" height="40"/><rect x="600" y="40" width="110" height="40"/>
+  <rect x="240" y="88" width="110" height="40"/><rect x="370" y="88" width="110" height="40"/><rect x="485" y="88" width="110" height="40"/>
+  <rect x="240" y="136" width="110" height="40"/><rect x="370" y="136" width="110" height="40"/><rect x="485" y="136" width="110" height="40"/><rect x="600" y="136" width="110" height="40"/>
+  <rect x="370" y="184" width="110" height="40"/><rect x="485" y="184" width="110" height="40"/><rect x="600" y="184" width="110" height="40"/>
+  <rect x="370" y="232" width="110" height="40"/><rect x="485" y="232" width="110" height="40"/><rect x="600" y="232" width="110" height="40"/>
+</g>
+<!-- cells: wrong -->
+<g class="fa">
+  <rect x="600" y="88" width="110" height="40"/>
+  <rect x="240" y="184" width="110" height="40"/>
+  <rect x="240" y="232" width="110" height="40"/>
+</g>
+<!-- cells: out of count -->
+<g class="sm" fill="none" stroke-dasharray="4 3">
+  <rect x="240.5" y="280.5" width="109" height="39"/><rect x="370.5" y="280.5" width="109" height="39"/><rect x="485.5" y="280.5" width="109" height="39"/><rect x="600.5" y="280.5" width="109" height="39"/>
+</g>
+<g class="t" font-size="12.5" text-anchor="middle">
+  <text x="295" y="65">раскатывать</text><text x="425" y="65">раскатывать</text><text x="540" y="65">раскатывать</text><text x="655" y="65">раскатывать</text>
+  <text x="295" y="113">разбираться</text><text x="425" y="113">не готов</text><text x="540" y="113">не готов</text><text x="655" y="113" class="w">не раскатывать</text>
+  <text x="295" y="161">не раскатывать</text><text x="425" y="161">не раскатывать</text><text x="540" y="161">не раскатывать</text><text x="655" y="161">не раскатывать</text>
+  <text x="295" y="209" class="w">раскатывать</text><text x="425" y="209">тест сломан</text><text x="540" y="209">тест сломан</text><text x="655" y="209">тест сломан</text>
+  <text x="295" y="257" class="w">разбираться</text><text x="425" y="257">не раскатывать</text><text x="540" y="257">не раскатывать</text><text x="655" y="257">не раскатывать</text>
+  <g class="g"><text x="295" y="305">раскатывать</text><text x="425" y="305">раскатывать</text><text x="540" y="305">раскатывать</text><text x="655" y="305">раскатывать</text></g>
+</g>
+<line class="si" x1="0" y1="334" x2="720" y2="334"/>
+<g class="t" font-size="14" font-weight="600">
+  <text x="295" y="356" text-anchor="middle">9 из 15</text>
+  <text x="540" y="356" text-anchor="middle">14 из 15</text>
+</g>
+</svg></div>
+<figcaption>Красное — неверный вердикт. Правило считается один раз на кейс, в счёте — по трём повторам. Новизна вне счёта: её улика только в заметках, которые агент не видел.</figcaption>
+</figure>
+
+<p>Самое наглядное — тест со сломанным делением на группы. Правило его выкатило бы. Агент три раза из трёх сказал «тест сломан» и каждый раз сам посчитал проверку.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 150" role="img" aria-labelledby="f7t">
+<title id="f7t">Объявлено 50 на 50, пришло 329 663 против 313 582</title>
+<g class="t" font-size="13.5"><text x="0" y="46">объявлено</text><text x="0" y="106">пришло</text></g>
+<!-- scale 600px = 100%, from x=110 -->
+<rect class="fl" x="110" y="26" width="300" height="30"/><rect class="fs sl" x="410" y="26" width="300" height="30"/>
+<rect class="fi" x="110" y="86" width="307.5" height="30"/><rect class="fs sl" x="417.5" y="86" width="292.5" height="30"/>
+<g class="t" font-size="13">
+  <text x="122" y="46">контроль 50%</text><text x="698" y="46" text-anchor="end">тест 50%</text>
+  <text x="122" y="106" class="w">контроль 329 663 · 51.2%</text><text x="698" y="106" text-anchor="end">тест 313 582 · 48.8%</text>
+</g>
+<line class="sa" x1="410" y1="14" x2="410" y2="130" stroke-dasharray="4 3"/>
+<text class="r" x="416" y="142" font-size="12.5">середина</text>
+</svg></div>
+<figcaption>Разница выглядит мелкой, но на трёхстах тысячах пользователей в плече она невозможна случайно. Правило смотрит только на эффект и p-значение — деление групп оно не проверяет.</figcaption>
+</figure>
+
+<p><strong>Единственная ошибка.</strong> На тесте, где данных честно мало, агент два раза сказал «не готов», а в третий — «не раскатывать», по тем же самым числам. Решение «незначимый результат на малой выборке — это „эффекта нет“ или „данных мало“» в сводке не записано: я не подал ни минимальный детектируемый эффект <code>mde_relative</code>, ни целевую мощность <code>power_target</code>, хотя в <code>contract.json</code> они есть у всех 660 кейсов. Их просто не извлекает <code>build_case()</code>. Незаписанное решение модель закрывает каждый раз заново.</p>
+
+<p><strong>Что вход сделал нерешаемым.</strong> На тесте с эффектом новизны улика только в заметках, которые я убрал, и агент трижды сказал «раскатывать» — как и правило. Проблему, которой не видно в числах, он не выдумал.</p>
+
+<div class="say">«DAU без данных, но это единственный неучтённый guardrail, и он не отменяет явного положительного результата».<span class="src">агент, тест с эффектом новизны</span></div>
+
+<p>На тесте с множественными сравнениями вердикт верен три из трёх, но механизм не назван ни разу: лишних метрик в сводке нет.</p>
+
+<div class="gen"><b>Урок для обвязки</b><p>Формат входа определяет, какие ошибки в тесте вообще можно заметить. Сводка ловит сломанное деление на группы и недобор данных. Новизну, множественные сравнения и парадокс Симпсона она прячет — для них нужны сырые данные, разбивка по сегментам и второй ход.</p></div>
+
+<h2 id="s7">Исследование: одного хода мало</h2>
+
+<p>Вопрос «почему упала выручка» не решается одним запросом. Нужно выдвинуть гипотезу, посмотреть на результат, выдвинуть следующую.</p>
+
+<p>Одноходовой агент за это не берётся: три повтора из трёх — уточнение, ни одного запроса. Ядро из трёх вариантов стабильно во всех прогонах, а определения повторной покупки в каждом прогоне разные.</p>
+
+<p>Одна задача, три повтора. Верность здесь мерить не с чем, только устойчивость — и измерилась устойчивость постановки, а не вывода. Для исследования нужна другая обвязка, многоходовая, и это следующий шаг.</p>
+
+<h2 id="s8">Четыре вещи, которые обвязка решает за вас</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>решение</th><th>где проявилось</th><th>что вышло</th></tr></thead>
+<tbody>
+<tr><td><strong>что показать</strong></td><td>выгрузка, A/B</td><td>слой <code>tables</code> в <code>agent/retrieval.py</code> включает и выключает сразу схему, описания и примеры; в сводке A/B любое лишнее поле может оказаться подсказкой</td></tr>
+<tr><td><strong>что агент может вернуть</strong></td><td>число, правка, выгрузка, A/B</td><td>у числа — <code>answer</code>, <code>clarify</code>, <code>refuse</code>; у правки и выгрузки инструкция «верни ОДИН SELECT»; где спросить нельзя, развилку агент закрывает сам</td></tr>
+<tr><td><strong>сколько раз посмотреть</strong></td><td>выгрузка, исследование</td><td>один ход — агент не может посмотреть на данные: он спрашивает или выбирает молча; пустая таблица проходит молча</td></tr>
+<tr><td><strong>что останется в записи</strong></td><td>все</td><td>промпт не сохраняется, только отпечатки блоков <code>layer_sha</code> и <code>context_sha</code>; у 705 старых прогонов не было и отпечатков</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="s9">Чего обвязка не может</h2>
+
+<p>Создать решение.</p>
+
+<figure>
+<div class="fig-scroll"><svg viewBox="0 0 720 236" role="img" aria-labelledby="f8t">
+<title id="f8t">Ошибки агента на записанных и незаписанных решениях по трём типам задач</title>
+<g class="t" font-size="12.5">
+  <rect class="fi" x="150" y="0" width="12" height="12"/><text x="168" y="11">решение записано и дошло</text>
+  <rect class="fa" x="380" y="0" width="12" height="12"/><text x="398" y="11">решение не записано</text>
+</g>
+<g class="t" font-size="14" font-weight="600">
+  <text x="0" y="62">число</text><text x="0" y="132">выгрузка</text><text x="0" y="202">правка</text>
+</g>
+<!-- scale: 9 = 405px from x=150 -->
+<g class="t" font-size="13">
+  <rect class="fi" x="150" y="40" width="2" height="20"/><text x="160" y="55">0</text>
+  <rect class="fa" x="150" y="64" width="405" height="20"/><text x="563" y="79">9 ошибок</text>
+  <rect class="fi" x="150" y="110" width="2" height="20"/><text x="160" y="125">0</text>
+  <rect class="fa" x="150" y="134" width="180" height="20"/><text x="338" y="149">4 ошибки</text>
+  <rect class="fi" x="150" y="180" width="2" height="20"/><text x="160" y="195">0</text>
+  <rect class="fa" x="150" y="204" width="2" height="20"/><text x="160" y="219">0 — решения несёт сам старый запрос</text>
+</g>
+</svg></div>
+<figcaption>Число — девять неверных ответов первого прогона, разобранных по развилкам. Выгрузка — пятнадцать попыток. Правка — восемнадцать.</figcaption>
+</figure>
+
+<p>В A/B то же самое: агент сорвался ровно на том решении, которое я не подал в сводке.</p>
+
+<p>Обвязка решает, <strong>дойдёт</strong> ли решение до агента. Придумать его она не может — это по-прежнему работа аналитика.</p>
+
+<h2 id="s10">Что проверить у себя</h2>
+
+<ol class="checks">
+<li><b>Что вы даёте агенту на вход</b><span>Для правки — подаёте ли вы действующий запрос целиком. Для A/B — нет ли в сводке полей, которые подсказывают ответ, и есть ли поля, без которых ответ невозможен.</span></li>
+<li><b>Что он видит</b><span>Соберите промпт, который реально уходит модели, и найдите в нём решения, которые вы считаете записанными. Описания из <code>schema.yml</code> доезжают через манифест — правка без пересборки до агента не дойдёт.</span></li>
+<li><b>Что он может вернуть</b><span>Может ли агент спросить или отказаться. Если нет — каждую развилку он закроет сам.</span></li>
+<li><b>Сколько ходов нужно задаче</b><span>Если результату надо посмотреть на данные прежде, чем делать вывод, одного хода мало.</span></li>
+<li><b>Чем принимаете результат — и стоит ли проверка до выдачи</b><span>Правку — против прошлой версии, выгрузку — изнутри и снаружи, A/B — по ширине интервала и делению на группы.</span></li>
+</ol>
+
+<p class="after-checks">Отдельный агент под каждый тип задач не нужен. Нужно одно ядро и небольшой модуль под тип: вход, контракт ответа, ходы, проверка.</p>
+
+<h2 id="s11">Как я это мерил</h2>
+
+<p>Число, правка и выгрузка — на синтетическом стенде <code>retail-lab</code>, где верный ответ известен по построению. A/B — на синтетическом корпусе <code>ab-factory</code>, шесть кейсов по три повтора. Объявления и отчёты по числу, правке и выгрузке: <code>docs/81</code>, <code>docs/96</code>–<code>docs/101</code> в <code>retail-lab</code>. Отчёт по A/B-прогону пока не опубликован; корпус — <code>ab-factory</code>.</p>
+
+<p>Перед каждым прогоном — объявления: что меряется, какие исходы бывают, какие ожидания в обе стороны. Потом проверка приёмки на подложенных ответах — заведомо верных и заведомо неверных — без единого вызова модели. На правке она нашла два дефекта в самой приёмке: один признак ошибки искался не в том месте запроса и не сработал бы ни разу. После проверки приёмка замораживалась, и только тогда шла дымовая проба и прогон.</p>
+
+<p>Эталон тоже проверялся. В корпусе A/B у одного кейса метка «мало данных» противоречила его собственным числам — интервал исключал практический порог. У другого агент нашёл сломанное деление на группы, которого не было в метке. Оба кейса выведены из счёта и заменены по правилу, объявленному до следующего вызова.</p>
+
+<h3>Оговорки</h3>
+
+<p>Один стенд и один корпус, оба синтетические. Одна модель. У правки, выгрузки и A/B агент не мог переспросить, у числа мог. Решения для второго прогона числа записаны при известном эталоне. В A/B по одному кейсу на сценарий, и подача — сводка, а не сырые данные. Все замеры — на одноходовом агенте.</p>
+
+<p>Переносится устройство, а не числа.</p>
+
+</div>
+
+<section class="series">
+<h2>Вся серия про AI-аналитика</h2>
+<ol>
+  <li><a href="https://davydov.my/workspace/articles/ai-analyst-checks/"><span class="idx"></span>
+    <span><span class="ttl">Как я строил AI-аналитика</span><span class="meta">2026.08 · 13 мин</span>
+    <span class="sub">Учебная сборка: шесть этапов и семнадцать проверок</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/quiet-wrong-answers/"><span class="idx"></span>
+    <span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span>
+    <span class="sub">Что он унесёт неверного и почему это не видно по числу</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/declare-and-extract/"><span class="idx"></span>
+    <span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Семь шагов между задачей и числом</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/metrics-layer/"><span class="idx"></span>
+    <span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Файл на сто семь строк и два его исполнителя</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/task-brief/"><span class="idx"></span>
+    <span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span>
+    <span class="sub">Семь сущностей задачи и три вида влияния шаблона</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/question-paths/"><span class="idx"></span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="meta">2026.09 · 8 мин</span>
+    <span class="sub">Шесть исходов одного вопроса</span></span></a></li>
+  <li><a href="/workspace/articles/question-paths/map/"><span class="idx"></span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span>
+    <span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
+  <li><a href="https://davydov.my/workspace/articles/how-agent-sees-decisions/"><span class="idx"></span>
+    <span><span class="ttl">AI-аналитик видит не ваш проект, а промпт</span><span class="meta">2026.09 · 13 мин</span>
+    <span class="sub">Семь артефактов между базой и ответом</span></span></a></li>
+  <li><div class="this"><span class="idx"></span>
+    <span><span class="ttl">Под каждую задачу AI-аналитику нужна своя обвязка</span><span class="sub">Вы здесь</span></span></div></li>
+</ol>
+</section>
+
+<footer>davydov.my · AI-аналитик · разбор восьмой</footer>
+</div>
+<script>
+const links=[...document.querySelectorAll(".ags nav a")];
+const secs=links.map(a=>document.getElementById(a.getAttribute("href").slice(1)));
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){
+    links.forEach(a=>a.classList.remove("on"));
+    const i=secs.indexOf(e.target); if(i>-1) links[i].classList.add("on");
+  }});
+},{rootMargin:"-10% 0px -80% 0px"});
+secs.forEach(s=>s&&io.observe(s));
+</script>
+</div>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
