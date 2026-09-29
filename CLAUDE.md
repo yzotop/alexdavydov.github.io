@@ -314,8 +314,13 @@ curl -s "https://davydov.my/ПУТЬ/?v=$(date +%s)" | grep -c 'НОВОЕ ЧИ�
   он держит устаревшие «OK» и даёт зелёный прогон при красном CI:
 
   ```
-  rm -f .lycheecache && lychee --config lychee.toml './**/*.html'
+  rm -f .lycheecache && lychee --config lychee.toml --remap "^https://davydov\.my/(.*)\$ file://$PWD/\$1" './**/*.html'
   ```
+
+  `--remap` обязателен: без него абсолютные `https://davydov.my/…`
+  (canonical на каждой странице) уходят запросом на прод, и canonical
+  новой страницы даёт 404 до выкладки. С ним они проверяются как файлы
+  рабочего дерева — так же, как в CI. Запускать из корня репозитория.
 
 После пуша — проверить статус Actions (`gh run watch --exit-status`),
 а не только коды ответов по URL. Зелёный curl при красном CI

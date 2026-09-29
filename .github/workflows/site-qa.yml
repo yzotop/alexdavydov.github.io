@@ -79,7 +79,16 @@ jobs:
           # на одном коммите дали 2172 и 2853 проверки. Закрепление делает
           # локальный прогон воспроизводимым — это дороже автообновлений.
           lycheeVersion: v0.24.2
-          args: --config lychee.toml './**/*.html'
+          # --remap переводит абсолютные https://davydov.my/… в файлы
+          # checkout'а: canonical и ссылки полным адресом проверяются так же,
+          # как относительные. Раньше домен стоял в exclude целиком, и опечатка
+          # в абсолютной ссылке проходила CI. Путь нужен абсолютный, поэтому
+          # remap здесь, а не в lychee.toml; github.workspace — путь раннера,
+          # не данные из PR.
+          args: >-
+            --config lychee.toml
+            --remap '^https://davydov\.my/(.*)$ file://${{ github.workspace }}/$1'
+            './**/*.html'
 
   lighthouse-sample:
     if: github.event_name != 'pull_request'
