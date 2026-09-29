@@ -119,6 +119,7 @@
   @keyframes bounce{0%,100%{transform:scale(1);}50%{transform:scale(1.4);}}
 
   .hero-right{grid-column:9 / span 4;align-self:end;padding-bottom:16px;}
+  .hero .ctas{grid-column:7 / span 6;}
   .hero-lede{font-size:18px;line-height:1.4;margin-bottom:16px;font-weight:400;}
   .highlight{background:var(--accent);color:#fff;padding:0 6px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
   .hero-sub{font-size:13px;color:var(--muted);line-height:1.55;}
@@ -1031,11 +1032,16 @@
      на /career/ до 193px при 187 доступных. 15vw меньше прежнего кегля
      только до ~427px; шире — всё как было (заголовок — прежний clamp). */
   .page-title{font-size:clamp(40px,15vw,clamp(64px,9vw,128px));}
+  /* «Давыдов.» с кареткой в герое главной — 4,23 кегля в ширину. При 84px
+     это 355px: на 375 точка отрывалась на отдельную строку, на 320 слово
+     выходило за край. Кегль не больше ширины колонки / 4,3; от ~410px
+     и шире — прежний clamp. */
+  h1.display{font-size:min(clamp(84px,12vw,176px),calc((100vw - 48px) / 4.3));}
   .stat-num{font-size:clamp(40px,15vw,64px);}
   .stats{grid-template-columns:1fr 1fr;}
   .stat:nth-child(2){border-right:none;}
   .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line);}
-  .hero-title,.hero-right,.sec-right{grid-column:1 / -1;}
+  .hero-title,.hero-right,.sec-right,.hero .ctas{grid-column:1 / -1;}
   .hero-right{padding-bottom:0;}
   .ctas{justify-content:flex-start;flex-wrap:wrap;}
   .courses-grid,.tests-grid,.cases-grid,.pricing,.cta-strip,.scenarios-grid{grid-template-columns:1fr;}
