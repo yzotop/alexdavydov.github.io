@@ -64,6 +64,17 @@ jobs:
       - name: Redirect stubs resolve in one hop
         run: python3 scripts/check_redirects.py
 
+  meta-css-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Ещё два места, которые lychee не читает: content у <meta> (og:url,
+      # og:image) и url() в CSS. Битая og:image даёт превью без картинки,
+      # битый шрифт — системный вместо своего; ни то ни другое страницу
+      # не роняет, поэтому и не замечается. Цели проверяются как файлы.
+      - name: og:url, og:image and CSS url() resolve to files
+        run: python3 scripts/check_meta_css_refs.py
+
   link-check:
     runs-on: ubuntu-latest
     steps:
