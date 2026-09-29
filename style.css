@@ -1178,6 +1178,16 @@
 .series-nav .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px;}
 .series-nav .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted);}
+/* Каркасы .ags и .qp задают ссылкам нижнюю черту (.ags a), а h2 — отступ
+   70px сверху (.ags h2, .qp h2). Их <style> стоит после style.css и при
+   равном весе селектора выигрывает. Раньше это гасили правила .X .series
+   в каждой статье; теперь — здесь, классом дважды: вес на ступень выше. */
+.series-nav.series-nav a{border:0;}
+.series-nav.series-nav h2{margin:0 0 4px;}
 @media(max-width:900px){
   .series-nav a,.series-nav .this{grid-template-columns:1fr;gap:5px;}
+  /* У подпункта стрелка остаётся слева от заголовка: в одну колонку
+     она уезжала отдельной строкой к правому краю. */
+  .series-nav li.side a{grid-template-columns:20px 1fr;gap:0 8px;}
+  .series-nav li.side .mark{text-align:left;padding-right:0;}
 }

@@ -93,28 +93,7 @@
 .qp .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}
 .qp .notes p{margin:0 0 12px;max-width:none}
 .qp .notes p:last-child{margin:0}
-.qp .series{margin:64px 0 0;grid-column:1}
-.qp .series h2{margin-top:0}
-.qp .series ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;border-top:1.5px solid var(--ink)}
-.qp .series li{border-bottom:1px solid var(--rule)}
-.qp .series li:last-child{border-bottom:1.5px solid var(--ink)}
-.qp .series a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
- padding:19px 18px 19px 0;border:0;text-decoration:none;transition:background .12s,padding .12s}
-.qp .series a:hover{background:var(--fill);padding-left:18px;padding-right:0}
-.qp .series a:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
-.qp .series .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--acc);letter-spacing:.06em}
-.qp .series .idx::before{content:"№ " counter(s,decimal-leading-zero)}
-.qp .series .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;margin-bottom:4px;color:var(--ink)}
-.qp .series a:hover .ttl{color:var(--acc)}
-.qp .series .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--sec);
- display:block;margin-bottom:3px}
-.qp .series .sub{color:var(--sec);font-size:16px;line-height:1.45;display:block}
-.qp .series .this{background:var(--fill);display:grid;grid-template-columns:62px 1fr;gap:0 8px;
- align-items:baseline;padding:19px 18px}
-.qp .series .this .idx{color:var(--ink)}
-.qp .series .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px}
-.qp .series .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sec)}
-@media(max-width:560px){.qp .series a,.qp .series .this{grid-template-columns:1fr;gap:5px}}
+.qp .series-nav{grid-column:1}
 .qp footer{grid-column:1;margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
  font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec)}
 @media(max-width:900px){.qp .wrap{grid-template-columns:1fr;gap:0}
@@ -368,20 +347,39 @@
 
 </div>
 
-<section class="series">
+<!-- series:start -->
+<section class="series-nav" id="series">
 <h2>Вся серия про AI-аналитика</h2>
 <ol>
-  <li><a href="https://davydov.my/workspace/articles/ai-analyst-checks/"><span class="idx"></span><span><span class="ttl">Как я строил AI-аналитика</span><span class="meta">2026.08 · 13 мин</span><span class="sub">Учебная сборка: шесть этапов и семнадцать проверок</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/quiet-wrong-answers/"><span class="idx"></span><span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span><span class="sub">Что он унесёт неверного и почему это не видно по числу</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/declare-and-extract/"><span class="idx"></span><span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span><span class="sub">Семь шагов между задачей и числом</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/metrics-layer/"><span class="idx"></span><span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span><span class="sub">Файл на сто семь строк и два его исполнителя</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/task-brief/"><span class="idx"></span><span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span><span class="sub">Семь сущностей задачи и три вида влияния шаблона</span></span></a></li>
-  <li><div class="this"><span class="idx"></span><span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="meta">2026.09 · 8 мин</span><span class="sub">Вы здесь</span></span></div></li>
-  <li><a href="/workspace/articles/question-paths/map/"><span class="idx"></span><span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span><span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/how-agent-sees-decisions/"><span class="idx"></span><span><span class="ttl">AI-аналитик видит не ваш проект, а промпт</span><span class="meta">2026.09 · 13 мин</span><span class="sub">Сорок четыре решения в коде сборки, до модели доходит девять</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/harness-by-type/"><span class="idx"></span><span><span class="ttl">Под каждую задачу AI-аналитику нужна своя обвязка</span><span class="meta">2026.09 · 14 мин</span><span class="sub">Четыре типа задач, общее ядро и сменный модуль</span></span></a></li>
+  <li><a href="/workspace/articles/ai-analyst-checks/"><span class="idx"></span>
+    <span><span class="ttl">Как я строил AI-аналитика и что придумывал, чтобы ему не верить на слово</span><span class="meta">2026.08 · 13 мин</span>
+    <span class="sub">Учебная сборка на ритейл-данных: шесть этапов, семнадцать проверок и числа, которых я не ожидал.</span></span></a></li>
+  <li><a href="/workspace/articles/quiet-wrong-answers/"><span class="idx"></span>
+    <span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span>
+    <span class="sub">Он не врёт — он переспрашивает. А когда ответить на уточнение некому, отвечает сам себе.</span></span></a></li>
+  <li><a href="/workspace/articles/declare-and-extract/"><span class="idx"></span>
+    <span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Задача из шести слов и пять решений внутри неё. Семь шагов между задачей и принятым числом.</span></span></a></li>
+  <li><a href="/workspace/articles/metrics-layer/"><span class="idx"></span>
+    <span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span>
+    <span class="sub">Файл на сто семь строк, где записано, как считаются метрики. Кто его читает — сборщик и модель — и почему два измерения расходятся.</span></span></a></li>
+  <li><a href="/workspace/articles/task-brief/"><span class="idx"></span>
+    <span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span>
+    <span class="sub">Четыре команды, почти четыре тысячи задач за двадцать месяцев. Семь вещей, без которых задачу нельзя посчитать.</span></span></a></li>
+  <li><div class="this"><span class="idx"></span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="sub">Вы здесь</span></span></div></li>
+  <li class="side"><a href="/workspace/articles/question-paths/map/"><span class="mark">↳</span>
+    <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span>
+    <span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
+  <li><a href="/workspace/articles/how-agent-sees-decisions/"><span class="idx"></span>
+    <span><span class="ttl">AI-аналитик видит не ваш проект, а промпт</span><span class="meta">2026.09 · 13 мин</span>
+    <span class="sub">Модель отвечает не по вашему проекту, а по тексту, который для неё собрали. Что в него попадает, а что нет.</span></span></a></li>
+  <li><a href="/workspace/articles/harness-by-type/"><span class="idx"></span>
+    <span><span class="ttl">Под каждую задачу AI-аналитику нужна своя обвязка</span><span class="meta">2026.09 · 14 мин</span>
+    <span class="sub">Четыре типа задач на одном стенде: число, правка отчёта, выгрузка, A/B-тест. Общая у обвязки половина, вторая меняется — и от неё зависит, можно ли задачу отдавать.</span></span></a></li>
 </ol>
 </section>
+<!-- series:end -->
 
 <footer>davydov.my · AI-аналитик · разбор шестой</footer>
 </div>

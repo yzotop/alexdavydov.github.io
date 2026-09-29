@@ -18,6 +18,16 @@
 <!-- series:end -->. Маркеров нет — блок вставляется: в каркасе .ags
 перед footer, в старом — перед блоком автора.
 
+Первый запуск заменяет блоки, собранные руками до генератора, а не
+ставит новый рядом: <section class="series"> в каркасе .ags и список
+<h2 id="series"> в task-brief. Иначе в статье было бы два списка серии.
+Новая секция получает id="series": на него ведёт ссылка «внизу» из
+вступления task-brief.
+
+Ссылки относительные: lychee исключает https://davydov.my (так
+помечены canonical и og:url), и абсолютная ссылка с опечаткой в слаге
+прошла бы CI незамеченной.
+
 Проверяется в CI: `git diff --exit-code workspace/articles`.
 """
 from __future__ import annotations
@@ -43,6 +53,11 @@ SIDE = {
 
 START, END = "<!-- series:start -->", "<!-- series:end -->"
 
+# Блоки серии, собранные руками до генератора. Встречаются только при
+# первом запуске: после него на их месте стоят маркеры.
+LEGACY_AGS = re.compile(r'<section class="series">.*?</section>', re.S)
+LEGACY_LIST = re.compile(r'\n\s*<hr/>\s*<h2 id="series">.*?</ul>\n', re.S)
+
 
 def item(a: dict, here: bool) -> str:
     e = html.escape
@@ -50,7 +65,7 @@ def item(a: dict, here: bool) -> str:
         return ('  <li><div class="this"><span class="idx"></span>\n'
                 f'    <span><span class="ttl">{e(a["title"])}</span>'
                 '<span class="sub">Вы здесь</span></span></div></li>')
-    return (f'  <li><a href="https://davydov.my{a["url"]}"><span class="idx"></span>\n'
+    return (f'  <li><a href="{a["url"]}"><span class="idx"></span>\n'
             f'    <span><span class="ttl">{e(a["title"])}</span>'
             f'<span class="meta">{e(a["meta"])}</span>\n'
             f'    <span class="sub">{e(a["blurb"])}</span></span></a></li>')
@@ -70,7 +85,7 @@ def block(arts: list[dict], current: str) -> str:
         rows.append(item(a, a["url"] == current))
         if a["num"] in SIDE:
             rows.append(side(SIDE[a["num"]]))
-    return (f'{START}\n<section class="series-nav">\n<h2>Вся серия про AI-аналитика</h2>\n'
+    return (f'{START}\n<section class="series-nav" id="series">\n<h2>Вся серия про AI-аналитика</h2>\n'
             '<ol>\n' + "\n".join(rows) + f'\n</ol>\n</section>\n{END}')
 
 
@@ -78,6 +93,12 @@ def place(s: str, blk: str) -> str:
     if START in s:
         i, j = s.index(START), s.index(END) + len(END)
         return s[:i] + blk + s[j:]
+    m = LEGACY_AGS.search(s)                           # старый блок .ags —
+    if m:                                              # на его же место
+        return s[:m.start()] + blk + s[m.end():]
+    s = LEGACY_LIST.sub("\n", s, count=1)              # список task-brief —
+                                                       # убрать, блок встанет
+                                                       # перед автором
     if '<div class="article-author">' in s:            # старый каркас
         i = s.index('  <div class="article-author">')
         return s[:i] + blk + "\n" + s[i:]
