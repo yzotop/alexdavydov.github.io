@@ -83,14 +83,14 @@
 .mech .legend i.author{border-color:var(--ink)}
 .mech .legend i.system{background:var(--soft)}
 .mech .legend i.un{border-color:var(--accent);background:var(--un-bg)}
-/* ── панель подробностей ── */
-.mech .panel{margin-top:30px;border-top:1px solid var(--ink);padding-top:14px}
-.mech .panel h3{font-size:var(--fs-m);font-weight:600;margin:0 0 8px}
-.mech .panel h4{font-size:var(--fs-m);font-weight:600;margin:16px 0 4px}
-.mech .panel p{font-size:var(--fs-m);line-height:1.5;margin:4px 0;max-width:72ch}
-.mech .panel .dual{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
-.mech .panel .dual.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.mech .panel .dual>div{min-width:0}
+/* ── подробности: раскрываются прямо под этапом, во всю ширину трубы ── */
+.mech .det{grid-column:1/-1;min-width:0;margin:4px 0 14px;padding:4px 0 14px;border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--node);background:var(--bg)}
+.mech .det h4{font-size:var(--fs-m);font-weight:600;margin:16px 0 4px}
+.mech .det p{font-size:var(--fs-m);line-height:1.5;margin:4px 0;max-width:72ch}
+.mech .stories .tech{margin:6px 0 0;max-width:90ch}
+/* у этапа нет входа — нет и стрелки к узлу */
+.mech .in.none::after{display:none}
 .mech .mono,.mech pre,.mech code,.mech td{font-family:var(--mono)}
 .mech .tech{font-size:var(--fs-s);line-height:1.55;color:var(--dim)}
 .mech .path{font-family:var(--mono);font-size:var(--fs-s);color:var(--dim);overflow-wrap:anywhere}
@@ -111,7 +111,7 @@
 .mech .barlab .hot{color:var(--accent)}
 @media(max-width:900px){
   .mech .ctl{position:static;gap:10px}
-  .mech .stories.two,.mech .pipes.two,.mech .panel .dual.two{grid-template-columns:minmax(0,1fr)}
+  .mech .stories.two,.mech .pipes.two{grid-template-columns:minmax(0,1fr)}
 }
 .mech .stg{display:contents}
 /* До 600 px этап — вертикальный блок. Ось трубы — сплошная линия по центру,
@@ -130,6 +130,8 @@
   .mech .stg>.nd{order:2}
   .mech .stg>.link{order:3}
   .mech .stg>.out{order:4;padding:0 0 6px calc(50% + 12px)}
+  .mech .stg>.det{order:5;position:relative;z-index:1}
+  .mech .stg>.in.none{display:none}
   .mech .stg>.out.has::before{content:"выпадает";position:static;width:auto;height:auto;background:none;
     font-size:var(--fs-s);color:var(--dim)}
   .mech .art,.mech .node,.mech .client{position:relative;z-index:1}
@@ -141,6 +143,7 @@
 </style>
 </head>
 <body>
+<!-- header:start -->
 <nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
     <div class="logo-mark"><span>Δ</span></div>
@@ -149,7 +152,7 @@
   <div class="nav-links">
     <a href="/ai-analyst/">AI-аналитик</a>
     <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
-    <a href="/talks/">Доклад</a>
+    <a href="/talks/">ММ’26</a>
     <a href="/teaching/">Преподаю</a>
     <a href="/cases/">Кейсы</a>
     <a href="/career/">Менторство</a>
@@ -162,7 +165,7 @@
   <div class="nav-drawer-section nav-drawer-section--primary">
     <a href="/ai-analyst/">AI-аналитик</a>
     <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
-    <a href="/talks/">Доклад</a>
+    <a href="/talks/">ММ’26</a>
     <a href="/teaching/">Преподаю</a>
     <a href="/cases/">Кейсы</a>
     <a href="/career/">Менторство</a>
@@ -179,6 +182,7 @@
     <a href="/search/">Поиск</a>
   </div>
 </nav>
+<!-- header:end -->
 
 <div class="mech">
 <div class="wrap">
@@ -200,7 +204,7 @@
   <span><i class="system"></i>код и система</span>
   <span><i class="un"></i>не записано — решает модель</span>
 </div>
-<div class="panel" id="panel"></div>
+<p class="hint">Нажмите этап — под ним раскроются блок промпта, SQL и результат. Открыт один этап.</p>
 
 </div>
 </div>
@@ -307,12 +311,13 @@ const ST=[
  more:(c,hot)=>'<h4>Шесть блоков промпта</h4>'+bar(c,hot)+'<h4>SYSTEM</h4><p class="path">'+esc(D.артефакты.контракт.путь)+'</p><pre>'+esc(D.блоки['SYSTEM'])+'</pre>'+
    '<h4>Примеры значений</h4><pre>'+esc(D.блоки['Примеры значений'])+'</pre>'},
 {t:'Модель',
- ins:c=>[[D.артефакты.модель.имя,'system']],
+ // имя — из лога ячейки; в логе нет — вход пустой, константу кода не подставляем
+ ins:c=>c.лог.модель?[[c.лог.модель,'system']]:[],
  out:c=>[['сырой текст ответа не сохранён']],
  cargo:c=>c.модель.вид==='clarify'?'уточнение вместо ответа':'ответ · '+nvar(c.модель.варианты.length)+', SQL',
  // Груз «один вариант, SQL» бывает одинаковым при разных запросах — сравниваем содержимое.
  key:c=>[c.модель.вид,c.модель.варианты.length,c.модель.варианты.map(v=>normSql(v.sql)).sort()], keyNote:'запросы различаются',
- more:c=>{const m=c.модель;let h='<p class="path">'+esc(D.артефакты.модель.путь)+'</p><p class="hint">'+esc(m.оговорка)+'</p>';
+ more:c=>{const m=c.модель;let h=(c.лог.модель?'<p class="path">'+esc(c.лог.модель)+' · из лога</p>':'')+'<p class="hint">'+esc(m.оговорка)+'</p>';
    if(m.уточнение)h+='<h4>Уточнение</h4><p>'+esc(m.уточнение)+'</p>';
    if(m.причина)h+='<h4>Причина</h4><p>'+esc(m.причина)+'</p>';
    m.варианты.forEach((v,i)=>{h+='<h4>Вариант '+(i+1)+'</h4><p>'+esc(v.label)+'</p>'});return h}},
@@ -350,9 +355,14 @@ function pipe(c,other){
       keyDiff=!!s.key&&JSON.stringify(s.key(c))!==JSON.stringify(s.key(other));
       same=!cgDiff&&!outDiff&&!keyDiff&&JSON.stringify(ins)===JSON.stringify(oi)}
     const dim=same?' dim':'';
-    const L=E('div','in'+dim,ins.map(([n,k])=>'<span class="art '+k+'">'+esc(n)+'</span>').join(''));
+    const L=E('div','in'+(ins.length?'':' none')+dim,ins.map(([n,k])=>'<span class="art '+k+'">'+esc(n)+'</span>').join(''));
     const nd=E('button','node'+(st.open===i?' on':''),(i+1)+' · '+esc(s.t));nd.type='button';
-    nd.onclick=()=>{st.open=st.open===i?null:i;draw();document.getElementById('panel').scrollIntoView({block:'start'})};
+    const did='det-'+c.плечо+'-'+i;nd.setAttribute('aria-expanded',String(st.open===i));nd.setAttribute('aria-controls',did);
+    nd.dataset.st=i;nd.dataset.arm=c.плечо;
+    nd.onclick=()=>{const y=nd.getBoundingClientRect().top;st.open=st.open===i?null:i;draw();
+      // Закрылся этап выше — узел уехал бы вверх. Возвращаем его на прежнее место.
+      const n=document.querySelector('.pipes .node[data-st="'+i+'"][data-arm="'+c.плечо+'"]');
+      if(n)window.scrollBy(0,n.getBoundingClientRect().top-y)};
     const C=E('div','nd'+dim);C.appendChild(nd);
     if(s.check)C.appendChild(E('div','chk',esc(s.check(c))));
     // содержимое разное, а груз совпал — иначе этап выглядел бы одинаковым
@@ -366,6 +376,9 @@ function pipe(c,other){
     const sg=E('div','stg');
     const lk=E('div','link'+dim,'<span class="ax"><i></i></span><span class="cg'+(cgDiff?' diff':'')+'">'+esc(cg)+'</span>');
     [L,C,R,E('div','sp'+dim),lk,E('div','sp'+dim)].forEach(x=>sg.appendChild(x));
+    // Подробности — под этим этапом, в своей трубе: в сравнении каждая труба
+    // раскрывает тот же этап своего плеча.
+    if(st.open===i){const d=E('div','det',s.more(c,other?'Слой метрик':null));d.id=did;sg.appendChild(d)}
     g.appendChild(sg);
   });
   const bad=c.приёмка.исход==='не сошлось';
@@ -387,29 +400,27 @@ function draw(){
     b.onclick=()=>{if(v==='сравнить')st.cmp=!st.cmp;else{st.cmp=false;st.arm=v}draw()};ca.appendChild(b)});
   const arms=st.cmp?[cell('А'),cell('Б')]:[cell(st.arm)];
   const sh=document.getElementById('stories');sh.className='stories'+(st.cmp?' two':'');
-  sh.innerHTML=arms.map(c=>'<div><span class="lbl">'+esc(c.id)+'</span><p class="tale">'+esc(story(c))+'</p></div>').join('');
+  sh.innerHTML=arms.map(c=>'<div><span class="lbl">'+esc(c.id)+'</span><p class="tale">'+esc(story(c))+'</p><p class="tech mono">'+esc(tech(c))+'</p></div>').join('');
   const ph=document.getElementById('pipes');ph.innerHTML='';ph.className='pipes'+(st.cmp?' two':'');
   arms.forEach((c,i)=>ph.appendChild(pipe(c,st.cmp?arms[1-i]:null)));
-  // панель подробностей
-  const pn=document.getElementById('panel');
-  const hot=st.cmp?'Слой метрик':null;
-  const one=c=>'<p class="lbl">'+esc(c.id)+'</p><p class="tech mono">'+esc(tech(c))+'</p>'+(st.open!==null?ST[st.open].more(c,hot):'');
-  pn.innerHTML='<h3>'+(st.open!==null?'Подробности · '+(st.open+1)+' · '+esc(ST[st.open].t):'Подробности')+'</h3>'+
-    (st.open===null?'<p class="hint">Нажмите этап трубы — здесь откроются блок промпта, SQL и результат.</p>':'')+
-    '<div class="dual'+(st.cmp?' two':'')+'">'+arms.map(c=>'<div>'+one(c)+'</div>').join('')+'</div>';
   // ширина сегментов полосы — размер блока из data.json; данные, а не стиль
-  pn.querySelectorAll('.pbar i[data-w]').forEach(i=>{i.style.flex=i.dataset.w+' 0 0'});
+  ph.querySelectorAll('.pbar i[data-w]').forEach(i=>{i.style.flex=i.dataset.w+' 0 0'});
 }
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;draw()});
 </script>
 <div class="footer-spacer"></div>
+<!-- footer:start -->
 <footer class="footer">
   <nav class="footer-links" aria-label="Подвал">
     <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
   </nav>
   <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
   <span class="footer-right">© 2026</span>
 </footer>
+<!-- footer:end -->
 <script src="/main.js" defer></script>
 </body>
 </html>
