@@ -16,6 +16,12 @@
 Скрипт смотрит на url= внутри meta refresh — то, по чему на самом деле
 уезжает браузер, а не на дублирующую ссылку в теле страницы.
 
+Второй источник переадресаций — assets/redirects.json. По нему уводит
+404.html, когда заглушки по старому адресу нет. Для него правила те же:
+цель существует и сама не заглушка. Иначе посетитель проходит 404,
+потом заглушку и только потом доезжает — или не доезжает вовсе. На
+2026-09-29 так вели 18 записей из 72, и ещё 3 — в никуда.
+
 Запуск из корня репозитория:
 
     python3 scripts/check_redirects.py
@@ -26,6 +32,7 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import posixpath
 import re
@@ -102,7 +109,21 @@ def main() -> int:
         elif path in stubs:
             chains.append((rel, href, stubs[path]))
 
+    # redirects.json: ключ — старый адрес, значение — куда увести с 404.
+    with open(os.path.join(root, "assets", "redirects.json"), encoding="utf-8") as f:
+        table = json.load(f)
+    for key, href in sorted(table.items()):
+        path = to_file("", href)
+        if path is None:
+            continue
+        src = f"redirects.json: {key}"
+        if path not in existing and not os.path.exists(os.path.join(root, path)):
+            dead.append((src, href, path))
+        elif path in stubs:
+            chains.append((src, href, stubs[path]))
+
     print(f"заглушек: {len(stubs)}")
+    print(f"записей в redirects.json: {len(table)}")
     print(f"мёртвых целей: {len(dead)}")
     print(f"цепочек: {len(chains)}")
 
