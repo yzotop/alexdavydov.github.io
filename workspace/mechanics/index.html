@@ -6,9 +6,17 @@
     <title>Механика AI-аналитика · Workspace</title>
     <meta name="author" content="Александр Давыдов"/>
     <link rel="canonical" href="https://davydov.my/workspace/mechanics/"/>
-    <meta name="description" content="Карта архитектуры AI-аналитика на записанных прогонах: что дошло до модели, что осталось незаписанным, что вернулось заказчику."/>
-    <meta name="robots" content="noindex"/>
+    <meta name="description" content="Путь вопроса до заказчика на записанных прогонах: что входит на каждом этапе, что передаётся дальше и что по дороге выпадает."/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Механика AI-аналитика — Александр Давыдов"/>
+    <meta property="og:description" content="Путь вопроса до заказчика на записанных прогонах: что входит на каждом этапе, что передаётся дальше и что по дороге выпадает."/>
+    <meta property="og:url" content="https://davydov.my/workspace/mechanics/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/articles.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
     <link rel="stylesheet" href="/style.css"/>
 <style>
 /* Три размера: 13 · 16 · 24. Один шрифт — sans; моноширинный только для имён
@@ -150,36 +158,41 @@
     <span>davydov.my</span>
   </a>
   <div class="nav-links">
-    <a href="/ai-analyst/">AI-аналитик</a>
-    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
-    <a href="/talks/">ММ’26</a>
-    <a href="/teaching/">Преподаю</a>
-    <a href="/cases/">Кейсы</a>
-    <a href="/career/">Менторство</a>
-    <a href="/about/">Обо мне</a>
+    <span class="nav-group">
+      <a href="/talks/">ММ’26</a>
+      <a href="/ai-analyst/">AI-аналитик</a>
+    </span>
+    <span class="nav-group">
+      <a href="/cases/">Аналитика везде</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+    <span class="nav-group">
+      <a href="/career/">Менторство</a>
+      <a href="/about/">Обо мне</a>
+    </span>
   </div>
   <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
 </nav>
 <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
 <nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
   <div class="nav-drawer-section nav-drawer-section--primary">
-    <a href="/ai-analyst/">AI-аналитик</a>
-    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
-    <a href="/talks/">ММ’26</a>
-    <a href="/teaching/">Преподаю</a>
-    <a href="/cases/">Кейсы</a>
-    <a href="/career/">Менторство</a>
-    <a href="/about/">Обо мне</a>
+    <div class="nav-drawer-group">
+      <a href="/talks/">ММ’26</a>
+      <a href="/ai-analyst/">AI-аналитик</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/cases/">Аналитика везде</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/career/">Менторство</a>
+      <a href="/about/">Обо мне</a>
+    </div>
   </div>
   <hr class="nav-drawer-divider" aria-hidden="true"/>
   <div class="nav-drawer-section nav-drawer-section--secondary">
-    <a href="/workspace/articles/">Статьи</a>
-    <a href="/workspace/">Workspace</a>
-    <a href="/workspace/simulators/">Симуляторы</a>
-    <a href="/notes/">Заметки</a>
     <a href="/companies/">Для компаний</a>
     <a href="/career/results/">Результаты менторства</a>
-    <a href="/search/">Поиск</a>
   </div>
 </nav>
 <!-- header:end -->
@@ -416,6 +429,7 @@ fetch('data.json').then(r=>r.json()).then(d=>{D=d;draw()});
     <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
     <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
     <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <a href="/search/">Поиск</a>
   </nav>
   <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
   <span class="footer-right">© 2026</span>
