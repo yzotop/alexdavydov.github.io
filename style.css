@@ -560,6 +560,10 @@
 .case-block{border:1px solid var(--line);padding:24px 28px;margin:32px 0;}
 .case-block-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
 .case-block--return{border-color:var(--accent);}
+/* Врезка как самостоятельный блок страницы (доклад на /talks/): метка,
+   заголовок, текст, ссылка. Заголовок — как у карточки кейса; в
+   остальных врезках заголовков нет, правило их не задевает. */
+.case-block h3{font-size:26px;font-weight:500;letter-spacing:-.02em;line-height:1.15;margin:0 0 12px;}
 
 /* stop-question */
 .stop-question{border-left:3px solid var(--accent);padding:16px 20px;margin:32px 0;background:var(--soft2);}
@@ -967,6 +971,13 @@
 .cta-strip h3{font-size:40px;margin:0;font-weight:500;letter-spacing:-.03em;line-height:1.05;}
 .cta-strip p{font-size:14px;color:var(--muted);margin:10px 0 0;max-width:520px;line-height:1.55;}
 .cta-strip .btn{margin-top:24px;}
+/* Кнопка — под заголовком, своей ширины. .ctas по умолчанию прижимает
+   кнопки вправо (так нужно в герое главной), а кнопка без обёртки как
+   элемент сетки растягивалась на всю колонку: на /ai-analyst/, /talks/,
+   /teaching/ кнопка висела посередине, на /career/ и /companies/ была во
+   всю ширину. Как надо было только на /cases/ — инлайновым стилем. */
+.cta-strip .ctas{justify-content:flex-start;}
+.cta-strip > .btn{justify-self:start;}
 /* contact message template block */
 .msg-template{background:var(--soft);border:1px solid var(--line);padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;line-height:1.8;color:var(--muted);position:relative;}
 .msg-template__header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
