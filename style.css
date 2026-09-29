@@ -1139,3 +1139,45 @@
   .learning-path-chain{font-size:14px;}
   .tests-grid--two-col{grid-template-columns:1fr;}
 }
+
+/* ── Блок серии в статьях ────────────────────────────────────────────
+   Раньше он жил в <style> трёх статей на каркасе .ags, поэтому в пяти
+   старых статьях его не было вовсе: там этого CSS просто нет. Перенесён
+   сюда, чтобы блок был компонентом сайта, а не украшением одной статьи,
+   и чтобы генератор мог класть одну и ту же разметку в оба каркаса.
+   Разметку пишет scripts/render_series_block.py между маркерами
+   <!-- series:start --> и <!-- series:end -->. */
+.series-nav{margin:64px 0 0;}
+.series-nav h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:0 0 4px;
+  padding-top:22px;border-top:1.5px solid var(--ink);font-weight:500;}
+.series-nav ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;
+  border-top:1.5px solid var(--ink);}
+.series-nav li{border-bottom:1px solid var(--line-d);}
+.series-nav li:last-child{border-bottom:1.5px solid var(--ink);}
+.series-nav a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
+  padding:19px 18px 19px 0;border:0;text-decoration:none;transition:background .12s,padding .12s;}
+.series-nav a:hover{background:var(--soft);padding-left:18px;padding-right:0;}
+.series-nav .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--accent);}
+.series-nav .idx::before{content:"№ " counter(s,decimal-leading-zero);}
+.series-nav .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;
+  margin-bottom:4px;color:var(--ink);}
+.series-nav a:hover .ttl{color:var(--accent);}
+.series-nav .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+  color:var(--muted);display:block;margin-bottom:3px;}
+.series-nav .sub{color:var(--muted);font-size:16px;line-height:1.45;display:block;}
+/* Интерактивная карта — подпункт под своим разбором: номера в блоке
+   обязаны совпадать с «разбор N-й» в тексте статей, а карта разбором
+   не является. Счётчик не трогает: он инкрементируется на .idx. */
+.series-nav li.side a{padding-left:22px;}
+.series-nav .mark{font-family:var(--mono);font-size:13.5px;color:var(--muted);
+  text-align:right;padding-right:12px;}
+.series-nav li.side .ttl{font-weight:500;font-size:17.5px;}
+.series-nav .this{background:var(--soft);display:grid;grid-template-columns:62px 1fr;
+  gap:0 8px;align-items:baseline;padding:19px 18px;}
+.series-nav .this .idx{color:var(--ink);}
+.series-nav .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px;}
+.series-nav .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);}
+@media(max-width:900px){
+  .series-nav a,.series-nav .this{grid-template-columns:1fr;gap:5px;}
+}
