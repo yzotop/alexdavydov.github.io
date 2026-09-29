@@ -38,6 +38,12 @@ user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
 # которого ещё не существовало.
 root_dir = "."
 
+# Абсолютные https://davydov.my/… (canonical и ссылки, написанные полным
+# адресом) проверяются тоже как файлы: их переводит --remap из аргументов
+# CI. В этом файле remap не записать — ему нужен абсолютный путь file://,
+# а он у раннера и на машине разный. Локальная команда — в CLAUDE.md,
+# «Pre-commit отчёт».
+
 # scheme не ограничиваем: с root_dir проверяются и file:, и внешние адреса.
 
 # Accept standard codes + redirects + 999 (LinkedIn bot-block)
@@ -47,12 +53,6 @@ accept = ["200", "204", "301", "302", "303", "307", "308", "999"]
 
 # Exclude URLs from checking (values are regular expressions)
 exclude = [
-  # Собственный домен в абсолютной форме: canonical и og:url на каждой
-  # странице. Проверять их — значит спрашивать прод о странице, которой
-  # там ещё нет: новая страница в коммите валила бы CI до выкладки.
-  # Относительные внутренние ссылки это правило НЕ затрагивает — они
-  # разрешаются в файлы через root_dir и проверяются полностью.
-  "^https://davydov\\.my",
   "^https?://t\\.me",                 # Telegram (bot-blocked)
   "^mailto:",                          # mailto links
   "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)
