@@ -24,6 +24,12 @@ jobs:
         run: python3 scripts/generate_sitemap.py
       - name: Ensure sitemap matches generator
         run: git diff --exit-code sitemap.xml
+      # Класс, объявленный во встроенном <style> страницы и в /style.css,
+      # незаметно получает чужое оформление: в прототипе .badge стал капсом,
+      # .tag — с рамкой; в /cases/industriya/ плитки получили чужую сетку.
+      # Ошибка — если протекает вид; одни отступы — предупреждение.
+      - name: Page classes do not inherit site styles
+        run: python3 scripts/check_class_collisions.py
       # Список разборов на /ai-analyst/ собирался руками и отставал:
       # восьмой разбор вышел 28.09 и на хаб не попал, потому что добавить
       # карточку было отдельным действием, о котором никто не напомнил.
