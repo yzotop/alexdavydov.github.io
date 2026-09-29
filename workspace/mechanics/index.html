@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Механика AI-аналитика · Workspace</title>
+    <meta name="author" content="Александр Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/workspace/mechanics/"/>
+    <meta name="description" content="Карта архитектуры AI-аналитика на записанных прогонах: что дошло до модели, что осталось незаписанным, что вернулось заказчику."/>
+    <meta name="robots" content="noindex"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="stylesheet" href="/style.css"/>
+<style>
+.mech{--node:var(--line-d);--dim:var(--muted)}
+.mech .wrap{max-width:1180px;margin:0 auto;padding:0 24px 110px}
+.mech h1{font-size:clamp(30px,4.4vw,46px);line-height:1.08;letter-spacing:-.02em;margin:28px 0 12px;font-weight:500}
+.mech .lede{font-size:19px;color:var(--dim);max-width:62ch;margin:0 0 6px}
+.mech .disclaimer{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--dim);
+  border-left:2px solid var(--node);padding:6px 0 6px 12px;margin:18px 0 28px;max-width:66ch}
+/* ── управление ── */
+.mech .ctl{display:flex;flex-wrap:wrap;gap:22px;padding:16px 0;margin-bottom:26px;
+  border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);position:sticky;top:0;background:var(--bg);z-index:5}
+.mech .ctl .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mech .ctl .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.mech .ctl button{font-family:var(--mono);font-size:13px;padding:6px 12px;border:1px solid var(--node);
+  background:var(--bg);color:var(--ink);cursor:pointer;transition:background .12s,border-color .12s}
+.mech .ctl button:hover{border-color:var(--ink)}
+.mech .ctl button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* ── карта ── */
+.mech .maps{display:grid;gap:28px}
+.mech .maps.two{grid-template-columns:1fr 1fr}
+.mech .map h2{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 12px;padding-bottom:8px;border-bottom:1.5px solid var(--ink)}
+.mech .row{display:grid;gap:12px;margin-bottom:12px}
+.mech .row.c1{grid-template-columns:1fr}
+.mech .row.c2{grid-template-columns:1fr 1fr}
+.mech .row.c3{grid-template-columns:1fr 1fr 1fr}
+.mech .node{border:1px solid var(--node);padding:12px 14px;cursor:pointer;background:var(--bg);
+  text-align:left;font:inherit;color:inherit;transition:border-color .12s,background .12s}
+.mech .node:hover{border-color:var(--ink);background:var(--soft2)}
+.mech .node .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:block}
+.mech .node .v{font-size:15.5px;line-height:1.35;display:block;margin-top:5px}
+.mech .node .n{font-family:var(--mono);font-size:24px;line-height:1.1;display:block;margin-top:4px}
+.mech .node.written{background:var(--soft)}
+.mech .node.unwritten{border-color:var(--accent)}
+.mech .node.unwritten .n,.mech .node.unwritten .k{color:var(--accent)}
+.mech .node.diff{outline:2px solid var(--accent);outline-offset:2px}
+.mech .arrow{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center;margin:2px 0 10px}
+.mech .check{border:1px dashed var(--node);padding:12px 14px;margin-top:4px}
+.mech .check .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.mech .check p{margin:6px 0 0;font-size:14.5px;line-height:1.4;color:var(--dim)}
+/* ── раскрытие ── */
+.mech .det{border-top:1.5px solid var(--ink);margin-top:30px;padding-top:16px}
+.mech .det h3{font-size:18px;margin:0 0 8px;font-weight:600}
+.mech .det .hint{font-family:var(--mono);font-size:12px;color:var(--dim);margin:0}
+.mech pre{background:var(--soft);padding:14px 16px;overflow-x:auto;font-family:var(--mono);
+  font-size:12px;line-height:1.55;margin:10px 0;white-space:pre-wrap;word-break:break-word}
+.mech pre.sql{white-space:pre-wrap}
+/* Вставки в плече Б — это ЗАПИСАННЫЕ решения, поэтому цвет записанного,
+   а не акцент: акцент на этой странице зарезервирован за незаписанным. */
+.mech .ins{background:var(--line);box-shadow:inset 3px 0 0 var(--ink);display:block;padding-left:8px}
+.mech table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+.mech th,.mech td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--line);
+  font-family:var(--mono);vertical-align:top}
+.mech th{color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.mech .tw{overflow-x:auto}
+.mech ul.plain{list-style:none;padding:0;margin:8px 0;font-size:14.5px}
+.mech ul.plain li{padding:4px 0;border-bottom:1px solid var(--line)}
+.mech .tag{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+/* Акцент — только за незаписанным решением. Остальные пометки нейтральны. */
+.mech .tag.un{color:var(--accent)}
+@media(max-width:900px){
+  .mech .maps.two{grid-template-columns:1fr}
+  .mech .row.c3{grid-template-columns:1fr}
+  .mech .row.c2{grid-template-columns:1fr}
+  .mech .ctl{position:static;gap:14px}
+  .mech .node .n{font-size:21px}
+}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <a href="/ai-analyst/">AI-аналитик</a>
+    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    <a href="/talks/">Доклад</a>
+    <a href="/teaching/">Преподаю</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Менторство</a>
+    <a href="/about/">Обо мне</a>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <a href="/ai-analyst/">AI-аналитик</a>
+    <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    <a href="/talks/">Доклад</a>
+    <a href="/teaching/">Преподаю</a>
+    <a href="/cases/">Кейсы</a>
+    <a href="/career/">Менторство</a>
+    <a href="/about/">Обо мне</a>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/workspace/articles/">Статьи</a>
+    <a href="/workspace/">Workspace</a>
+    <a href="/workspace/simulators/">Симуляторы</a>
+    <a href="/notes/">Заметки</a>
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+    <a href="/search/">Поиск</a>
+  </div>
+</nav>
+
+<div class="mech">
+<div class="wrap">
+
+<h1>Механика AI-аналитика</h1>
+<p class="lede">Карта архитектуры на записанных прогонах: задача, что дошло до модели, что осталось незаписанным, что вернулось заказчику. Восемнадцать ячеек — три вопроса, три повтора, два плеча.</p>
+<p class="disclaimer">Повтор записанных прогонов, стенд синтетический; ничего не смоделировано. Промпт пересобран тем же кодом и сверен с отпечатками из лога. Сырой текст ответа модели не сохранялся — показан разбор из лога: варианты, SQL, уточнение.</p>
+
+<div class="ctl">
+  <div class="grp"><span class="lbl">Вопрос</span><span id="c-q"></span></div>
+  <div class="grp"><span class="lbl">Повтор</span><span id="c-r"></span></div>
+  <div class="grp"><span class="lbl">Плечо</span><span id="c-a"></span></div>
+</div>
+
+<div class="maps" id="maps"></div>
+
+<div class="det" id="det">
+  <h3 id="det-t">Узел</h3>
+  <p class="hint">Нажмите узел карты — здесь раскроется его содержимое целиком.</p>
+  <div id="det-b"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+const esc=s=>String(s==null?'':s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+let D=null, st={q:'q02', r:1, arm:'Б', cmp:false, node:null};
+
+function cell(arm){return D.ячейки.find(c=>c.плечо===arm&&c.вопрос===st.q&&c.повтор===st.r)}
+
+function node(kind,key,val,num,cls){
+  const b=E('button','node'+(cls?' '+cls:''));
+  b.type='button'; b.dataset.kind=kind;
+  b.appendChild(E('span','k',esc(key)));
+  if(num!==undefined&&num!==null)b.appendChild(E('span','n',esc(num)));
+  if(val)b.appendChild(E('span','v',esc(val)));
+  b.onclick=()=>{st.node=kind;draw()};
+  return b;
+}
+function row(cols,nodes){const r=E('div','row c'+cols);nodes.forEach(n=>r.appendChild(n));return r}
+
+function map(c,other){
+  const m=E('div','map');
+  m.appendChild(E('h2',null,'Плечо '+c.плечо+' · '+c.id));
+  const df=(k,f)=>other&&JSON.stringify(f(c))!==JSON.stringify(f(other))?'diff':'';
+  m.appendChild(row(1,[node('задача','Задача',c.задача,null,'')]));
+  m.appendChild(E('div','arrow','↓'));
+  m.appendChild(row(3,[
+    node('данные','Данные',c.данные.в_схеме+' из '+c.данные.в_базе+' объектов в схеме',c.данные.в_схеме,''),
+    node('записанные','Записанные решения',c.записанные.строк+' строк файла определений',c.записанные.знаков,'written '+df('з',x=>x.записанные)),
+    node('незаписанные','Незаписанные решения',
+      c.незаписанные.length?c.незаписанные.map(u=>u['о чём']).join('; '):'для этого вопроса — нет',
+      c.незаписанные.length, (c.незаписанные.length?'unwritten ':'')+df('н',x=>x.незаписанные))]));
+  m.appendChild(E('div','arrow','↓  обвязка  ↓'));
+  m.appendChild(row(2,[
+    node('ядро','Ядро',c.ядро.отбор,c.ядро.примеры,''),
+    node('модуль','Модуль под тип',c.модуль.контракт,c.модуль.ходов,'')]));
+  m.appendChild(E('div','arrow','↓'));
+  // Модель сравнивается по содержанию ответа, а не по числу вариантов:
+  // у А и Б бывает по одному варианту с разным SQL.
+  m.appendChild(row(1,[node('модель','Модель',
+    c.модель.вид==='clarify'?'переспросила':'вариантов: '+c.модель.варианты.length,
+    c.модель.вид==='clarify'?'?':c.модель.варианты.length,
+    df('м',x=>[x.модель.вид,x.модель.уточнение,x.модель.варианты.map(v=>v.sql)]))]));
+  m.appendChild(E('div','arrow','↓'));
+  m.appendChild(row(3,[
+    node('лог','Лог',c.лог.layer_sha,'$'+c.лог.цена.toFixed(4),df('л',x=>x.лог.layer_sha)),
+    node('приёмка','Приёмка',c.приёмка.исход,null,df('п',x=>x.приёмка.исход)),
+    node('заказчик','Заказчик',c.заказчик,null,df('з2',x=>x.заказчик))]));
+  const ch=E('div','check');
+  ch.appendChild(E('div','k','← проверка проверки'));
+  ch.appendChild(E('p',null,'Отпечатки сошлись: '+esc(D.проверка_проверки.отпечатков_сошлось)+'. '+esc(D.проверка_проверки.пары)+'.'));
+  m.appendChild(ch);
+  return m;
+}
+
+const NAMES={задача:'Задача',данные:'Данные',записанные:'Записанные решения',
+  незаписанные:'Незаписанные решения',ядро:'Ядро',модуль:'Модуль под тип',
+  модель:'Модель',лог:'Лог',приёмка:'Приёмка',заказчик:'Заказчик'};
+
+function details(c){
+  const b=E('div'); const k=st.node;
+  const add=(h)=>b.insertAdjacentHTML('beforeend',h);
+  if(k==='задача') add('<pre>'+esc(c.задача)+'</pre>');
+  if(k==='данные'){
+    add('<p>В базе '+c.данные.в_базе+' объектов, в блок схемы вошло '+c.данные.в_схеме+'.</p>');
+    add('<p><b>Не вписаны в код</b> — '+c.данные.не_вписаны.length+': '+esc(c.данные.не_вписаны.join(', '))+
+        '. <span class="tag">'+esc(c.данные.причина)+'</span> Это не отбор: отбор в этом прогоне выключен.</p>');
+    add('<p><b>Описание дошло, таблицы в схеме нет</b>: '+esc(c.данные.описано_без_схемы.join(', '))+
+        '. Агент читает правило про эти таблицы и не видит ни одной их колонки.</p>');
+    add('<pre>'+esc(D.общие_блоки['Схема базы'])+'</pre>');
+  }
+  if(k==='записанные'){
+    add('<p>Файл определений, плечо '+c.плечо+': '+c.записанные.строк+' строк, '+c.записанные.знаков+' знаков. Описаний моделей: '+c.записанные.описаний+'.</p>');
+    if(c.записанные.вставки.length){
+      add('<p><b>Чего нет в плече А</b> — '+c.записанные.вставки.length+' строк:</p>');
+      add('<pre>'+c.записанные.вставки.map(l=>'<span class="ins">'+(esc(l)||' ')+'</span>').join('')+'</pre>');
+    }
+    add('<h3>Блок целиком</h3><pre>'+esc(D.слои[c.плечо])+'</pre>');
+    add('<h3>Описания</h3><pre>'+esc(D.общие_блоки['Описания'])+'</pre>');
+  }
+  if(k==='незаписанные'){
+    if(!c.незаписанные.length) add('<p>В плече Б эти решения записаны — узел пуст.</p>');
+    else{ add('<ul class="plain">'+c.незаписанные.map(u=>'<li><b>'+esc(u['о чём'])+
+      '</b><br><span class="tag un">'+esc(u.ключ)+': '+esc(u.значение)+'</span> — дописано в плече Б</li>').join('')+'</ul>');
+      add('<p>Пока решение не записано, его принимает модель — и каждый раз заново.</p>'); }
+  }
+  if(k==='ядро'){
+    add('<p>Отбор объектов по вопросу: '+esc(c.ядро.отбор)+'.</p>');
+    add('<h3>Примеры значений — '+c.ядро.примеры+' полей</h3><pre>'+esc(D.общие_блоки['Примеры значений'])+'</pre>');
+  }
+  if(k==='модуль'){
+    add('<p>Контракт ответа: '+esc(c.модуль.контракт)+'. Ходов: '+c.модуль.ходов+', попыток при ошибке: '+c.модуль.попыток+'.</p>');
+    add('<h3>SYSTEM</h3><pre>'+esc(D.общие_блоки['SYSTEM'])+'</pre>');
+  }
+  if(k==='модель'){
+    add('<p class="tag">'+esc(c.модель.оговорка)+'</p>');
+    if(c.модель.уточнение) add('<h3>Уточнение</h3><pre>'+esc(c.модель.уточнение)+'</pre>');
+    if(c.модель.причина) add('<h3>Причина</h3><pre>'+esc(c.модель.причина)+'</pre>');
+    c.модель.варианты.forEach((v,i)=>{
+      add('<h3>Вариант '+(i+1)+'</h3><p>'+esc(v.label)+'</p><pre class="sql">'+esc(v.sql)+'</pre>');
+      if(v.rows&&v.rows.length){
+        const rs=v.rows.slice(0,20);
+        add('<div class="tw"><table><tbody>'+rs.map(r=>'<tr>'+r.map(x=>'<td>'+esc(x)+'</td>').join('')+'</tr>').join('')+
+          '</tbody></table></div><p class="hint">строк в результате: '+v.rows.length+(v.rows.length>20?', показаны первые 20':'')+'</p>');
+      } else add('<p class="hint">результат не сохранён</p>');
+    });
+  }
+  if(k==='лог'){
+    add('<table><tbody><tr><th>layer_sha</th><td>'+esc(c.лог.layer_sha)+'</td></tr>'+
+      '<tr><th>context_sha</th><td>'+esc(c.лог.context_sha)+'</td></tr>'+
+      '<tr><th>вход</th><td>'+c.лог.токены.in+'</td></tr>'+
+      '<tr><th>выход</th><td>'+c.лог.токены.out+'</td></tr>'+
+      '<tr><th>цена</th><td>$'+c.лог.цена.toFixed(4)+'</td></tr></tbody></table>');
+    add('<p class="hint">Отпечатки сверены с пересобранным промптом: сходятся, значит показан тот самый текст.</p>');
+  }
+  if(k==='приёмка'){
+    add('<p>Эталон: <code>'+esc(c.приёмка.эталон.файл)+'</code>, значение '+esc(JSON.stringify(c.приёмка.эталон.значение))+'.</p>');
+    add('<p>Исход: <b>'+esc(c.приёмка.исход)+'</b>.</p>');
+    if(c.приёмка.поля.length) add('<div class="tw"><table><thead><tr><th>вариант</th><th>число сошлось</th><th>форма разошлась</th><th>нескалярный</th></tr></thead><tbody>'+
+      c.приёмка.поля.map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+(p['число сошлось']?'да':'нет')+'</td><td>'+(p['форма разошлась']?'да':'нет')+'</td><td>'+(p['нескалярный ответ']?'да':'нет')+'</td></tr>').join('')+'</tbody></table></div>');
+    else add('<p class="hint">Приёмка пуста: агент переспросил, судить нечего. Уточнение — законный исход.</p>');
+  }
+  if(k==='заказчик') add('<p>'+esc(c.заказчик)+'</p>');
+  return b;
+}
+
+function draw(){
+  const qs=['q02','q05','s11a'], rs=[1,2,3];
+  const mk=(host,items,cur,fn,lbl)=>{const h=document.getElementById(host);h.innerHTML='';
+    items.forEach(v=>{const b=E('button',null,lbl?lbl(v):String(v));b.type='button';
+      b.setAttribute('aria-pressed',String(v===cur));b.onclick=()=>{fn(v);draw()};h.appendChild(b)})};
+  mk('c-q',qs,st.q,v=>st.q=v);
+  mk('c-r',rs,st.r,v=>st.r=v);
+  const h=document.getElementById('c-a');h.innerHTML='';
+  ['А','Б','сравнить'].forEach(v=>{const b=E('button',null,v);b.type='button';
+    const on=v==='сравнить'?st.cmp:(!st.cmp&&st.arm===v);
+    b.setAttribute('aria-pressed',String(on));
+    b.onclick=()=>{if(v==='сравнить'){st.cmp=!st.cmp}else{st.cmp=false;st.arm=v}draw()};h.appendChild(b)});
+  const maps=document.getElementById('maps');maps.innerHTML='';
+  maps.className='maps'+(st.cmp?' two':'');
+  if(st.cmp){const a=cell('А'),b=cell('Б');maps.appendChild(map(a,b));maps.appendChild(map(b,a))}
+  else maps.appendChild(map(cell(st.arm),null));
+  const c=cell(st.cmp?'Б':st.arm);
+  document.getElementById('det-t').textContent=st.node?NAMES[st.node]+' · '+c.id:'Узел';
+  const b=document.getElementById('det-b');b.innerHTML='';
+  if(st.node){document.querySelector('#det .hint').style.display='none';b.appendChild(details(c))}
+  else document.querySelector('#det .hint').style.display='';
+}
+
+fetch('data.json').then(r=>r.json()).then(d=>{D=d;draw()});
+</script>
+<div class="footer-spacer"></div>
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script src="/main.js" defer></script>
+</body>
+</html>
