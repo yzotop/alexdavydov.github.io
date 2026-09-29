@@ -75,12 +75,6 @@
   .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;
     background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
   .nav-links a:hover::after{transform:scaleX(1);}
-  .nav-cta{padding:8px 16px;background:var(--accent);color:#fff;font-size:12px;
-    font-weight:600;letter-spacing:.02em;transition:background .15s;display:flex;align-items:center;gap:8px;}
-  .nav-cta:hover{background:var(--accent-d);}
-  .nav-cta .dot{width:6px;height:6px;border-radius:50%;background:#fff;
-    box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulse 2s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7);}70%{box-shadow:0 0 0 8px rgba(255,255,255,0);}100%{box-shadow:0 0 0 0 rgba(255,255,255,0);}}
   .nav-burger{display:inline-flex;align-items:center;justify-content:center;
     width:36px;height:36px;padding:0;border:1px solid var(--line);background:transparent;
     color:var(--ink);cursor:pointer;flex-shrink:0;appearance:none;-webkit-appearance:none;}
@@ -179,7 +173,6 @@
     letter-spacing:0;color:var(--muted);}
 
   /* portrait + manifesto */
-  .portrait-row{margin:64px 48px 0;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   .portrait{aspect-ratio:4/5;background:var(--soft);position:relative;overflow:hidden;}
   .portrait-img{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%, #d4d4d4 0%, #737373 45%, #0a0a0a 95%);}
   .portrait-img::before{content:"";position:absolute;inset:0;
@@ -253,21 +246,11 @@
   .learning-path-arrow{color:var(--mute2);}
 
   /* notes */
-  .notes-wrap{padding:96px 48px 0;}
   .sec-more{padding:20px 0 0;text-align:right;}
-  .approach-wrap{padding:96px 48px 0;}
   .note{display:grid;grid-template-columns:90px 90px 1fr 80px 40px;gap:20px;align-items:center;
     padding:22px 0;border-bottom:1px solid var(--line);cursor:pointer;
     transition:padding .25s;}
   .note:hover{padding-left:12px;padding-right:-12px;}
-  .note:hover .note-title{color:var(--accent);}
-  .note:hover .note-arrow{transform:translateX(4px);}
-  .note-date{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;}
-  .note-cat{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:3px 8px;
-    background:var(--soft);justify-self:start;font-weight:500;}
-  .note-title{font-size:22px;font-weight:500;letter-spacing:-.015em;transition:color .2s;}
-  .note-read{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;}
-  .note-arrow{font-size:20px;text-align:right;color:var(--accent);transition:transform .25s;}
 
   /* knowledge catalog list */
   .km-list{display:flex;flex-direction:column;margin-top:40px;}
@@ -434,7 +417,6 @@
   .km-step p{margin:0;color:var(--ink);font-size:14px;line-height:1.5;}
 
   /* testimonials */
-  .tests-wrap{padding:96px 48px 0;}
   .tests-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink);}
   .tests-grid--two-col{grid-template-columns:1fr 1fr;}
   .test{padding:28px 26px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);
@@ -446,22 +428,6 @@
   .test-by{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding-left:28px;}
   .test-by b{color:var(--ink);font-weight:600;}
   .test-stars{display:flex;gap:2px;font-size:10px;color:var(--accent);margin-left:auto;}
-
-  /* newsletter */
-  .news{margin:96px 48px 0;padding:56px 48px;background:var(--ink);color:#fff;
-    display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center;position:relative;overflow:hidden;}
-  .news::before{content:"";position:absolute;right:-80px;top:-80px;width:320px;height:320px;
-    background:var(--accent);opacity:.12;border-radius:50%;}
-  .news-kicker{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.12em;margin-bottom:14px;}
-  .news h3{font-size:44px;margin:0;font-weight:500;letter-spacing:-.03em;line-height:1.05;}
-  .news-sub{font-size:14px;color:#a3a3a3;line-height:1.55;margin-top:16px;max-width:420px;}
-  .news-form{display:flex;gap:0;position:relative;z-index:1;}
-  .news-form input{flex:1;padding:16px 18px;background:#1a1a1a;border:1px solid #333;
-    color:#fff;font-family:var(--sans);font-size:14px;outline:none;transition:border .15s;}
-  .news-form input:focus{border-color:var(--accent);}
-  .news-form button{padding:16px 24px;background:var(--accent);border:none;color:#fff;
-    font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
-  .news-form button:hover{background:var(--accent-d);}
 
   /* footer */
   .footer{padding:40px 48px;background:var(--ink);color:#fff;font-size:13px;
@@ -481,7 +447,6 @@
   .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s;}
   .reveal.in{opacity:1;transform:none;}
 
-
 /* -- Page-shared styles --------------------------------- */
 .page{padding:64px 48px 0;}
 .page .meta-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:32px;padding-bottom:12px;border-bottom:1px solid var(--line);}
@@ -491,8 +456,6 @@
 .page-lead .highlight{background:var(--accent);color:#fff;padding:0 6px;}
 .page-sub{font-size:14px;color:var(--muted);margin-top:14px;line-height:1.55;max-width:620px;}
 .page-sub--tight{margin-top:8px;}
-
-
 
 /* course detail card list */
 .course-list{margin-top:48px;border-top:1px solid var(--ink);}
@@ -508,11 +471,6 @@
 .ci-meta .chip{padding:3px 9px;background:var(--soft);justify-self:start;display:inline-block;width:max-content;}
 .ci-arrow{text-align:right;font-size:22px;transition:transform .25s;}
 
-/* two column prose */
-.prose-grid{display:grid;grid-template-columns:240px 1fr;gap:48px;margin-top:72px;
-  padding-top:48px;border-top:1px solid var(--line);}
-.prose-grid h4{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.12em;
-  text-transform:uppercase;margin:0;}
 .prose p{font-size:16px;line-height:1.65;color:var(--ink);margin:0 0 16px;max-width:620px;}
 .prose p strong{font-weight:600;}
 .prose ul{font-size:16px;line-height:1.7;color:var(--ink);padding-left:20px;margin:0 0 16px;}
@@ -546,15 +504,6 @@
 .platform-figure img{width:100%;max-width:752px;height:auto;display:block;border:1px solid var(--line);}
 .platform-figure figcaption{margin-top:12px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
 .platform-figure figcaption a{color:var(--muted);}
-
-/* lesson */
-.lesson{padding:64px 48px 0;max-width:800px;margin:0 auto;}
-.lesson-header{margin-bottom:56px;padding-bottom:32px;border-bottom:1px solid var(--ink);}
-.lesson-meta{display:flex;gap:16px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px;flex-wrap:wrap;}
-.lesson-num{color:var(--accent);font-weight:600;}
-.lesson-module{color:var(--muted);}
-.lesson-title{font-size:clamp(36px,5vw,56px);font-weight:500;letter-spacing:-.035em;margin:0 0 16px;line-height:1.05;}
-.lesson-lede{font-size:22px;line-height:1.45;color:var(--ink);max-width:640px;}
 
 /* case-block */
 .case-block{border:1px solid var(--line);padding:24px 28px;margin:32px 0;}
@@ -730,26 +679,12 @@
 .exp-detail b{color:var(--ink);font-weight:600;}
 .exp-detail .rare{color:var(--accent);}
 
-/* lesson footer nav */
-.lesson-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--ink);}
+/* breadcrumb */
 .breadcrumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:32px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
 .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .15s;}
 .breadcrumb a:hover{color:var(--ink);}
 .breadcrumb-sep{color:var(--mute2);user-select:none;}
 .breadcrumb-current{color:var(--ink);}
-.lesson-nav{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.lesson-nav--prev{text-align:left;}
-.lesson-nav--next{text-align:right;}
-.lesson-nav-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.lesson-nav-title{font-size:18px;font-weight:500;letter-spacing:-.01em;color:var(--ink);transition:color .15s;}
-.lesson-nav-title:hover{color:var(--accent);}
-
-/* think-block — вопрос для самостоятельного осмысления (сценарии практики) */
-.think-block{margin:40px 0;padding:28px 32px;border-left:4px solid var(--accent);background:var(--soft);}
-.think-block-tag{display:block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
-.think-block ol{padding-left:20px;margin:0;}
-.think-block li{font-size:17px;line-height:1.6;margin-bottom:10px;}
-.think-block li:last-child{margin-bottom:0;}
 
 /* disclosure — скрытый разбор на базе <details>/<summary>
    Класс .reveal занят scroll-animation (строка ~237); используем .disclosure. */
@@ -824,9 +759,6 @@
 .quote-author{color:var(--ink);font-weight:600;}
 .quote-preview{font-size:15px;line-height:1.65;color:var(--ink);margin:0;}
 .quote-full{font-size:15px;line-height:1.65;color:var(--ink);margin:0;}
-
-/* lesson-meta--scenario: модификатор для страниц сценариев */
-.lesson-type{color:var(--accent);}
 
 /* mentorship pricing */
 .pricing{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:48px;
@@ -1065,9 +997,8 @@
 @media (max-width:900px){
   .nav{display:flex;align-items:center;gap:12px;padding:16px 24px;}
   .nav-links{display:none;}
-  .nav-cta{margin-left:auto;}
-  .hero,.courses-wrap,.notes-wrap,.approach-wrap,.tests-wrap,.page,.article{padding-left:24px;padding-right:24px;}
-  .stats,.companies,.portrait-row,.news,.footer,.cta-strip{margin-left:24px!important;margin-right:24px!important;}
+  .hero,.courses-wrap,.page,.article{padding-left:24px;padding-right:24px;}
+  .stats,.companies,.footer,.cta-strip{margin-left:24px!important;margin-right:24px!important;}
   /* Шапка секции — в одну колонку. Разметка ставит заголовку
      grid-column:1/span 6 инлайном; при двенадцати колонках на ширине
      контента 342px это даёт 163px, а «Инструменты» кеглем 72 занимает
@@ -1099,8 +1030,7 @@
   .hero-title,.hero-right,.sec-right{grid-column:1 / -1;}
   .hero-right{padding-bottom:0;}
   .ctas{justify-content:flex-start;flex-wrap:wrap;}
-  .portrait-row,.courses-grid,.tests-grid,.news,.cases-grid,.pricing,.prose-grid,.cta-strip,.scenarios-grid{grid-template-columns:1fr;}
-  .news{padding:36px 24px;}
+  .courses-grid,.tests-grid,.cases-grid,.pricing,.cta-strip,.scenarios-grid{grid-template-columns:1fr;}
   .footer{grid-template-columns:1fr;text-align:left;}
   .footer-right,.footer-center{text-align:left;}
   /* Пятая ссылка (Поиск) в одну строку на 375 не влезает: подвал уезжал
@@ -1124,10 +1054,6 @@
   .tl-row{grid-template-columns:80px 1fr;}
   .tl-body{grid-column:1 / -1;}
   .note{grid-template-columns:70px 1fr 40px;}
-  .note-cat,.note-read{display:none;}
-  .lesson{padding-left:24px;padding-right:24px;}
-  .lesson-nav{grid-template-columns:1fr;}
-  .lesson-nav--next{text-align:left;}
   /* Гасим выход за колонку: ниже 900 у .article padding уже 24px,
      и -48px увели бы рамку за край экрана — горизонтальная прокрутка
      на всю статью из-за одной врезки. */

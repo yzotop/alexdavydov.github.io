@@ -555,11 +555,11 @@
 
 ---
 
-### 3.21 В `style.css`, но на страницах не используются
+### 3.21 Удалённые из `style.css` классы
 
-Остались от курсов, заметок и старой главной. Кандидаты на удаление из CSS отдельной задачей:
+2026-09-29 удалены правила классов, которых нет ни в разметке живых страниц, ни в JS: `.lesson`, `.lesson-header`, `.lesson-meta`, `.lesson-num`, `.lesson-module`, `.lesson-title`, `.lesson-lede`, `.lesson-type`, `.lesson-footer`, `.lesson-nav` (+ `--prev`, `--next`, `-label`, `-title`) · `.think-block`, `.think-block-tag` · `.portrait-row` · `.news`, `.news-kicker`, `.news-sub`, `.news-form` · `.nav-cta` и `@keyframes pulse` · `.prose-grid` · `.approach-wrap`, `.notes-wrap`, `.tests-wrap` · `.note-date`, `.note-cat`, `.note-title`, `.note-read`, `.note-arrow`. Скриншоты двенадцати страниц на 1280 и 375 до и после совпали пиксель в пиксель.
 
-`.lesson`, `.lesson-header`, `.lesson-meta`, `.lesson-type`, `.lesson-footer`, `.lesson-nav` (уроки курсов) · `.think-block` (сценарии практики) · `.portrait-row` · `.news`, `.news-form` · `.nav-cta` · `.prose-grid` · `.approach-wrap`, `.notes-wrap`, `.tests-wrap` · `.note` — строка-ссылка старой главной. Класс `.note` на `/cases/telenok/` и в `question-paths` — свой у страницы, совпадение имён (одно из предупреждений `check_class_collisions.py`). `.banner` на странице тренажёра `ab-trap-trainer` — его собственный CSS.
+**Оставлены:** `.note` и `.note:hover` — на `/cases/telenok/` блок `<div class="note">` берёт оформление из `style.css` (своего `<style>` у страницы нет); в `question-paths` `.note` переопределён в CSS страницы. `.author-av` — на `/about/`. `.banner` — у тренажёра `ab-trap-trainer` в его собственном CSS.
 
 ---
 
@@ -660,7 +660,7 @@
 
 **7.4 Scroll-анимация `.reveal`** противоречит swiss-принципу «контент существует сразу, а не по триггеру прокрутки». Плановая задача — удалить из `style.css` и `main.js`.
 
-**7.5 Чистка `style.css`** от классов из 3.21.
+**~~7.5 Чистка `style.css`~~** ✅ Закрыто 2026-09-29, см. 3.21.
 
 ---
 
