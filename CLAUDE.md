@@ -35,7 +35,8 @@
 
 | что | где | генератор |
 |---|---|---|
-| сетка карточек на хабе | `ai-analyst/index.html`, внутри `<div class="courses-grid">` | `scripts/render_ai_analyst_hub.py` |
+| полки карточек на хабе | `ai-analyst/index.html`, между `<!-- shelf:ИМЯ:start -->` и `<!-- shelf:ИМЯ:end -->` | `scripts/render_ai_analyst_hub.py` |
+| карточки трёх секций главной | `index.html`, между `<!-- home:ИМЯ:start -->` и `<!-- home:ИМЯ:end -->` | `scripts/render_home.py` |
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |
 | шапка: меню и шторка | все страницы с шапкой, между `<!-- header:start -->` и `<!-- header:end -->` | `scripts/render_site_header.py` из шаблона `_partials/site-header.html` |
@@ -43,7 +44,7 @@
 
 Остальной текст этих страниц правится руками как обычно. Сгенерированную
 часть руками не править: следующий прогон её сотрёт, а CI-job
-`seo-artifacts` пересобирает все четыре и валит сборку на `git diff`.
+`seo-artifacts` пересобирает все и валит сборку на `git diff`.
 
 Меню правится в шаблоне `_partials/site-header.html`, подвал —
 в `_partials/site-footer.html`, потом прогон генератора. Каталог
@@ -53,7 +54,11 @@
 
 Источник карточек и блока серии — сами статьи: `h1`, дата в
 `article-meta`, «разбор N-й» в шапке, `<meta name="series-blurb">`
-и тег «AI-аналитик» в `assets/search-index.json`. Поменять заголовок
+и тег «AI-аналитик» в `assets/search-index.json`. Вторая полка хаба —
+статьи с рубрикой A/B-эксперименты или Монетизация (`span.chip`),
+порядок по `<meta property="article:published_time">`, подпись —
+`description`. Кейсы на главной — список `HOME_CASES` в
+`render_home.py` (выбор автора), остальное из карточек `/cases/`. Поменять заголовок
 или подводку — значит поправить статью и прогнать оба генератора.
 
 Это уже случалось: скриптовый проход по мета-тегам добавил
@@ -359,6 +364,7 @@ curl -s "https://davydov.my/ПУТЬ/?v=$(date +%s)" | grep -c 'НОВОЕ ЧИ�
   python3 scripts/generate_sitemap.py
   python3 scripts/render_ai_analyst_hub.py
   python3 scripts/render_series_block.py
+  python3 scripts/render_home.py
   python3 scripts/render_site_header.py
   git diff --exit-code sitemap.xml ai-analyst/index.html workspace/articles
   git diff --exit-code -- '*.html'
