@@ -174,12 +174,27 @@ curl -s "https://davydov.my/ПУТЬ/?v=$(date +%s)" | grep -c 'НОВОЕ ЧИ�
 по репутации адреса. Если CI красный, а локально зелено — сперва
 уравнять версию, и только потом искать разницу.
 
-Отдельно: локальный прогон **вообще не проверяет внутренние ссылки**,
-пока конфиг не переделан. `base_url` превращает `/cases/foo/`
+Отдельно — внутренние ссылки. Они проверяются как файлы рабочего
+дерева, и локально, и в CI:
+
+- относительные (`/cases/foo/`) lychee разрешает через `root_dir = "."`
+  в `cases/foo/` — поэтому запускать его из корня репозитория;
+- абсолютные `https://davydov.my/…` — canonical на каждой странице
+  и ссылки, написанные полным адресом, — переводит в файлы `--remap`.
+  В CI он стоит аргументом с `github.workspace`, локально — в команде
+  из «Pre-commit отчёт». Без `--remap` абсолютные адреса уходят
+  запросом на прод, и canonical новой страницы даёт 404 до выкладки.
+
+Так было не всегда. `base_url` превращал `/cases/foo/`
 в `https://davydov.my/cases/foo/`, а правило `^https://davydov\.my`
-в `exclude` это отсеивает. Опечатка во внутреннем адресе проходит
-и локально, и в CI молча — так уже случилось со ссылкой на ещё
-не существовавший `/cases/ub22/palette/`.
+в `exclude` это отсеивало: внутренние ссылки не проверялись вовсе,
+и прошла ссылка на ещё не существовавший `/cases/ub22/palette/`.
+Потом `root_dir` вернул проверку относительным, но абсолютные
+оставались под `exclude` до перехода на `--remap`.
+
+Не проверяются и сейчас: `og:url` и `og:image` (lychee не читает
+`content` у `<meta>`), `url()` в CSS, цели meta refresh — для них
+`scripts/check_redirects.py`.
 
 Метод для любых расхождений между средами: уравнять всё, что можно
 уравнять, и смотреть на остаток. Остаток и есть настоящая разница.
@@ -306,8 +321,9 @@ curl -s "https://davydov.my/ПУТЬ/?v=$(date +%s)" | grep -c 'НОВОЕ ЧИ�
 
   ```
   python3 scripts/generate_sitemap.py
-  python3 scripts/render_courses_hub.py
-  git diff --exit-code sitemap.xml courses/index.html
+  python3 scripts/render_ai_analyst_hub.py
+  python3 scripts/render_series_block.py
+  git diff --exit-code sitemap.xml ai-analyst/index.html workspace/articles
   ```
 - Локальный прогон `link-check` — **обязательно без кеша**.
   `.lycheecache` не в репозитории, поэтому в CI его нет, а локально
