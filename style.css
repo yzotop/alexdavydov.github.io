@@ -61,7 +61,11 @@
     transform:translateY(101%);transition:transform .35s cubic-bezier(.7,0,.3,1);}
   .logo:hover .logo-mark::after{transform:translateY(0);}
   .logo-mark span{position:relative;z-index:1;}
-  .nav-links{display:flex;gap:28px;justify-content:center;color:var(--muted);}
+  /* Пункты стоят тремя группами: доклад и серия, разборы и сад, менторство
+     и о себе. Группы разделяет промежуток вдвое шире, чем пункты внутри
+     группы, — без линий и символов. */
+  .nav-links{display:flex;gap:56px;justify-content:center;color:var(--muted);}
+  .nav-group{display:flex;gap:28px;}
   /* Подпись пункта не переносится по словам: «AI-аналитик» или «Обо мне»
      в две строки ломают высоту шапки. С седьмым пунктом (∅ Сад) на ширине
      901–1000 подписи начали переноситься — замерено: высота 36 вместо 18. */
@@ -92,6 +96,10 @@
 .nav-drawer-section{display:flex;flex-wrap:wrap;align-items:center;line-height:1.6;}
 .nav-drawer-section a{display:inline;text-decoration:none;padding:3px 0;}
 .nav-drawer-section--primary a{font-size:15px;font-weight:500;color:var(--ink);}
+/* В шторке группы идут строками, между строками — отступ. Точки ставятся
+   только внутри группы: у последнего пункта группы их нет. */
+.nav-drawer-section--primary{flex-direction:column;align-items:flex-start;row-gap:10px;}
+.nav-drawer-group{display:flex;flex-wrap:wrap;align-items:center;}
 .nav-drawer-section--primary a:not(:last-child)::after{content:"·";margin:0 8px;color:var(--muted);pointer-events:none;}
 .nav-drawer-section--primary a:hover{color:var(--accent);}
 .nav-drawer-divider{border:none;border-top:1px solid var(--line);margin:12px 0;}
@@ -1019,11 +1027,14 @@
 .sim-embed-fallback{display:none;}
 
 /* responsive tweaks */
-/* Между 900 и 1000 в строку не влезают семь пунктов с промежутком 28:
-   без переноса последний упирается в кнопку меню с зазором 12px.
-   Промежуток 20 даёт запас около 60px. Ниже 900 меню и так прячется. */
+/* Между 900 и 1000 промежутки ужаты: при семи пунктах с промежутком 28
+   последний упирался в кнопку меню с зазором 12px. Пунктов теперь шесть,
+   но группы шире: внутри 18, между группами 30 — так на 901 от меню до
+   логотипа и до кнопки остаётся около 28px. Ниже 900 меню и так
+   прячется. */
 @media (max-width:1000px){
-  .nav-links{gap:20px;}
+  .nav-links{gap:30px;}
+  .nav-group{gap:18px;}
 }
 
 @media (max-width:900px){
@@ -1067,6 +1078,9 @@
   .news{padding:36px 24px;}
   .footer{grid-template-columns:1fr;text-align:left;}
   .footer-right,.footer-center{text-align:left;}
+  /* Пятая ссылка (Поиск) в одну строку на 375 не влезает: подвал уезжал
+     на 45px за край и давал горизонтальную прокрутку. Переносим. */
+  .footer-links{flex-wrap:wrap;row-gap:8px;}
   .course-item{grid-template-columns:40px 1fr 40px;}
   /* Базовый компонент на мобильном намеренно прячет мету —
      .course-item .ci-meta{display:none} ниже в этом же блоке.
