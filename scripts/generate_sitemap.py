@@ -22,7 +22,6 @@ EXCLUDED_FROM_SITEMAP = (
     "/workspace/articles/honesty-probe-hint/",
     "/workspace/articles/llm-decisions-two-metrics/",
     "/workspace/articles/sgr-ab-decisions/",
-    "/workspace/articles/ai-evals-production/",
 )
 
 # Paths not guaranteed to appear in search-index (add when new hubs ship).

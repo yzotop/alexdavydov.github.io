@@ -8,7 +8,7 @@
 
   § 01 AI-аналитик — разборы 01–03 серии (render_ai_analyst_hub.collect)
                      и карточка доклада;
-  § 02 Основа      — три последние статьи второй полки /ai-analyst/
+  § 02 Основа      — четыре последние статьи второй полки /ai-analyst/
                      (render_ai_analyst_hub.collect_base);
   § 03 Аналитика везде — кейсы из списка HOME_CASES. Список — выбор
                      автора, из страниц его не вывести; всё остальное
@@ -35,11 +35,12 @@ ROOT = Path(__file__).resolve().parent.parent
 HOME = ROOT / "index.html"
 CASES = ROOT / "cases" / "index.html"
 
-# Кейсы на главной — выбор автора, 2026-09-29: ровно те три, что названы
-# в подзаголовке /cases/ (кроссовки, салфетка, Корейко).
-HOME_CASES = ["ub22", "menu-check", "telenok"]
+# Кейсы на главной — выбор автора, 2026-09-29: три, названные в
+# подзаголовке /cases/ (кроссовки, салфетка, Корейко), и «Лего». Четыре —
+# чтобы сетка в две колонки закрывалась без пустой клетки.
+HOME_CASES = ["ub22", "menu-check", "telenok", "lego-octan"]
 SERIES_ON_HOME = 3
-BASE_ON_HOME = 3
+BASE_ON_HOME = 4
 
 TALK_CARD = """    <a class="course" href="/talks/">
       <div class="course-meta"><span class="course-num">26.11</span><span>МАТЕМАРКЕТИНГ’26 · ДОКЛАД</span></div>
