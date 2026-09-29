@@ -14,7 +14,10 @@
 последний составной селектор каждого правила: у «.qp .note» это .note.
 В /style.css — правила из одного составного селектора: .note, .note:hover,
 a.note. Контекстные правила сайта (.cases-grid .case) к элементам страницы
-не пристают, их не смотрим. Класс, объявленный и там и там, — совпадение;
+не пристают, их не смотрим. Составной класс сайта .a.b действует только на
+элемент с обоими классами: совпадением он считается, если такой элемент
+есть в разметке страницы. Иначе .reveal.in из /style.css засчитывался бы
+утечкой в свой .in страницы, у которого .reveal нет. Класс, объявленный и там и там, — совпадение;
 свойства сайта, которых страница не задала сама, — утечка. Сокращённое
 свойство страницы закрывает полные: border закрывает border-top.
 
@@ -33,7 +36,8 @@ a.note. Контекстные правила сайта (.cases-grid .case) к 
 «страница — класс» добавить в ALLOW с причиной. Лучше — переименовать
 свой класс, как сделано в прототипе (.chk, .art, .pbar).
 
-Не видит: стили, которые вставляет JS, и страницы без /style.css.
+Не видит: стили и классы, которые вставляет JS (класс in у .reveal
+ставит main.js — в разметке его нет), и страницы без /style.css.
 
 Запуск из корня репозитория:
 
@@ -62,6 +66,7 @@ SOFT = ("margin", "padding", "gap", "row-gap", "column-gap", "align-",
 COMMENT = re.compile(r"/\*.*?\*/", re.S)
 TOKEN = re.compile(r"([^{}]+)\{([^{}]*)\}|(@[^{}]+)\{|\}")
 STYLE = re.compile(r"<style[^>]*>(.*?)</style>", re.S | re.I)
+ELEMENT_CLASS = re.compile(r'\bclass="([^"]*)"')
 CLASS = re.compile(r"\.([A-Za-z_][\w-]*)")
 
 
@@ -96,15 +101,17 @@ def kind(prop: str) -> str:
     return "hard"
 
 
-def site_classes() -> dict[str, set[str]]:
+def site_classes() -> dict[frozenset[str], set[str]]:
+    """Классы одиночных правил сайта: .x → {x}, .a.b → {a, b}."""
     with open(os.path.join(ROOT, "style.css"), encoding="utf-8") as f:
         css = f.read()
-    out: dict[str, set[str]] = defaultdict(set)
+    out: dict[frozenset[str], set[str]] = defaultdict(set)
     for sel, props in rules(css):
         parts = compounds(sel)
         if len(parts) == 1:
-            for c in CLASS.findall(parts[0]):
-                out[c] |= props
+            key = frozenset(CLASS.findall(parts[0]))
+            if key:
+                out[key] |= props
     return out
 
 
@@ -133,10 +140,18 @@ def main() -> int:
                 if parts:
                     for c in CLASS.findall(parts[-1]):
                         mine[c] |= props
-            for c, props in sorted(mine.items()):
-                if c not in site or (rel, c) in ALLOW:
+            elements = [set(m.split()) for m in ELEMENT_CLASS.findall(s)]
+            for key, site_props in sorted(site.items(), key=lambda kv: sorted(kv[0])):
+                hit = key & mine.keys()
+                if not hit:
                     continue
-                leak = sorted(p for p in site[c] if not covered(p, props))
+                if len(key) > 1 and not any(key <= el for el in elements):
+                    continue             # .a.b: на странице нет элемента с обоими
+                c = ".".join(sorted(key))
+                if (rel, c) in ALLOW:
+                    continue
+                props = set().union(*(mine[k] for k in hit))
+                leak = sorted(p for p in site_props if not covered(p, props))
                 hard = [p for p in leak if kind(p) == "hard"]
                 soft = [p for p in leak if kind(p) == "soft"]
                 if hard:
