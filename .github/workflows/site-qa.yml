@@ -16,9 +16,10 @@ jobs:
       - uses: actions/checkout@v4
       # courses/index.html больше не генерируется: пять курсов уехали
       # в архив, страница стала заглушкой на /teaching/, а генератор
-      # render_courses_hub.py удалён. Генераторов теперь три: карта сайта,
-      # хаб /ai-analyst/ и блок серии в статьях. Правило у всех одно —
-      # regenerate, затем git diff --exit-code: расхождение валит сборку.
+      # render_courses_hub.py удалён. Генераторов теперь четыре: карта
+      # сайта, хаб /ai-analyst/, блок серии в статьях и шапка сайта. Правило
+      # у всех одно — regenerate, затем git diff --exit-code: расхождение
+      # валит сборку.
       - name: Regenerate sitemap
         run: python3 scripts/generate_sitemap.py
       - name: Ensure sitemap matches generator
@@ -36,6 +37,11 @@ jobs:
       # оставила бы блоки в остальных статьях устаревшими — шаг это ловит.
       - name: Ensure series blocks match generator
         run: python3 scripts/render_series_block.py && git diff --exit-code workspace/articles
+      # Шапка — меню и шторка — выводится из _partials/site-header.html.
+      # Пункт, поправленный руками в одной странице, генератор вернёт к
+      # шаблону, и diff уронит сборку. Шапка вне маркеров — ОСТАНОВ.
+      - name: Ensure site header matches template
+        run: python3 scripts/render_site_header.py && git diff --exit-code -- '*.html'
 
   verification-file:
     runs-on: ubuntu-latest
