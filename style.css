@@ -1024,6 +1024,14 @@
      28px убирают этот разрыв и держат полосу одной строкой до 768. */
   .companies{gap:14px 28px;}
   .stats--page{margin-left:-24px!important;margin-right:-24px!important;}
+  /* Заголовок страницы и число счётчика ужимаются по ширине экрана только
+     там, где иначе не влезают. Нижняя граница 64px не давала длинному
+     слову влезть: «Менторство.» на 375 выходило за край на 12px, на 320
+     не влезали шесть заголовков; число «27/31» раздвигало колонку счётчика
+     на /career/ до 193px при 187 доступных. 15vw меньше прежнего кегля
+     только до ~427px; шире — всё как было (заголовок — прежний clamp). */
+  .page-title{font-size:clamp(40px,15vw,clamp(64px,9vw,128px));}
+  .stat-num{font-size:clamp(40px,15vw,64px);}
   .stats{grid-template-columns:1fr 1fr;}
   .stat:nth-child(2){border-right:none;}
   .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line);}
