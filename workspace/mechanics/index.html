@@ -113,13 +113,30 @@
   .mech .ctl{position:static;gap:10px}
   .mech .stories.two,.mech .pipes.two,.mech .panel .dual.two{grid-template-columns:minmax(0,1fr)}
 }
+.mech .stg{display:contents}
+/* До 600 px этап — вертикальный блок. Ось трубы — сплошная линия по центру,
+   узлы и метки лежат на ней; потери уходят вправо от оси и её не пересекают. */
+@media(max-width:600px){
+  .mech .phead span:first-child,.mech .phead span:last-child{display:none}
+  .mech .phead{display:block;text-align:center}
+  .mech .pipe{display:block;position:relative}
+  .mech .pipe::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-d)}
+  .mech .stg{display:flex;flex-direction:column}
+  .mech .stg>.sp{display:none}
+  .mech .stg>.in{order:1;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px;padding:12px 0 6px}
+  .mech .stg>.in::after{display:none}
+  .mech .stg>.in::before{content:"входит";width:100%;text-align:center;font-size:var(--fs-s);color:var(--dim);
+    background:var(--bg);position:relative;z-index:1}
+  .mech .stg>.nd{order:2}
+  .mech .stg>.link{order:3}
+  .mech .stg>.out{order:4;padding:0 0 6px calc(50% + 12px)}
+  .mech .stg>.out.has::before{content:"выпадает";position:static;width:auto;height:auto;background:none;
+    font-size:var(--fs-s);color:var(--dim)}
+  .mech .art,.mech .node,.mech .client{position:relative;z-index:1}
+  .mech .link .ax{flex:0 0 50%}
+}
 @media(max-width:560px){
   .mech .wrap{padding:0 16px 90px}
-  .mech .pipe,.mech .phead{gap:0 8px}
-  .mech .in{padding-right:12px}.mech .out{padding-left:12px}
-  .mech .in::after,.mech .out.has::before{width:8px}
-  .mech .art{padding:4px 5px}
-  .mech .node{padding:12px 4px}
 }
 </style>
 </head>
@@ -336,7 +353,7 @@ function pipe(c,other){
     const L=E('div','in'+dim,ins.map(([n,k])=>'<span class="art '+k+'">'+esc(n)+'</span>').join(''));
     const nd=E('button','node'+(st.open===i?' on':''),(i+1)+' · '+esc(s.t));nd.type='button';
     nd.onclick=()=>{st.open=st.open===i?null:i;draw();document.getElementById('panel').scrollIntoView({block:'start'})};
-    const C=E('div',dim.trim());C.appendChild(nd);
+    const C=E('div','nd'+dim);C.appendChild(nd);
     if(s.check)C.appendChild(E('div','chk',esc(s.check(c))));
     // содержимое разное, а груз совпал — иначе этап выглядел бы одинаковым
     if(keyDiff&&!cgDiff)C.appendChild(E('div','chk diff',esc(s.keyNote)));
@@ -344,14 +361,17 @@ function pipe(c,other){
     // («код сборки и тесты не читаются») не подсвечивается.
     const oth=other?s.out(other).map(x=>x[0]):null;
     const R=E('div','out'+(out.length?' has':'')+dim,out.map(([t,k])=>'<span class="loss'+(k?' '+k:'')+(oth&&!oth.includes(t)?' diff':'')+'">'+esc(t)+'</span>').join(''));
-    g.appendChild(L);g.appendChild(C);g.appendChild(R);
+    // Этап — обёртка: на десктопе display:contents (три колонки сетки как были),
+    // до 600 px — вертикальный блок: входит, узел, груз, выпадает.
+    const sg=E('div','stg');
     const lk=E('div','link'+dim,'<span class="ax"><i></i></span><span class="cg'+(cgDiff?' diff':'')+'">'+esc(cg)+'</span>');
-    g.appendChild(E('div',dim.trim()));g.appendChild(lk);g.appendChild(E('div',dim.trim()));
+    [L,C,R,E('div','sp'+dim),lk,E('div','sp'+dim)].forEach(x=>sg.appendChild(x));
+    g.appendChild(sg);
   });
   const bad=c.приёмка.исход==='не сошлось';
-  g.appendChild(E('div'));
-  g.appendChild(E('div','client'+(bad?' bad':''),'Заказчик получил бы '+esc(c.заказчик)));
-  g.appendChild(E('div'));
+  const cl=E('div','stg');
+  [E('div','sp'),E('div','nd client'+(bad?' bad':''),'Заказчик получил бы '+esc(c.заказчик)),E('div','sp')].forEach(x=>cl.appendChild(x));
+  g.appendChild(cl);
   w.appendChild(g);return w;
 }
 
