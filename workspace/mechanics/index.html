@@ -12,83 +12,105 @@
     <link rel="stylesheet" href="/style.css"/>
 <style>
 .mech{--node:var(--line-d);--dim:var(--muted)}
-.mech .wrap{max-width:1180px;margin:0 auto;padding:0 24px 110px}
+.mech .wrap{max-width:1120px;margin:0 auto;padding:0 24px 110px}
 .mech h1{font-size:clamp(30px,4.4vw,46px);line-height:1.08;letter-spacing:-.02em;margin:28px 0 12px;font-weight:500}
 .mech .lede{font-size:19px;color:var(--dim);max-width:62ch;margin:0 0 6px}
-.mech .disclaimer{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--dim);
-  border-left:2px solid var(--node);padding:6px 0 6px 12px;margin:18px 0 26px;max-width:70ch}
-.mech h2.sec{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--dim);font-weight:500;margin:34px 0 12px;padding-bottom:8px;border-bottom:1.5px solid var(--ink)}
+.mech .disclaimer{font-size:13.5px;line-height:1.5;color:var(--dim);border-left:2px solid var(--node);
+  padding:6px 0 6px 12px;margin:16px 0 24px;max-width:70ch}
+/* служебные подписи — моноширинный капс; содержание — никогда */
+.mech .svc{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 /* ── управление ── */
-.mech .ctl{display:flex;flex-wrap:wrap;gap:22px;padding:14px 0;margin-bottom:8px;
+.mech .ctl{display:flex;flex-wrap:wrap;gap:20px;padding:13px 0;margin-bottom:22px;
   border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);position:sticky;top:0;background:var(--bg);z-index:5}
 .mech .ctl .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.mech .ctl .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 .mech .ctl button{font-family:var(--mono);font-size:13px;padding:6px 12px;border:1px solid var(--node);
   background:var(--bg);color:var(--ink);cursor:pointer}
 .mech .ctl button:hover{border-color:var(--ink)}
 .mech .ctl button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-/* ── обзор: компактная карта ── */
-.mech .ov{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:6px}
-.mech .ov button{border:1px solid var(--node);background:var(--bg);padding:7px 6px;cursor:pointer;
-  font:inherit;text-align:left;min-width:0}
-.mech .ov button:hover{border-color:var(--ink)}
-.mech .ov .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
-  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mech .ov .n{font-family:var(--mono);font-size:17px;display:block;margin-top:2px}
-.mech .ov .written{background:var(--soft)}
-.mech .ov .unwritten{border-color:var(--accent)}
-.mech .ov .unwritten .n,.mech .ov .unwritten .k{color:var(--accent)}
-/* ── пайплайн ── */
-.mech .pipe{border-top:1.5px solid var(--ink)}
-.mech .stage{border-bottom:1px solid var(--node)}
-.mech .stage.diff{outline:2px solid var(--accent);outline-offset:-2px}
-.mech .srow{display:grid;grid-template-columns:150px 200px minmax(0,1fr) minmax(0,1fr);gap:0 18px;
-  padding:16px 12px;cursor:pointer;align-items:start}
-.mech .srow:hover{background:var(--soft2)}
-.mech .cmp .srow{grid-template-columns:130px 170px minmax(0,1fr) minmax(0,1fr)}
-.mech .col-h{display:grid;grid-template-columns:150px 200px minmax(0,1fr) minmax(0,1fr);gap:0 18px;
-  padding:8px 12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.mech .cmp .col-h{grid-template-columns:130px 170px minmax(0,1fr) minmax(0,1fr)}
-.mech .st-n{font-family:var(--mono);font-size:12px;color:var(--dim);display:block}
-.mech .st-t{font-size:17px;font-weight:600;line-height:1.25;display:block;margin-top:2px}
-.mech .arts{display:flex;flex-wrap:wrap;gap:5px}
-.mech .a{font-family:var(--mono);font-size:11px;padding:2px 6px;border:1px solid var(--node);line-height:1.5;overflow-wrap:anywhere}
-.mech .a.author{background:var(--soft);border-color:var(--ink)}
-.mech .a.unread{text-decoration:line-through;color:var(--dim)}
-.mech .a .mk{font-family:var(--sans);font-size:10px;color:var(--dim);text-decoration:none;display:block}
-.mech .cell{font-size:14.5px;line-height:1.45;min-width:0}
-.mech .cell .arm{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--dim);display:block;margin-bottom:3px}
-.mech .cell .big{font-family:var(--mono);font-size:20px;display:block;line-height:1.15}
-.mech .cell p{margin:3px 0}
-.mech .cell ul{margin:4px 0;padding-left:16px}
-.mech .go{color:var(--ink)}
-.mech .lost{color:var(--dim)}
-.mech .lost b{font-weight:500;color:var(--ink)}
-.mech .un{color:var(--accent)}
-.mech .gr{color:var(--dim)}
-.mech .lbl2{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:block;margin-top:7px}
-.mech .blk{display:grid;grid-template-columns:1fr auto;gap:0 10px;font-size:13px;font-family:var(--mono)}
-.mech .blk .d{color:var(--dim)}
-/* ── раскрытие ── */
-.mech .det{padding:4px 12px 18px;border-top:1px dashed var(--node)}
-.mech .det h4{font-size:14px;font-weight:600;margin:14px 0 4px}
+/* ── история ── */
+/* Колонки — minmax(0,1fr), не 1fr: у 1fr минимум равен ширине содержимого,
+   и таблица результата с длинными числами раздувала страницу на телефоне. */
+.mech .story{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin:0 0 26px}
+.mech .story.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.mech .story p.tale{font-size:20px;line-height:1.45;margin:6px 0 8px;max-width:64ch}
+.mech .story p.tech{font-family:var(--mono);font-size:11.5px;line-height:1.55;color:var(--dim);margin:0;max-width:90ch}
+/* ── лента этапов ── */
+.mech .ribbon{display:flex;align-items:stretch;gap:0;margin:0 0 10px;overflow-x:auto;padding-bottom:4px}
+.mech .ribbon button{flex:1 1 0;min-width:108px;border:0;background:none;cursor:pointer;text-align:left;
+  padding:8px 6px 8px 0;font:inherit;color:var(--ink)}
+.mech .ribbon button:hover .rn{text-decoration:underline}
+.mech .ribbon .arr{flex:0 0 auto;align-self:center;color:var(--dim);padding:0 6px 0 2px;font-size:13px}
+.mech .rtop{display:flex;align-items:center;gap:6px}
+.mech .rn{font-size:14px;font-weight:600;line-height:1.2}
+.mech .rw{display:block;font-size:12.5px;color:var(--dim);line-height:1.3;margin-top:3px}
+.mech .dot{width:10px;height:10px;border-radius:50%;flex:0 0 10px;display:inline-block}
+.mech .dot.reached{background:var(--muted)}
+.mech .dot.written{background:var(--ink)}
+.mech .dot.unwritten{background:var(--accent)}
+.mech .dot.unread{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-d)}
+.mech .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--dim);margin:0 0 30px}
+.mech .legend span{display:inline-flex;align-items:center;gap:6px}
+/* ── этап ── */
+.mech .stage{border-top:1.5px solid var(--ink);padding:18px 0 20px;scroll-margin-top:70px}
+.mech .stage.diff{box-shadow:inset 3px 0 0 var(--accent);padding-left:14px}
+.mech .shead{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+.mech .shead .sn{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.mech .shead h3{font-size:21px;font-weight:600;margin:0}
+.mech .cols{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.mech .cols>div,.mech .story>div,.mech .verdicts>div{min-width:0}
+.mech .cols.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.mech .meaning{font-size:17px;line-height:1.45;margin:0 0 12px;max-width:62ch}
+.mech .meaning.un{color:var(--accent)}
+.mech .num{font-family:var(--mono);font-size:30px;line-height:1.05;display:block}
+.mech .cap{font-size:13.5px;color:var(--dim);display:block;margin-top:3px}
+.mech .same{border-top:1px solid var(--node);padding:11px 0;font-size:15px;color:var(--dim);cursor:pointer;
+  display:flex;gap:10px;align-items:baseline}
+.mech .same b{color:var(--ink);font-weight:600}
+.mech .same:hover{color:var(--ink)}
+/* артефакты: имя крупно, путь мелко */
+.mech .arts{display:flex;flex-wrap:wrap;gap:8px 14px;margin:14px 0 0}
+.mech .art{display:flex;flex-direction:column;border-left:2px solid var(--node);padding:1px 0 1px 8px}
+.mech .art.author{border-left-color:var(--ink)}
+.mech .art .an{font-size:14px;line-height:1.3}
+.mech .art .ap{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.4;overflow-wrap:anywhere}
+.mech .art .am{font-size:11.5px;color:var(--dim)}
+.mech .art.unread .an,.mech .art.unread .ap{text-decoration:line-through;color:var(--dim)}
+/* полоса промпта */
+.mech .barwrap{margin-top:14px}
+.mech .bar{display:flex;height:22px;margin:4px 0 8px;border:1px solid var(--node)}
+.mech .bar i{display:block;height:100%;background:var(--soft);border-right:1px solid var(--bg);min-width:3px}
+.mech .bar i:nth-child(odd){background:var(--line)}
+.mech .bar i.hot{background:var(--soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.mech .barlab{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:3px 14px;font-size:13px}
+.mech .barlab span{display:flex;justify-content:space-between;gap:8px}
+.mech .barlab .d{font-family:var(--mono);color:var(--dim)}
+.mech .barlab .hot{color:var(--accent)}
+/* свёрнутые подробности */
+.mech details{margin-top:12px}
+.mech summary{cursor:pointer;font-size:14px;color:var(--dim)}
+.mech summary:hover{color:var(--ink)}
+.mech details h4{font-size:14px;font-weight:600;margin:14px 0 4px}
 .mech pre{background:var(--soft);padding:12px 14px;overflow-x:auto;font-family:var(--mono);
   font-size:12px;line-height:1.55;margin:6px 0;white-space:pre-wrap;word-break:break-word}
-/* Вставки плеча Б — ЗАПИСАННЫЕ решения: цвет записанного, не акцент. */
 .mech .ins{background:var(--line);box-shadow:inset 3px 0 0 var(--ink);display:block;padding-left:8px}
 .mech .tw{overflow-x:auto}
 .mech table{border-collapse:collapse;width:100%;font-size:12.5px;margin:6px 0}
 .mech td,.mech th{text-align:left;padding:5px 10px 5px 0;border-bottom:1px solid var(--line);font-family:var(--mono);vertical-align:top}
-.mech th{color:var(--dim);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
-.mech .hint{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:4px 0}
-.mech .dual{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mech th{color:var(--dim);font-weight:400}
+.mech .hint{font-size:13px;color:var(--dim);margin:4px 0}
+.mech .un{color:var(--accent)}
+.mech code{font-family:var(--mono);font-size:.9em;background:var(--soft);padding:0 4px}
+/* ── карточка вердикта ── */
+.mech .verdict{border:1.5px solid var(--ink);padding:18px 20px;margin-top:34px}
+.mech .verdict .vg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:10px}
+.mech .verdict .vv{font-size:17px;line-height:1.4;margin-top:4px}
+.mech .verdicts{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.mech .verdicts.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 @media(max-width:900px){
-  .mech .ctl{position:static;gap:14px}
-  .mech .ov{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .mech .col-h{display:none}
-  .mech .srow,.mech .cmp .srow{grid-template-columns:1fr;gap:10px}
-  .mech .dual{grid-template-columns:1fr}
+  .mech .ctl{position:static;gap:12px}
+  .mech .story.two,.mech .cols.two,.mech .verdicts.two{grid-template-columns:minmax(0,1fr)}
+  .mech .verdict .vg{grid-template-columns:minmax(0,1fr)}
+  .mech .story p.tale{font-size:18px}
 }
 </style>
 </head>
@@ -136,20 +158,26 @@
 <div class="wrap">
 
 <h1>Механика AI-аналитика</h1>
-<p class="lede">Что происходит с вопросом по дороге к ответу: какие артефакты участвуют на каждом этапе, что из них доходит дальше и что теряется. Восемнадцать записанных ячеек — три вопроса, три повтора, два плеча.</p>
+<p class="lede">Что происходит с вопросом по дороге к ответу: какие решения записаны и дошли до модели, каких нет, что агент отдал и чем это кончилось против эталона.</p>
 <p class="disclaimer">Повтор записанных прогонов, стенд синтетический; ничего не смоделировано. Промпт пересобран тем же кодом и сверен с отпечатками из лога. Сырой текст ответа модели не сохранялся; показан разбор из лога — варианты, SQL, уточнение.</p>
 
 <div class="ctl">
-  <div class="grp"><span class="lbl">Вопрос</span><span id="c-q"></span></div>
-  <div class="grp"><span class="lbl">Повтор</span><span id="c-r"></span></div>
-  <div class="grp"><span class="lbl">Плечо</span><span id="c-a"></span></div>
+  <div class="grp"><span class="svc">вопрос</span><span id="c-q"></span></div>
+  <div class="grp"><span class="svc">повтор</span><span id="c-r"></span></div>
+  <div class="grp"><span class="svc">плечо</span><span id="c-a"></span></div>
 </div>
 
-<h2 class="sec">Обзор · карта архитектуры</h2>
-<div class="ov" id="ov"></div>
+<div class="story" id="story"></div>
+<div class="ribbon" id="ribbon"></div>
+<div class="legend">
+  <span><i class="dot reached"></i>дошло</span>
+  <span><i class="dot written"></i>записано и дошло</span>
+  <span><i class="dot unwritten"></i>не записано</span>
+  <span><i class="dot unread"></i>не читается</span>
+</div>
 
-<h2 class="sec">Пайплайн · восемь этапов</h2>
-<div class="pipe" id="pipe"></div>
+<div id="stages"></div>
+<div id="verdict"></div>
 
 </div>
 </div>
@@ -158,165 +186,147 @@
 const E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
-let D=null, st={q:'q02', r:1, arm:'Б', cmp:false, open:null};
+let D=null, st={q:'q02', r:1, arm:'Б', cmp:false, open:new Set()};
 const cell=arm=>D.ячейки.find(c=>c.плечо===arm&&c.вопрос===st.q&&c.повтор===st.r);
 
-/* ── артефакты: метки ── */
-const art=(name,kind,mark)=>'<span class="a'+(kind?' '+kind:'')+'">'+esc(name).replace(/\//g,'/<wbr>')+(mark?'<span class="mk">'+esc(mark)+'</span>':'')+'</span>';
-const AUTHOR='пишет аналитик', UNREAD='модель не читает';
+/* ── подписи артефактов: человеческое имя к пути. Это подписи, не данные ── */
+const ART={'data/retail.duckdb':'база данных','agent/retrieval.py':'код отбора контекста',
+  'agent/sql_gen.py':'контракт ответа','agent/loop.py':'петля агента',
+  'metrics/metrics.yml':'файл определений метрик','dbt/models/marts/schema.yml':'описания витрин',
+  'dbt/models/staging/schema.yml':'описания промежуточных таблиц','agent/log/':'лог прогона','truth_sql/':'эталонный запрос'};
+const art=(name,path,kind,mark)=>'<span class="art'+(kind?' '+kind:'')+'"><span class="an">'+esc(name)+'</span>'+
+  (path?'<span class="ap">'+esc(path)+'</span>':'')+(mark?'<span class="am">'+esc(mark)+'</span>':'')+'</span>';
+const A=p=>art(ART[p]||p,p);
 
-/* ── размеры блоков промпта: считаются из data.json, не вписаны ── */
-function blocks(c){
-  return [['SYSTEM',D.блоки['SYSTEM']],['Схема базы',D.блоки['Схема базы']],
-    ['Описания',D.блоки['Описания']],['Примеры значений',D.блоки['Примеры значений']],
-    ['Слой метрик',D.слои[c.плечо]],['Вопрос',c.задача]];
-}
-function blkTable(c){
-  const b=blocks(c), tot=b.reduce((s,x)=>s+x[1].length,0);
-  return '<div class="blk">'+b.map(x=>'<span>'+esc(x[0])+'</span><span class="d">'+fmt(x[1].length)+'</span>').join('')+
-    '<span><b>всего</b></span><span><b>'+fmt(tot)+'</b></span></div>';
-}
+/* ── текст истории: тот же шаблон, что принят ── */
+const L=keys=>{const xs=keys.map(k=>D.подписи[k]);return xs.length<2?xs[0]:xs.slice(0,-1).join(', ')+' и '+xs[xs.length-1]};
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const val=v=>Array.isArray(v)?v.join(' / '):String(v);
+const grp=keys=>{const g={};keys.forEach(k=>{const [m,x]=k.split('.');(g[m]=g[m]||[]).push(x)});
+  return Object.entries(g).map(([m,xs])=>m+' ('+xs.join(', ')+')').join('; ')};
+const nvar=n=>n===1?'один вариант':n+(n<5?' варианта':' вариантов');
+const written=c=>c.решения.записаны_в_плече.length===c.решения.ключи_истории.length;
+// Одно число в единственном варианте — пишется рядом с эталоном, с округлением эталона.
+// На текущих данных не срабатывает ни разу: в ответах из одного варианта 2–8 чисел.
+function single(c){const v=c.модель.варианты,p=c.приёмка;
+  if(v.length!==1||!p.поля.length||p.поля[0]['чисел в выдаче']!==1||p.исход==='форма разошлась')return null;
+  const x=(v[0].rows||[]).flat().find(y=>typeof y==='number');if(x==null)return null;
+  const ref=p.эталон.значение, dp=(String(ref).split('.')[1]||'').length;return x.toFixed(dp)}
+function tail(c){const p=c.приёмка,e=val(p.эталон.значение),x=single(c);
+  if(p.исход==='не сошлось'&&x!=null)return ' и не совпал: '+x+' против эталона '+e+'.';
+  return {'сошлось':' и совпал с эталоном '+e+'.','не сошлось':' и не совпал с эталоном '+e+'.',
+    'форма разошлась':'. Числа верные, но не в форме эталона '+e+'.'}[p.исход]}
+function story(c){const r=c.решения,m=c.модель,w=written(c);
+  let s=cap(L(r.ключи_истории))+' — '+(w?'дописано в файл определений':'не записано');
+  if(w&&!r.маршрут_задет)s+=', но маршрут вопроса ведёт к другой метрике';s+='. ';
+  if(m.вид==='clarify')return s+'Агент переспросил.';
+  const n=m.варианты.length;
+  if(!w)return s+'Агент '+(n===1?'выбрал сам':'подал '+nvar(n))+tail(c);
+  const saw=(!r.маршрут_задет&&!D.отбор)?'увидел запись только потому, что файл определений идёт целиком, и ':'';
+  return s+'Агент '+saw+(r.упомянуто_агентом.length?(saw?'сослался на неё':'сослался на дописанное'):'ответил')+tail(c)}
+function tech(c){const r=c.решения,m=c.модель,p=c.приёмка,parts=[];
+  parts.push('записано и дошло: '+(r.есть.length?grp(r.есть):'ничего по маршруту'));
+  if(r.нет_в_плече.length)parts.push('не записано: '+grp(r.нет_в_плече)+' — '+(m.вид==='clarify'?'никто не закрыл, агент переспросил':'решал агент, а не файл'));
+  else if(!r.маршрут_задет&&D.новые_метрики_в_Б.length)parts.push(D.новые_метрики_в_Б.join(', ')+(c.плечо==='Б'?' записан, но маршрут вопроса ведёт в ':' в этом плече нет, и маршрут вопроса ведёт в ')+r.маршрут.join(', '));
+  else parts.push('по маршруту записаны все решения, которые знает код');
+  parts.push(m.вид==='clarify'?'агент отдал вопрос вместо числа':'агент отдал '+nvar(m.варианты.length)+(m.уточнение?' и уточнение':''));
+  const e=val(p.эталон.значение);
+  parts.push({'сошлось':'совпало с эталоном '+e,'форма разошлась':'числа верные, но не в форме эталона '+e,'не сошлось':'не совпало с эталоном '+e,'уточнение':'с эталоном '+e+' сверять нечего'}[p.исход]);
+  if(written(c)&&m.вид!=='clarify'&&r.упоминание_не_проверяется.length)parts.push('упоминание '+r.упоминание_не_проверяется.map(k=>k.split('.')[1]).join(', ')+' не проверяется: значение — список');
+  return parts.join('; ')+'.'}
 
-/* ── восемь этапов ── */
+/* ── блоки промпта: размеры из текста в data.json ── */
+const blocks=c=>[['SYSTEM',D.блоки['SYSTEM']],['Схема базы',D.блоки['Схема базы']],['Описания',D.блоки['Описания']],
+  ['Примеры значений',D.блоки['Примеры значений']],['Слой метрик',D.слои[c.плечо]],['Вопрос',c.задача]];
+function bar(c,hot){const b=blocks(c),tot=b.reduce((s,x)=>s+x[1].length,0);
+  return '<div class="bar" role="img" aria-label="Шесть блоков промпта, ширина по размеру">'+b.map(x=>'<i'+(hot&&x[0]===hot?' class="hot"':'')+
+    ' data-w="'+x[1].length+'" title="'+esc(x[0])+': '+x[1].length+' знаков"></i>').join('')+'</div>'+
+    '<div class="barlab">'+b.map(x=>'<span class="'+(hot&&x[0]===hot?'hot':'')+'">'+esc(x[0])+' <span class="d">'+fmt(x[1].length)+'</span></span>').join('')+'</div>'}
+
+/* ── восемь этапов: смысл → число → подробности ── */
 const S=[
- {t:'Вопрос',
-  arts:c=>art('вопрос','author',AUTHOR),
-  what:c=>'<p>«'+esc(c.задача)+'»</p><span class="big">'+c.задача.length+'</span><p class="gr">знаков</p>',
-  loss:c=>'<p class="go">→ в промпт как есть, последним блоком</p><p class="lost">теряется: —</p>',
-  key:c=>c.задача,
-  det:c=>'<pre>'+esc(c.задача)+'</pre>'},
- {t:'Данные',
-  arts:c=>art(D.артефакты.база)+art(D.артефакты.код_отбора,'','GROUPS'),
-  what:c=>'<span class="big">'+c.данные.в_схеме+' из '+c.данные.в_базе+'</span><p>объектов базы вошло в схему</p>',
-  loss:c=>'<p class="go">→ '+c.данные.в_схеме+' объектов в блок схемы</p>'+
-    '<p class="lost">теряется: <b>'+c.данные.не_вписаны.length+' stg_*</b> — не вписаны в код, '+esc(c.данные.причина.replace('не вписан в GROUPS ','').replace(/[()]/g,''))+'; это не отбор</p>',
-  key:c=>c.данные,
-  det:c=>'<h4>Вошли в схему — '+c.данные.в_схеме+'</h4><p class="hint">'+esc(c.данные.в_схеме_имена.join(', '))+'</p>'+
-    '<h4>Не вписаны в код — '+c.данные.не_вписаны.length+'</h4><p class="hint">'+esc(c.данные.не_вписаны.join(', '))+' · '+esc(c.данные.причина)+'</p>'+
-    '<h4>Блок схемы целиком</h4><pre>'+esc(D.блоки['Схема базы'])+'</pre>'},
- {t:'Решения',
-  arts:c=>art(D.артефакты.файл_определений,'author',AUTHOR)+D.артефакты.описания.map(f=>art(f,'author',AUTHOR)).join('')+
-    art('dbt/models/*/*.sql ×'+D.артефакты.код_сборки.length,'unread',UNREAD)+
-    art('dbt/tests/*.sql ×'+D.артефакты.тесты.length,'unread',UNREAD),
-  what:c=>{const r=c.решения;
-    let h='<span class="big">'+fmt(r.знаков)+'</span><p>знаков, '+r.строк+' строк файла определений</p>';
-    if(r.вставки.length) h+='<p>из них <b>'+r.вставки.length+'</b> строк дописаны против плеча А</p>';
-    h+='<span class="lbl2">где есть · маршрут '+esc(r.маршрут.join(', '))+'</span><p>'+(r.есть.length?esc(r.есть.join(', ')):'—')+'</p>';
-    h+='<span class="lbl2">описания моделей — '+c.данные.описано.length+'</span><p>'+esc(c.данные.описано.join(', '))+'</p>';
-    return h},
-  loss:c=>{const r=c.решения;
-    let h='<p class="go">→ metrics.yml целиком и '+c.данные.описано.length+' описаний</p>'+
-      '<p class="lost">теряется: <b>код сборки</b> ('+D.артефакты.код_сборки.length+' .sql) и <b>тесты</b> ('+D.артефакты.тесты.length+') — не читаются</p>';
-    h+='<span class="lbl2">чего нет · по маршруту</span>'+(r.нет.length?'<p class="un">'+esc(r.нет.join(', '))+'</p>':'<p>—</p>');
-    if(r.дописано_в_Б_вне_маршрута.length) h+='<span class="lbl2">дописано в Б, маршрут вопроса не ведёт</span><p class="gr">'+esc(r.дописано_в_Б_вне_маршрута.join(', '))+'</p>';
-    return h},
-  key:c=>c.решения,
-  det:c=>{const r=c.решения; let h='';
-    h+='<h4>Чего нет в этом плече по маршруту вопроса</h4><p class="'+(r.нет.length?'un':'')+'">'+(r.нет.length?esc(r.нет.join(', ')):'ничего')+'</p>';
-    h+='<p class="hint">Выведено из диффа: ключи-решения (render.DECIDING), которые есть в metrics.yml плеча Б и которых нет в плече А, пересечённые с метриками, к которым ведёт вопрос (retrieval.metrics_for).</p>';
-    if(r.дописано_в_Б_вне_маршрута.length) h+='<h4>Дописано в Б, но маршрут вопроса к этим метрикам не ведёт</h4><p class="gr">'+esc(r.дописано_в_Б_вне_маршрута.join(', '))+'</p>';
-    if(r.вставки.length) h+='<h4>Дописано против плеча А — '+r.вставки.length+' строк</h4><pre>'+r.вставки.map(l=>'<span class="ins">'+(esc(l)||' ')+'</span>').join('')+'</pre>';
-    h+='<h4>Файл определений целиком, плечо '+c.плечо+'</h4><pre>'+esc(D.слои[c.плечо])+'</pre>';
-    h+='<h4>Описания</h4><pre>'+esc(D.блоки['Описания'])+'</pre>';
-    h+='<h4>Не читаются моделью</h4><p class="hint">'+esc(D.артефакты.код_сборки.concat(D.артефакты.тесты).join(', '))+'</p>';
-    return h}},
- {t:'Обвязка',
-  arts:c=>art(D.артефакты.код_отбора)+art(D.артефакты.контракт)+art(D.артефакты.петля),
-  what:c=>blkTable(c),
-  loss:c=>'<p class="go">→ промпт из '+blocks(c).length+' блоков</p>'+
-    '<p class="lost">теряется: отбора нет — ничего; но <b>'+esc(c.данные.описано_без_схемы.join(', '))+'</b>: описание дошло, таблицы в схеме нет</p>',
-  key:c=>D.слои[c.плечо],
-  det:c=>'<h4>Размеры блоков</h4>'+blkTable(c)+'<h4>SYSTEM</h4><pre>'+esc(D.блоки['SYSTEM'])+'</pre>'+
-    '<h4>Примеры значений</h4><pre>'+esc(D.блоки['Примеры значений'])+'</pre>'},
- {t:'Модель',
-  arts:c=>art(D.артефакты.модель),
-  what:c=>{const m=c.модель;
-    if(m.вид==='clarify') return '<span class="big">?</span><p>переспросила, вариантов нет</p><p class="gr">'+esc(m.уточнение.slice(0,140))+'…</p>';
-    return '<span class="big">'+m.варианты.length+'</span><p>'+(m.варианты.length===1?'вариант':'вариантов')+(m.уточнение?', и уточнение':'')+'</p>'+
-      m.варианты.map((v,i)=>'<p class="gr">'+(i+1)+'. '+esc(v.label.slice(0,90))+(v.label.length>90?'…':'')+'</p>').join('')},
-  loss:c=>'<p class="go">→ разобранный ответ: варианты, SQL, уточнение</p><p class="lost">теряется: <b>сырой текст ответа</b> — не сохранялся</p>',
-  key:c=>[c.модель.вид,c.модель.уточнение,c.модель.варианты.map(v=>v.sql)],
-  det:c=>{const m=c.модель; let h='<p class="hint">'+esc(m.оговорка)+'</p>';
-    if(m.уточнение) h+='<h4>Уточнение</h4><pre>'+esc(m.уточнение)+'</pre>';
-    if(m.причина) h+='<h4>Причина</h4><pre>'+esc(m.причина)+'</pre>';
-    m.варианты.forEach((v,i)=>{h+='<h4>Вариант '+(i+1)+'</h4><p>'+esc(v.label)+'</p><pre>'+esc(v.sql)+'</pre>'});
-    return h}},
- {t:'Исполнение',
-  arts:c=>art(D.артефакты.база),
-  what:c=>{const v=c.модель.варианты;
-    if(!v.length) return '<span class="big">—</span><p>исполнять нечего</p>';
-    return v.map((x,i)=>'<p><b>'+(i+1)+'.</b> '+(x.rows?fmt(x.rows.length)+' строк':'результат не сохранён')+'</p>').join('')},
-  loss:c=>c.модель.варианты.length?'<p class="go">→ строки результата в приёмку</p><p class="lost">теряется: —</p>'
-    :'<p class="go">→ уточнение в приёмку</p><p class="lost">теряется: —</p>',
-  key:c=>c.модель.варианты.map(v=>v.rows),
-  det:c=>{const v=c.модель.варианты; if(!v.length) return '<p class="hint">Агент переспросил — исполнять нечего.</p>';
-    return v.map((x,i)=>'<h4>Вариант '+(i+1)+' · SQL</h4><pre>'+esc(x.sql)+'</pre>'+
-      (x.rows&&x.rows.length?'<div class="tw"><table><tbody>'+x.rows.slice(0,20).map(r=>'<tr>'+r.map(y=>'<td>'+esc(y)+'</td>').join('')+'</tr>').join('')+
-      '</tbody></table></div><p class="hint">строк: '+fmt(x.rows.length)+(x.rows.length>20?', показаны первые 20':'')+'</p>':'<p class="hint">результат не сохранён</p>')).join('')}},
- {t:'Приёмка',
-  arts:c=>art(c.приёмка.эталон.файл,'author',AUTHOR+' · модель не видит'),
-  what:c=>'<p>эталон: <b>'+esc(JSON.stringify(c.приёмка.эталон.значение))+'</b></p><span class="big">'+esc(c.приёмка.исход)+'</span>'+
-    (c.приёмка.поля.length?'<p class="gr">проверено вариантов: '+c.приёмка.поля.length+'</p>':'<p class="gr">приёмка пуста — уточнение законный исход</p>'),
-  loss:c=>'<p class="go">→ заказчику: '+esc(c.заказчик)+'</p>'+
-    (c.приёмка.исход==='сошлось'?'<p class="lost">теряется: —</p>':'<p class="lost">теряется: <b>'+esc(c.приёмка.исход)+'</b></p>'),
-  key:c=>c.приёмка.исход,
-  det:c=>'<p>Эталон <code>'+esc(c.приёмка.эталон.файл)+'</code>: '+esc(JSON.stringify(c.приёмка.эталон.значение))+'</p>'+
-    (c.приёмка.поля.length?'<div class="tw"><table><thead><tr><th>вариант</th><th>число сошлось</th><th>форма разошлась</th><th>нескалярный</th></tr></thead><tbody>'+
-     c.приёмка.поля.map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+(p['число сошлось']?'да':'нет')+'</td><td>'+(p['форма разошлась']?'да':'нет')+'</td><td>'+(p['нескалярный ответ']?'да':'нет')+'</td></tr>').join('')+
-     '</tbody></table></div>':'<p class="hint">Агент переспросил, судить нечего.</p>')},
- {t:'Проверка проверки',
-  arts:c=>art(D.артефакты.лог)+art('layer_sha')+art('context_sha'),
-  what:c=>'<p class="gr">layer_sha</p><span class="big">'+esc(c.лог.layer_sha)+'</span>'+
-    '<p>'+fmt(c.лог.токены.in)+' вход · '+fmt(c.лог.токены.out)+' выход · $'+c.лог.цена.toFixed(4)+'</p>',
-  loss:c=>'<p class="go">→ отпечатков сошлось: '+esc(D.проверка_проверки.отпечатков_сошлось)+'</p><p class="lost">'+esc(D.проверка_проверки.пары)+'</p>',
-  key:c=>c.лог.layer_sha,
-  det:c=>'<div class="tw"><table><tbody><tr><th>layer_sha</th><td>'+esc(c.лог.layer_sha)+'</td></tr><tr><th>context_sha</th><td>'+esc(c.лог.context_sha)+'</td></tr>'+
-    '<tr><th>вход</th><td>'+fmt(c.лог.токены.in)+'</td></tr><tr><th>выход</th><td>'+fmt(c.лог.токены.out)+'</td></tr><tr><th>цена</th><td>$'+c.лог.цена.toFixed(4)+'</td></tr></tbody></table></div>'+
-    '<p class="hint">Промпт пересобран тем же кодом, что на прогоне; отпечатки сошлись — показан тот самый текст.</p>'}
+{t:'Вопрос', dot:c=>'reached', rib:c=>c.задача.length+' знаков',
+ mean:c=>'Вопрос продакта уходит в промпт как есть, последним блоком.',
+ num:c=>[c.задача.length,'знаков'], arts:c=>art('вопрос продакта','','author','пишет аналитик'),
+ key:c=>c.задача, more:c=>'<pre>'+esc(c.задача)+'</pre>'},
+{t:'Данные', dot:c=>'reached', rib:c=>c.данные.в_схеме+' из '+c.данные.в_базе+' объектов',
+ mean:c=>'В схему попали '+c.данные.в_схеме+' объектов из '+c.данные.в_базе+'; '+c.данные.не_вписаны.length+' промежуточных таблиц не вписаны в код отбора — это не фильтр, их там просто нет.',
+ num:c=>[c.данные.в_схеме+' из '+c.данные.в_базе,'объектов базы в схеме'],
+ arts:c=>A(D.артефакты.база)+A(D.артефакты.код_отбора),
+ key:c=>c.данные,
+ more:c=>'<h4>Вошли в схему</h4><p class="hint">'+esc(c.данные.в_схеме_имена.join(', '))+'</p>'+
+   '<h4>Не вписаны в код</h4><p class="hint">'+esc(c.данные.не_вписаны.join(', '))+' — '+esc(c.данные.причина)+'</p>'+
+   '<h4>Блок схемы целиком</h4><pre>'+esc(D.блоки['Схема базы'])+'</pre>'},
+{t:'Решения', dot:c=>written(c)?'written':'unwritten',
+ rib:c=>written(c)?(c.решения.маршрут_задет?'дописано':'записано, мимо маршрута'):'не записано',
+ mean:c=>{const r=c.решения;
+   if(written(c)&&!r.маршрут_задет)return D.новые_метрики_в_Б.join(', ')+' записан, но маршрут вопроса ведёт в '+r.маршрут.join(', ')+'.';
+   return cap(L(r.ключи_истории))+' — '+(written(c)?'дописано в файл определений.':'не записано.')},
+ meanCls:c=>written(c)?'':'un',
+ num:c=>[fmt(c.решения.знаков),'знаков в файле определений, '+c.решения.строк+' строк'],
+ arts:c=>art(ART[D.артефакты.файл_определений],D.артефакты.файл_определений,'author','пишет аналитик')+
+   D.артефакты.описания.map(p=>art(ART[p]||p,p,'author','пишет аналитик')).join('')+
+   art('код сборки витрин','dbt/models/*/*.sql ×'+D.артефакты.код_сборки.length,'unread','модель не читает')+
+   art('тесты сборки','dbt/tests/*.sql ×'+D.артефакты.тесты.length,'unread','модель не читает'),
+ key:c=>c.решения,
+ more:c=>{const r=c.решения;let h='';
+   h+='<h4>Где есть — маршрут вопроса: '+esc(r.маршрут.join(', '))+'</h4><p>'+(r.есть.length?esc(r.есть.join(', ')):'ничего')+'</p>';
+   h+='<h4>Чего нет в этом плече по маршруту</h4><p class="'+(r.нет_в_плече.length?'un':'')+'">'+(r.нет_в_плече.length?esc(r.нет_в_плече.join(', ')):'ничего: записаны все решения, которые знает код')+'</p>';
+   if(r.дописано_в_Б_вне_маршрута.length)h+='<h4>Дописано в Б, маршрут вопроса не ведёт</h4><p class="hint">'+esc(r.дописано_в_Б_вне_маршрута.join(', '))+'</p>';
+   if(r.вставки.length)h+='<h4>Дописано против плеча А — '+r.вставки.length+' строк</h4><pre>'+r.вставки.map(l=>'<span class="ins">'+(esc(l)||' ')+'</span>').join('')+'</pre>';
+   h+='<h4>Файл определений целиком, плечо '+c.плечо+'</h4><pre>'+esc(D.слои[c.плечо])+'</pre>';
+   h+='<h4>Описания моделей — '+c.данные.описано.length+'</h4><pre>'+esc(D.блоки['Описания'])+'</pre>';
+   h+='<p class="hint">Описание дошло, таблицы в схеме нет: '+esc(c.данные.описано_без_схемы.join(', '))+'.</p>';
+   return h}},
+{t:'Обвязка', dot:c=>'reached', rib:c=>'промпт из '+blocks(c).length+' блоков',
+ mean:c=>'Промпт собирается из '+blocks(c).length+' блоков. Отбора по вопросу '+(D.отбор?'есть':'нет')+': файл определений идёт целиком.',
+ num:c=>[fmt(blocks(c).reduce((s,x)=>s+x[1].length,0)),'знаков промпта'],
+ extra:(c,hot)=>bar(c,hot),
+ arts:c=>A(D.артефакты.код_отбора)+A(D.артефакты.контракт)+A(D.артефакты.петля),
+ key:c=>D.слои[c.плечо],
+ more:c=>'<h4>SYSTEM</h4><pre>'+esc(D.блоки['SYSTEM'])+'</pre><h4>Примеры значений</h4><pre>'+esc(D.блоки['Примеры значений'])+'</pre>'},
+{t:'Модель', dot:c=>'reached',
+ rib:c=>c.модель.вид==='clarify'?'переспросила':nvar(c.модель.варианты.length),
+ mean:c=>{const m=c.модель;return (m.вид==='clarify'?'Агент переспросил вместо ответа.':'Агент отдал '+nvar(m.варианты.length)+(m.уточнение?' и уточнение':'')+'.')+' Сырой текст ответа не сохранялся.'},
+ num:c=>c.модель.вид==='clarify'?['вопрос','вместо числа']:[c.модель.варианты.length,c.модель.варианты.length===1?'вариант ответа':'варианта ответа'],
+ arts:c=>art('модель',D.артефакты.модель),
+ key:c=>[c.модель.вид,c.модель.уточнение,c.модель.варианты.map(v=>v.sql)],
+ more:c=>{const m=c.модель;let h='<p class="hint">'+esc(m.оговорка)+'</p>';
+   if(m.уточнение)h+='<h4>Уточнение</h4><pre>'+esc(m.уточнение)+'</pre>';
+   if(m.причина)h+='<h4>Причина</h4><pre>'+esc(m.причина)+'</pre>';
+   m.варианты.forEach((v,i)=>{h+='<h4>Вариант '+(i+1)+'</h4><p>'+esc(v.label)+'</p>'});return h}},
+{t:'Исполнение', dot:c=>c.модель.варианты.length?'reached':'unread',
+ rib:c=>c.модель.варианты.length?'SQL исполнен':'не исполнялось',
+ mean:c=>c.модель.варианты.length?'SQL исполнен на базе данных.':'Исполнять нечего: агент переспросил.',
+ num:c=>{const v=c.модель.варианты;if(!v.length)return ['нечего','исполнять'];
+   return [v.map(x=>x.rows?fmt(x.rows.length):'—').join(' · '),v.length===1?'строк результата':'строк результата по вариантам']},
+ arts:c=>A(D.артефакты.база),
+ key:c=>c.модель.варианты.map(v=>v.rows),
+ more:c=>{const v=c.модель.варианты;if(!v.length)return '<p class="hint">Агент переспросил — исполнять нечего.</p>';
+   return v.map((x,i)=>'<h4>Вариант '+(i+1)+' · SQL</h4><pre>'+esc(x.sql)+'</pre>'+(x.rows&&x.rows.length?
+     '<div class="tw"><table><tbody>'+x.rows.slice(0,20).map(r=>'<tr>'+r.map(y=>'<td>'+esc(y)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'+
+     '<p class="hint">строк: '+fmt(x.rows.length)+(x.rows.length>20?', показаны первые 20':'')+'</p>':'<p class="hint">результат не сохранён</p>')).join('')}},
+{t:'Приёмка', dot:c=>'reached', rib:c=>c.приёмка.исход,
+ mean:c=>({'сошлось':'Совпало с эталоном.','не сошлось':'Не совпало с эталоном.','форма разошлась':'Числа верные, но не в форме эталона.','уточнение':'Сверять нечего: агент переспросил.'})[c.приёмка.исход],
+ num:c=>[val(c.приёмка.эталон.значение),'эталон'],
+ arts:c=>art('эталонный запрос',c.приёмка.эталон.файл,'author','пишет аналитик; модель не видит'),
+ key:c=>c.приёмка.исход,
+ more:c=>c.приёмка.поля.length?'<div class="tw"><table><thead><tr><th>вариант</th><th>число сошлось</th><th>форма разошлась</th><th>чисел в выдаче</th></tr></thead><tbody>'+
+   c.приёмка.поля.map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+(p['число сошлось']?'да':'нет')+'</td><td>'+(p['форма разошлась']?'да':'нет')+'</td><td>'+p['чисел в выдаче']+'</td></tr>').join('')+'</tbody></table></div>'
+   :'<p class="hint">Агент переспросил — судить нечего. Уточнение — законный исход.</p>'},
+{t:'Проверка проверки', dot:c=>'reached', rib:c=>'отпечатки сошлись',
+ mean:c=>'Промпт пересобран тем же кодом, что на прогоне, и сверен с отпечатками из лога. '+esc(cap(D.проверка_проверки.пары))+'.',
+ num:c=>[D.проверка_проверки.отпечатков_сошлось,'ячеек со сверенными отпечатками'],
+ arts:c=>A(D.артефакты.лог)+art('отпечатки промпта','layer_sha, context_sha'),
+ key:c=>c.лог.layer_sha,
+ more:c=>'<div class="tw"><table><tbody><tr><th>layer_sha</th><td>'+esc(c.лог.layer_sha)+'</td></tr><tr><th>context_sha</th><td>'+esc(c.лог.context_sha)+'</td></tr>'+
+   '<tr><th>вход</th><td>'+fmt(c.лог.токены.in)+'</td></tr><tr><th>выход</th><td>'+fmt(c.лог.токены.out)+'</td></tr><tr><th>цена</th><td>$'+c.лог.цена.toFixed(4)+'</td></tr></tbody></table></div>'}
 ];
 
-/* ── обзор: узел карты → этап пайплайна ── */
-function overview(c){
-  const r=c.решения, pr={сошлось:'✓',уточнение:'?','форма разошлась':'~','не сошлось':'✗'}[c.приёмка.исход];
-  const N=[['задача',c.вопрос,0,''],['данные',c.данные.в_схеме,1,''],['записано',fmt(r.знаков),2,'written'],
-    ['не записано',r.нет.length,2,r.нет.length?'unwritten':''],['ядро',c.данные.в_схеме,3,''],['модуль','1 ход',3,''],
-    ['модель',c.модель.вид==='clarify'?'?':c.модель.варианты.length,4,''],['исполнение',c.модель.варианты.length?'SQL':'—',5,''],
-    ['приёмка',pr,6,''],['заказчик',pr,6,''],['проверка',D.проверка_проверки.отпечатков_сошлось.replace(' из ','/'),7,'']];
-  const ov=document.getElementById('ov'); ov.innerHTML='';
-  N.forEach(([k,n,i,cls])=>{const b=E('button',cls,'<span class="k">'+esc(k)+'</span><span class="n">'+esc(n)+'</span>');
-    b.type='button'; b.title='к этапу «'+S[i].t+'»';
-    b.onclick=()=>{st.open=i;draw();document.getElementById('st-'+i).scrollIntoView({block:'start'})};ov.appendChild(b)});
-}
-
-function pipe(){
-  const host=document.getElementById('pipe'); host.innerHTML='';
-  host.className='pipe'+(st.cmp?' cmp':'');
-  const a=cell(st.cmp?'А':st.arm), b=st.cmp?cell('Б'):null;
-  host.appendChild(E('div','col-h',st.cmp?'<span>этап</span><span>артефакты</span><span>плечо А · что в них · дальше</span><span>плечо Б · что в них · дальше</span>'
-    :'<span>этап</span><span>артефакты</span><span>что в них на этом прогоне</span><span>дальше · теряется</span>'));
-  S.forEach((s,i)=>{
-    const diff=st.cmp&&JSON.stringify(s.key(a))!==JSON.stringify(s.key(b));
-    const w=E('div','stage'+(diff?' diff':'')); w.id='st-'+i;
-    const row=E('div','srow');
-    row.appendChild(E('div',null,'<span class="st-n">'+String(i+1).padStart(2,'0')+(diff?' · расходится':'')+'</span><span class="st-t">'+esc(s.t)+'</span>'));
-    row.appendChild(E('div','arts',s.arts(a)));
-    if(st.cmp){
-      row.appendChild(E('div','cell','<span class="arm">А</span>'+s.what(a)+s.loss(a)));
-      row.appendChild(E('div','cell','<span class="arm">Б</span>'+s.what(b)+s.loss(b)));
-    } else {
-      row.appendChild(E('div','cell',s.what(a)));
-      row.appendChild(E('div','cell',s.loss(a)));
-    }
-    row.onclick=()=>{st.open=st.open===i?null:i;draw()};
-    w.appendChild(row);
-    if(st.open===i){
-      const d=E('div','det');
-      d.innerHTML=st.cmp?'<div class="dual"><div><span class="lbl2">плечо А</span>'+s.det(a)+'</div><div><span class="lbl2">плечо Б</span>'+s.det(b)+'</div></div>':s.det(a);
-      w.appendChild(d);
-    }
-    host.appendChild(w);
-  });
-}
+function body(s,c,hot){let h='<p class="meaning '+(s.meanCls?s.meanCls(c):'')+'">'+s.mean(c)+'</p>';
+  const [n,capt]=s.num(c);h+='<span class="num">'+esc(n)+'</span><span class="cap">'+esc(capt)+'</span>';
+  if(s.extra)h+='<div class="barwrap">'+s.extra(c,hot)+'</div>';
+  h+='<details><summary>подробности</summary>'+s.more(c)+'</details>';return h}
 
 function draw(){
   const mk=(host,items,cur,fn)=>{const h=document.getElementById(host);h.innerHTML='';
@@ -324,12 +334,50 @@ function draw(){
       b.onclick=()=>{fn(v);draw()};h.appendChild(b)})};
   mk('c-q',['q02','q05','s11a'],st.q,v=>st.q=v);
   mk('c-r',[1,2,3],st.r,v=>st.r=v);
-  const h=document.getElementById('c-a');h.innerHTML='';
+  const ca=document.getElementById('c-a');ca.innerHTML='';
   ['А','Б','сравнить'].forEach(v=>{const b=E('button',null,v);b.type='button';
     b.setAttribute('aria-pressed',String(v==='сравнить'?st.cmp:(!st.cmp&&st.arm===v)));
-    b.onclick=()=>{if(v==='сравнить')st.cmp=!st.cmp;else{st.cmp=false;st.arm=v}draw()};h.appendChild(b)});
-  overview(cell(st.cmp?'А':st.arm));
-  pipe();
+    b.onclick=()=>{if(v==='сравнить')st.cmp=!st.cmp;else{st.cmp=false;st.arm=v}draw()};ca.appendChild(b)});
+
+  const arms=st.cmp?[cell('А'),cell('Б')]:[cell(st.arm)];
+  // история
+  const sh=document.getElementById('story');sh.className='story'+(st.cmp?' two':'');
+  sh.innerHTML=arms.map(c=>'<div><span class="svc">'+esc(c.id)+'</span><p class="tale">'+esc(story(c))+'</p><p class="tech">'+esc(tech(c))+'</p></div>').join('');
+  // лента
+  const rb=document.getElementById('ribbon');rb.innerHTML='';
+  S.forEach((s,i)=>{if(i)rb.appendChild(E('span','arr','→'));
+    // В сравнении у этапа две точки — А и Б; подпись одна, если плечи совпадают.
+    const dots=arms.map(c=>'<i class="dot '+s.dot(c)+'" title="плечо '+c.плечо+'"></i>').join('');
+    const words=[...new Set(arms.map(c=>s.rib(c)))].join(' / ');
+    const b=E('button',null,'<span class="rtop">'+dots+'<span class="rn">'+esc(s.t)+'</span></span><span class="rw">'+esc(words)+'</span>');
+    b.type='button';b.onclick=()=>{document.getElementById('st-'+i).scrollIntoView({block:'start'})};rb.appendChild(b)});
+  // этапы
+  const host=document.getElementById('stages');host.innerHTML='';
+  S.forEach((s,i)=>{
+    const diff=st.cmp&&JSON.stringify(s.key(arms[0]))!==JSON.stringify(s.key(arms[1]));
+    if(st.cmp&&!diff&&!st.open.has(i)){
+      const r=E('div','same','<span class="svc">'+String(i+1).padStart(2,'0')+'</span><b>'+esc(s.t)+'</b> — одинаково в обоих плечах');
+      r.id='st-'+i;r.tabIndex=0;r.onclick=()=>{st.open.add(i);draw()};host.appendChild(r);return}
+    const w=E('div','stage'+(diff?' diff':''));w.id='st-'+i;
+    w.innerHTML='<div class="shead"><span class="sn">'+String(i+1).padStart(2,'0')+'</span><h3>'+esc(s.t)+'</h3>'+(diff?'<span class="svc">расходится</span>':'')+'</div>';
+    const cols=E('div','cols'+(st.cmp?' two':''));
+    const hot=st.cmp&&i===3?'Слой метрик':null;
+    arms.forEach(c=>{const d=E('div');d.innerHTML=(st.cmp?'<span class="svc">плечо '+c.плечо+'</span>':'')+body(s,c,hot);cols.appendChild(d)});
+    w.appendChild(cols);
+    w.insertAdjacentHTML('beforeend','<div class="arts">'+s.arts(arms[0])+'</div>');
+    host.appendChild(w)});
+  // Ширина сегмента полосы — размер блока промпта из data.json. Данные,
+  // а не стиль, поэтому выставляется здесь, а не в разметке.
+  host.querySelectorAll('.bar i[data-w]').forEach(i=>{i.style.flex=i.dataset.w+' 0 0'});
+  // вердикт
+  const vh=document.getElementById('verdict');
+  vh.innerHTML='<div class="verdicts'+(st.cmp?' two':'')+'">'+arms.map(c=>{const m=c.модель,p=c.приёмка;
+    const gave=m.вид==='clarify'?'вопрос вместо числа':(m.варианты.length===1?'один вариант':nvar(m.варианты.length))+(m.уточнение?' и уточнение':'');
+    const x=single(c);
+    return '<div class="verdict"><span class="svc">итог · '+esc(c.id)+'</span><div class="vg">'+
+      '<div><span class="svc">эталон</span><div class="vv"><b>'+esc(val(p.эталон.значение))+'</b></div></div>'+
+      '<div><span class="svc">что отдал агент</span><div class="vv">'+esc(gave)+(x!=null?': <b>'+esc(x)+'</b>':'')+'</div></div>'+
+      '<div><span class="svc">исход</span><div class="vv">'+esc(S[6].mean(c))+'</div></div></div></div>'}).join('')+'</div>';
 }
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;draw()});
 </script>
