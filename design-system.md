@@ -394,9 +394,8 @@
 - `.ctas`: `display: flex; gap: 12px; justify-content: flex-end` — так нужно в герое главной; внутри `.cta-strip` прижимается влево (см. 3.15).
 - `.sec-link` — текстовая ссылка-действие («Все →», «Сайт конференции →»): `14px`, вес `500`, подчёркивание с отступом `4px`, hover — красным.
 
-### 3.12 Теги и чипы (`.tag`, `.chip`)
+### 3.12 Чипы (`.chip`)
 
-- `.tag`, `.tags` — рамочная плашка: `padding: 8px 14px; border: 1px solid var(--ink); 12px`. Стояла в герое главной, убрана 2026-09-29; на страницах сайта сейчас не используется, правило в `style.css` осталось.
 - `.chip` — рубрика в `.article-meta` статьи; `.chip--contact` — контакт на `/career/`. Фон `var(--soft)`, `12px`.
 
 ---
@@ -558,6 +557,8 @@
 ### 3.21 Удалённые из `style.css` классы
 
 2026-09-29 удалены правила классов, которых нет ни в разметке живых страниц, ни в JS: `.lesson`, `.lesson-header`, `.lesson-meta`, `.lesson-num`, `.lesson-module`, `.lesson-title`, `.lesson-lede`, `.lesson-type`, `.lesson-footer`, `.lesson-nav` (+ `--prev`, `--next`, `-label`, `-title`) · `.think-block`, `.think-block-tag` · `.portrait-row` · `.news`, `.news-kicker`, `.news-sub`, `.news-form` · `.nav-cta` и `@keyframes pulse` · `.prose-grid` · `.approach-wrap`, `.notes-wrap`, `.tests-wrap` · `.note-date`, `.note-cat`, `.note-title`, `.note-read`, `.note-arrow`. Скриншоты двенадцати страниц на 1280 и 375 до и после совпали пиксель в пиксель.
+
+Там же, 2026-09-29, после снятия тегов с героя главной: `.tags`, `.tag`, `.tag:hover`. Ни в разметке, ни в JS, ни в `_archive/`, mechanics, симуляторах и AI-evals их нет; скриншоты тринадцати страниц на 1280 и 375 до и после совпали пиксель в пиксель.
 
 **Оставлены:** `.note` и `.note:hover` — на `/cases/telenok/` блок `<div class="note">` берёт оформление из `style.css` (своего `<style>` у страницы нет); в `question-paths` `.note` переопределён в CSS страницы. `.author-av` — на `/about/`. `.banner` — у тренажёра `ab-trap-trainer` в его собственном CSS.
 
