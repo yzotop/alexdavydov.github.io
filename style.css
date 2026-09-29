@@ -852,10 +852,20 @@
 .case-metric{display:grid;grid-template-columns:1fr;gap:16px;padding-top:16px;border-top:1px solid var(--line);}
 .case-metric .m-num{font-size:28px;font-weight:500;letter-spacing:-.02em;color:var(--ink);line-height:1;}
 .case-metric .m-lbl{font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono);letter-spacing:.05em;}
-/* отбивка ссылки «Открыть кейс» от блока с метрикой. Класс вместо
-   style="margin-top:12px": атрибут style запрещён (CLAUDE.md). У карточек
-   #1–#8 отбивка пока инлайновая — это долг, заведённый до этой правки. */
-.case-open{margin-top:12px;}
+/* Карточка кликабельна целиком. Ссылка одна — заголовок; её ::after
+   растянут на всю карточку (.case — position:relative). «Открыть →» —
+   подпись, не вторая ссылка: вторая дала бы два одинаковых перехода для
+   клавиатуры и чтения с экрана. Ссылки внутри описания и метрики
+   поднимаются над растянутой областью и остаются кликабельными.
+   Фокус с клавиатуры рисуется по всей карточке. */
+.case-link{color:inherit;text-decoration:none;}
+.case-link::after{content:"";position:absolute;inset:0;}
+.case-link:focus-visible{outline:none;}
+.case-link:focus-visible::after{outline:2px solid var(--ink);outline-offset:2px;}
+.case p a,.case-metric a{position:relative;z-index:1;}
+.case-open{margin-top:12px;font-size:14px;font-weight:500;color:var(--ink);
+  text-decoration:underline;text-underline-offset:4px;transition:color .2s;}
+.case:hover .case-open{color:var(--accent);}
 
 /* article */
 .article{padding:72px 48px 0;max-width:880px;margin:0 auto;}
