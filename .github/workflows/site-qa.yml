@@ -16,11 +16,26 @@ jobs:
       - uses: actions/checkout@v4
       # courses/index.html больше не генерируется: пять курсов уехали
       # в архив, страница стала заглушкой на /teaching/, а генератор
-      # render_courses_hub.py удалён. Остался один генератор — карты сайта.
+      # render_courses_hub.py удалён. Генераторов теперь три: карта сайта,
+      # хаб /ai-analyst/ и блок серии в статьях. Правило у всех одно —
+      # regenerate, затем git diff --exit-code: расхождение валит сборку.
       - name: Regenerate sitemap
         run: python3 scripts/generate_sitemap.py
       - name: Ensure sitemap matches generator
         run: git diff --exit-code sitemap.xml
+      # Список разборов на /ai-analyst/ собирался руками и отставал:
+      # восьмой разбор вышел 28.09 и на хаб не попал, потому что добавить
+      # карточку было отдельным действием, о котором никто не напомнил.
+      # Теперь хаб выводится из самих статей, а этот шаг ловит расхождение.
+      - name: Regenerate /ai-analyst/ hub
+        run: python3 scripts/render_ai_analyst_hub.py
+      - name: Ensure hub matches generator
+        run: git diff --exit-code ai-analyst/index.html
+      # Блок «Вся серия» в конце статей выводится из того же источника,
+      # что и хаб. Правка номера, заголовка или подводки без перегенерации
+      # оставила бы блоки в остальных статьях устаревшими — шаг это ловит.
+      - name: Ensure series blocks match generator
+        run: python3 scripts/render_series_block.py && git diff --exit-code workspace/articles
 
   verification-file:
     runs-on: ubuntu-latest

@@ -7,6 +7,7 @@
     <meta name="author" content="Александр Давыдов"/>
     <link rel="canonical" href="https://davydov.my/workspace/articles/how-agent-sees-decisions/"/>
     <meta name="description" content="Модель отвечает не по вашему проекту, а по тексту, который для неё собрали. Что в него попадает, что нет — и почему даже дошедшего бывает мало."/>
+    <meta name="series-blurb" content="Модель отвечает не по вашему проекту, а по тексту, который для неё собрали. Что в него попадает, а что нет."/>
     <meta property="og:type" content="article"/>
     <meta property="og:title" content="AI-аналитик видит не ваш проект, а промпт — Александр Давыдов"/>
     <meta property="og:description" content="Модель отвечает не по вашему проекту, а по тексту, который для неё собрали. Что в него попадает, что нет — и почему даже дошедшего бывает мало."/>
@@ -20,7 +21,7 @@
     <link rel="stylesheet" href="/style.css"/>
 <style>
 .ags{--sec:var(--muted);--rule:var(--line-d);--fill:var(--soft);--acc:var(--accent)}.ags *{box-sizing:border-box}.ags .wrap>*{min-width:0}.ags{margin:0;background:#fff;color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1.62}.ags .wrap{max-width:1120px;margin:0 auto;padding:0 24px 130px;display:grid;
- grid-template-columns:1fr 232px;gap:0 56px}.ags header,.ags .body,.ags footer,.ags .series{grid-column:1}.ags header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}.ags .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
+ grid-template-columns:1fr 232px;gap:0 56px}.ags header,.ags .body,.ags footer,.ags .series-nav{grid-column:1}.ags header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}.ags .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
  color:var(--sec);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.ags h1{font-size:clamp(28px,4.8vw,50px);line-height:1.08;letter-spacing:-.02em;margin:24px 0 0;
  font-weight:500;max-width:18ch}.ags .lede{font-size:21px;color:var(--sec);margin:20px 0 4px;max-width:60ch}.ags h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:70px 0 14px;padding-top:22px;
  border-top:1.5px solid var(--ink);scroll-margin-top:20px}.ags h3{font-size:21px;font-weight:700;margin:40px 0 10px}.ags p{margin:0 0 17px;max-width:66ch}.ags code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}.ags nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;padding-top:34px;font-size:14.5px}.ags nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
@@ -34,13 +35,9 @@
  color:var(--sec);margin:0 0 14px}.ags .flow .h:not(:first-child){margin-top:26px}.ags .gen{background:var(--fill);padding:16px 20px;margin:20px 0;font-size:16px;
  line-height:1.5;max-width:64ch;border-left:3px solid var(--rule)}.ags .gen b{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
  color:var(--sec);font-weight:500}.ags .pull{border-left:3px solid var(--acc);padding:4px 0 4px 22px;margin:32px 0;max-width:62ch}.ags .pull p{font-size:21px;line-height:1.45;margin:0}.ags .checks{list-style:none;padding:0;margin:24px 0;counter-reset:c}.ags .checks li{border-top:1px solid var(--rule);padding:15px 0 15px 44px;position:relative;max-width:66ch}.ags .checks li:last-child{border-bottom:1px solid var(--rule)}.ags .checks li::before{counter-increment:c;content:counter(c);position:absolute;left:0;top:15px;
- font-family:var(--mono);font-size:14px;color:var(--acc)}.ags .checks b{display:block;margin-bottom:2px}.ags .checks span{color:var(--sec);font-size:16.5px;line-height:1.5}.ags .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}.ags .notes p{margin:0 0 12px;max-width:none}.ags .notes p:last-child{margin:0}.ags a{color:var(--ink);border-bottom:1px solid var(--acc);text-decoration:none}.ags a:hover{color:var(--acc)}.ags .series{margin:64px 0 0}.ags .series h2{margin-top:0}.ags .series ol{list-style:none;padding:0;margin:24px 0 0;counter-reset:s;border-top:1.5px solid var(--ink)}.ags .series li{border-bottom:1px solid var(--rule)}.ags .series li:last-child{border-bottom:1.5px solid var(--ink)}.ags .series a{display:grid;grid-template-columns:62px 1fr;gap:0 8px;align-items:baseline;
- padding:19px 18px 19px 0;border:0;transition:background .12s,padding .12s}.ags .series a:hover{background:var(--fill);padding-left:18px;padding-right:0}.ags .series .idx{counter-increment:s;font-family:var(--mono);font-size:13.5px;color:var(--acc)}.ags .series .idx::before{content:"№ " counter(s,decimal-leading-zero)}.ags .series .ttl{font-weight:700;font-size:19px;line-height:1.3;display:block;margin-bottom:4px;color:var(--ink)}.ags .series a:hover .ttl{color:var(--acc)}.ags .series .meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--sec);
- display:block;margin-bottom:3px}.ags .series .sub{color:var(--sec);font-size:16px;line-height:1.45;display:block}.ags .series .this{background:var(--fill);display:grid;grid-template-columns:62px 1fr;gap:0 8px;
- align-items:baseline;padding:19px 18px}.ags .series .this .idx{color:var(--ink)}.ags .series .this .ttl{display:block;margin-bottom:4px;font-weight:700;font-size:19px}.ags .series .this .sub{font-family:var(--mono);font-size:12px;letter-spacing:.14em;
- text-transform:uppercase;color:var(--sec)}.ags footer{margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
+ font-family:var(--mono);font-size:14px;color:var(--acc)}.ags .checks b{display:block;margin-bottom:2px}.ags .checks span{color:var(--sec);font-size:16.5px;line-height:1.5}.ags .notes{background:var(--fill);padding:24px 26px;margin:40px 0 0;font-size:16px;line-height:1.58}.ags .notes p{margin:0 0 12px;max-width:none}.ags .notes p:last-child{margin:0}.ags a{color:var(--ink);border-bottom:1px solid var(--acc);text-decoration:none}.ags a:hover{color:var(--acc)}.ags footer{margin-top:80px;padding-top:20px;border-top:2px solid var(--ink);
  font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sec)}
-@media(max-width:900px){.ags .wrap{grid-template-columns:1fr;gap:0}.ags nav{grid-column:1;grid-row:auto;position:static;padding:16px 18px;margin:0 0 30px;border:1.5px solid var(--rule)}.ags nav ol{columns:2;column-gap:22px}.ags{font-size:17.5px}.ags .series a,.ags .series .this{grid-template-columns:1fr;gap:5px}}
+@media(max-width:900px){.ags .wrap{grid-template-columns:1fr;gap:0}.ags nav{grid-column:1;grid-row:auto;position:static;padding:16px 18px;margin:0 0 30px;border:1.5px solid var(--rule)}.ags nav ol{columns:2;column-gap:22px}.ags{font-size:17.5px}}
 .ags .ags-meta{grid-column:1;padding-top:28px;margin-bottom:0}
 .ags td.mid{vertical-align:middle}
 .ags .notes h3{margin:0 0 10px;font-size:18px}
@@ -419,37 +416,39 @@
 
 </div>
 
-<section class="series">
+<!-- series:start -->
+<section class="series-nav" id="series">
 <h2>Вся серия про AI-аналитика</h2>
 <ol>
-  <li><a href="https://davydov.my/workspace/articles/ai-analyst-checks/"><span class="idx"></span>
-    <span><span class="ttl">Как я строил AI-аналитика</span><span class="meta">2026.08 · 13 мин</span>
-    <span class="sub">Учебная сборка: шесть этапов и семнадцать проверок</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/quiet-wrong-answers/"><span class="idx"></span>
+  <li><a href="/workspace/articles/ai-analyst-checks/"><span class="idx"></span>
+    <span><span class="ttl">Как я строил AI-аналитика и что придумывал, чтобы ему не верить на слово</span><span class="meta">2026.08 · 13 мин</span>
+    <span class="sub">Учебная сборка на ритейл-данных: шесть этапов, семнадцать проверок и числа, которых я не ожидал.</span></span></a></li>
+  <li><a href="/workspace/articles/quiet-wrong-answers/"><span class="idx"></span>
     <span><span class="ttl">Продакт задал двадцать вопросов AI-аналитику</span><span class="meta">2026.08 · 12 мин</span>
-    <span class="sub">Что он унесёт неверного и почему это не видно по числу</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/declare-and-extract/"><span class="idx"></span>
+    <span class="sub">Он не врёт — он переспрашивает. А когда ответить на уточнение некому, отвечает сам себе.</span></span></a></li>
+  <li><a href="/workspace/articles/declare-and-extract/"><span class="idx"></span>
     <span><span class="ttl">Как получить от AI-аналитика ответ на задачу</span><span class="meta">2026.09 · 10 мин</span>
-    <span class="sub">Семь шагов между задачей и числом</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/metrics-layer/"><span class="idx"></span>
+    <span class="sub">Задача из шести слов и пять решений внутри неё. Семь шагов между задачей и принятым числом.</span></span></a></li>
+  <li><a href="/workspace/articles/metrics-layer/"><span class="idx"></span>
     <span><span class="ttl">Как устроен слой метрик для AI-аналитика</span><span class="meta">2026.09 · 10 мин</span>
-    <span class="sub">Файл на сто семь строк и два его исполнителя</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/task-brief/"><span class="idx"></span>
+    <span class="sub">Файл на сто семь строк, где записано, как считаются метрики. Кто его читает — сборщик и модель — и почему два измерения расходятся.</span></span></a></li>
+  <li><a href="/workspace/articles/task-brief/"><span class="idx"></span>
     <span><span class="ttl">AI-аналитику нужна не длинная задача, а точная</span><span class="meta">2026.09 · 8 мин</span>
-    <span class="sub">Семь сущностей задачи и три вида влияния шаблона</span></span></a></li>
-  <li><a href="https://davydov.my/workspace/articles/question-paths/"><span class="idx"></span>
+    <span class="sub">Четыре команды, почти четыре тысячи задач за двадцать месяцев. Семь вещей, без которых задачу нельзя посчитать.</span></span></a></li>
+  <li><a href="/workspace/articles/question-paths/"><span class="idx"></span>
     <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу</span><span class="meta">2026.09 · 8 мин</span>
-    <span class="sub">Шесть исходов одного вопроса</span></span></a></li>
-  <li><a href="/workspace/articles/question-paths/map/"><span class="idx"></span>
+    <span class="sub">Тридцать пять вопросов на стенде с известной правдой, каждый задан трижды. Шесть мест, где путь обрывается.</span></span></a></li>
+  <li class="side"><a href="/workspace/articles/question-paths/map/"><span class="mark">↳</span>
     <span><span class="ttl">Что бывает у AI-аналитика с вопросом по дороге к ответу (интерактив)</span><span class="meta">2026.09 · карта</span>
     <span class="sub">Сто пять ячеек, каждая кликается</span></span></a></li>
   <li><div class="this"><span class="idx"></span>
     <span><span class="ttl">AI-аналитик видит не ваш проект, а промпт</span><span class="sub">Вы здесь</span></span></div></li>
-  <li><a href="https://davydov.my/workspace/articles/harness-by-type/"><span class="idx"></span>
+  <li><a href="/workspace/articles/harness-by-type/"><span class="idx"></span>
     <span><span class="ttl">Под каждую задачу AI-аналитику нужна своя обвязка</span><span class="meta">2026.09 · 14 мин</span>
-    <span class="sub">Четыре типа задач, общее ядро и сменный модуль</span></span></a></li>
+    <span class="sub">Четыре типа задач на одном стенде: число, правка отчёта, выгрузка, A/B-тест. Общая у обвязки половина, вторая меняется — и от неё зависит, можно ли задачу отдавать.</span></span></a></li>
 </ol>
 </section>
+<!-- series:end -->
 
 <footer>davydov.my · AI-аналитик · разбор седьмой</footer>
 </div>
