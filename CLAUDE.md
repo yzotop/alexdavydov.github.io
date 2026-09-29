@@ -201,9 +201,13 @@ curl -s "https://davydov.my/ПУТЬ/?v=$(date +%s)" | grep -c 'НОВОЕ ЧИ�
 Потом `root_dir` вернул проверку относительным, но абсолютные
 оставались под `exclude` до перехода на `--remap`.
 
-Цели meta refresh lychee тоже не читает — их проверяет
-`scripts/check_redirects.py`. А для `og:url`, `og:image` (lychee не
-читает `content` у `<meta>`) и `url()` в CSS проверки сейчас нет.
+Три места lychee не читает вовсе, для них свои скрипты, оба в CI:
+
+- цели meta refresh — `scripts/check_redirects.py`;
+- `og:url` и `og:image` (lychee не смотрит `content` у `<meta>`)
+  и `url()` в CSS — `scripts/check_meta_css_refs.py`. Цели проверяются
+  как файлы рабочего дерева, по тем же правилам, что у lychee
+  с `root_dir` и `--remap`.
 
 Метод для любых расхождений между средами: уравнять всё, что можно
 уравнять, и смотреть на остаток. Остаток и есть настоящая разница.
