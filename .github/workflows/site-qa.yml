@@ -37,10 +37,11 @@ jobs:
       # оставила бы блоки в остальных статьях устаревшими — шаг это ловит.
       - name: Ensure series blocks match generator
         run: python3 scripts/render_series_block.py && git diff --exit-code workspace/articles
-      # Шапка — меню и шторка — выводится из _partials/site-header.html.
-      # Пункт, поправленный руками в одной странице, генератор вернёт к
-      # шаблону, и diff уронит сборку. Шапка вне маркеров — ОСТАНОВ.
-      - name: Ensure site header matches template
+      # Шапка (меню и шторка) и подвал выводятся из _partials/site-header.html
+      # и _partials/site-footer.html. Правку, сделанную руками в одной
+      # странице, генератор вернёт к шаблону, и diff уронит сборку. Шапка
+      # или подвал вне маркеров — ОСТАНОВ.
+      - name: Ensure site header and footer match templates
         run: python3 scripts/render_site_header.py && git diff --exit-code -- '*.html'
 
   verification-file:
