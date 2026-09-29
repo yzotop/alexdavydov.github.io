@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Собрать сетку карточек на /ai-analyst/ из самих статей.
+"""Собрать полки карточек на /ai-analyst/ из самих статей.
 
 Список на хабе поддерживался руками и отставал: восьмой разбор вышел
 28.09 и на хаб не попал. Правда о статье живёт на её странице, хаб
@@ -20,6 +20,20 @@
 
 Порядок — от большего номера к меньшему: новые сверху.
 
+Вторая полка — «Основа: эксперименты и монетизация». В неё идут статьи
+с рубрикой A/B-эксперименты или Монетизация (span.chip в article-meta),
+от новых к старым по <meta property="article:published_time">. Дата в
+шапке статьи — только месяц, а в мае 2026 вышло восемь статей: порядок
+внутри месяца без точного времени не вывести. Подводка — description
+статьи.
+
+У каждой статьи не больше одной полки: статья, попавшая в обе, —
+ОСТАНОВ. Статьи ни в одной полке печатаются списком и на хаб не идут.
+
+Каждая полка пишется между своими маркерами <!-- shelf:ИМЯ:start --> и
+<!-- shelf:ИМЯ:end -->. Первый запуск оборачивает маркерами сетку серии,
+собранную раньше без них, и добавляет секцию второй полки после неё.
+
 Проверяется в CI шагом `git diff --exit-code ai-analyst/index.html`
 рядом с картой сайта: забытая правка роняет сборку, а не тихо живёт
 в репозитории месяц.
@@ -36,6 +50,10 @@ ROOT = Path(__file__).resolve().parent.parent
 HUB = ROOT / "ai-analyst" / "index.html"
 INDEX = ROOT / "assets" / "search-index.json"
 RUBRIC = "AI-аналитик"
+BASE_RUBRICS = ("A/B-эксперименты", "Монетизация")
+BASE_TITLE = "Основа: эксперименты и монетизация"
+BASE_LEAD = ("Глубина в домене: A/B на двусторонних рынках, аукционы, "
+             "монетизация. Без неё агенту нечего объявить.")
 
 WORDS = ["первый", "второй", "третий", "четвёртый", "пятый", "шестой",
          "седьмой", "восьмой", "девятый", "десятый"]
@@ -83,6 +101,76 @@ def collect() -> list[dict]:
     return sorted(out, key=lambda a: -a["num"])
 
 
+def articles() -> list[tuple[str, str]]:
+    """(url, html) всех статей из поискового индекса."""
+    out = []
+    for entry in json.loads(INDEX.read_text(encoding="utf-8")):
+        if entry.get("type") != "article":
+            continue
+        page = ROOT / entry["url"].strip("/") / "index.html"
+        if not page.exists():
+            sys.exit(f"ОСТАНОВ: нет файла {page}")
+        out.append((entry["url"], page.read_text(encoding="utf-8")))
+    return out
+
+
+def rubric(s: str) -> str | None:
+    meta = re.search(r'class="article-meta[^"]*">(.*?)</div>', s, re.S)
+    chip = re.search(r'<span class="chip">([^<]+)</span>', meta.group(1)) if meta else None
+    return html.unescape(chip.group(1)).strip() if chip else None
+
+
+def collect_base() -> list[dict]:
+    """Вторая полка: рубрики BASE_RUBRICS, от новых к старым."""
+    series = {a["url"] for a in collect()}
+    out = []
+    for url, s in articles():
+        r = rubric(s)
+        if r not in BASE_RUBRICS:
+            continue
+        if url in series:
+            sys.exit(f"ОСТАНОВ: {url} попадает в две полки — серия и «{BASE_TITLE}»")
+        meta = re.search(r'class="article-meta[^"]*">(.*?)</div>', s, re.S)
+        out.append({
+            "url": url,
+            "rubric": r,
+            "published": field(s, r'property="article:published_time" content="([^"]+)"',
+                               "дата публикации (meta property=article:published_time)", url),
+            "date": field(meta.group(1), r"<span>([^<]+)</span>", "дата", url),
+            "title": field(s, r"<h1[^>]*>([^<]+)</h1>", "заголовок", url),
+            "blurb": field(s, r'<meta name="description" content="([^"]+)"', "description", url),
+        })
+    return sorted(out, key=lambda a: a["published"], reverse=True)
+
+
+def unplaced() -> list[str]:
+    placed = {a["url"] for a in collect()} | {a["url"] for a in collect_base()}
+    return sorted(url for url, _ in articles() if url not in placed)
+
+
+def base_card(a: dict) -> str:
+    e = html.escape
+    return (f'        <a class="course" href="{a["url"]}">\n'
+            f'          <div class="course-meta"><span class="course-num">{e(a["rubric"])}</span>'
+            f'<span>{e(a["date"])}</span></div>\n'
+            f'          <h3>{e(a["title"])}</h3>\n'
+            f'          <p>{e(a["blurb"])}</p>\n'
+            f'          <span class="course-arrow">↗</span>\n'
+            f'        </a>')
+
+
+def shelf(name: str, cards: list[str]) -> str:
+    return (f'<!-- shelf:{name}:start -->\n      <div class="courses-grid">\n'
+            + "\n".join(cards) + f'\n      </div>\n      <!-- shelf:{name}:end -->')
+
+
+def put(s: str, name: str, block: str) -> str | None:
+    start, end = f"<!-- shelf:{name}:start -->", f"<!-- shelf:{name}:end -->"
+    if start not in s:
+        return None
+    return s[:s.index(start)] + block + s[s.index(end) + len(end):]
+
+
 def card(a: dict) -> str:
     e = html.escape
     return (f'        <a class="course" href="{a["url"]}">\n'
@@ -96,16 +184,35 @@ def card(a: dict) -> str:
 
 def main() -> int:
     arts = collect()
+    base = collect_base()
     s = HUB.read_text(encoding="utf-8")
-    i = s.index('<div class="courses-grid">')
-    j = s.index("</div>", s.index("</a>", s.rindex('<a class="course"')))
-    grid = '<div class="courses-grid">\n' + "\n".join(card(a) for a in arts) + "\n      "
-    new = s[:i] + grid + s[j:]
-    if new != s:
-        HUB.write_text(new, encoding="utf-8")
-    print(f"  {HUB.relative_to(ROOT)}  {len(arts)} карточек, "
-          f"{arts[0]['num']:02d}→{arts[-1]['num']:02d}"
-          f"{'  (изменено)' if new != s else '  (без изменений)'}")
+
+    series_block = shelf("series", [card(a) for a in arts])
+    new = put(s, "series", series_block)
+    if new is None:                        # первый запуск: сетка без маркеров
+        i = s.index('<div class="courses-grid">')
+        j = s.index("</div>", s.index("</a>", s.rindex('<a class="course"'))) + len("</div>")
+        new = s[:i] + series_block + s[j:]
+
+    base_block = shelf("base", [base_card(a) for a in base])
+    out = put(new, "base", base_block)
+    if out is None:                        # первый запуск: секции второй полки нет
+        k = new.index("</section>", new.index("<!-- shelf:series:end -->")) + len("</section>")
+        out = (new[:k] + "\n    <section>\n"
+               f"      <h2>{html.escape(BASE_TITLE)}</h2>\n"
+               f"      <p>{html.escape(BASE_LEAD)}</p>\n      "
+               + base_block + "\n    </section>" + new[k:])
+
+    if out != s:
+        HUB.write_text(out, encoding="utf-8")
+    print(f"  {HUB.relative_to(ROOT)}  серия {arts[0]['num']:02d}→{arts[-1]['num']:02d}, "
+          f"основа: {len(base)} карточек"
+          f"{'  (изменено)' if out != s else '  (без изменений)'}")
+    rest = unplaced()
+    if rest:
+        print("  ни в одной полке (на хаб не идут):")
+        for url in rest:
+            print(f"     {url}")
     return 0
 
 
