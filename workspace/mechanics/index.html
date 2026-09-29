@@ -47,7 +47,10 @@
 .mech .dot.reached{background:var(--muted)}
 .mech .dot.written{background:var(--ink)}
 .mech .dot.unwritten{background:var(--accent)}
-.mech .dot.unread{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-d)}
+/* «не наступал» — этап после уточнения: пустой кружок. «Не читается» у этапов
+   больше не бывает — это состояние артефакта, оно зачёркивается, а не точкой. */
+.mech .dot.notreached{background:transparent;box-shadow:inset 0 0 0 1.5px var(--muted)}
+.mech .legend .unreadart{text-decoration:line-through}
 .mech .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--dim);margin:0 0 30px}
 .mech .legend span{display:inline-flex;align-items:center;gap:6px}
 /* ── этап ── */
@@ -173,7 +176,8 @@
   <span><i class="dot reached"></i>дошло</span>
   <span><i class="dot written"></i>записано и дошло</span>
   <span><i class="dot unwritten"></i>не записано</span>
-  <span><i class="dot unread"></i>не читается</span>
+  <span><i class="dot notreached"></i>не наступал</span>
+  <span><span class="unreadart">не читается</span> — у артефактов, которые модель не видит</span>
 </div>
 
 <div id="stages"></div>
@@ -189,14 +193,10 @@ const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
 let D=null, st={q:'q02', r:1, arm:'Б', cmp:false, open:new Set()};
 const cell=arm=>D.ячейки.find(c=>c.плечо===arm&&c.вопрос===st.q&&c.повтор===st.r);
 
-/* ── подписи артефактов: человеческое имя к пути. Это подписи, не данные ── */
-const ART={'data/retail.duckdb':'база данных','agent/retrieval.py':'код отбора контекста',
-  'agent/sql_gen.py':'контракт ответа','agent/loop.py':'петля агента',
-  'metrics/metrics.yml':'файл определений метрик','dbt/models/marts/schema.yml':'описания витрин',
-  'dbt/models/staging/schema.yml':'описания промежуточных таблиц','agent/log/':'лог прогона','truth_sql/':'эталонный запрос'};
+/* ── артефакты: имя и путь приходят из data.json (экспорт, ART_NAMES) ── */
 const art=(name,path,kind,mark)=>'<span class="art'+(kind?' '+kind:'')+'"><span class="an">'+esc(name)+'</span>'+
   (path?'<span class="ap">'+esc(path)+'</span>':'')+(mark?'<span class="am">'+esc(mark)+'</span>':'')+'</span>';
-const A=p=>art(ART[p]||p,p);
+const AE=(e,kind,mark,path)=>art(e.имя,path===undefined?e.путь:path,kind,mark);
 
 /* ── текст истории: тот же шаблон, что принят ── */
 const L=keys=>{const xs=keys.map(k=>D.подписи[k]);return xs.length<2?xs[0]:xs.slice(0,-1).join(', ')+' и '+xs[xs.length-1]};
@@ -247,12 +247,12 @@ function bar(c,hot){const b=blocks(c),tot=b.reduce((s,x)=>s+x[1].length,0);
 const S=[
 {t:'Вопрос', dot:c=>'reached', rib:c=>c.задача.length+' знаков',
  mean:c=>'Вопрос продакта уходит в промпт как есть, последним блоком.',
- num:c=>[c.задача.length,'знаков'], arts:c=>art('вопрос продакта','','author','пишет аналитик'),
+ num:c=>[c.задача.length,'знаков'], arts:c=>AE(D.артефакты.вопрос,'author','пишет аналитик'),
  key:c=>c.задача, more:c=>'<pre>'+esc(c.задача)+'</pre>'},
 {t:'Данные', dot:c=>'reached', rib:c=>c.данные.в_схеме+' из '+c.данные.в_базе+' объектов',
  mean:c=>'В схему попали '+c.данные.в_схеме+' объектов из '+c.данные.в_базе+'; '+c.данные.не_вписаны.length+' промежуточных таблиц не вписаны в код отбора — это не фильтр, их там просто нет.',
  num:c=>[c.данные.в_схеме+' из '+c.данные.в_базе,'объектов базы в схеме'],
- arts:c=>A(D.артефакты.база)+A(D.артефакты.код_отбора),
+ arts:c=>AE(D.артефакты.база)+AE(D.артефакты.код_отбора),
  key:c=>c.данные,
  more:c=>'<h4>Вошли в схему</h4><p class="hint">'+esc(c.данные.в_схеме_имена.join(', '))+'</p>'+
    '<h4>Не вписаны в код</h4><p class="hint">'+esc(c.данные.не_вписаны.join(', '))+' — '+esc(c.данные.причина)+'</p>'+
@@ -264,10 +264,10 @@ const S=[
    return cap(L(r.ключи_истории))+' — '+(written(c)?'дописано в файл определений.':'не записано.')},
  meanCls:c=>written(c)?'':'un',
  num:c=>[fmt(c.решения.знаков),'знаков в файле определений, '+c.решения.строк+' строк'],
- arts:c=>art(ART[D.артефакты.файл_определений],D.артефакты.файл_определений,'author','пишет аналитик')+
-   D.артефакты.описания.map(p=>art(ART[p]||p,p,'author','пишет аналитик')).join('')+
-   art('код сборки витрин','dbt/models/*/*.sql ×'+D.артефакты.код_сборки.length,'unread','модель не читает')+
-   art('тесты сборки','dbt/tests/*.sql ×'+D.артефакты.тесты.length,'unread','модель не читает'),
+ arts:c=>{const a=D.артефакты;
+   return AE(a.файл_определений,'author','пишет аналитик')+a.описания.map(e=>AE(e,'author','пишет аналитик')).join('')+
+   AE(a.код_сборки,'unread','модель не читает',a.код_сборки.путь+' ×'+a.код_сборки.файлы.length)+
+   AE(a.тесты,'unread','модель не читает',a.тесты.путь+' ×'+a.тесты.файлы.length)},
  key:c=>c.решения,
  more:c=>{const r=c.решения;let h='';
    h+='<h4>Где есть — маршрут вопроса: '+esc(r.маршрут.join(', '))+'</h4><p>'+(r.есть.length?esc(r.есть.join(', ')):'ничего')+'</p>';
@@ -282,34 +282,35 @@ const S=[
  mean:c=>'Промпт собирается из '+blocks(c).length+' блоков. Отбора по вопросу '+(D.отбор?'есть':'нет')+': файл определений идёт целиком.',
  num:c=>[fmt(blocks(c).reduce((s,x)=>s+x[1].length,0)),'знаков промпта'],
  extra:(c,hot)=>bar(c,hot),
- arts:c=>A(D.артефакты.код_отбора)+A(D.артефакты.контракт)+A(D.артефакты.петля),
+ arts:c=>AE(D.артефакты.код_отбора)+AE(D.артефакты.контракт)+AE(D.артефакты.петля),
  key:c=>D.слои[c.плечо],
  more:c=>'<h4>SYSTEM</h4><pre>'+esc(D.блоки['SYSTEM'])+'</pre><h4>Примеры значений</h4><pre>'+esc(D.блоки['Примеры значений'])+'</pre>'},
 {t:'Модель', dot:c=>'reached',
  rib:c=>c.модель.вид==='clarify'?'переспросила':nvar(c.модель.варианты.length),
  mean:c=>{const m=c.модель;return (m.вид==='clarify'?'Агент переспросил вместо ответа.':'Агент отдал '+nvar(m.варианты.length)+(m.уточнение?' и уточнение':'')+'.')+' Сырой текст ответа не сохранялся.'},
  num:c=>c.модель.вид==='clarify'?['вопрос','вместо числа']:[c.модель.варианты.length,c.модель.варианты.length===1?'вариант ответа':'варианта ответа'],
- arts:c=>art('модель',D.артефакты.модель),
+ arts:c=>AE(D.артефакты.модель),
  key:c=>[c.модель.вид,c.модель.уточнение,c.модель.варианты.map(v=>v.sql)],
  more:c=>{const m=c.модель;let h='<p class="hint">'+esc(m.оговорка)+'</p>';
    if(m.уточнение)h+='<h4>Уточнение</h4><pre>'+esc(m.уточнение)+'</pre>';
    if(m.причина)h+='<h4>Причина</h4><pre>'+esc(m.причина)+'</pre>';
    m.варианты.forEach((v,i)=>{h+='<h4>Вариант '+(i+1)+'</h4><p>'+esc(v.label)+'</p>'});return h}},
-{t:'Исполнение', dot:c=>c.модель.варианты.length?'reached':'unread',
- rib:c=>c.модель.варианты.length?'SQL исполнен':'не исполнялось',
+{t:'Исполнение', dot:c=>c.модель.вид==='clarify'?'notreached':'reached',
+ rib:c=>c.модель.вид==='clarify'?'не исполнялось':'SQL исполнен',
  mean:c=>c.модель.варианты.length?'SQL исполнен на базе данных.':'Исполнять нечего: агент переспросил.',
  num:c=>{const v=c.модель.варианты;if(!v.length)return ['нечего','исполнять'];
    return [v.map(x=>x.rows?fmt(x.rows.length):'—').join(' · '),v.length===1?'строк результата':'строк результата по вариантам']},
- arts:c=>A(D.артефакты.база),
+ arts:c=>AE(D.артефакты.база),
  key:c=>c.модель.варианты.map(v=>v.rows),
  more:c=>{const v=c.модель.варианты;if(!v.length)return '<p class="hint">Агент переспросил — исполнять нечего.</p>';
    return v.map((x,i)=>'<h4>Вариант '+(i+1)+' · SQL</h4><pre>'+esc(x.sql)+'</pre>'+(x.rows&&x.rows.length?
      '<div class="tw"><table><tbody>'+x.rows.slice(0,20).map(r=>'<tr>'+r.map(y=>'<td>'+esc(y)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'+
      '<p class="hint">строк: '+fmt(x.rows.length)+(x.rows.length>20?', показаны первые 20':'')+'</p>':'<p class="hint">результат не сохранён</p>')).join('')}},
-{t:'Приёмка', dot:c=>'reached', rib:c=>c.приёмка.исход,
+{t:'Приёмка', dot:c=>c.модель.вид==='clarify'?'notreached':'reached',
+ rib:c=>c.модель.вид==='clarify'?'не исполнялось':c.приёмка.исход,
  mean:c=>({'сошлось':'Совпало с эталоном.','не сошлось':'Не совпало с эталоном.','форма разошлась':'Числа верные, но не в форме эталона.','уточнение':'Сверять нечего: агент переспросил.'})[c.приёмка.исход],
  num:c=>[val(c.приёмка.эталон.значение),'эталон'],
- arts:c=>art('эталонный запрос',c.приёмка.эталон.файл,'author','пишет аналитик; модель не видит'),
+ arts:c=>AE(D.артефакты.эталоны,'author','пишет аналитик; модель не видит',c.приёмка.эталон.файл),
  key:c=>c.приёмка.исход,
  more:c=>c.приёмка.поля.length?'<div class="tw"><table><thead><tr><th>вариант</th><th>число сошлось</th><th>форма разошлась</th><th>чисел в выдаче</th></tr></thead><tbody>'+
    c.приёмка.поля.map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+(p['число сошлось']?'да':'нет')+'</td><td>'+(p['форма разошлась']?'да':'нет')+'</td><td>'+p['чисел в выдаче']+'</td></tr>').join('')+'</tbody></table></div>'
@@ -317,7 +318,7 @@ const S=[
 {t:'Проверка проверки', dot:c=>'reached', rib:c=>'отпечатки сошлись',
  mean:c=>'Промпт пересобран тем же кодом, что на прогоне, и сверен с отпечатками из лога. '+esc(cap(D.проверка_проверки.пары))+'.',
  num:c=>[D.проверка_проверки.отпечатков_сошлось,'ячеек со сверенными отпечатками'],
- arts:c=>A(D.артефакты.лог)+art('отпечатки промпта','layer_sha, context_sha'),
+ arts:c=>AE(D.артефакты.лог)+AE(D.артефакты.отпечатки),
  key:c=>c.лог.layer_sha,
  more:c=>'<div class="tw"><table><tbody><tr><th>layer_sha</th><td>'+esc(c.лог.layer_sha)+'</td></tr><tr><th>context_sha</th><td>'+esc(c.лог.context_sha)+'</td></tr>'+
    '<tr><th>вход</th><td>'+fmt(c.лог.токены.in)+'</td></tr><tr><th>выход</th><td>'+fmt(c.лог.токены.out)+'</td></tr><tr><th>цена</th><td>$'+c.лог.цена.toFixed(4)+'</td></tr></tbody></table></div>'}
