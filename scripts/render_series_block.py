@@ -86,7 +86,9 @@ def block(arts: list[dict], current: str) -> str:
         if a["num"] in SIDE:
             rows.append(side(SIDE[a["num"]]))
     return (f'{START}\n<section class="series-nav" id="series">\n<h2>Вся серия про AI-аналитика</h2>\n'
-            '<ol>\n' + "\n".join(rows) + f'\n</ol>\n</section>\n{END}')
+            '<ol>\n' + "\n".join(rows) + '\n</ol>\n'
+            '<div class="sec-right-link"><a class="sec-link" href="/ai-analyst/slovar/">Словарь терминов →</a></div>\n'
+            f'</section>\n{END}')
 
 
 def place(s: str, blk: str) -> str:
