@@ -93,6 +93,16 @@ jobs:
       - name: og:url, og:image and CSS url() resolve to files
         run: python3 scripts/check_meta_css_refs.py
 
+  goatcounter-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Счётчик приходит из шаблона подвала, но на страницах без него
+      # вписан руками. Живая страница без счётчика не видна в статистике,
+      # заглушка со счётчиком считает визит дважды.
+      - name: GoatCounter — one on every live page, none on stubs
+        run: python3 scripts/check_goatcounter.py
+
   link-check:
     runs-on: ubuntu-latest
     steps:
