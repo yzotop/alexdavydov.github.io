@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Словарь — Саша Давыдов</title>
+    <meta name="author" content="Саша Давыдов"/>
+    <link rel="canonical" href="https://davydov.my/ai-analyst/slovar/"/>
+    <meta name="description" content="Термины серии про AI-аналитика: данные, решения, агент, проверка — как они называются у меня и как их называют обычно."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Словарь — Саша Давыдов"/>
+    <meta property="og:description" content="Термины серии про AI-аналитика: данные, решения, агент, проверка — как они называются у меня и как их называют обычно."/>
+    <meta property="og:url" content="https://davydov.my/ai-analyst/slovar/"/>
+    <meta property="og:image" content="https://davydov.my/assets/og/ai-analyst.png"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="icon" href="/favicon.ico" sizes="any"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span>davydov.my</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/talks/">ММ’26</a>
+      <a href="/ai-analyst/">AI-аналитик</a>
+    </span>
+    <span class="nav-group">
+      <a href="/cases/">Аналитика везде</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+    <span class="nav-group">
+      <a href="/career/">Менторство</a>
+      <a href="/about/">Обо мне</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/talks/">ММ’26</a>
+      <a href="/ai-analyst/">AI-аналитик</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/cases/">Аналитика везде</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/career/">Менторство</a>
+      <a href="/about/">Обо мне</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+
+<div class="page">
+  <nav class="breadcrumb" aria-label="Хлебные крошки">
+    <a href="/">Главная</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <a href="/ai-analyst/">AI-аналитик</a>
+    <span class="breadcrumb-sep" aria-hidden="true">→</span>
+    <span class="breadcrumb-current">Словарь</span>
+  </nav>
+
+  <h1 class="page-title">Словарь<span class="accent-dot">.</span></h1>
+  <p class="page-lead">Как я называю вещи в текстах, как их называют обычно и что это.</p>
+
+  <div class="prose">
+    <h2 id="dannye">Данные</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>термин</th><th>что это</th><th>как называют обычно</th></tr></thead>
+      <tbody>
+        <tr id="syrye-tablicy"><td><strong>сырые таблицы</strong></td><td>таблицы, как пришли от генератора</td><td>raw, landing, bronze</td></tr>
+        <tr id="promezhutochnaya-tablica"><td><strong>промежуточная таблица</strong></td><td>таблицы <code>stg_*</code>: почищено, дедуплицировано, приведено к UTC</td><td>staging, silver</td></tr>
+        <tr id="vitrina"><td><strong>витрина</strong></td><td>таблицы <code>fct_*</code> / <code>dim_*</code>, из них агент и считает</td><td>mart, gold</td></tr>
+        <tr id="kod-sborki"><td><strong>код сборки</strong></td><td>SQL-файлы</td><td>dbt-модель, transformation</td></tr>
+        <tr id="manifest-sborki"><td><strong>манифест сборки</strong></td><td>JSON, пишется при компиляции</td><td>dbt manifest</td></tr>
+        <tr id="opisaniya-vitrin"><td><strong>описания витрин</strong></td><td>YAML: витрины, промежуточные таблицы; до агента доезжают через манифест</td><td>dbt docs, model descriptions</td></tr>
+        <tr id="testy-sborki"><td><strong>тесты сборки</strong></td><td>проверки, которые сборка прогоняет над своими таблицами: нет дублей, ключи не пустые, связи между таблицами сходятся</td><td>dbt tests</td></tr>
+        <tr id="srez-klientov"><td><strong>срез клиентов</strong></td><td><code>customers_asof</code> — состояние клиентов на курсор</td><td>snapshot, as-of table</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>Витрина — это результат, код сборки — это причина.</strong> Их постоянно смешивают, потому что в dbt и то и другое называется model.</p>
+
+    <h2 id="resheniya">Решения</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>термин</th><th>что это</th><th>как называют обычно</th></tr></thead>
+      <tbody>
+        <tr id="fayl-opredeleniy-metrik"><td><strong>файл определений метрик</strong></td><td><code>metrics.yml</code></td><td>semantic layer, metrics layer</td></tr>
+        <tr id="reshenie"><td><strong>решение</strong></td><td>за какой период, включать ли гостей</td><td>business logic, definition</td></tr>
+        <tr id="razvilka"><td><strong>развилка</strong></td><td>место, где решение можно было принять иначе; признак — можно поставить другое, и запрос останется рабочим</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2 id="agent-blok">Агент</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>термин</th><th>что это</th><th>как называют обычно</th></tr></thead>
+      <tbody>
+        <tr id="model"><td><strong>модель</strong></td><td>языковая модель, только она</td><td>LLM</td></tr>
+        <tr id="agent"><td><strong>агент</strong></td><td>модель плюс обвязка</td><td>agent, LLM app</td></tr>
+        <tr id="obvyazka"><td><strong>обвязка</strong></td><td>код, который собирает промпт и исполняет SQL; ядро + модуль под тип</td><td>harness, scaffolding</td></tr>
+        <tr id="otbor-konteksta"><td><strong>отбор контекста</strong></td><td>что положить в промпт</td><td>retrieval, RAG</td></tr>
+        <tr id="sloy-tables"><td><strong>слой <code>tables</code></strong></td><td>общий выключатель отбора: сразу для схемы, описаний и примеров значений</td><td>—</td></tr>
+        <tr id="prompt"><td><strong>промпт</strong></td><td>текст, который уходит модели на один вопрос</td><td>prompt</td></tr>
+        <tr id="instrukciya"><td><strong>инструкция</strong></td><td>константа <code>SYSTEM_FREE</code></td><td>system prompt</td></tr>
+        <tr id="blok"><td><strong>блок</strong></td><td>часть промпта</td><td>prompt section</td></tr>
+        <tr id="ranner"><td><strong>раннер</strong></td><td>скрипт прогона под тип задачи</td><td>runner, eval script</td></tr>
+        <tr id="petlya"><td><strong>петля</strong></td><td>у нас её нет: один план, перезапуск только при падении</td><td>agent loop, multi-step</td></tr>
+        <tr id="kontekst-hoda"><td><strong>контекст хода</strong></td><td>вводим, когда появится петля: всё, что модель видит на данном ходу; промпт — его первая часть</td><td>context window</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>Отбор контекста здесь не RAG в привычном смысле.</strong> Нет ни векторов, ни эмбеддингов, ни похожести. Это правила: взять таблицы, названные в определении метрики, взять их описания из манифеста. Роль та же — решить, что попадёт в промпт.</p>
+
+    <h2 id="proverka">Проверка</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>термин</th><th>что это</th><th>как называют обычно</th></tr></thead>
+      <tbody>
+        <tr id="etalonnyy-zapros"><td><strong>эталонный запрос</strong></td><td>пишется по сырым таблицам, правда по построению</td><td>ground truth query</td></tr>
+        <tr id="etalon-keysa"><td><strong>эталон кейса</strong></td><td>вердикт, который автор генератора хотел заложить. Намерение, а не пересчёт из данных</td><td>label, ground truth</td></tr>
+        <tr id="stend"><td><strong>стенд</strong></td><td>данные плюс вопросы плюс эталоны</td><td>benchmark, eval harness</td></tr>
+        <tr id="priemka"><td><strong>приёмка</strong></td><td>проверка результата под тип; см. <a href="#priemka-po-tipam">приёмку по типам</a></td><td>evaluation, acceptance check</td></tr>
+        <tr id="podlozhennaya-kopiya"><td><strong>подложенная копия</strong></td><td>заведомо верный или неверный ответ, которым проверяют приёмку до прогона</td><td>planted answer, canary</td></tr>
+        <tr id="otpechatok"><td><strong>отпечаток</strong></td><td><code>layer_sha</code>, <code>context_sha</code> — снимаются с того, что видела модель, не с файла</td><td>hash, fingerprint</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2 id="obraz-rezultata">Образ результата</h2>
+    <ul>
+      <li>Шаг 1 · Разложить задачи по образу результата</li>
+      <li>Шаг 7 · Принять по образу результата</li>
+    </ul>
+    <p><strong>Приёмка зависит от образа результата.</strong> У числа своя правда, у выгрузки другая, у исследования её нет вовсе.</p>
+
+    <h2 id="peredavaemost">Передаваемость</h2>
+    <p><strong>Передаваемость не про сложность.</strong> Задача отдаётся не потому, что простая, а потому, что решения в ней объявлены.</p>
+
+    <h2 id="priemka-po-tipam">Приёмка по типам</h2>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>тип</th><th>чем принимать</th><th>что она не видит</th></tr></thead>
+      <tbody>
+        <tr><td>число</td><td>сверка с эталонным запросом; разложение числа на слагаемые; сложение двумя способами; пересчёт с другим решением</td><td>совпадение при разных определениях</td></tr>
+        <tr><td>правка</td><td>сверка с прошлой версией с допуском: снятый фильтр — старые строки не тронуты; агрегат — ключи те же</td><td>лишние правки кода — смотреть дифф запроса</td></tr>
+        <tr><td>выгрузка</td><td>внутренние проверки плюс сверка ключей и значений</td><td>пустую таблицу — внутренние проверки её пропускают</td></tr>
+        <tr><td>A/B</td><td>вердикт против заложенного; ширина интервала против порога; деление групп</td><td>улики вне сводки</td></tr>
+        <tr><td>исследование</td><td>устойчивость вывода между повторами</td><td>верность — её мерить не с чем</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Общий приём для всех типов — <strong>чтение того, что агент решил сам</strong>: он называет развилки даже без права спросить.</p>
+  </div>
+</div>
+
+<div class="footer-spacer"></div>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
+    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <a href="/search/">Поиск</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
