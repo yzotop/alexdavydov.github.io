@@ -35,11 +35,17 @@
 .gp .gp-h{font-size:var(--fs-s);color:var(--dim);padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--line-d)}
 /* этапы */
 .gp .gp-stages{display:flex;flex-direction:column;gap:4px}
-.gp .gp-st{font:inherit;text-align:left;background:var(--bg);border:1px solid var(--line);padding:9px 12px;cursor:pointer;color:var(--ink)}
-.gp .gp-st:hover{border-color:var(--ink)}
+.gp .gp-st{font:inherit;text-align:left;background:var(--bg);border:1px solid transparent;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.gp .gp-st:hover{background:var(--soft2)}
 .gp .gp-st[aria-current=step]{background:var(--soft);border-color:var(--ink)}
 .gp .gp-st b{display:block;font-size:var(--fs-m);font-weight:600}
 .gp .gp-st span{display:block;font-size:var(--fs-s);color:var(--dim);margin-top:2px}
+.gp .gp-st .gp-does{color:var(--ink);line-height:1.4;margin-top:4px}
+.gp .gp-does-m{display:none;font-size:var(--fs-s);line-height:1.4;margin:8px 0 0}
+/* навигация по этапам */
+.gp .gp-go{display:flex;justify-content:space-between;gap:12px;margin:22px 0 0}
+.gp .gp-go button{font:inherit;font-size:var(--fs-s);padding:7px 14px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+.gp .gp-go button:disabled{border-color:var(--line-d);color:var(--mute2);cursor:default}
 /* входы */
 .gp .gp-ins{display:flex;flex-direction:column;gap:8px}
 .gp .gp-in{font:inherit;text-align:left;width:100%;background:var(--bg);border:1px solid var(--line);
@@ -92,6 +98,7 @@
   .gp .gp-stages{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:6px}
   .gp .gp-st{flex:0 0 auto;padding:7px 10px}
   .gp .gp-st span{display:none}
+  .gp .gp-does-m{display:block}
 }
 </style>
 </head>
@@ -148,7 +155,7 @@
 <p class="gp-kick">Механика</p>
 <h1>Общий процесс AI-аналитика</h1>
 <p class="gp-lede" id="lede"></p>
-<p class="gp-fine">Воспроизведение записанного прогона, стенд синтетический. Промпт пересобран тем же кодом и сверен с отпечатками из лога.</p>
+<p class="gp-fine" id="fine"></p>
 
 <div class="gp-leg" aria-label="Виды входов">
   <span><i></i>пишет аналитик</span>
@@ -158,10 +165,11 @@
 </div>
 
 <div class="gp-cols">
-  <div><div class="gp-h">этап</div><div class="gp-stages" id="stages" role="list"></div></div>
+  <div><div class="gp-h">этап</div><div class="gp-stages" id="stages" role="list"></div><p class="gp-does-m" id="does-m"></p></div>
   <div><div class="gp-h">входы</div><div class="gp-ins" id="ins"></div></div>
   <div><div class="gp-h">выход</div><div id="out"></div></div>
 </div>
+<div class="gp-go"><button type="button" id="prev">← Назад</button><button type="button" id="next">Дальше →</button></div>
 <p class="gp-foot">Выходы показаны файлами для наглядности. На стенде в логе агента лежат вопрос и ответ модели, промпт и контекст — отпечатками, результат и вердикт — в записи прогона.</p>
 
 </div>
@@ -184,6 +192,7 @@ const TABLE=(head,rows)=>h('div',{class:'gp-tw'},h('table',null,
 
 /* Прогон, который показываем: q02, без записи, попытка 2. */
 const RUN={плечо:'А',вопрос:'q02',повтор:2};
+const AR={'А':'без записи','Б':'с записью'};
 
 /* SQL для чтения. Меняются только пробелы вне литералов: перенос перед
    ключевым словом уровня запроса, отступ — глубина вложенных запросов.
@@ -229,7 +238,7 @@ const DEF={
   витрина:{term:'витрина',d:'таблицы fct_* / dim_*, из них агент и считает',usual:'mart, gold'},
   отбор:{term:'отбор контекста',d:'что положить в промпт',usual:'retrieval, RAG'},
   инструкция:{d:'константа SYSTEM_FREE',usual:'system prompt'},
-  модель:{d:'языковая модель, только она',usual:'LLM'},
+  модель:{d:'языковая модель, только она'},
   обвязка:{d:'код, который собирает промпт и исполняет SQL; ядро + модуль под тип',usual:'harness, scaffolding'},
   эталонный_запрос:{d:'пишется по сырым таблицам, правда по построению',usual:'ground truth query'},
   приёмка:{term:'приёмка',d:'проверка результата под тип',usual:'evaluation, acceptance check'},
@@ -237,6 +246,7 @@ const DEF={
 const KORDER={prev:0,an:1,data:2,code:3};
 
 let D=null,C=null,st={s:0,open:null,tab:0};
+const go=i=>{if(!D||i<0||i>6)return;st={s:i,open:null,tab:0};draw()};
 const blocks=()=>[['SYSTEM',D.блоки['SYSTEM'],'code'],['Схема базы',D.блоки['Схема базы'],'data'],
   ['Описания',D.блоки['Описания'],'an'],['Примеры значений',D.блоки['Примеры значений'],'data'],
   ['Файл определений метрик',D.слои[RUN.плечо],'an'],['Вопрос',C.задача,'an']];
@@ -249,11 +259,11 @@ const vlab=(i)=>V().length>1?'вариант '+(i+1)+': ':'';
 function stages(){const d=C.данные,r=C.решения,m=C.модель,p=C.приёмка,rev=D.ревизии[RUN.плечо];
  const bl=blocks(),total=bl.reduce((s,x)=>s+x[1].length,0);
  return [
- {t:'Запрос',out:'вопрос',tech:'question.txt',
+ {t:'Запрос',does:'вопрос уходит в работу как есть',out:'вопрос',tech:'question.txt',
   ins:[{n:'вопрос продакта',k:'an',path:'experiments/two_arms.py · QUESTIONS["'+RUN.вопрос+'"]',def:DEF.вопрос_продакта,
         see:'да, дословно: последний блок промпта',run:()=>PRE(C.задача)}],
   tabs:[['текст',()=>frag(PRE(C.задача),NOTE(pl(C.задача.length,'знак','знака','знаков')))]]},
- {t:'Отбор контекста',out:'отобранный контекст',tech:'context/ schema.txt · columns.txt · values.txt · metrics.yml',
+ {t:'Отбор контекста',does:'обвязка выбирает, что из данных, описаний и определений показать модели',out:'отобранный контекст',tech:'context/ schema.txt · columns.txt · values.txt · metrics.yml',
   ins:[{n:'вопрос',k:'prev',from:0},
    {n:'файл определений метрик',k:'an',path:'metrics/metrics.yml · ревизия '+rev,def:DEF.файл_определений,
     see:D.отбор?'по маршруту вопроса':'да, целиком',
@@ -269,14 +279,14 @@ function stages(){const d=C.данные,r=C.решения,m=C.модель,p=C
     see:'схему — '+d.в_схеме+' объектов из '+d.в_базе+', и примеры значений '+pl(C.примеры.length,'колонки','колонок','колонок'),
     run:()=>frag(P('объектов в базе: '+d.в_базе+'; в схему промпта: '+d.в_схеме),h('p',{class:'gp-tech'},d.в_схеме_имена.join(', ')))},
    {n:'код отбора контекста',k:'code',path:'agent/retrieval.py',def:DEF.отбор,
-    see:'нет: агент видит только то, что код отобрал',
+    act:'решает, какие таблицы попадут в схему промпта, чьи описания и какие примеры значений показать модели'+(D.отбор?'':'; файл определений метрик кладёт целиком'),
     run:()=>frag(P('не вписаны в код отбора: '+d.не_вписаны.join(', ')),NOTE(d.причина))}],
   tabs:[['схема',()=>PRE(D.блоки['Схема базы'])],['описания',()=>PRE(D.блоки['Описания'])],
    ['примеры',()=>PRE(D.блоки['Примеры значений'])],['определения',()=>frag(NOTE('metrics/metrics.yml · ревизия '+rev),PRE(D.слои[RUN.плечо]))]]},
- {t:'Сборка промпта',out:'промпт',tech:'prompt.txt',
+ {t:'Сборка промпта',does:'обвязка склеивает контекст, вопрос и инструкцию в один текст',out:'промпт',tech:'prompt.txt',
   ins:[{n:'вопрос',k:'prev',from:0},{n:'отобранный контекст',k:'prev',from:1},
-   {n:'инструкция',k:'code',path:'agent/sql_gen.py · SYSTEM_FREE',def:DEF.инструкция,see:'да, первым блоком',run:()=>PRE(D.блоки['SYSTEM'])},
-   {n:'обвязка',k:'code',path:'agent/loop.py:101–103 · agent/sql_gen.py',def:DEF.обвязка,see:'нет',
+   {n:'инструкция',k:'code',path:'agent/sql_gen.py · SYSTEM_FREE',def:DEF.инструкция,act:'задаёт правила ответа: если вопрос не определяет решение — не выбирать молча, а вернуть варианты или переспросить; только SELECT; отказ, если данных нет',run:()=>PRE(D.блоки['SYSTEM'])},
+   {n:'обвязка',k:'code',path:'agent/loop.py:101–103 · agent/sql_gen.py',def:DEF.обвязка,act:'кладёт инструкцию и файл определений метрик в системную часть промпта, остальные блоки и вопрос — в сообщение модели',
     run:()=>P('собрано '+pl(bl.length,'блок','блока','блоков')+', '+fmt(total)+' знаков')}],
   tabs:[['блоки',()=>frag(
       h('div',{class:'gp-bar',role:'img','aria-label':'Шесть блоков промпта, ширина по размеру'},
@@ -285,34 +295,34 @@ function stages(){const d=C.данные,r=C.решения,m=C.модель,p=C
       NOTE('всего '+fmt(total)+' знаков'))],
    ['отпечатки',()=>TABLE(null,[[{th:'layer_sha'},C.лог.layer_sha],[{th:'context_sha'},C.лог.context_sha],
       [{th:'сверено с логом'},C.лог.сверено?'да':'нет']])]]},
- {t:'Вызов модели',out:'ответ модели',tech:'plan.json',
+ {t:'Вызов модели',does:'модель читает промпт и пишет план ответа и SQL',out:'ответ модели',tech:'plan.json',
   ins:[{n:'промпт',k:'prev',from:2},
-   {n:'модель',k:'code',path:'experiments/two_arms.py · MODEL',def:DEF.модель,see:'это и есть модель: читает промпт и пишет ответ',
+   {n:'модель'+(C.лог.модель?' · '+C.лог.модель:''),k:'code',path:'задана в experiments/two_arms.py',def:DEF.модель,act:'читает промпт и пишет план ответа: варианты с SQL, уточнение или отказ',
     run:()=>P((C.лог.модель||'—')+'; токены: '+fmt(C.лог.токены.in)+' вход, '+fmt(C.лог.токены.out)+' выход; цена $'+C.лог.цена.toFixed(4))},
-   {n:'обвязка',k:'code',path:'agent/loop.py',def:DEF.обвязка,see:'нет',run:()=>P('попыток: '+C.лог.попыток)}],
+   {n:'обвязка',k:'code',path:'agent/loop.py',def:DEF.обвязка,act:'вызывает модель; если запрос упал, перезапускает — не больше трёх попыток',run:()=>P('попыток: '+C.лог.попыток)}],
   tabs:()=>{const t=[['варианты',()=>V().length?h('ol',null,V().map(v=>h('li',null,v.label))):P('вариантов нет')],
      ['SQL',()=>frag(V().map((v,i)=>[V().length>1?P('вариант '+(i+1)):null,PRE(sqlLines(v.sql))]),NOTE('переносы строк добавлены для чтения'))],
      ['уточнение',()=>P(m.уточнение||'не было')]];
     if(m.причина)t.push(['причина',()=>P(m.причина)]);return t},
   foot:()=>m.оговорка},
- {t:'Исполнение',out:'результат',tech:'rows.json',
+ {t:'Исполнение',does:'обвязка выполняет запрос в базе',out:'результат',tech:'rows.json',
   ins:[{n:'SQL',k:'prev',from:3},
    {n:'витрины и схема базы',k:'data',path:'data/retail.duckdb',def:DEF.витрина,see:'нет: запрос исполняет обвязка',
     run:()=>P(V().map((v,i)=>vlab(i)+pl((v.rows||[]).length,'строка','строки','строк')).join('; '))},
-   {n:'обвязка',k:'code',path:'agent/loop.py',def:DEF.обвязка,see:'нет',run:()=>P('исполнено запросов: '+V().length)}],
+   {n:'обвязка',k:'code',path:'agent/loop.py',def:DEF.обвязка,act:'выполняет SQL каждого варианта в базе; все строки для записи прогона раннер experiments/two_arms.py получает, выполнив тот же SQL ещё раз',run:()=>P('исполнено запросов: '+V().length)}],
   tabs:[['таблица',()=>frag(V().map((v,i)=>[V().length>1?P('вариант '+(i+1)):null,
       v.rows&&v.rows.length?TABLE(v.колонки,v.rows.slice(0,20).map(row=>row.map(num))):P('результат не сохранён')]))],
    ['повторы',()=>P('попыток: '+C.лог.попыток+'; перезапуск только при падении запроса')]]},
- {t:'Проверка',out:'вердикт',tech:'verdict.json',
+ {t:'Проверка',does:'результат сверяется с эталонным запросом',out:'вердикт',tech:'verdict.json',
   ins:[{n:'результат',k:'prev',from:4},
    {n:'эталонный запрос',k:'an',path:p.эталон.файл,def:DEF.эталонный_запрос,see:'нет',
     run:()=>frag(P('значение: ',h('b',null,num(p.эталон.значение))),PRE(D.эталоны[RUN.вопрос].запрос))},
-   {n:'код приёмки',k:'code',path:'experiments/two_arms.py · score_cell',def:DEF.приёмка,see:'нет',
+   {n:'код приёмки',k:'code',path:'experiments/two_arms.py · score_cell',def:DEF.приёмка,act:'сверяет каждое число выдачи, округлив до двух знаков, с эталоном '+num(p.эталон.значение)+' и ставит исход',
     run:()=>P(p.поля.map((f,i)=>(p.поля.length>1?'вариант '+(i+1)+': ':'')+'чисел в выдаче: '+f['чисел в выдаче']).join('; '))}],
   tabs:[['исход',()=>P(p.исход+'; эталон '+num(p.эталон.значение))],
    ['поля',()=>TABLE(['вариант','число сошлось','форма разошлась','чисел в выдаче'],
       p.поля.map((f,i)=>[String(i+1),f['число сошлось']?'да':'нет',f['форма разошлась']?'да':'нет',String(f['чисел в выдаче'])]))]]},
- {t:'Выдача',out:'ответ заказчику',tech:'answer.txt',
+ {t:'Выдача',does:'результат уходит заказчику',out:'ответ заказчику',tech:'answer.txt',
   ins:[{n:'результат',k:'prev',from:4},{n:'вердикт',k:'prev',from:5}],
   // Числа — из rows того же варианта, что сверялся на проверке (первый).
   // Какую колонку сверяла приёмка, в data.json нет: score_cell сверяет все
@@ -325,14 +335,18 @@ function stages(){const d=C.данные,r=C.решения,m=C.модель,p=C
 function draw(){const S=stages(),s=S[st.s];
   const sl=document.getElementById('stages');
   sl.replaceChildren(...S.map((x,i)=>{const b=h('button',{class:'gp-st',type:'button',role:'listitem',
-      on:()=>{st={s:i,open:null,tab:0};draw()}},h('b',null,(i+1)+' · '+x.t),h('span',null,'→ '+x.out));
+      on:()=>go(i)},h('b',null,(i+1)+' · '+x.t),i===st.s?h('span',{class:'gp-does'},x.does):null,h('span',null,'→ '+x.out));
     if(i===st.s)b.setAttribute('aria-current','step');return b}));
+  document.getElementById('does-m').textContent=s.does;
+  // На телефоне лента этапов прокручивается — выбранный этап держим в виду.
+  if(sl.scrollWidth>sl.clientWidth){const c=sl.querySelector('[aria-current]');sl.scrollLeft=c.offsetLeft-sl.offsetLeft-16}
+  document.getElementById('prev').disabled=st.s===0;document.getElementById('next').disabled=st.s===S.length-1;
   // Входы: выход прошлого этапа → пишет аналитик → данные → код и система.
   const ins=s.ins.map((x,i)=>({...x,i})).sort((a,b)=>KORDER[a.k]-KORDER[b.k]||a.i-b.i);
   const nodes=[];
   ins.forEach(x=>{
     const label=x.k==='prev'?'выход этапа '+(x.from+1)+' · '+S[x.from].t.toLowerCase():x.path;
-    if(x.k==='prev'){nodes.push(h('button',{class:'gp-in prev',type:'button',on:()=>{st={s:x.from,open:null,tab:0};draw()}},
+    if(x.k==='prev'){nodes.push(h('button',{class:'gp-in prev',type:'button',on:()=>go(x.from)},
       h('b',null,x.n),h('code',null,label)));return}
     const open=st.open===x.i;
     nodes.push(h('button',{class:'gp-in '+x.k,type:'button','aria-expanded':String(open),
@@ -342,7 +356,7 @@ function draw(){const S=stages(),s=S[st.s];
         h('h4',null,'Определение'),
         h('p',f.draft?{class:'gp-draft'}:null,(f.term?f.term+': ':'')+f.d,
           f.usual?h('span',{class:'gp-draft'},' (обычно: '+f.usual+')'):null,f.draft?' — черновик определения':null),
-        h('h4',null,'Видит ли агент'),P(x.see),
+        x.k==='code'?[h('h4',null,'Что делает'),P(x.act)]:[h('h4',null,'Видит ли агент'),P(x.see)],
         h('h4',null,'В этом прогоне'),x.run()))}});
   document.getElementById('ins').replaceChildren(...nodes);
   // Выход
@@ -355,10 +369,17 @@ function draw(){const S=stages(),s=S[st.s];
   // ширина сегментов полосы — размер блока из data.json; данные, а не стиль
   oh.querySelectorAll('.gp-bar i[data-w]').forEach(i=>{i.style.flex=i.dataset.w+' 0 0'});
 }
+document.getElementById('prev').addEventListener('click',()=>go(st.s-1));
+document.getElementById('next').addEventListener('click',()=>go(st.s+1));
+// Стрелки влево и вправо листают этапы; с модификаторами и в полях ввода — нет.
+document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;
+  const t=e.target;if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+  if(e.key==='ArrowRight'){go(st.s+1);e.preventDefault()}else if(e.key==='ArrowLeft'){go(st.s-1);e.preventDefault()}});
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;
   C=d.ячейки.find(c=>c.плечо===RUN.плечо&&c.вопрос===RUN.вопрос&&c.повтор===RUN.повтор);
-  document.getElementById('lede').textContent='Один записанный прогон: «'+C.задача+'» — без записи, попытка '+C.повтор+
-    '. Семь этапов от запроса до выдачи: что входит в каждый и что из него выходит.';
+  document.getElementById('lede').textContent='Один записанный прогон вопроса «'+C.задача+'». Семь этапов от запроса до выдачи: что входит в каждый и что из него выходит.';
+  document.getElementById('fine').textContent='Воспроизведение записанного прогона: '+AR[C.плечо]+', попытка '+C.повтор+
+    '; стенд синтетический. Промпт пересобран тем же кодом и сверен с отпечатками из лога.';
   draw()});
 </script>
 <div class="footer-spacer"></div>
