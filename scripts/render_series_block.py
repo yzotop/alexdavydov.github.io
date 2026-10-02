@@ -87,7 +87,7 @@ def block(arts: list[dict], current: str) -> str:
             rows.append(side(SIDE[a["num"]]))
     return (f'{START}\n<section class="series-nav" id="series">\n<h2>Вся серия про AI-аналитика</h2>\n'
             '<ol>\n' + "\n".join(rows) + '\n</ol>\n'
-            '<div class="sec-right-link"><a class="sec-link" href="/ai-analyst/slovar/">Словарь терминов →</a></div>\n'
+            '<div class="sec-right-link"><a class="sec-link" href="/ai-analyst/slovar/">Словарь терминов →</a> · <a class="sec-link" href="/workspace/mechanics/">Механика →</a></div>\n'
             f'</section>\n{END}')
 
 
