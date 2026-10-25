@@ -9,29 +9,17 @@ from xml.sax.saxutils import escape
 
 SITE_ORIGIN = "https://davydov.my"
 
-# Страницы, которые есть в поиске по сайту, но не должны попадать
-# в карту сайта. Карта — заявка поисковику «вот что индексировать»,
-# поиск по сайту — навигация для того, кто уже пришёл. Это разные вещи,
-# и разводятся они здесь: search-index.json остаётся полным, из карты
-# путь вычитается.
-#
-# Ветка AI-evals скрыта из навигации: карточек на хабе нет, но статьи
-# должны находиться поиском. Единственная дверь — /workspace/blind-verdict-evals/.
-# Возврат — убрать путь отсюда и вернуть карточку на хаб. См. CHANGELOG.md.
-EXCLUDED_FROM_SITEMAP = (
-    "/workspace/articles/honesty-probe-hint/",
-    "/workspace/articles/llm-decisions-two-metrics/",
-    "/workspace/articles/sgr-ab-decisions/",
-)
+# Замороженные исследования и справочные снимки не включены в поисковый
+# индекс, поэтому не попадают в sitemap. Исключения для будущих страниц
+# остаются явным списком: поиск и карта сайта имеют разные задачи.
+EXCLUDED_FROM_SITEMAP = ()
 
 # Paths not guaranteed to appear in search-index (add when new hubs ship).
 EXTRA_PATHS = (
     "/",
-    "/approach/",
     "/cases/",
     "/cases/macbook-market/",
-    "/search/",
-    "/site-map/",
+    "/materials/",
     "/ai-analyst/",
     "/talks/",
     "/teaching/",

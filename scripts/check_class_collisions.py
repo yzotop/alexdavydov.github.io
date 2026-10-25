@@ -128,7 +128,7 @@ def main() -> int:
             rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
             with open(path, encoding="utf-8") as f:
                 s = f.read()
-            if 'href="/style.css"' not in s or 'http-equiv="refresh"' in s:
+            if not re.search(r'href=["\']/style\.css(?:\?[^"\']*)?["\']', s) or 'http-equiv="refresh"' in s:
                 continue
             own = "".join(STYLE.findall(s))
             if not own:

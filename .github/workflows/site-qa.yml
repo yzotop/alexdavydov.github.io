@@ -16,8 +16,8 @@ jobs:
       - uses: actions/checkout@v4
       # courses/index.html больше не генерируется: пять курсов уехали
       # в архив, страница стала заглушкой на /teaching/, а генератор
-      # render_courses_hub.py удалён. Генераторов теперь пять: карта сайта,
-      # хаб /ai-analyst/, главная, блок серии в статьях и шапка с подвалом.
+      # render_courses_hub.py удалён. Проверяются карта сайта, каталог,
+      # хаб серии, главная, блок серии в статьях и шапка с подвалом.
       # Правило у всех одно — regenerate, затем git diff --exit-code:
       # расхождение валит сборку.
       - name: Regenerate sitemap
@@ -38,8 +38,14 @@ jobs:
         run: python3 scripts/render_ai_analyst_hub.py
       - name: Ensure hub matches generator
         run: git diff --exit-code ai-analyst/index.html
-      # Карточки трёх секций главной выводятся из тех же источников, что и
-      # хабы: серия, вторая полка /ai-analyst/, карточки /cases/. Карточка,
+      # Каталог собран из источников статей и кейсов, а не из ручных копий.
+      # --check ловит и правку карточки, и изменение исходной страницы.
+      - name: Ensure materials catalog matches sources
+        run: python3 scripts/render_materials.py --check
+      - name: Publication negative checks on temporary copies
+        run: python3 scripts/test_site_structure.py
+      # Избранное и авторские разборы главной выводятся из тех же источников,
+      # что каталог. Текущая практика — из assets/home-practice.json. Карточка,
       # поправленная руками, или кейс, пропавший с /cases/, — сборка падает.
       - name: Ensure homepage matches generator
         run: python3 scripts/render_home.py && git diff --exit-code index.html
