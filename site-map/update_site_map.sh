@@ -6,6 +6,10 @@
 # ──────────────────────────────────────────────────────────────
 set -euo pipefail
 
+# Граф снят с витрины 2026-10-25. Не создавать его данные заново.
+echo 'Старая карта в архиве. Каталог: python3 scripts/render_materials.py из корня репозитория.' >&2
+exit 1
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 REGISTRY="$REPO_ROOT/docs/site/ENTITY_REGISTRY_CANONICAL_2026-03.md"

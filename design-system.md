@@ -5,7 +5,7 @@
 > Зеркало того, что сейчас есть в коде. Не рекомендации — факты.
 > Источник правды: `style.css`, шаблоны `_partials/` и живые HTML-страницы.
 > Правила «когда какой компонент» — в `CLAUDE.md`, раздел «Дизайн: типы и компоненты».
-> Дата: 2026-04-26 · Обновлено: 2026-09-29 (сайт после смены позиционирования: курсы, заметки, Workspace и симуляторы в архиве; шапка и подвал из шаблонов; главная из пяти блоков)
+> Дата: 2026-04-26 · Обновлено: 2026-10-25 (принятый MVP: постоянная часть и практика на главной, общий каталог, объединённый профиль; остальные страницы сохраняют прежние компоненты)
 
 ---
 
@@ -13,11 +13,13 @@
 
 | Тип | Каркас | Страницы |
 |---|---|---|
-| Главная | `.hero`, `.companies`, секции `.courses-wrap` с `.sec-head` и `.courses-grid` | `/` |
+| Главная | `.dvy` → `.dv-intro`, `.dv-section-wrap`, `.dv-work-grid` | `/` |
+| Каталог | `.dvy` → `.dv-catalog-tools`, `.dv-catalog-list`, `.dv-catalog-item` | `/materials/` |
+| Профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
 | Хаб | `.page` → `.page-title`, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | Статья | `.article` → `h1`, `.article-meta`, `.prose`; у серии `.series-nav` | статьи `/workspace/articles/…`, страницы кейсов `/cases/…` |
-| Текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`; по месту `.timeline`, `.case-block`, `.pricing`, `.cta-strip` | `/about/`, `/approach/`, `/talks/`, `/teaching/`, `/career/`, `/career/results/`, `/companies/`, `404` |
-| Интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона, если страница самостоятельная | симуляторы, карта `question-paths/map`, `/workspace/mechanics/`, `/search/` |
+| Текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`; по месту `.timeline`, `.case-block`, `.pricing`, `.cta-strip` | `/talks/`, `/teaching/`, `/career/`, `/career/results/`, `/companies/`, `404` |
+| Интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона, если страница самостоятельная | сохранённые симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 **Каркас статьи.** Стандартный — `.article` из `style.css`. Три разбора серии собраны на своих каркасах со стилями внутри страницы: `.ags` (`harness-by-type`, `how-agent-sees-decisions`) и `.qp` (`question-paths` и её карта), 6–8 КБ CSS на страницу. Для новых статей не используются.
 
@@ -28,10 +30,37 @@
 | шапка: меню и шторка | `_partials/site-header.html` | `scripts/render_site_header.py` |
 | подвал | `_partials/site-footer.html` | тот же |
 | карточки хаба `/ai-analyst/` | сами статьи | `scripts/render_ai_analyst_hub.py` |
-| карточки главной | статьи и карточки `/cases/` | `scripts/render_home.py` |
+| каталог `/materials/` | статьи и кейсы через `scripts/site_materials.py` | `scripts/render_materials.py` |
+| практика и карточки главной | `assets/home-practice.json`, статьи и карточки `/cases/` | `scripts/render_home.py` |
 | блок серии в статьях | сами статьи | `scripts/render_series_block.py` |
 
 ---
+
+### Компоненты принятого MVP — 25 октября 2026
+
+Новая композиция ограничена `<main class="dvy">`. Все её правила в `style.css`
+имеют префикс `.dvy`; шапка и подвал остаются общими для сайта. Используются
+существующие Manrope и цветовые токены, без новых шрифтов и библиотек.
+
+- `.dv-intro` — постоянное представление на главной, кнопки и переход к профилю.
+- `.dv-section-wrap` — раздел главной, каталога или профиля.
+- `.dv-practice-grid`, `.dv-focus`, `.dv-update` — текущая практика и ссылки на публикации.
+- `.dv-work-grid`, `.dv-work-card` — избранные материалы главной.
+- `.dv-catalog-list`, `.dv-catalog-item` — список материалов: название,
+  описание и тема. Вся строка кликабельна. Полное описание остаётся в HTML;
+  CSS показывает строку на десктопе и две на телефоне.
+- `.dv-catalog-tools`, `.dv-catalog-filters` — поиск и фильтры. Без JavaScript
+  остаются видимы все статические карточки; адрес хранит выбранную тему и запрос.
+- `.dv-profile-history` — свёрнутая сохранённая история выступлений и преподавания.
+
+Упрощение 25 октября 2026: подпись шапки — Δ davydov (`.logo-wordmark`),
+декоративные точки в новых заголовках убраны. Имя крупнее заголовков разделов.
+Практика содержит фокус, краткую стадию и публикации; повторные подписи сняты.
+Контакты подвала генератор убирает только на главной, где они уже есть перед ним.
+
+Старые `.hero`, `.companies` и секции прежней главной ниже описаны как исторические
+компоненты. При новой редактуре главной их не возвращать. `/approach/` теперь
+заглушка на `/about/#principles`, `/search/` и `/site-map/` — на каталог.
 
 ## 2. Дизайн-токены
 
@@ -182,20 +211,20 @@
 <nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
     <div class="logo-mark"><span>Δ</span></div>
-    <span>davydov.my</span>
+    <span class="logo-wordmark">davydov</span>
   </a>
   <div class="nav-links">
     <span class="nav-group">
+      <a href="/materials/">Материалы</a>
       <a href="/talks/">ММ’26</a>
-      <a href="/ai-analyst/">AI-аналитик</a>
     </span>
     <span class="nav-group">
-      <a href="/cases/">Аналитика везде</a>
-      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
-    </span>
-    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
       <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
       <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
     </span>
   </div>
   <button type="button" class="nav-burger" id="nav-burger" …>…</button>
@@ -218,13 +247,15 @@
 - Группы: `.nav-links { gap: 56px }`, `.nav-group { gap: 28px }` — промежуток между группами вдвое шире, без линий и символов. В зоне 901–1000px — 30 и 18.
 - `.nav-links a` — `white-space: nowrap`: подпись в две строки ломает высоту шапки.
 - Подчёркивание при наведении: `::after { height: 2px; background: var(--accent); transform: scaleX(0) → 1 }`.
-- Ниже 900px `.nav-links` скрыт, открывается шторка.
+- Ниже 900px `.nav-links` скрыт, кнопка меню прижата вправо; открывается шторка.
 
 **Шторка:** справа, `width: min(300px, 88vw)`. Группы основного уровня — строками, между строками отступ `row-gap: 10px`; внутри группы пункты через «·». Второй уровень мельче и серым.
 
 **Активный пункт:** `aria-current="page"` ставит генератор — на пункт, чей адрес совпадает с адресом страницы. Внутренние страницы раздела свой пункт не подсвечивают. CSS: `.nav-links a[aria-current="page"] { color: var(--ink) }`. Класса `.active` нет.
 
 **`.logo-mark`:** `28×28px`, фон `var(--ink)`, символ Δ; при наведении снизу выезжает красная заливка (`::after`, `translateY(101%) → 0`).
+
+**`.logo-wordmark`:** Manrope, `19px`, вес 600, `letter-spacing: -.035em`.
 
 ---
 
@@ -236,16 +267,19 @@
 ```html
 <footer class="footer">
   <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
     <a href="https://t.me/Datalake">Telegram</a>
-    <a href="https://solvery.io/ru/mentor/alex_davydov">Solvery</a>
-    <a href="https://getmentor.dev/mentor/sasha-davydov-3357">GetMentor</a>
     <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
-    <a href="/search/">Поиск</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
   </nav>
   <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
   <span class="footer-right">© 2026</span>
 </footer>
 ```
+
+Маркеры `footer:contacts` генератор вырезает только на главной: контакты уже
+есть перед подвалом. Счётчик от этого условия не зависит.
 
 **CSS:**
 - `display: grid; grid-template-columns: 1fr auto 1fr`; `padding: 40px 48px; background: var(--ink); color: #fff; font-size: 13px`.
@@ -643,19 +677,23 @@
 ### №5: Инлайн-стили
 По числу `style="…"`: `industriya` 53 (намеренное исключение, раздел 8), `question-paths` 12, `/site-map/` 12, `macbook-market` 9, `404` 6, `/career/` 5, `/companies/` 5, `/approach/` 3, главная 1, статьи «Основы» (`retention-vs-revenue`, `mde-marketplace`, `ab-planning-mistakes`) по 4.
 
-### №6: `/site-map/`
-Отдельная страница без шапки сайта, со своим CSS.
+### ~~№6: `/site-map/`~~ Закрыто 2026-10-25
+Отдельный граф заменён переходом на каталог. Прежняя страница и данные
+сохранены в архиве перед заменой.
 
 ### ~~№7: Кнопка в блоке-призыве~~ ✅ Закрыто 2026-09-29
 Три варианта разметки, кнопка посередине или во всю колонку. Выравнивание перенесено в `.cta-strip` (3.15), инлайн на `/cases/` и `/companies/` убран.
 
 ### №8: Горизонтальная прокрутка на 320 px
-На 375 px прокрутки нет (исправлено 2026-09-29, мобильный кегль `.page-title` и `.stat-num`). На 320 px страница шире экрана в трёх местах:
+Замер 2026-09-29: на 375 px прокрутки не было после исправления мобильного
+кегля `.page-title` и `.stat-num`. На 320 px были следующие выходы за экран:
 - `/career/` — 353 px: число счётчика «27/31» (`.stat-num`) не даёт колонке `.stats` сжаться;
 - `/companies/` — 375 px: `.plan-tag` и строки списка `li` в `.pricing`;
 - `/about/` — 335 px: `.tl-body` в `.timeline`.
 
-Не исправлено, решение за автором.
+Счётчики и тарифы не исправлены, решение за автором. Прежний таймлайн
+`/about/` сохранён внутри свёрнутой истории в новом профиле; его содержимое
+не переписывалось. Датированные размеры выше не являются замером новой вёрстки.
 
 ---
 

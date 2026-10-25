@@ -73,6 +73,14 @@ def current(block: str, url: str) -> str:
     return NAV_LINKS.sub(mark, block, count=1)
 
 
+def footer_for_page(block: str, url: str) -> str:
+    """На главной контакты уже есть перед подвалом; на остальных нужны здесь."""
+    if url == "/":
+        return re.sub(r'    <!-- footer:contacts:start -->.*?<!-- footer:contacts:end -->\n',
+                      '', block, flags=re.S)
+    return block
+
+
 def render(s: str, part: dict, block: str) -> str | None:
     """Страница с этой частью на месте шаблона; None — части на странице нет."""
     start, end = part["start"], part["end"]
@@ -108,6 +116,8 @@ def main() -> int:
                 block = templates[part["name"]]
                 if part["name"] == "шапка":
                     block = current(block, page_url(rel))
+                else:
+                    block = footer_for_page(block, page_url(rel))
                 out = render(new, part, block)
                 if out is None:
                     if part["sign"] in new:      # часть есть, но не узнана

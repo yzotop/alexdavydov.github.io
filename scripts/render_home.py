@@ -1,121 +1,109 @@
 #!/usr/bin/env python3
-"""Карточки трёх секций главной — из тех же источников, что хабы.
+"""Избранное и кейсы — из материалов; текущая практика — из JSON.
 
-Главная повторяет то, что уже есть на других страницах: разборы серии,
-статьи основы, кейсы. Карточки, вписанные руками, расходились с хабами —
-подпись разбора 01 на главной и на /ai-analyst/ была разной. Теперь
-главная выводится, а не ведётся.
-
-  § 01 AI-аналитик — разборы 01–03 серии (render_ai_analyst_hub.collect)
-                     и карточка доклада;
-  § 02 Основа      — четыре последние статьи второй полки /ai-analyst/
-                     (render_ai_analyst_hub.collect_base);
-  § 03 Аналитика везде — кейсы из списка HOME_CASES. Список — выбор
-                     автора, из страниц его не вывести; всё остальное
-                     берётся из карточек /cases/: название, №, заголовок,
-                     описание.
-
-Каждая сетка пишется между маркерами <!-- home:ИМЯ:start --> и
-<!-- home:ИМЯ:end -->. Нет маркеров или кейса из списка нет на /cases/ —
-ОСТАНОВ, ничего не записано.
-
-Проверяется в CI: python3 scripts/render_home.py && git diff --exit-code index.html
+Постоянное представление правится в HTML. --check не пишет файлы.
 """
 from __future__ import annotations
 
+import argparse
 import html
-import re
+import json
 import sys
-from pathlib import Path
+from urllib.parse import urlsplit
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from render_ai_analyst_hub import WORDS, collect, collect_base  # noqa: E402
+from site_materials import ROOT, cases, materials, replace_block, validate_url
 
-ROOT = Path(__file__).resolve().parent.parent
-HOME = ROOT / "index.html"
-CASES = ROOT / "cases" / "index.html"
-
-# Кейсы на главной — выбор автора, 2026-09-29: три, названные в
-# подзаголовке /cases/ (кроссовки, салфетка, Корейко), и «Лего». Четыре —
-# чтобы сетка в две колонки закрывалась без пустой клетки.
-HOME_CASES = ["ub22", "menu-check", "telenok", "lego-octan"]
-SERIES_ON_HOME = 3
-BASE_ON_HOME = 4
-
-TALK_CARD = """    <a class="course" href="/talks/">
-      <div class="course-meta"><span class="course-num">26.11</span><span>МАТЕМАРКЕТИНГ’26 · ДОКЛАД</span></div>
-      <h3>Сколько работы аналитика можно отдать агенту и чем это проверять</h3>
-      <p class="course-status">Москва, ИНТЦ Кластер Ломоносов</p>
-      <span class="course-arrow">↗</span>
-    </a>"""
+SELECTED = [
+    ("/workspace/articles/how-agent-sees-decisions/", "Контекст и решения",
+     "Где записанное правило теряется по дороге к модели."),
+    ("/workspace/articles/harness-by-type/", "Подготовка и приёмка",
+     "Почему способ проверки зависит от результата задачи."),
+    ("/workspace/articles/two-sided-interference/", "Эксперименты",
+     "Что меняется, когда тест и контроль влияют друг на друга."),
+    ("/workspace/articles/pctr-calibration/", "Монетизация",
+     "Почему качество модели нужно связывать с экономикой продукта."),
+]
+HOME_CASES = [("ub22", "Кроссовки"), ("menu-check", "Кофейня")]
 
 
-def stop(msg: str) -> None:
-    sys.exit(f"ОСТАНОВ: {msg}. Ничего не записано.")
+def selected_block() -> str:
+    by_url = {a["url"]: a for a in materials()}
+    rows = []
+    for url, label, why in SELECTED:
+        if url not in by_url:
+            raise ValueError(f"Избранного материала нет в каталоге: {url}")
+        a = by_url[url]
+        rows.append(f'        <a class="dv-work-card" href="{url}">\n'
+                    f'          <span class="dv-work-label">{html.escape(label)}</span>\n'
+                    f'          <h3>{html.escape(a["title"])}</h3>\n'
+                    f'          <p>{html.escape(why)}</p>\n'
+                    '          <span class="dv-read">Читать разбор <span aria-hidden="true">↗</span></span>\n'
+                    '        </a>')
+    return "\n".join(rows)
 
 
-def card(href: str, num: str, label: str, title: str, text: str) -> str:
+def curiosity_block() -> str:
+    found = {a["slug"]: a for a in cases()}
+    rows = []
+    for slug, label in HOME_CASES:
+        if slug not in found:
+            raise ValueError(f"Кейса из HOME_CASES нет на /cases/: {slug}")
+        a = found[slug]
+        rows.append(f'        <a href="{a["url"]}"><span>{label}</span>'
+                    f'<strong>{html.escape(a["title"])}</strong><span class="dv-arrow">↗</span></a>')
+    rows.append('        <a href="https://null.davydov.my/"><span>∅ Сад</span>'
+                '<strong>Математические объекты и рассуждения</strong><span class="dv-arrow">↗</span></a>')
+    return "\n".join(rows)
+
+
+def practice_block() -> str:
+    data = json.loads((ROOT / "assets/home-practice.json").read_text())
     e = html.escape
-    return (f'    <a class="course" href="{href}">\n'
-            f'      <div class="course-meta"><span class="course-num">{e(num)}</span>'
-            f'<span>{e(label)}</span></div>\n'
-            f'      <h3>{e(title)}</h3>\n'
-            f'      <p>{e(text)}</p>\n'
-            f'      <span class="course-arrow">↗</span>\n'
-            f'    </a>')
-
-
-def grid(cards: list[str]) -> str:
-    return '  <div class="courses-grid">\n' + "\n".join(cards) + "\n  </div>"
-
-
-def series_cards() -> list[str]:
-    first = sorted(collect(), key=lambda a: a["num"])[:SERIES_ON_HOME]
-    cards = [card(a["url"], f'{a["num"]:02d}', f'РАЗБОР {WORDS[a["num"] - 1]}'.upper(),
-                  a["title"], a["blurb"]) for a in first]
-    return cards + [TALK_CARD]
-
-
-def base_cards() -> list[str]:
-    return [card(a["url"], a["rubric"].upper(), a["date"].upper(), a["title"], a["blurb"])
-            for a in collect_base()[:BASE_ON_HOME]]
-
-
-def case_cards() -> list[str]:
-    s = CASES.read_text(encoding="utf-8")
-    found = {}
-    for block in re.findall(r'<div class="case">(.*?)\n    </div>\n', s, re.S):
-        link = re.search(r'<a href="(/cases/([^/"]+)/)" class="case-link">([^<]+)</a>', block)
-        co = re.search(r'<span class="case-co">([^<]+)</span>', block)
-        num = re.search(r'<span>(№ \d+)</span>', block)
-        text = re.search(r'<p>(.*?)</p>', block, re.S)
-        if link and co and num and text:
-            found[link.group(2)] = (link.group(1), num.group(1), html.unescape(co.group(1)),
-                                    html.unescape(link.group(3)),
-                                    html.unescape(re.sub(r"<[^>]+>", "", text.group(1))))
-    missing = [slug for slug in HOME_CASES if slug not in found]
-    if missing:
-        stop(f"кейсов из HOME_CASES нет на /cases/: {', '.join(missing)}")
-    return [card(href, num, co.upper(), title, text)
-            for href, num, co, title, text in (found[slug] for slug in HOME_CASES)]
+    updates = []
+    for update in data["updates"]:
+        url = update["url"]
+        if url.startswith("/"):
+            validate_url(url)
+        elif urlsplit(url).scheme != "https" or not urlsplit(url).netloc:
+            raise ValueError(f"Недопустимая ссылка обновления: {url}")
+        updates.append('        <article class="dv-update">\n'
+                       f'          <div class="dv-update-meta">{e(update["label"])}</div>\n'
+                       f'          <h3><a href="{e(url, quote=True)}">{e(update["title"])}</a></h3>\n'
+                       f'          <p>{e(update["text"])}</p>\n'
+                       '        </article>')
+    return ('      <div class="dv-section-heading"><h2 id="practice-title">Сейчас в практике'
+            '</h2>'
+            f'<span class="dv-date">{e(data["updated"])}</span></div>\n'
+            '      <div class="dv-practice-grid">\n'
+            '        <div class="dv-focus">\n'
+            f'          <h3>{e(data["title"])}</h3><p>{e(data["text"])}</p>\n'
+            f'          <p class="dv-muted">{e(data["stage"])}</p>\n'
+            '        </div>\n'
+            '        <div class="dv-updates">\n' + "\n".join(updates) + '\n        </div>\n      </div>')
 
 
 def main() -> int:
-    s = HOME.read_text(encoding="utf-8")
-    new = s
-    for name, cards in (("series", series_cards()), ("base", base_cards()),
-                        ("cases", case_cards())):
-        start, end = f"<!-- home:{name}:start -->", f"<!-- home:{name}:end -->"
-        if start not in new or end not in new:
-            stop(f"на главной нет маркеров {start} … {end}")
-        i, j = new.index(start) + len(start), new.index(end)
-        new = new[:i] + "\n" + grid(cards) + "\n  " + new[j:]
-    if new != s:
-        HOME.write_text(new, encoding="utf-8")
-    print(f"  index.html  серия, основа, кейсы"
-          f"{'  (изменено)' if new != s else '  (без изменений)'}")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    try:
+        blocks = {"practice": practice_block(), "selected": selected_block(), "curiosity": curiosity_block()}
+        path = ROOT / "index.html"
+        old = path.read_text()
+        new = old
+        for name, block in blocks.items():
+            new = replace_block(new, "home:" + name, block)
+    except (KeyError, ValueError, OSError) as exc:
+        print(f"ОСТАНОВ: {exc}. Ничего не записано.", file=sys.stderr)
+        return 1
+    if args.check and old != new:
+        print("Главная расходится с источниками", file=sys.stderr)
+        return 1
+    if old != new:
+        path.write_text(new)
+    print("  главная: практика, избранное, авторские разборы — " + ("без изменений" if old == new else "обновлены"))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

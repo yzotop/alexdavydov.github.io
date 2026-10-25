@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Собрать полки карточек на /ai-analyst/ из самих статей.
+"""Собрать карточки серии на /ai-analyst/ из самих статей.
 
 Список на хабе поддерживался руками и отставал: восьмой разбор вышел
 28.09 и на хаб не попал. Правда о статье живёт на её странице, хаб
@@ -20,7 +20,8 @@
 
 Порядок — от большего номера к меньшему: новые сверху.
 
-Вторая полка — «Основа: эксперименты и монетизация». В неё идут статьи
+Доменные статьи собираются collect_base() для /materials/, а не для
+второй полки хаба серии. Прежняя полка — «Основа: эксперименты и монетизация». В неё идут статьи
 с рубрикой A/B-эксперименты или Монетизация (span.chip в article-meta),
 от новых к старым по <meta property="article:published_time">. Дата в
 шапке статьи — только месяц, а в мае 2026 вышло восемь статей: порядок
@@ -30,9 +31,9 @@
 У каждой статьи не больше одной полки: статья, попавшая в обе, —
 ОСТАНОВ. Статьи ни в одной полке печатаются списком и на хаб не идут.
 
-Каждая полка пишется между своими маркерами <!-- shelf:ИМЯ:start --> и
-<!-- shelf:ИМЯ:end -->. Первый запуск оборачивает маркерами сетку серии,
-собранную раньше без них, и добавляет секцию второй полки после неё.
+Серия пишется между маркерами <!-- shelf:series:start --> и
+<!-- shelf:series:end -->. Доменные статьи собираются для общего каталога,
+вторую полку на странице серии генератор не добавляет.
 
 Проверяется в CI шагом `git diff --exit-code ai-analyst/index.html`
 рядом с картой сайта: забытая правка роняет сборку, а не тихо живёт
@@ -184,7 +185,6 @@ def card(a: dict) -> str:
 
 def main() -> int:
     arts = collect()
-    base = collect_base()
     s = HUB.read_text(encoding="utf-8")
 
     series_block = shelf("series", [card(a) for a in arts])
@@ -194,19 +194,12 @@ def main() -> int:
         j = s.index("</div>", s.index("</a>", s.rindex('<a class="course"'))) + len("</div>")
         new = s[:i] + series_block + s[j:]
 
-    base_block = shelf("base", [base_card(a) for a in base])
-    out = put(new, "base", base_block)
-    if out is None:                        # первый запуск: секции второй полки нет
-        k = new.index("</section>", new.index("<!-- shelf:series:end -->")) + len("</section>")
-        out = (new[:k] + "\n    <section>\n"
-               f"      <h2>{html.escape(BASE_TITLE)}</h2>\n"
-               f"      <p>{html.escape(BASE_LEAD)}</p>\n      "
-               + base_block + "\n    </section>" + new[k:])
+    out = new
 
     if out != s:
         HUB.write_text(out, encoding="utf-8")
     print(f"  {HUB.relative_to(ROOT)}  серия {arts[0]['num']:02d}→{arts[-1]['num']:02d}, "
-          f"основа: {len(base)} карточек"
+          "основа — в /materials/"
           f"{'  (изменено)' if out != s else '  (без изменений)'}")
     rest = unplaced()
     if rest:
