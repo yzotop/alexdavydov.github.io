@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Почему знания разбросаны по всей компании? — Саша Давыдов</title>
+  <meta name="author" content="Саша Давыдов">
+  <meta name="description" content="Для конкретной задачи определить нужные источники. Разобраться, какие правила действуют, кто их поддерживает и что делать с противоречиями.">
+  <meta name="material-topic" content="ai">
+  <link rel="canonical" href="https://davydov.my/workspace/articles/knowledge-for-ai-analysts/">
+  <meta property="article:published_time" content="2026-10-19">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Почему знания разбросаны по всей компании? — Саша Давыдов">
+  <meta property="og:description" content="Для конкретной задачи определить нужные источники. Разобраться, какие правила действуют, кто их поддерживает и что делать с противоречиями.">
+  <meta property="og:url" content="https://davydov.my/workspace/articles/knowledge-for-ai-analysts/">
+  <meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/style.css?v=20261025-2">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+
+<article class="article">
+  <div class="article-meta">
+    <span>19 октября 2026</span>
+    <span class="chip">AI-first аналитика</span>
+  </div>
+  <h1>Почему знания разбросаны по всей компании?</h1>
+  <p class="page-sub"><a href="https://www.linkedin.com/posts/alexanderdavydow_%D0%B1%D0%B0%D0%B7%D0%B0-%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B9-%D0%B4%D0%BB%D1%8F-%D0%B0%D0%B3%D0%B5%D0%BD%D1%82%D0%BE%D0%B2-ugcPost-7517822328110682112-jyoa/" rel="noopener">Впервые опубликовано в LinkedIn</a> · 19 октября 2026</p>
+  <div class="prose" id="post-text">
+    <p>Готовлю задачи для AI-аналитиков и периодически упираюсь в вопрос: где взять всё, что нужно знать для их выполнения?</p>
+
+    <p>Знания часто раскиданы по разным местам - определение метрики в конфлю, последнее уточнение лежит в рабочем чате, почему решили считать именно так знает коллега, ссылка на прошлый расчёт спрятана в задаче.</p>
+
+    <p>У аналитика со стажем есть шанс собрать эту картину по памяти. Агенту приходится объяснять, где искать и чему верить.</p>
+
+    <p>Контекст для базы знаний приходится собирать много где:</p>
+
+    <ul>
+
+      <li>базы знаний Confluence и другие базы знаний: определения, методики, процессы. Включая устаревшие.</li>
+
+      <li>таск-трекеры Jira, YouTrack: постановки задач, уточнения, решения, результаты выполнения задач.</li>
+
+      <li>Каталоги данных: описания таблиц и полей, происхождение данных, владельцы.</li>
+
+      <li>Документы, облака, SQL, ноутбуки: расчёты. Почему считали именно так — может лежать отдельно.</li>
+
+      <li>Slack, Telegram, лички и каналы: обсуждения и решения, которые редко переносят в документацию.</li>
+
+      <li><strong>Почта и встречи:</strong> согласования, ограничения, договорённости.</li>
+
+      <li><strong>Головы аналитиков и заказчиков:</strong> почему всё устроено именно так.</li>
+
+    </ul>
+
+    <p>По разговорам с коллегами и постам в LinkedIn есть три подхода к подготовке знаний для агентов.</p>
+
+    <h3>1 Подключить всё через mcp и отдать агентам (god-mode).</h3>
+
+    <p>Конфлю, Jira, почту, чаты, облака - пусть агент ищет знания и ответы сам. Какие документы актуальны и где окончательное решение, заранее не разбираем. Потом агент находит три версии методики и тратит кучу токенов, чтобы спросить, какая правильная.</p>
+
+    <h3>2 Оставить всё как есть</h3>
+
+    <p>Аналитик знает, где искать. Если агенту чего-то не хватит — спросим человека.</p>
+
+    <h3>3 Последовательно организовать работу со знаниями</h3>
+
+    <p>Для конкретной задачи определить нужные источники. Разобраться, какие правила действуют, кто их поддерживает и что делать с противоречиями. Настроить получение нужной информации по ходу работы агента.</p>
+
+    <p>Сам я методом проб и ошибок пришёл к трём практическим советам:</p>
+
+    <h3>1 Начинать с одной типовой задачи.</h3>
+
+    <p>Выбрать понятный результат. Собрать определения, данные, прошлые расчёты и ограничения. Сделать короткий вход со ссылками и отметить пробелы.</p>
+
+    <h3>2 Пополнять базу знаний по ходу работы.</h3>
+
+    <p>Уточнили правило — записали. Приняли решение — сохранили почему. Закончили расчёт — оставили результат и ссылки. Чтобы найденное сегодня пригодилось для следующей задачи.</p>
+
+    <h3>3 Заранее договариваться о времени смежных команд.</h3>
+
+    <p>Вместе с владельцами данных, инфраструктурой и AI-платформой выяснять, где нужные данные, что означают поля, какие ограничения есть и как агент сможет получать эту информацию.</p>
+
+    <p>Собрать источники — только начало. Дальше нужно выбрать актуальное для задачи и передать модели вместе с инструкциями. А по ходу работы дополнять контекст, когда появляется новая информация. Это уже context engineering.</p>
+  </div>
+  <div class="article-back"><a href="/materials/">← Все материалы</a></div>
+</article>
+
+<div class="footer-spacer"></div>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+</body>
+</html>
