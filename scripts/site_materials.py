@@ -4,6 +4,7 @@ from __future__ import annotations
 import html
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 
 from render_ai_analyst_hub import collect, collect_base, field
@@ -57,6 +58,7 @@ def materials() -> list[dict]:
     # Новый самостоятельный AI-first текст не обязан быть частью прежней серии.
     # В его HTML указываются material-topic и description, запись — в поиске.
     known = {a["url"] for a in out}
+    independent = []
     for entry in json.loads((ROOT / "assets/search-index.json").read_text()):
         url = entry["url"]
         if entry.get("type") != "article" or url in known or url in NOT_PROMOTED:
@@ -68,9 +70,23 @@ def materials() -> list[dict]:
             continue
         if topic[1] not in TOPICS:
             raise ValueError(f"Неизвестная тема у {url}: {topic[1]}")
-        out.append({"url": url, "topic": topic[1], "format": "Статья",
-                    "title": field(source, r"<h1[^>]*>([^<]+)</h1>", "заголовок", url),
-                    "blurb": field(source, r'<meta name="description" content="([^"]+)"', "description", url)})
+        article = {"url": url, "topic": topic[1], "format": "Статья",
+                   "title": field(source, r"<h1[^>]*>([^<]+)</h1>", "заголовок", url),
+                   "blurb": field(source, r'<meta name="description" content="([^"]+)"', "description", url)}
+        if topic[1] == "ai":
+            published = field(source, r'property="article:published_time" content="([^"]+)"',
+                              "дата публикации", url)
+            try:
+                article["published_date"] = datetime.fromisoformat(published.replace("Z", "+00:00")).date()
+            except ValueError as exc:
+                raise ValueError(f"Некорректная дата публикации у {url}: {published}") from exc
+        independent.append(article)
+    # Самостоятельные AI-first тексты — выше серии. Сравниваем календарные
+    # даты публикаций: у части статей время не известно и не добавляется.
+    # При одинаковой дате URL даёт устойчивый порядок независимо от индекса.
+    ai = sorted((a for a in independent if a["topic"] == "ai"),
+                key=lambda a: (-a["published_date"].toordinal(), a["url"]))
+    out = ai + out + [a for a in independent if a["topic"] != "ai"]
     urls = [a["url"] for a in out]
     if len(set(urls)) != len(urls):
         raise ValueError("Один материал повторяется в каталоге")

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Проверки публикации на временных копиях; рабочее дерево не меняется."""
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -81,6 +82,7 @@ class PublicationChecks(unittest.TestCase):
         page = self.root / url.strip("/") / "index.html"
         page.parent.mkdir()
         page.write_text('<html><head><meta name="material-topic" content="ai">'
+                        '<meta property="article:published_time" content="2026-10-27">'
                         '<meta name="description" content="Опубликованный самостоятельный разбор">'
                         '</head><body><h1>Новый AI-first разбор</h1></body></html>')
         index = self.root / "assets/search-index.json"
@@ -91,6 +93,49 @@ class PublicationChecks(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(f'href="{url}"', (self.root / "materials/index.html").read_text())
         self.assertEqual(self.run_script("render_home.py", "--check").returncode, 0)
+
+    def test_independent_ai_dates_override_index_order_and_preserve_the_rest(self):
+        page = self.root / "materials/index.html"
+        def urls():
+            return re.findall(r'<li class="dv-catalog-item".*?<a href="([^"]+)"',
+                              page.read_text(), re.S)
+        before = urls()
+        index = self.root / "assets/search-index.json"
+        entries = json.loads(index.read_text())
+        fixtures = [("z-newer", "2099-02-01"), ("a-older", "2099-01-02T12:00:00+03:00")]
+        for slug, date in fixtures:
+            url = f"/workspace/articles/{slug}/"
+            article = self.root / url.strip("/") / "index.html"
+            article.parent.mkdir()
+            article.write_text('<meta name="material-topic" content="ai">'
+                               f'<meta property="article:published_time" content="{date}">'
+                               '<meta name="description" content="Проверка порядка по дате">'
+                               f'<h1>{slug}</h1>')
+            entries.append({"type": "article", "url": url})
+        # Индекс теперь начинается со старого текста, а его URL идёт первым
+        # по алфавиту: ни один из этих порядков не должен победить дату.
+        index.write_text(json.dumps(list(reversed(entries))))
+        result = self.run_script("render_materials.py")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(urls()[:2], [f"/workspace/articles/{slug}/" for slug, _ in fixtures])
+        self.assertEqual(urls()[2:], before)
+
+    def test_missing_or_invalid_ai_date_stops_without_writing(self):
+        article = self.root / "workspace/articles/company-brain/index.html"
+        original = article.read_text()
+        for value in [None, "2026-02-30", "not-a-date"]:
+            with self.subTest(date=value):
+                replacement = '' if value is None else f'<meta property="article:published_time" content="{value}">'
+                article.write_text(re.sub(r'<meta property="article:published_time"[^>]+>',
+                                          replacement, original))
+                for script, output in [("render_materials.py", "materials/index.html"),
+                                       ("render_home.py", "index.html")]:
+                    page = self.root / output
+                    before = page.read_bytes()
+                    result = self.run_script(script)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("/workspace/articles/company-brain/", result.stderr)
+                    self.assertEqual(page.read_bytes(), before)
 
     def test_frozen_research_does_not_reappear_from_search_metadata(self):
         url = "/workspace/articles/sgr-ab-decisions/"
