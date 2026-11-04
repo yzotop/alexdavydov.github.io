@@ -42,6 +42,8 @@ jobs:
       # --check ловит и правку карточки, и изменение исходной страницы.
       - name: Ensure materials catalog matches sources
         run: python3 scripts/render_materials.py --check
+      - name: Ensure shared-memory reading list matches sources
+        run: python3 scripts/render_shared_memory_hub.py --check
       - name: Publication negative checks on temporary copies
         run: python3 scripts/test_site_structure.py
       # Избранное и авторские разборы главной выводятся из тех же источников,
