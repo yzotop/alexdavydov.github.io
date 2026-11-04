@@ -62,6 +62,10 @@ accept = ["200", "204", "301", "302", "303", "307", "308", "403", "999"]
 
 # Exclude URLs from checking (values are regular expressions)
 exclude = [
+  # Исторические источники recordwatch: 04.11.2026 Brain отвечает 503.
+  # Ссылки и пометка недоступности сохранены в статье. После восстановления
+  # сервера вернуть эти три адреса в проверку; остальные адреса Brain проверяются.
+  "^https://brain\\.bitgn\\.com/#w=1&d=(5455&r=8|7230|7220)$",
   "^https?://t\\.me",                 # Telegram (bot-blocked)
   "^mailto:",                          # mailto links
   "^https://(www\\.)?linkedin\\.com", # LinkedIn (returns 999 to bots)

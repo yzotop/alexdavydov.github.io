@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Как проверить исправление агента — Саша Давыдов</title>
+  <meta name="author" content="Саша Давыдов">
+  <meta name="description" content="Одна строка в recordwatch: как воспроизвели ошибку, проверили исправление в двух средах и передали результат другим агентам.">
+  <meta name="material-topic" content="ai">
+  <link rel="canonical" href="https://davydov.my/workspace/articles/check-agent-fix/">
+  <meta property="article:published_time" content="2026-11-04">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Как проверить исправление агента — Саша Давыдов">
+  <meta property="og:description" content="Одна строка в recordwatch: как воспроизвели ошибку, проверили исправление в двух средах и передали результат другим агентам.">
+  <meta property="og:url" content="https://davydov.my/workspace/articles/check-agent-fix/">
+  <meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/style.css?v=20261025-2">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<article class="article">
+  <p class="page-sub"><a href="/shared-memory/">Общая память и работа агентов →</a></p>
+  <div class="article-meta"><span>4 ноября 2026</span><span class="chip">AI-first аналитика</span></div>
+  <h1>Как проверить исправление агента</h1>
+  <div class="prose" id="post-text">
+    <p>Я отправил своего Codex-агента в открытый эксперимент Рината Абдуллина — посмотреть, как агенты работают с общей памятью, и найти небольшую полезную задачу. Он исправил одну строку в инструменте наблюдения за рекордами. Больше всего работы оказалось вокруг этой строки: воспроизвести ошибку, проверить исправление в двух средах и убедиться, что в общей базе лежит именно проверенная версия.</p>
+
+    <p>Из этого получился небольшой рецепт для тех, кто поручает агентам менять код и общие инструменты.</p>
+
+    <h2>Что сломалось</h2>
+
+    <p>В эксперименте BitGN агенты участников дорабатывали программу, которая решала задачи интернет-магазина. Результаты запусков сравнивали с текущим рекордом. Один из общих инструментов, recordwatch, должен был находить завершённые запуски с более высокой оценкой.</p>
+
+    <p>У двух чисел были разные шкалы. Из результата запуска приходило значение от 0 до 1, а рекорд хранился по шкале от 0 до 100. Функция <code>above()</code> сравнивала их напрямую:</p>
+
+    <pre><code>s &gt; rec</code></pre>
+
+    <p>Условный пример: новый результат — <code>0.96</code>, рекорд — <code>94.7</code>. Сравнение возвращает «нет», хотя 96 баллов больше 94,7.</p>
+
+    <p>В соседней функции того же инструмента шкалы уже приводились друг к другу и учитывалась погрешность вычислений. Агент применил тот же подход:</p>
+
+    <pre><code>s * 100.0 &gt; rec + 1e-6</code></pre>
+
+    <p>Маленький допуск нужен, чтобы погрешность вычислений не превратила равенство в новый рекорд.</p>
+
+    <h2>Как проверяли</h2>
+
+    <p>Сначала агент сохранил исходную версию и подготовил проверки. Затем прогнал исходник и исправление. Это позволяло увидеть, что проверки действительно обнаруживают ошибку.</p>
+
+    <div class="table-wrap"><table><thead><tr><th scope="col">Набор проверок</th><th scope="col">До исправления</th><th scope="col">После</th></tr></thead><tbody><tr><td>11 локальных проверок на границе SDK</td><td>4 сбоя</td><td>11 из 11 прошли</td></tr><tr><td>9 контрольных случаев в серверной среде Monty</td><td>6 из 9 прошли</td><td>9 из 9 прошли</td></tr></tbody></table></div>
+
+    <p>Девять серверных случаев также выполнили на обычном Python и сопоставили результаты. Отдельно сверили изменение кода: одна строка, остальные определения не изменились.</p>
+
+    <p>После публикации агент открыл новую сессию и прочитал общий файл заново. Его содержимое совпало с проверенным исправлением. В пакет для других участников вошли исходник, исправление, проверки и инструкция воспроизведения.</p>
+
+    <p>При обновлении общей заметки возник конфликт с чужими изменениями. Агент сохранил свежую версию и добавил свою запись к ней. Передача результата включает и эту обязанность: сохранить работу, которая появилась, пока ты занимался своей задачей.</p>
+
+    <h2>Что получилось</h2>
+
+    <p>23 октября 2026 года исправление было опубликовано в общем инструменте. Проверки подтвердили, что на выбранных случаях функция правильно сравнивает оценки; новая сессия подтвердила содержимое опубликованной версии.</p>
+
+    <p>В просмотренном окне запусков результатов выше рекорда не было. Поэтому конкретного пропущенного победителя мы не нашли. Использование правки другими участниками и независимое ревью тоже пока не подтверждены. Из этого случая нельзя вывести прирост качества решающего агента или экономию команды.</p>
+
+    <h2>Как повторить на своей задаче</h2>
+
+    <p>Для небольшой правки я бы оставлял следующему исполнителю такой комплект:</p>
+
+    <ol>
+<li><strong>Исходная версия и пример ошибки.</strong> Какой результат ожидали, какой получили и на каких входах.</li>
+<li><strong>Исправление и сравнение версий.</strong> Что поменялось и почему изменение решает эту ошибку.</li>
+<li><strong>Одинаковые проверки до и после.</strong> Ошибочный случай, границы и важное прежнее поведение. Если рабочая среда отличается от локальной, проверить существенные различия и там.</li>
+<li><strong>Проверенная опубликованная версия.</strong> Прочитать результат из общего места и сверить его с тем, что проверяли.</li>
+<li><strong>Продолжение.</strong> Где лежат материалы, что ещё неизвестно и какое свидетельство закроет следующий вопрос: ревью, включение в сборку или использование на реальной задаче.</li>
+</ol>
+
+    <p>У recordwatch первые четыре шага завершены, а пятый оставляет открытый вопрос: кто воспользовался исправлением и что это изменило в его работе? Такая запись помогает следующему агенту продолжить исследование с того места, до которого мы действительно дошли.</p>
+
+    <h2>Источники</h2>
+
+    <p>Кейс из открытого эксперимента Рината Абдуллина и участников BitGN. Вклад выполнен моим агентом <code>kbad-davydov</code>; проверки и публикация относятся к 23 октября 2026 года. Текст подготовлен по сохранённым материалам 4 ноября, новых запусков для статьи не выполняли.</p>
+
+    <ul>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=5455&amp;r=8" rel="noopener">Исправленный recordwatch, ревизия 8</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=7230" rel="noopener">Пакет с исходником, исправлением и проверками</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=7220" rel="noopener">Обсуждение задачи и передача результата</a>.</li>
+</ul>
+
+    <p>Ссылки ведут в Brain; для чтения может потребоваться доступ к пространству.</p>
+  </div>
+  <p class="page-sub">При проверке 4 ноября 2026 сервер BitGN Brain отвечал HTTP 503. Исторические ссылки сохранены; разбор опирается на материалы, сохранённые во время исследования.</p>
+  <nav class="article-back" aria-label="Продолжить чтение">
+    <p><a href="/workspace/articles/company-brain/">Как я ходил изучать Company Brain — история эксперимента →</a></p>
+    <p><a href="/shared-memory/">← К серии разборов</a> · <a href="/materials/">Все материалы</a></p>
+  </nav>
+</article>
+<div class="footer-spacer"></div>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+</body>
+</html>
