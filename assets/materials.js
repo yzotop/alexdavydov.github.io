@@ -5,6 +5,7 @@
   const search = document.querySelector('#catalog-query');
   const buttons = [...document.querySelectorAll('[data-topic-filter]')];
   const items = [...grid.querySelectorAll('.dv-catalog-item')];
+  const groups = [...grid.querySelectorAll('[data-catalog-topic]')];
   const empty = document.querySelector('#catalog-empty');
   let topic = 'all';
 
@@ -22,6 +23,9 @@
       item.hidden = !((topic === 'all' || item.dataset.topic === topic)
         && item.textContent.toLocaleLowerCase('ru').includes(query));
       if (!item.hidden) visible++;
+    });
+    groups.forEach(group => {
+      group.hidden = !group.querySelector('.dv-catalog-item:not([hidden])');
     });
     buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.topicFilter === topic)));
     empty.hidden = visible > 0;
