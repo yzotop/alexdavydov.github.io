@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Как передать работу другому агенту — Саша Давыдов</title>
+  <meta name="author" content="Саша Давыдов">
+  <meta name="description" content="Inara → bobcat: что оставили в общей памяти, как подтвердили приём работы и чем проверили продолжение.">
+  <meta name="material-topic" content="ai">
+  <link rel="canonical" href="https://davydov.my/workspace/articles/inara-bobcat/">
+  <meta property="article:published_time" content="2026-11-05">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Как передать работу другому агенту — Саша Давыдов">
+  <meta property="og:description" content="Inara → bobcat: что оставили в общей памяти, как подтвердили приём работы и чем проверили продолжение.">
+  <meta property="og:url" content="https://davydov.my/workspace/articles/inara-bobcat/">
+  <meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/style.css?v=20261025-2">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<article class="article">
+  <p class="page-sub"><a href="/shared-memory/">Общая память и работа агентов →</a></p>
+  <div class="article-meta"><span>5 ноября 2026</span><span class="chip">AI-first аналитика</span></div>
+  <h1>Как передать работу другому агенту</h1>
+  <div class="prose" id="post-text">
+    <p>Inara сообщила, что уходит раньше плана, по просьбе своего владельца. В общей памяти она оставила установленную версию программы, ещё идущую проверку, незакрытые задачи и имя того, кто продолжит работу.</p>
+
+    <p>Так передавали роль интегратора в эксперименте Рината Абдуллина. Агенты участников писали части программы для задач интернет-магазина. Интегратор собирал изменения в общую версию и координировал её проверки.</p>
+
+    <p>Передача Inara была опубликована 23 октября в 10:13 мск. Ответ bobcat — в 10:19. Дальше в истории есть и новая сборка, и результат прогона. Но между ними успело измениться распределение ролей.</p>
+
+    <h2>Что осталось следующему агенту</h2>
+
+    <p>Inara указала:</p>
+
+    <ul>
+<li><strong>Установленную версию rc3 и её исходник.</strong> Можно было найти точный код, от которого продолжать работу.</li>
+<li><strong>Диагностическую версию r6 и уже запущенный прогон.</strong> Он ещё выполнялся. Рядом стояло прямое ограничение: результат диагностики нельзя продвигать в основную версию.</li>
+<li><strong>Незакрытые задачи.</strong> Оставались сбой чтения скана и правка, которую нужно было ужать примерно на 100 байт, чтобы она поместилась в сборку.</li>
+<li><strong>Места для продолжения.</strong> Куда записать результат диагностики, где лежат материалы и договорённости по следующей ветке разработки.</li>
+<li><strong>Основного принимающего и резерв.</strong> Bobcat — интегратор, lea-code — запасной участник.</li>
+</ul>
+
+    <p>Bobcat опубликовал собственное подтверждение приёма роли. В ответе он перечислил унаследованные проверки и задачи, указал границу ответственности — до возвращения Inara — и отдельно обозначил работы, которые оставляет другим участникам.</p>
+
+    <h2>Как работу продолжили</h2>
+
+    <p>Inara вернулась ещё до публикации новой сборки. По новому соглашению bobcat собирает и проверяет ветку TRAIN-5, Inara управляет порядком очереди и отправкой полных прогонов на 100 задачах.</p>
+
+    <p>Позже bobcat опубликовал сборку с точным исходником, контрольной суммой, описанием изменений и известными проблемами. Затем в README появился результат короткого прогона на 19 задачах.</p>
+
+    <p>В данных прогона — 19 завершённых задач и ни одной со статусом <code>failed</code>. Это не означает, что всё решено правильно: сумма оценок составила <strong>16,67 из 19</strong>, две задачи получили нулевую оценку. Проблемы были записаны рядом с результатом.</p>
+
+    <p>При нашем разборе мы сверили исходник прогона с версией из README и отдельно пересчитали 19 оценок. Полная оценка этой сборки в нашем срезе не подтверждена; решение о полном прогоне оставалось за Inara.</p>
+
+    <p>Подтверждено продолжение работы: принимающий опубликовал сборку и вернул результат проверки в память. Это не доказывает, что все пункты исходной передачи были закрыты.</p>
+
+    <h2>Что осталось неизвестным</h2>
+
+    <p>Мы не знаем, как bobcat обнаружил сообщение Inara и кто запустил его сессию. Этих событий в наших источниках нет.</p>
+
+    <p>Поэтому здесь видна согласованная передача между агентами, а автоматическое пробуждение следующего исполнителя не установлено. Очередь, которая выполняет отправленный тест, — отдельный механизм.</p>
+
+    <h2>Как применить у себя</h2>
+
+    <p>Для своей задачи можно оставить следующему агенту короткую передачу:</p>
+
+    <ol>
+<li><strong>Откуда продолжать:</strong> актуальный файл и версия.</li>
+<li><strong>Что уже известно:</strong> выполненные проверки, результаты и незакрытые вопросы.</li>
+<li><strong>Что сделать первым:</strong> одно действие, его входы и место для результата.</li>
+<li><strong>Где остановиться:</strong> ограничения и действия, требующие отдельного решения.</li>
+<li><strong>Кто принял работу:</strong> собственное подтверждение следующего исполнителя.</li>
+</ol>
+
+    <p>После ответа «беру» стоит найти результат продолжения: изменённый артефакт, проверку и запись о том, что делать дальше. В этой истории таким свидетельством стали опубликованная сборка и обновлённый README.</p>
+
+    <h2>Источники</h2>
+
+    <p>Исторический срез — 23 октября 2026 года, до 13:36:54 мск. Текст подготовлен 5 ноября по сохранённым версиям; более поздние действия для него не проверялись.</p>
+
+    <ul>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=4678&amp;r=29" rel="noopener">Передача Inara, d4678r29</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=7796&amp;r=1" rel="noopener">Подтверждение bobcat, d7796r1</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=4678&amp;r=33" rel="noopener">Возвращение Inara и уточнение ролей, d4678r33</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=8219&amp;r=1" rel="noopener">Соглашение об очереди TRAIN-5, d8219r1</a>.</li>
+<li><a href="https://brain.bitgn.com/#w=1&amp;d=8644&amp;r=3" rel="noopener">README сборки с результатом short19, d8644r3</a>.</li>
+</ul>
+
+    <p>Ссылки ведут в BitGN Brain. При проверке сервера 5 ноября он отвечал HTTP 503; разбор опирается на сохранённые источники.</p>
+  </div>
+  <nav class="article-back" aria-label="Продолжить чтение">
+    <p><a href="/workspace/articles/vindex-dot/">← Как агент проверил чужую аналитику</a></p>
+    <p><a href="/shared-memory/">← К серии разборов</a> · <a href="/materials/">Все материалы</a></p>
+  </nav>
+</article>
+<div class="footer-spacer"></div>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+</body>
+</html>
