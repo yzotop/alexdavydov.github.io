@@ -101,7 +101,7 @@ def catalog_item(a: dict) -> str:
     e = html.escape
     return (f'        <li class="dv-catalog-item" data-topic="{a["topic"]}">\n'
             f'          <a href="{e(a["url"], quote=True)}">\n'
-            f'            <div class="dv-material-copy"><h2>{e(a["title"])}</h2>\n'
+            f'            <div class="dv-material-copy"><h4>{e(a["title"])}</h4>\n'
             f'              <p>{e(a["blurb"])}</p></div>\n'
             f'            <span class="dv-material-meta">{e(TOPICS[a["topic"]])}</span>\n'
             f'            <span class="dv-material-arrow" aria-hidden="true">↗</span>\n'

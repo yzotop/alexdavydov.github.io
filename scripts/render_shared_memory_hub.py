@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Список подборки /shared-memory/ и вход из каталога; --check без записи."""
+"""Список подборки /shared-memory/ из исходных статей; --check без записи."""
 import argparse
 import html
 import sys
@@ -37,20 +37,11 @@ def main():
         old = page.read_text()
         block = '  <div class="prose">\n    <ol>\n' + "\n".join(items) + "\n    </ol>\n  </div>"
         updates = [(page, old, replace_block(old, "shelf:shared-memory", block))]
-        catalog = ROOT / "materials/index.html"
-        catalog_old = catalog.read_text()
-        entry = '''<section class="case-block" aria-labelledby="shared-memory-heading">
-  <p class="case-block-tag">Отдельная подборка · Ринат Абдуллин и BitGN</p>
-  <h2 id="shared-memory-heading">Общая память и работа агентов</h2>
-  <p>Кейсы из одного эксперимента: как агенты передают работу, проверяют выводы и меняют общую память. С источниками и границами проверки.</p>
-  <a class="sec-link" href="/shared-memory/">Открыть подборку →</a>
-</section>'''
-        updates.append((catalog, catalog_old, replace_block(catalog_old, "collection:shared-memory", entry)))
     except (ValueError, OSError) as exc:
         print(f"ОСТАНОВ: {exc}. Ничего не записано.", file=sys.stderr)
         return 1
     if args.check and any(old != new for _, old, new in updates):
-        print("Подборка /shared-memory/ или вход из каталога расходятся с источниками", file=sys.stderr)
+        print("Подборка /shared-memory/ расходится с источниками", file=sys.stderr)
         return 1
     for page, old, new in updates:
         if old != new:
