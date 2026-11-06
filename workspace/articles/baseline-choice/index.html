@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Почему рекорда не хватило для выбора рабочей версии — Саша Давыдов</title>
+  <meta name="author" content="Саша Давыдов">
+  <meta name="description" content="Как в рое Абдуллина сравнивали версии, отзывали кандидата после новой ошибки и почему итоговый выбор после draft4 остался неизвестным.">
+  <meta name="material-topic" content="ai">
+  <link rel="canonical" href="https://davydov.my/workspace/articles/baseline-choice/">
+  <meta property="article:published_time" content="2026-11-06">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Почему рекорда не хватило для выбора рабочей версии — Саша Давыдов">
+  <meta property="og:description" content="Как в рое Абдуллина сравнивали версии, отзывали кандидата после новой ошибки и почему итоговый выбор после draft4 остался неизвестным.">
+  <meta property="og:url" content="https://davydov.my/workspace/articles/baseline-choice/">
+  <meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/style.css?v=20261105-rules">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/materials/">Материалы</a>
+      <a href="/talks/">ММ’26</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<article class="article">
+  <p class="page-sub"><a href="/shared-memory/">Общая память и работа агентов →</a></p>
+  <div class="article-meta"><span>6 ноября 2026</span><span class="chip">AI-first аналитика</span></div>
+  <h1>Почему рекорда не хватило для выбора рабочей версии</h1>
+  <div class="prose" id="post-text">
+    <p>В эксперименте Абдуллина агенты собирали общую программу для задач интернет-магазина. 23 октября её версию rc3 сделали основной: на полном тесте из ста задач она получила 96,1 балла.</p>
+
+    <p>Позже участница Inara привела в чате ответ своего агента: тот сообщил, что точный повтор того же кода дал 91,9. Разница — 4,2 балла без изменения программы.</p>
+
+    <p>Оценку 91,9 мы видели в этой цитате; полный результат повтора получить не удалось. Но участники уже обсуждали другой способ выбора: смотреть на несколько прогонов и известные ошибки, а не пытаться один раз перебить рекорд.</p>
+
+    <h2>Как собирались сравнивать версии</h2>
+
+    <p>В тот день общая инструкция уже изменилась: новый рекорд больше не требовал автоматического продвижения. При выборе рабочей основы — baseline — нужно было учитывать решение задач, перенос на новые случаи, понятность кода и регрессии.</p>
+
+    <p>Агент inara предложил проверить более простую программу, которая разбирает запросы без заготовленных списков формулировок. В плане были как минимум два полных прогона, сравнение среднего результата с ориентиром для прежней линии и запись того, на каких задачах стало лучше или хуже. Проверки безопасности и понятный исходник тоже входили в условия.</p>
+
+    <p>Это был конкретный план сравнения. Общая инструкция не устанавливала универсального правила «двух прогонов достаточно».</p>
+
+    <p>Мы подтвердили постановку двух полных прогонов draft4: оба были привязаны к одной версии и одной контрольной сумме исходника. Однако оба конечных результата и решение после них в наш архив не попали. Посчитать среднее и назвать победителя по этой паре мы не можем.</p>
+
+    <h2>Что остановило другого кандидата</h2>
+
+    <p>Параллельно разбирали другую доработку rc3 — H4. Она восстанавливала артикул товара из обрезанного фрагмента чека.</p>
+
+    <p>Ревьюер Aika составил небольшой синтетический каталог: Red compressor и Blue compressor. В чеке написано Red, но повреждённый артикул похож на артикул Blue. Из Red такой фрагмент тоже можно получить — если при распознавании потерять одну букву и заменить одну цифру.</p>
+
+    <p>Старый обработчик rc3 не выбирал товар. H4 выбирал Blue. Проверка конкурирующих товаров учитывала лишь одну ошибку в артикуле и пропускала Red, до которого было две правки.</p>
+
+    <p>Это была конкретная новая ошибка. Случай проверяли на изолированном обработчике; полноценную покупку с неправильным товаром в этом ревью не воспроизводили.</p>
+
+    <p>Автор кандидата, агент inara, признал контрпример и отозвал H4 как кандидата на полный прогон. Вместо него предложил исправление H4b, которое ещё должно было пройти повторное ревью и проверку на реальном каталоге.</p>
+
+    <h2>Исправили пример, но не закрыли проблему</h2>
+
+    <p>H4b учитывал и конкурирующий товар в двух правках от фрагмента — при условии, что его текущая цена совпадает с ценой чека. На исходном примере обработчик теперь отказывался от выбора.</p>
+
+    <p>Aika изменил только текущую цену Red в каталоге. Чек и остальные данные оставил прежними.</p>
+
+    <p>H4b снова выбрал Blue. Родительская rc3 на том же входе по-прежнему не выбирала товар.</p>
+
+    <p>Цена в каталоге могла измениться после выдачи чека. Без условия, гарантирующего неизменность цены, несовпадение не исключало Red. Исправление закрывало знакомый пример, но сохраняло новое ошибочное поведение на близком случае.</p>
+
+    <p>Aika снова выдал вердикт «нужны правки». Эти проверки описаны в отчётах участников; мы их не повторяли. Они показывают проблему конкретного обработчика, но не измеряют качество всей программы на ста задачах.</p>
+
+    <h2>Какую версию в итоге оставили</h2>
+
+    <p>Последняя установка, которую мы независимо сверили в этом исследовании, — rc3. Файл общей программы побайтно совпадал с её оценённым исходником.</p>
+
+    <p>У этой проверки есть точная граница: срез 23 октября, до двух запусков draft4. Более поздний выбор по их результатам нам установить не удалось.</p>
+
+    <p>Документ о baseline к тому времени уже согласовали с новыми критериями. В нём прямо указали: обновление текста не переоценивает и не меняет установленную программу.</p>
+
+    <p>Поэтому здесь есть подтверждённый отзыв кандидата после ревью. Есть исправление, которое снова получило замечание. Есть две поставленные проверки другой версии. А завершённого выбора общей baseline по всем этим данным у нас нет.</p>
+
+    <h2>Что я бы взял для своих проектов</h2>
+
+    <p>При выборе новой версии я бы отдельно отвечал на три вопроса:</p>
+
+    <ol>
+      <li><strong>Насколько устойчив результат?</strong> Нужны сопоставимые прогоны кандидата и текущей версии, с точными исходниками и всей выбранной серией результатов. Удачный старый максимум — слабая замена такому сравнению.</li>
+      <li><strong>Какие потери появились?</strong> Существенную регрессию стоит разобрать на одинаковом входе. Решение о том, допустима ли она, не заменяется ещё одним общим прогоном.</li>
+      <li><strong>Что именно решили использовать?</strong> Нужна запись о выбранной версии: кто решил, какие альтернативы рассмотрел, какие потери принял и когда вернётся к вопросу.</li>
+    </ol>
+
+    <p>Пока данных не хватает, прежнюю версию можно оставить рабочей основой временно. Это решение продолжать работу с известной версией. Её превосходство ещё предстоит проверить.</p>
+
+    <h2>Источники</h2>
+
+    <p>Текст подготовлен 6 ноября 2026 по сохранённым материалам 23–24 октября. Новые результаты прогонов и более поздний выбор здесь не проверялись.</p>
+
+    <ul>
+      <li><a href="https://brain.bitgn.com/#w=1&amp;d=7&amp;r=35" rel="noopener">Рекорд rc3 и границы обновления документа о baseline, d7r35</a>.</li>
+      <li><a href="https://t.me/llm_driven_products/80113" rel="noopener">Цитата агента Inara о повторе 96,1 → 91,9</a>.</li>
+      <li><a href="https://brain.bitgn.com/#w=1&amp;d=9454&amp;r=1" rel="noopener">Предложение сравнения более простой версии, d9454r1</a>.</li>
+      <li><a href="https://brain.bitgn.com/#w=1&amp;d=8748&amp;r=1" rel="noopener">Контрпример Aika для H4, d8748r1</a>.</li>
+      <li><a href="https://brain.bitgn.com/#w=1&amp;d=8873&amp;r=1" rel="noopener">Признание ошибки и отзыв кандидата, d8873r1</a>.</li>
+      <li><a href="https://brain.bitgn.com/#w=1&amp;d=8918&amp;r=1" rel="noopener">Повторное ревью H4b, d8918r1</a>.</li>
+    </ul>
+  </div>
+  <nav class="article-back" aria-label="Продолжить чтение">
+    <p><a href="/workspace/articles/rule-delivery/">← Как новое правило доходило до агентов</a></p>
+    <p><a href="/shared-memory/">← К подборке разборов</a> · <a href="/materials/">Все материалы</a></p>
+  </nav>
+</article>
+<div class="footer-spacer"></div>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+</body>
+</html>

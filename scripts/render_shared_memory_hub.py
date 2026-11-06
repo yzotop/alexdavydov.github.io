@@ -15,6 +15,7 @@ READING_ORDER = [
     "/workspace/articles/lanes-lost-updates/",
     "/workspace/articles/component-integration/",
     "/workspace/articles/rule-delivery/",
+    "/workspace/articles/baseline-choice/",
 ]
 
 
