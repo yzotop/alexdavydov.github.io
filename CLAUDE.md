@@ -37,7 +37,7 @@
   и аналитика везде. `/ai-analyst/` — отдельная законченная серия, а не
   вся текущая практика. `/approach/` ведёт на `/about/#principles`,
   `/search/` и `/site-map/` — на каталог. Старые адреса статей сохраняются.
-- **Меню:** Материалы · ММ’26 | Преподаю · Менторство | Обо мне · ∅ Сад.
+- **Меню:** Материалы | Преподаю · Менторство | Обо мне · ∅ Сад.
   Для компаний и результаты менторства — во втором уровне шторки.
 - **Подпись бренда — Δ davydov.** Имя в представлении — Саша Давыдов.
   AI-first — направление внутри бренда, ∅ — знак Сада.
@@ -163,7 +163,7 @@
 | что | где | генератор |
 |---|---|---|
 | карточки серии на хабе | `ai-analyst/index.html`, между `<!-- shelf:series:start -->` и `<!-- shelf:series:end -->` | `scripts/render_ai_analyst_hub.py` |
-| каталог материалов | `materials/index.html`, между `<!-- catalog:start -->` и `<!-- catalog:end -->` | `scripts/render_materials.py` |
+| каталог и постоянные входы | `materials/index.html`, маркеры `catalog`, `catalog:collections`, `catalog:practice` | `scripts/render_materials.py` |
 | практика, избранное и авторские разборы главной | `index.html`, маркеры `home:practice`, `home:selected`, `home:curiosity` | `scripts/render_home.py` |
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |

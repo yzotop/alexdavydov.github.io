@@ -7,6 +7,19 @@ import sys
 from site_materials import ROOT, TOPICS, catalog_item, field, materials, replace_block, validate_url
 
 
+def practice_entry() -> str:
+    url = "/ai-first/workshop/"
+    validate_url(url)
+    source = (ROOT / url.strip("/") / "index.html").read_text()
+    title = field(source, r"<title>(.*?) — Саша Давыдов</title>", "название практики", url)
+    blurb = field(source, r'<meta name="description" content="([^"]+)"', "описание практики", url)
+    return ('<div class="case-block">\n'
+            f'  <h3>{html.escape(title)}</h3>\n'
+            f'  <p>{html.escape(blurb)}</p>\n'
+            f'  <a class="sec-link" href="{url}">Открыть мастерскую →</a>\n'
+            '</div>')
+
+
 def collection_cards() -> str:
     cards = []
     for url in ["/shared-memory/", "/ai-analyst/"]:
@@ -47,6 +60,7 @@ def main() -> int:
         old = page.read_text()
         new = replace_block(old, "catalog", items)
         new = replace_block(new, "catalog:collections", collection_cards())
+        new = replace_block(new, "catalog:practice", practice_entry())
     except (ValueError, OSError) as exc:
         print(f"ОСТАНОВ: {exc}. Ничего не записано.", file=sys.stderr)
         return 1
