@@ -222,6 +222,7 @@
   </a>
   <div class="nav-links">
     <span class="nav-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
       <a href="/materials/">Материалы</a>
     </span>
     <span class="nav-group">
