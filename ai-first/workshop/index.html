@@ -40,6 +40,7 @@
   </a>
   <div class="nav-links">
     <span class="nav-group">
+      <a href="/ai-first/workshop/" aria-current="page">Мастерская</a>
       <a href="/materials/">Материалы</a>
     </span>
     <span class="nav-group">
@@ -57,6 +58,7 @@
 <nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
   <div class="nav-drawer-section nav-drawer-section--primary">
     <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
       <a href="/materials/">Материалы</a>
     </div>
     <div class="nav-drawer-group">
@@ -75,7 +77,7 @@
   </div>
 </nav>
 <!-- header:end -->
-<article class="article wk"><p class="page-sub"><a href="/materials/?topic=ai">AI-first аналитика</a></p><h1>Мастерская <span class="wk-nowrap">AI-first</span> аналитики</h1><p class="wk-lead">Решите аналитическую задачу сами, с коллегой или со своим агентом. Затем сверьте вывод с разбором и проверьте, что можно передать следующему исполнителю.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="#colleague">Начать упражнение</a><a class="btn" href="#downloads">Скачать практикум</a></div><div class="prose">
+<article class="article wk"><p class="page-sub"><a href="/materials/?topic=ai">AI-first аналитика</a></p><h1>Мастерская <span class="wk-nowrap">AI-first</span> аналитики</h1><p class="wk-lead">Решите аналитическую задачу сами, с коллегой или со своим агентом. Затем сверьте вывод с разбором и проверьте, что можно передать следующему исполнителю.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="#colleague">Начать упражнение</a><a class="btn" href="#sasha">Открыть стенд «Саша»</a><a class="btn" href="#downloads">Скачать практикум</a></div><div class="prose">
 <section class="wk-section" id="colleague"><p class="page-sub">Учебный случай · стенд «Саша» · синтетические данные</p><h2>Коллега продолжает июльский разбор</h2><p><a href="#method">Карточка методики: что оставить коллеге и что проверить</a></p><p>Руководитель может поручить проверку одного магазина. Он выбирает его по наибольшему отрицательному вкладу в отклонение чистой выручки сети от утверждённого плана. Все суммы учебные. Можно выполнить обе роли самому или передать вторую роль коллеге либо агенту.</p>
 <div class="ctas ctas--start" id="task-download"><a class="btn btn-primary" href="files/july-colleague-task.zip" download>Скачать задание с данными</a></div><p class="page-sub">ZIP для своего агента: условие июльского задания и исходные данные, без авторского разбора. <a href="#downloads">Весь практикум с разборами — отдельно</a>.</p>
 <p><strong>Первая смена.</strong> Открой принятый июльский пересмотр и оставь второй смене короткую записку по карточке. Укажи, на сколько магазин отстал по чистой выручке, какую часть предстоит исследовать по продажам и что ты хочешь спросить у управляющего. Дай коллеге ссылки, по которым он сможет проверить твою строку. <a href="/ai-first/workshop/data/july/revised-answer.html">Прежний расчёт</a> · <a href="/ai-first/workshop/data/july/approval.json">утверждение плана</a> · <a href="/ai-first/workshop/data/july/inputs.json">паспорт снимка</a> · <a href="/ai-first/workshop/data/july/plan-A.csv">план A</a> · <a href="/ai-first/workshop/data/july/plan-B.csv">рабочий сценарий B</a> · <a href="/ai-first/workshop/data/july/actual.csv">факт</a>.</p>
@@ -168,6 +170,21 @@
 </tr>
 </tbody>
 </table></div><div class="case-block"><div class="case-block-tag">Приёмка · 13 ноября 2026</div><p>Новый учебный результат версии <code>343d1fae</code> принят Александром с ограничениями. Оценка проверки остаётся <strong>partial: 6 полных, 2 частичных, 0 проваленных пунктов</strong>.</p><p>«принимаю эту версию с указанными ограничениями, фиксируй.» <a href="evidence/current-decision.json">Запись решения</a>.</p><p>Это приёмка конкретного результата на синтетических данных. Операционная причина неизвестна; самостоятельный проход человека, применение в команде и бизнес-эффект не установлены.</p></div><p><a href="evidence/previous-decision.html">Приёмка прежнего пересмотра, 12 ноября</a> · <a href="evidence/current-decision.json">Приёмка нового ответа, 13 ноября</a></p></details></section>
+<section class="wk-section" id="sasha">
+<h2>Стенд «Саша»</h2>
+<p>На учебных данных розничной сети можно проверить, какой магазин выбрать для разбора и что позволяют утверждать записи о возвратах.</p>
+<h3>Кому звонить по итогам июля?</h3>
+<p>Выберите версию плана. Браузер сравнит её с одним и тем же фактом за июль 2025 года по 24 магазинам и найдёт самое большое отставание по чистой выручке. Суммы в условных единицах.</p>
+<label for="sasha-plan">Версия плана</label>
+<select id="sasha-plan"><option value="B">B — рабочая</option><option value="A">A — утверждённая</option></select>
+<p role="status" id="sasha-plan-result"></p>
+<p>Исходники: <a href="data/july/actual.json">факт</a>, <a href="data/july/plan-B.json">план B</a>, <a href="data/july/plan-A.json">план A</a>, <a href="data/july/approval.json">подтверждение версии</a>.</p>
+<noscript><p>Для интерактивного расчёта включите JavaScript или откройте <a href="data/july/revised-answer.html">сохранённый пересмотр</a>.</p></noscript>
+<h3>Сколько возвратов было за неделю?</h3>
+<p>Регион и период одинаковы: Учебный север, 7–13 июля 2025 года. Откройте два случая, чтобы сравнить сохранённые выводы Саши и исходные записи.</p>
+<details class="wk-reveal"><summary>Оба филиала передали нули</summary><p>За неделю в регионе зарегистрировано <strong>0 возвратов</strong>. Присутствуют оба филиала, по каждому есть строка с нулём, полнота учёта подтверждена.</p><p><a href="data/returns/explicit-zero.json">Посмотреть записи филиалов и охват</a></p></details>
+<details class="wk-reveal"><summary>Запрос выполнен, список записей пуст</summary><p><strong>Число возвратов неизвестно.</strong> Чтобы назвать число для региона, нужны правило учёта отсутствующих строк и подтверждение полноты выгрузки за неделю.</p><p><a href="data/returns/no-record.json">Посмотреть пустую выгрузку и её условия</a></p></details>
+</section>
 <section class="wk-section" id="downloads"><h2>Практикум «Как работать с агентами в аналитике»</h2><p>Выпуск с приложением «Счёт <span class="wk-nowrap">INV-100</span>»: PDF на 27 страниц и комплект с учебными файлами. В приложении — условие, оригинал счёта и отдельный ключ. Скачайте ZIP, распакуйте и откройте <code>СТАРТ.html</code>. Июльское упражнение и его дневная выгрузка также доступны выше на этой странице.</p><p class="page-sub">В PDF и ZIP статус июльского опыта записан до последующей приёмки 13 ноября. <a href="#lab-result" data-open-result>Актуальная приёмка с ограничениями — в блоке результата</a>.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="files/agent-analytics-workshop-inv100.pdf">Открыть PDF · 27 страниц</a><a class="btn" href="files/agent-analytics-workshop-inv100-kit.zip" download>Скачать весь практикум · ZIP</a></div></section>
 <section class="wk-section" id="reading"><h2>Откуда взялся подход</h2><p>Общая рабочая среда в материалах <a href="https://t.me/llm_under_hood/992" rel="noopener">Рината Абдуллина</a> — исходная идея для проверки передачи работы. Июльский случай — отдельное учебное применение на синтетических данных.</p><ul><li><a href="/shared-memory/">Общая память и работа агентов</a> — история эксперимента BitGN и собственное участие.</li><li><a href="/ai-analyst/">Серия «AI-аналитик»</a> — решения, контекст и приёмка.</li><li><a href="/workspace/articles/how-agent-sees-decisions/">Как агент видит решения</a> — как правило доходит до исполнителя.</li><li><a href="/workspace/articles/harness-by-type/">Проверка под тип результата</a> — чем принимать разные виды работы.</li></ul></section>
 </div><div class="cta-strip"><h3>Принести отчёт команды</h3><p>Возьмём похожую задачу вашей команды: какие решения нужно записать, что отдать агенту и чем принять результат.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="/companies/">Для компаний →</a></div></div></article>
@@ -186,5 +203,5 @@
 <script data-goatcounter="https://davydov.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 <!-- footer:end -->
-<script src="/main.js" defer></script><script src="workshop.js" defer></script>
+<script src="/main.js" defer></script><script src="workshop.js" defer></script><script src="sasha.js" defer></script>
 </body></html>
