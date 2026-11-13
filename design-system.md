@@ -30,7 +30,7 @@
 | шапка: меню и шторка | `_partials/site-header.html` | `scripts/render_site_header.py` |
 | подвал | `_partials/site-footer.html` | тот же |
 | карточки хаба `/ai-analyst/` | сами статьи | `scripts/render_ai_analyst_hub.py` |
-| каталог `/materials/` | статьи и кейсы через `scripts/site_materials.py` | `scripts/render_materials.py` |
+| каталог `/materials/`, подборки и практика | статьи и кейсы через `scripts/site_materials.py`; название и описание Мастерской из `/ai-first/workshop/` | `scripts/render_materials.py` |
 | практика и карточки главной | `assets/home-practice.json`, статьи и карточки `/cases/` | `scripts/render_home.py` |
 | блок серии в статьях | сами статьи | `scripts/render_series_block.py` |
 
@@ -223,7 +223,6 @@
   <div class="nav-links">
     <span class="nav-group">
       <a href="/materials/">Материалы</a>
-      <a href="/talks/">ММ’26</a>
     </span>
     <span class="nav-group">
       <a href="/teaching/">Преподаю</a>

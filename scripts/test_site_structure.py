@@ -66,6 +66,27 @@ class PublicationChecks(unittest.TestCase):
         self.assertEqual(self.run_script("render_materials.py").returncode, 0)
         self.assertEqual(self.run_script("render_materials.py", "--check").returncode, 0)
 
+    def test_handwritten_workshop_entry_is_detected_without_writing(self):
+        page = self.root / "materials/index.html"
+        self.assertIn("Открыть мастерскую →", page.read_text())
+        page.write_text(page.read_text().replace("Открыть мастерскую →", "Непроверенная копия", 1))
+        changed = page.read_bytes()
+        self.assertNotEqual(self.run_script("render_materials.py", "--check").returncode, 0)
+        self.assertEqual(page.read_bytes(), changed)
+        self.assertEqual(self.run_script("render_materials.py").returncode, 0)
+        self.assertEqual(self.run_script("render_materials.py", "--check").returncode, 0)
+
+    def test_missing_workshop_stops_generators_without_partial_output(self):
+        (self.root / "ai-first/workshop/index.html").unlink()
+        for script, output in [("render_home.py", "index.html"),
+                               ("render_materials.py", "materials/index.html")]:
+            page = self.root / output
+            old = page.read_bytes()
+            result = self.run_script(script)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("/ai-first/workshop/", result.stderr)
+            self.assertEqual(page.read_bytes(), old)
+
     def test_missing_case_stops_both_generators_without_partial_output(self):
         (self.root / "cases/ub22/index.html").unlink()
         for script, output in [("render_home.py", "index.html"),
