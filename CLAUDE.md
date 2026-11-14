@@ -86,14 +86,14 @@
 |---|---|---|
 | главная | `.dvy` → `.dv-intro`, `.dv-section-wrap`, `.dv-work-grid` | только `/` |
 | каталог | `.dvy` → `.dv-catalog-tools`, `.dv-catalog-list`, `.dv-catalog-item` | `/materials/` |
-| хаб | `.page` → `.page-title`, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
+| хаб | `.section-frame` → H1, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | статья | `.article` → `h1`, `.article-meta`, `.prose`; `.series-nav` у серии | статьи, страницы кейсов |
 | профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
 | Мастерская | `.dvy.wh` → `.wh-feature`, `.wh-secondary` | `/ai-first/workshop/` |
 | лаборатория Саши | `.dvy.sl` → `.sl-dashboard` | `/ai-first/workshop/sasha/` |
 | сохранённый разбор | `.dvy.sx` → `.sx-board`, `.sx-before`, `.sx-after`, `.sx-review` | `/ai-first/workshop/sasha/returns-r7/` |
 | преподавание и менторство | `.section-frame` → H1, `.page-lead`, компоненты раздела | `/teaching/`, `/career/` |
-| текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/companies/` |
+| текстовая | `.section-frame` → H1, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/companies/` |
 | интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона | симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 Каркас новой статьи — `.article` из `style.css`. `.ags` и `.qp` —
