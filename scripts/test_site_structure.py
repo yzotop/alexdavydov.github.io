@@ -33,6 +33,7 @@ class PublicationChecks(unittest.TestCase):
         (cls.fixture / "assets").mkdir(exist_ok=True)
         for name in ["search-index.json", "home-practice.json"]:
             shutil.copy2(ROOT / "assets" / name, cls.fixture / "assets" / name)
+        shutil.copy2(ROOT / "style.css", cls.fixture / "style.css")
         shutil.copytree(ROOT / "_partials", cls.fixture / "_partials")
 
     @classmethod
@@ -189,6 +190,18 @@ class PublicationChecks(unittest.TestCase):
         result = self.run_script("check_class_collisions.py")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("collision_probe", result.stderr)
+
+    def test_stylesheet_change_invalidates_shared_url(self):
+        pages = [self.root / path for path in ("index.html", "materials/index.html")]
+        href = re.compile(r'href="(/style\.css\?v=[^"]+)"')
+        old = href.search(pages[0].read_text())[1]
+        with (self.root / "style.css").open("a") as css:
+            css.write("\n/* cache probe */\n")
+        result = self.run_script("render_site_header.py")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        versions = {href.search(page.read_text())[1] for page in pages}
+        self.assertEqual(len(versions), 1)
+        self.assertNotIn(old, versions)
 
     def test_contacts_stay_on_inner_pages_and_do_not_repeat_on_home(self):
         result = self.run_script("render_site_header.py")

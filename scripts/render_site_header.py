@@ -29,15 +29,23 @@ aria-current="page" ставится на пункт основного меню
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
-import sys
+from pathlib import Path
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SKIP_DIRS = {"_archive", "_staging", "_partials", ".claude", ".git", "node_modules"}
 
 NAV_OPEN = '<nav class="nav" aria-label="Основное меню">'
 NAV_LINKS = re.compile(r'(<div class="nav-links">)(.*?)(</div>)', re.S)
+
+# Только подключение общего CSS, в любом порядке атрибутов link.
+SHARED_CSS = re.compile(
+    r"""(<link\b(?=[^>]*\srel=["']stylesheet["'])[^>]*?\shref=(["'])/style\.css)"""
+    r"""(?:\?[^"'<>]*)?(\2)""", re.I,
+)
+
 
 # Части страницы: шаблон, маркеры, как узнать вписанное руками, и строка,
 # по которой видна копия вне маркеров.
@@ -94,6 +102,7 @@ def render(s: str, part: dict, block: str) -> str | None:
 
 
 def main() -> int:
+    version = hashlib.sha256((Path(ROOT) / "style.css").read_bytes()).hexdigest()[:12]
     templates = {}
     for part in PARTS:
         with open(os.path.join(ROOT, part["template"]), encoding="utf-8") as f:
@@ -129,6 +138,8 @@ def main() -> int:
                     stray.append(f"{rel}  ({part['name']})")
                 counts[part["name"]] += 1
                 new = out
+            if PARTS[0]["start"] in new:
+                new = SHARED_CSS.sub(lambda m: f"{m[1]}?v={version}{m[3]}", new)
             if new != s or any(p["start"] in new for p in PARTS):
                 todo.append((path, new if new != s else ""))
 
