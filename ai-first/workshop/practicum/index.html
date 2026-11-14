@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Практикум «Как работать с агентами в аналитике» — Саша Давыдов</title><meta name="author" content="Саша Давыдов">
+<meta name="description" content="Попробовать аналитическую задачу с агентом: условие, учебные данные, авторский разбор и проверка передачи работы.">
+<link rel="canonical" href="https://davydov.my/ai-first/workshop/practicum/">
+<meta property="og:type" content="website"><meta property="og:title" content="Практикум «Как работать с агентами в аналитике» — Саша Давыдов">
+<meta property="og:description" content="Попробовать аналитическую задачу с агентом: условие, учебные данные, авторский разбор и проверка передачи работы."><meta property="og:url" content="https://davydov.my/ai-first/workshop/practicum/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css?v=20261025-2"><style>
+.wk .wk-lead{font-size:20px;line-height:1.5;margin-bottom:24px;}
+.wk .wk-nowrap{white-space:nowrap;}
+.wk .wk-section p a,.wk .wk-section li a,.wk blockquote a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;}
+.wk .wk-section{margin-top:48px;padding-top:32px;border-top:1px solid var(--line);}
+.wk .wk-section>h2{margin-top:0;}
+.wk .wk-data{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;padding-left:20px;}
+.wk .wk-data a{overflow-wrap:anywhere;}
+.wk .wk-reveal{border-top:1px solid var(--line);border-bottom:0;margin:0;padding:18px 0;}
+.wk .wk-reveal:last-of-type{border-bottom:1px solid var(--line);}
+.wk .wk-reveal>summary{font-size:18px;font-weight:600;cursor:pointer;line-height:1.45;}
+.wk .wk-reveal[open]>summary{margin-bottom:24px;}
+.wk .wk-table-wrap{overflow-x:auto;max-width:100%;margin:24px 0;}
+.wk .wk-table-wrap table{min-width:600px;margin-bottom:0;}
+.wk .wk-table-wrap th{width:auto;}
+.wk .wk-num{text-align:right;}
+.wk .wk-answer{margin:28px 0;}
+.wk .wk-answer label{display:block;font-size:18px;font-weight:600;margin-bottom:12px;}
+.wk .wk-answer textarea{box-sizing:border-box;display:block;width:100%;min-height:190px;border:1px solid var(--line-d);padding:16px;font:16px/1.5 var(--sans);background:var(--bg);color:var(--ink);resize:vertical;}
+.wk .wk-answer textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.wk .wk-answer button:disabled{opacity:.45;cursor:default;}
+.wk code{overflow-wrap:anywhere;}
+.wk pre{overflow-x:auto;}
+.wk [id]{scroll-margin-top:100px;}
+@media(max-width:650px){.wk .wk-data{grid-template-columns:1fr;}.wk .wk-lead{font-size:18px;}.wk h1{font-size:36px;}}
+.wk .wk-action-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:24px 0 0;}
+.wk .wk-action-nav a{justify-content:flex-start;min-height:52px;font-size:16px;line-height:1.4;}
+.wk .prose .wk-note{font-size:14px;line-height:1.5;color:var(--muted);}
+.wk .wk-sasha-control{display:grid;gap:8px;max-width:380px;margin:24px 0 16px;}
+.wk .wk-sasha-control label{font-size:16px;font-weight:600;}
+.wk .wk-sasha-control select{box-sizing:border-box;width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--line-d);border-radius:0;background:var(--bg);color:var(--ink);font:16px/1.4 var(--sans);}
+.wk .wk-sasha-result{padding:18px 20px;margin:0 0 24px;border-left:3px solid var(--accent);background:var(--soft);font-size:18px;line-height:1.55;}
+.wk .wk-save-btn{border:1px solid var(--ink);border-radius:0;font:15px/1.4 var(--sans);appearance:none;}
+.wk a:focus-visible,.wk select:focus-visible,.wk button:focus-visible,.wk summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+@media(max-width:650px){.wk .wk-action-nav{grid-template-columns:minmax(0,1fr);gap:8px;}.wk .wk-action-nav a{min-height:48px;padding:12px 16px;}}
+.wk h1{font-size:clamp(36px,5.5vw,52px);}</style>
+</head><body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<article class="article wk"><p><a href="/ai-first/workshop/">← Мастерская</a></p><p class="page-sub wk-note"><a href="/materials/?topic=ai">AI-first аналитика</a></p><h1>Практикум «Как работать с агентами в аналитике»</h1><p class="wk-lead">Решите аналитическую задачу сами, с коллегой или со своим агентом. Затем сверьте вывод с разбором и проверьте, что можно передать следующему исполнителю.</p><nav class="wk-action-nav" aria-label="В Мастерской"><a class="btn btn-primary" href="#colleague">Начать упражнение</a><a class="btn btn-ghost" href="#sasha">Открыть стенд «Саша»</a><a class="btn btn-ghost" href="/ai-first/workshop/recipes/accepting-agent-work/">Читать рецепты</a><a class="btn btn-ghost" href="#downloads">Скачать практикум</a></nav><div class="prose">
+<section class="wk-section" id="colleague"><p class="page-sub wk-note">Учебный случай · стенд «Саша» · синтетические данные</p><h2>Коллега продолжает июльский разбор</h2><p><a href="#method">Карточка методики: что оставить коллеге и что проверить</a></p><p>Руководитель может поручить проверку одного магазина. Он выбирает его по наибольшему отрицательному вкладу в отклонение чистой выручки сети от утверждённого плана. Все суммы учебные. Можно выполнить обе роли самому или передать вторую роль коллеге либо агенту.</p>
+<div class="ctas ctas--start" id="task-download"><a class="btn btn-primary" href="/ai-first/workshop/files/july-colleague-task.zip" download>Скачать задание с данными</a></div><p class="page-sub wk-note">ZIP для своего агента: условие июльского задания и исходные данные, без авторского разбора. <a href="#downloads">Весь практикум с разборами — отдельно</a>.</p>
+<p><strong>Первая смена.</strong> Открой принятый июльский пересмотр и оставь второй смене короткую записку по карточке. Укажи, на сколько магазин отстал по чистой выручке, какую часть предстоит исследовать по продажам и что ты хочешь спросить у управляющего. Дай коллеге ссылки, по которым он сможет проверить твою строку. <a href="/ai-first/workshop/data/july/revised-answer.html">Прежний расчёт</a> · <a href="/ai-first/workshop/data/july/approval.json">утверждение плана</a> · <a href="/ai-first/workshop/data/july/inputs.json">паспорт снимка</a> · <a href="/ai-first/workshop/data/july/plan-A.csv">план A</a> · <a href="/ai-first/workshop/data/july/plan-B.csv">рабочий сценарий B</a> · <a href="/ai-first/workshop/data/july/actual.csv">факт</a>.</p>
+<p><strong>Вторая смена.</strong> Возьми записку первой смены и дневную выгрузку. В JSON поле <code>columns</code> задаёт порядок значений каждой строки в <code>rows</code>. По одной строке на магазин, дату UTC и товарную группу. Сверь версию плана и месячную сумму продаж по выбранному магазину. Найди, где и когда сосредоточено отклонение. Напиши руководителю, кому звонить, что уточнили новые строки и какую проверку поручить. Приложи хотя бы одну строку, по которой коллега сможет повторить расчёт. <a href="/ai-first/workshop/data/sales-detail.json">Детализация продаж за июль</a>.</p>
+<p>Сохрани свой первый ответ. Затем сравни его с <a href="#solution">авторским разбором и оценкой первой попытки</a>.</p>
+<div class="wk-answer"><label for="first-answer">Ваш первый ответ руководителю</label><textarea id="first-answer" placeholder="Кому звонить, что показывают данные и что ещё предстоит проверить?"></textarea><p class="page-sub wk-note">Сохраните свой ответ до открытия разбора. Можно также скопировать его в свой документ.</p><button class="btn btn-primary wk-save-btn" id="save-answer" type="button" disabled>Скачать свой ответ</button><p id="answer-status" role="status" class="page-sub wk-note"></p></div>
+</section><section class="wk-section"><h2>Сверить свой вывод</h2><details class="wk-reveal" id="solution"><summary>Открыть авторский разбор</summary><p><strong>Что передаёт первая смена.</strong> Пример записки коллеге по принятому пересмотру:</p>
+<blockquote>
+<p>Проверь первым магазин №2. В июле 2025 года по снимку <code>plan-fact-revision-control-01</code> он дал крупнейший отрицательный вклад в чистую выручку сети. Владелец учебного плана утвердил A. За месяц по №2 факт 640 000 минус план 1 000 000 даёт −360 000. Из этой суммы −350 000 приходится на продажи, ещё −10 000 даёт рост возвратов. Сеть из 24 магазинов в целом отстала на 446 000. Утром выясни, в какой товарной группе и в какие дни продажи отстали сильнее всего. <a href="/ai-first/workshop/data/july/approval.json">Утверждение A</a> · <a href="/ai-first/workshop/data/july/inputs.json">паспорт снимка</a> · <a href="/ai-first/workshop/data/july/revised-answer.html">принятый расчёт</a>.</p>
+</blockquote>
+<p><strong>Как проверить применение плана.</strong> В строке №2 по сценарию B план чистой выручки равен 700 000. При том же факте получится −60 000. Воспроизвести −360 000 позволяет значение 1 000 000 из A. Теперь сверь компоненты по строке №2. Продажи составили 690 000 при плане 1 040 000, возвраты — 50 000 при плане 40 000. Чистая выручка равна продажам за вычетом возвратов, поэтому −350 000 − (50 000 − 40 000) = −360 000. В новой выгрузке есть только продажи до возвратов. Её месячный итог для сверки — <strong>−350 000</strong>. <a href="/ai-first/workshop/data/july/actual.csv">Факт</a> · <a href="/ai-first/workshop/data/july/plan-A.csv">план A</a> · <a href="/ai-first/workshop/data/july/plan-B.csv">сценарий B</a>.</p>
+<p><strong>Что узнала вторая смена.</strong> Для магазина №2 сложи фактические и плановые продажи по группам за месяц. Электроника дала −300 000, товары для дома −40 000, одежда −20 000, прочие товары +10 000. С учётом этой компенсации доля электроники в месячном недоборе продаж равна 300 000 / 350 000 = <strong>85,71%</strong>. Теперь сгруппируй те же строки по двум периодам. <a href="/ai-first/workshop/data/sales-detail.json">Дневные строки продаж</a>.</p>
+<div aria-label="Таблица, на телефоне прокручивается вправо" class="wk-table-wrap" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>Строки магазина №2</th>
+<th class="wk-num">План продаж</th>
+<th class="wk-num">Факт продаж</th>
+<th class="wk-num">Факт − план</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Электроника, 1–15 июля</td>
+<td class="wk-num">309 677,44</td>
+<td class="wk-num">309 677,44</td>
+<td class="wk-num">0</td>
+</tr>
+<tr>
+<td>Электроника, 16–31 июля</td>
+<td class="wk-num">330 322,56</td>
+<td class="wk-num">30 322,56</td>
+<td class="wk-num">−300 000</td>
+</tr>
+<tr>
+<td>Все группы, 1–15 июля</td>
+<td class="wk-num">503 225,98</td>
+<td class="wk-num">492 225,98</td>
+<td class="wk-num">−11 000</td>
+</tr>
+<tr>
+<td>Все группы, 16–31 июля</td>
+<td class="wk-num">536 774,02</td>
+<td class="wk-num">197 774,02</td>
+<td class="wk-num">−339 000</td>
+</tr>
+</tbody>
+</table></div>
+<p>Для проверки одной строки найди <code>store_id=2</code>, <code>date_utc=2025-07-16</code>, <code>product_group=Электроника</code>. Факт 1 895,16 минус план 20 645,16 даёт −18 750. Днём раньше обе суммы равнялись 20 645,16. За вторую половину июля магазин набрал <strong>96,86%</strong> месячного недобора продаж (339 000 / 350 000). В эти 339 000 уже входят 300 000 по электронике. <a href="/ai-first/workshop/data/sales-detail.json">Проверить по выгрузке</a>.</p>
+<p><strong>Как изменился звонок.</strong> Управляющему №2 можно задать конкретный вопрос. «Что происходило с продажами электроники с 16 июля? Можешь показать по дням, товарам и каналам продажи, остатки, поставки, часы работы и сбои, чтобы сравнить с 1–15 июля?» Таблица локализует отклонение по группе и датам. Каналы в ней объединены, операционных записей и строк возвратов нет. Дефицит товара остаётся гипотезой. Если журналы его не подтвердят, следующим вопросом будут спрос и цены.</p></details></section>
+<section class="wk-section" id="method"><p class="page-sub wk-note">Методика DAVYDOV</p><h2>Как передать незавершённый план-факт другому аналитику</h2><p>К концу смены ты уже знаешь, какой магазин стоит проверить первым. Утром придёт детализация, и звонить управляющему будет коллега. Что оставить ему сейчас, чтобы утром он мог задать более точный вопрос?</p>
+<div aria-label="Таблица, на телефоне прокручивается вправо" class="wk-table-wrap" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>Действие</th>
+<th>Что оставить или проверить</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Передай основание решения</td>
+<td>В общей папке оставь ссылку на принятый расчёт и на запись владельца об утверждении плана. Укажи период, охват, показатель и правило выбора магазина. Выпиши одну строку «факт − план = отклонение» для выбранного магазина. Закончи вопросом, который остаётся открытым до поступления детализации.</td>
+</tr>
+<tr>
+<td>Проверь, какой план коллега применил</td>
+<td>Попроси коллегу открыть указанную версию и подставить в формулу значение плана из строки магазина. Выбери строку, в которой версии расходятся. По числу в расчёте можно увидеть, с какой версией он работал.</td>
+</tr>
+<tr>
+<td>Проверь, что коллега добавил</td>
+<td>Какую фразу в его ответе можно проверить только по новой выгрузке? Попроси показать ключи строк, расчёт и связь с месячным итогом по тому же показателю. Как изменился вопрос управляющему? Каких данных ещё не хватает для ответа?</td>
+</tr>
+</tbody>
+</table></div><p><a href="#colleague">Вернуться к упражнению</a></p></section>
+<section class="wk-section" id="lab-result"><h2>Что получилось на стенде «Саша»</h2><p>Один агент продолжил прежний разбор по новой синтетической выгрузке. Ниже отдельно показаны первая попытка, оценка проверяющего и последующее решение владельца.</p><details class="wk-reveal" id="observed-result"><summary>Посмотреть результат и ограничения опыта</summary><p>13 ноября 2026 года в pRLAB6 один агент нашёл прежнюю работу Саши и по новой синтетической выгрузке получил расчёт по электронике и периоду. Его первый ответ сохранили до обратной связи. Из восьми заранее заданных критериев шесть выполнены полностью, два частично, проваленных нет. <a href="/ai-first/workshop/evidence/first-answer.html">Дословная первая выдача</a> · <a href="/ai-first/workshop/evidence/review.html">оценка проверяющего</a>.</p>
+<div aria-label="Таблица, на телефоне прокручивается вправо" class="wk-table-wrap" role="region" tabindex="0"><table>
+<thead>
+<tr>
+<th>Частичный пункт</th>
+<th>Чего не хватило в первой попытке</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1. Поиск через экран Саши</td>
+<td>Первый запрос потребовал переформулировки. После неё агент выбрал нужный июльский случай. Маршрут известен по журналу самого агента, независимой записи действий в браузере нет. Рубрика требовала найти через экран и детализацию, хотя поручение разрешало открыть JSON по отдельной ссылке. Агент воспользовался этим разрешением.</td>
+</tr>
+<tr>
+<td>R5. Сверка месячных сумм</td>
+<td>Агент верно связал −350 000 продаж, −10 000 эффекта возвратов и −360 000 чистой выручки. В первой выдаче он пропустил абсолютные суммы возвратов — 40 000 по плану и 50 000 по факту. Месячный файл факта он отдельно не перечитал. Эти суммы восстановлены выше для разбора.</td>
+</tr>
+</tbody>
+</table></div><div class="case-block"><div class="case-block-tag">Приёмка · 13 ноября 2026</div><p>Новый учебный результат версии <code>343d1fae</code> принят Александром с ограничениями. Оценка проверки остаётся <strong>partial: 6 полных, 2 частичных, 0 проваленных пунктов</strong>.</p><p>«принимаю эту версию с указанными ограничениями, фиксируй.» <a href="/ai-first/workshop/evidence/current-decision.json">Запись решения</a>.</p><p>Это приёмка конкретного результата на синтетических данных. Операционная причина неизвестна; самостоятельный проход человека, применение в команде и бизнес-эффект не установлены.</p></div><p><a href="/ai-first/workshop/evidence/previous-decision.html">Приёмка прежнего пересмотра, 12 ноября</a> · <a href="/ai-first/workshop/evidence/current-decision.json">Приёмка нового ответа, 13 ноября</a></p></details></section>
+<section class="wk-section" id="sasha">
+<h2>Стенд «Саша»</h2>
+<p>На учебных данных розничной сети можно проверить, какой магазин выбрать для разбора и что позволяют утверждать записи о возвратах.</p>
+<h3>Кому звонить по итогам июля?</h3>
+<p>Выберите версию плана. Браузер сравнит её с одним и тем же фактом за июль 2025 года по 24 магазинам и найдёт самое большое отставание по чистой выручке. Суммы в условных единицах.</p>
+<div class="wk-sasha-control"><label for="sasha-plan">Версия плана</label>
+<select id="sasha-plan"><option value="B">B — рабочая</option><option value="A">A — утверждённая</option></select></div>
+<p role="status" class="wk-sasha-result" id="sasha-plan-result">Загружаю данные…</p>
+<p>Исходники: <a href="/ai-first/workshop/data/july/actual.json">факт</a>, <a href="/ai-first/workshop/data/july/plan-B.json">план B</a>, <a href="/ai-first/workshop/data/july/plan-A.json">план A</a>, <a href="/ai-first/workshop/data/july/approval.json">подтверждение версии</a>.</p>
+<noscript><p>Для интерактивного расчёта включите JavaScript или откройте <a href="/ai-first/workshop/data/july/revised-answer.html">сохранённый пересмотр</a>.</p></noscript>
+<h3>Сколько возвратов было за неделю?</h3>
+<p>Регион и период одинаковы: Учебный север, 7–13 июля 2025 года. Откройте два случая, чтобы сравнить сохранённые выводы Саши и исходные записи.</p>
+<details class="wk-reveal"><summary>Оба филиала передали нули</summary><p>За неделю в регионе зарегистрировано <strong>0 возвратов</strong>. Присутствуют оба филиала, по каждому есть строка с нулём, полнота учёта подтверждена.</p><p><a href="/ai-first/workshop/data/returns/explicit-zero.json">Посмотреть записи филиалов и охват</a></p></details>
+<details class="wk-reveal"><summary>Запрос выполнен, список записей пуст</summary><p><strong>Число возвратов неизвестно.</strong> Чтобы назвать число для региона, нужны правило учёта отсутствующих строк и подтверждение полноты выгрузки за неделю.</p><p><a href="/ai-first/workshop/data/returns/no-record.json">Посмотреть пустую выгрузку и её условия</a></p></details>
+</section>
+<section class="wk-section" id="recipes"><h2>Рецепты AI-first аналитики</h2><p><strong>Выпуск 1. Как принять работу агента</strong></p><p>Четыре способа проверить результат агента перед тем, как использовать его в отчёте</p><p><a href="/ai-first/workshop/recipes/accepting-agent-work/">Читать выпуск →</a></p></section>
+<section class="wk-section" id="downloads"><h2>Практикум «Как работать с агентами в аналитике»</h2><p>Выпуск с приложением «Счёт <span class="wk-nowrap">INV-100</span>»: PDF на 27 страниц и комплект с учебными файлами. В приложении — условие, оригинал счёта и отдельный ключ. Скачайте ZIP, распакуйте и откройте <code>СТАРТ.html</code>. Июльское упражнение и его дневная выгрузка также доступны выше на этой странице.</p><p class="page-sub wk-note">В PDF и ZIP статус июльского опыта записан до последующей приёмки 13 ноября. <a href="#lab-result" data-open-result>Актуальная приёмка с ограничениями — в блоке результата</a>.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="/ai-first/workshop/files/agent-analytics-workshop-inv100.pdf">Открыть PDF · 27 страниц</a><a class="btn btn-ghost" href="/ai-first/workshop/files/agent-analytics-workshop-inv100-kit.zip" download>Скачать весь практикум · ZIP</a></div></section>
+<section class="wk-section" id="reading"><h2>Откуда взялся подход</h2><p>Общая рабочая среда в материалах <a href="https://t.me/llm_under_hood/992" rel="noopener">Рината Абдуллина</a> — исходная идея для проверки передачи работы. Июльский случай — отдельное учебное применение на синтетических данных.</p><ul><li><a href="/shared-memory/">Общая память и работа агентов</a> — история эксперимента BitGN и собственное участие.</li><li><a href="/ai-analyst/">Серия «AI-аналитик»</a> — решения, контекст и приёмка.</li><li><a href="/workspace/articles/how-agent-sees-decisions/">Как агент видит решения</a> — как правило доходит до исполнителя.</li><li><a href="/workspace/articles/harness-by-type/">Проверка под тип результата</a> — чем принимать разные виды работы.</li></ul></section>
+</div><div class="cta-strip"><h3>Принести отчёт команды</h3><p>Возьмём похожую задачу вашей команды: какие решения нужно записать, что отдать агенту и чем принять результат.</p><div class="ctas ctas--start"><a class="btn btn-primary" href="/companies/">Для компаний →</a></div></div></article>
+<div class="footer-spacer"></div><!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script><script src="/ai-first/workshop/workshop.js" defer></script><script src="/ai-first/workshop/sasha.js" defer></script>
+</body></html>
