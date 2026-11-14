@@ -176,7 +176,7 @@
 | что | где | генератор |
 |---|---|---|
 | карточки серии на хабе | `ai-analyst/index.html`, между `<!-- shelf:series:start -->` и `<!-- shelf:series:end -->` | `scripts/render_ai_analyst_hub.py` |
-| каталог и постоянные входы | `materials/index.html`, маркеры `catalog`, `catalog:collections`, `catalog:practice` | `scripts/render_materials.py` |
+| каталог и постоянные входы | `materials/index.html`, маркеры `catalog`, `catalog:shortcuts`, `catalog:collections`, `catalog:practice` | `scripts/render_materials.py` |
 | практика, избранное и авторские разборы главной | `index.html`, маркеры `home:practice`, `home:selected`, `home:curiosity` | `scripts/render_home.py` |
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |
