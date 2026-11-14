@@ -181,6 +181,7 @@
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |
 | шапка: меню и шторка | все страницы с шапкой, между `<!-- header:start -->` и `<!-- header:end -->` | `scripts/render_site_header.py` из шаблона `_partials/site-header.html` |
+| версия общей таблицы стилей | ссылка на `/style.css` на страницах с шаблонной шапкой | после правки CSS запустить `scripts/render_site_header.py`: он ставит одну версию по содержимому файла |
 | подвал | те же страницы, между `<!-- footer:start -->` и `<!-- footer:end -->` | тот же `scripts/render_site_header.py` из `_partials/site-footer.html` |
 
 Остальной текст этих страниц правится руками как обычно. Сгенерированную
