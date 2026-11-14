@@ -1177,7 +1177,7 @@
 .dvy a:focus-visible,.dvy button:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
 .dvy button{font:inherit;cursor:pointer}
 .dvy button:focus:not(:focus-visible){outline:none}
-.dvy .dv-section-wrap{max-width:1216px;padding:56px 24px;margin:auto}
+.section-frame,.dvy .dv-section-wrap{max-width:1216px;padding:56px 24px;margin:auto}
 .dvy .dv-intro{padding-top:45px;padding-bottom:64px}
 .dvy .dv-intro-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:72px;align-items:center}
 .dvy h1{font-size:clamp(70px,7.8vw,110px);font-weight:500;line-height:.95;letter-spacing:-.065em;margin:0 0 28px}
@@ -1236,7 +1236,7 @@
 .dvy .dv-contact>div{flex-wrap:wrap}
 .dvy .dv-contact h2{width:100%}}
 @media(max-width:650px){.dvy{font-size:16px}
-.dvy .dv-section-wrap{padding:43px 20px}
+.section-frame,.dvy .dv-section-wrap{padding:43px 20px}
 .dvy .dv-intro{padding-top:25px}
 .dvy .dv-intro-grid,.dvy .dv-practice-grid,.dvy .dv-curiosity-grid,.dvy .dv-work-grid,.dvy .dv-people-grid{grid-template-columns:minmax(0,1fr)}
 .dvy .dv-intro-grid{gap:27px}
@@ -1259,12 +1259,20 @@
 .dvy .dv-resources>span{width:100%}
 .dvy .dv-contact>div{gap:18px 28px}
 .dvy .dv-contact h2{font-size:28px}}
-.dvy .dv-catalog-title{font-size:clamp(38px,4.4vw,52px);line-height:1.05;letter-spacing:-.055em;margin:0 0 18px}
+.section-frame h1{font-weight:500;font-size:clamp(38px,4.4vw,52px);line-height:1.05;letter-spacing:-.055em;margin:0 0 18px}
 .dvy .dv-catalog-tools{padding:8px 0 24px;margin:0}
 .dvy .dv-catalog-search{width:100%;max-width:520px;padding:12px 14px;border:1px solid #d4d4d4;background:white;font:15px/1.5 Manrope,system-ui,sans-serif;color:#0a0a0a;outline-offset:3px}
 .dvy .dv-catalog-filters{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
 .dvy .dv-catalog-filters button{font:13px/1.5 Manrope,system-ui,sans-serif;border:1px solid #e5e5e5;padding:7px 12px;background:white;color:#0a0a0a;cursor:pointer}
 .dvy .dv-catalog-filters button[aria-pressed=true]{border-color:#0a0a0a;background:#0a0a0a;color:white}
+.section-frame > h1 + .page-lead{margin-top:0;}
+.section-frame > :is(.stats,.cta-strip){margin-inline:0!important;}
+.section-frame > .breadcrumb{margin:40px 0 0;}
+@media(max-width:650px){
+  .section-frame .stat{padding-inline:12px;overflow-wrap:anywhere;}
+  .section-frame > .cta-strip{padding:24px;}
+  .section-frame .cta-strip .ctas{flex-wrap:wrap;}
+}
 .dvy .dv-catalog-description{display:block;margin:0 0 8px;font-size:13px;color:#737373}
 .dvy .dv-catalog-section-title{font-size:30px;margin:40px 0 20px;scroll-margin-top:100px}
 .dvy .dv-catalog-resources .course{min-height:0;padding:24px 28px 48px}

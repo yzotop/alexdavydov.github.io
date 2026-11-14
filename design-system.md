@@ -9,16 +9,27 @@
 
 ---
 
+## Как начать страницу
+
+| Что добавляем | Рабочий образец | Что меняется |
+|---|---|---|
+| Раздел основного меню | `materials/index.html` | Внутри `.section-frame` ставим H1, вводный текст и содержимое раздела. CSS рамки задаёт ширину, поля и масштаб H1 для всех пунктов меню. |
+| Статья | `.article`, например `workspace/articles/baseline-choice/index.html` | Текст, иллюстрации, таблицы и врезки. Длину строки задаёт каркас статьи. |
+| Интерактив | `ai-first/workshop/sasha/returns-r7/index.html` | Шапка и подвал общие. Сетку результата и взаимодействия оформляем внутри корневого класса интерактива. |
+
+Для проверки рамки запустить `python3 scripts/check_section_layout.py` с установленными Playwright и Chromium (установка в job `section-layout`). Проверка открывает внутренние пункты основного меню и сравнивает их с «Материалами».
+
 ## 1. Типы страниц
 
 | Тип | Каркас | Страницы |
 |---|---|---|
 | Главная | `.dvy` → `.dv-intro`, `.dv-section-wrap`, `.dv-work-grid` | `/` |
 | Каталог | `.dvy` → `.dv-catalog-tools`, `.dv-catalog-list`, `.dv-catalog-item` | `/materials/` |
-| Профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
+| Профиль | `.dvy` → `.dv-profile-grid`, `.section-frame`, `.dv-profile-history` | `/about/` |
 | Хаб | `.page` → `.page-title`, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | Статья | `.article` → `h1`, `.article-meta`, `.prose`; у серии `.series-nav` | статьи `/workspace/articles/…`, страницы кейсов `/cases/…` |
-| Текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`; по месту `.timeline`, `.case-block`, `.pricing`, `.cta-strip` | `/talks/`, `/teaching/`, `/career/`, `/career/results/`, `/companies/`, `404` |
+| Преподавание и менторство | `.section-frame` → H1, `.page-lead`, расписание или условия | `/teaching/`, `/career/` |
+| Текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`; по месту `.timeline`, `.case-block`, `.pricing`, `.cta-strip` | `/talks/`, `/career/results/`, `/companies/`, `404` |
 | Интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона, если страница самостоятельная | сохранённые симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 **Каркас статьи.** Стандартный — `.article` из `style.css`. Три разбора серии собраны на своих каркасах со стилями внутри страницы: `.ags` (`harness-by-type`, `how-agent-sees-decisions`) и `.qp` (`question-paths` и её карта), 6–8 КБ CSS на страницу. Для новых статей не используются.
@@ -43,7 +54,7 @@
 существующие Manrope и цветовые токены, без новых шрифтов и библиотек.
 
 - `.dv-intro` — постоянное представление на главной, кнопки и переход к профилю.
-- `.dv-section-wrap` — раздел главной, каталога или профиля.
+- `.dv-section-wrap` — секция главной или вложенной страницы Мастерской.
 - `.dv-practice-grid`, `.dv-focus`, `.dv-update` — текущая практика и ссылки на публикации.
 - `.dv-work-grid`, `.dv-work-card` — избранные материалы главной.
 - `.dv-catalog-list`, `.dv-catalog-item` — список материалов: название,
@@ -308,7 +319,7 @@
 
 ### 3.3 Заголовок страницы (`.page-title`)
 
-**Где:** хабы и текстовые страницы: `/ai-analyst/`, `/cases/`, `/about/`, `/approach/`, `/talks/`, `/teaching/`, `/career/`, `/career/results/`, `/companies/`.
+**Где:** хабы и текстовые страницы: `/ai-analyst/`, `/cases/`, `/about/`, `/approach/`, `/talks/`, `/career/results/`, `/companies/`.
 
 ```html
 <div class="page">
@@ -708,7 +719,7 @@
 - `/companies/` — 375 px: `.plan-tag` и строки списка `li` в `.pricing`;
 - `/about/` — 335 px: `.tl-body` в `.timeline`.
 
-Счётчики и тарифы не исправлены, решение за автором. Прежний таймлайн
+В общей рамке счётчики менторства помещаются при 320 px после переноса длинной подписи. Тарифы компаний требуют отдельного решения. Прежний таймлайн
 `/about/` сохранён внутри свёрнутой истории в новом профиле; его содержимое
 не переписывалось. Датированные размеры выше не являются замером новой вёрстки.
 

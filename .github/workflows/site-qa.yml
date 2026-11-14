@@ -10,6 +10,17 @@ on:
     - cron: "17 6 * * 1"
 
 jobs:
+  section-layout:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare menu sections in Chromium
+        run: |
+          python3 -m venv "$RUNNER_TEMP/layout-env"
+          "$RUNNER_TEMP/layout-env/bin/pip" install playwright==1.59.0
+          "$RUNNER_TEMP/layout-env/bin/playwright" install --with-deps chromium
+          "$RUNNER_TEMP/layout-env/bin/python" scripts/check_section_layout.py
+
   seo-artifacts:
     runs-on: ubuntu-latest
     steps:
