@@ -76,7 +76,9 @@
 если чего-то не хватает — сначала вопрос автору, потом новый
 компонент в `style.css`. Описание классов — `design-system.md`.
 Принятые главная, каталог и профиль от 2026-10-25 используют `.dvy`
-и компоненты `.dv-*`; прочие страницы сохраняют прежний набор.
+и компоненты `.dv-*`. На внутренних страницах основного меню ширину, поля и H1
+задаёт `.section-frame`. Образец — `materials/index.html`. Каркас проверяет
+`scripts/check_section_layout.py`.
 
 **Типы страниц**
 
@@ -90,7 +92,8 @@
 | Мастерская | `.dvy.wh` → `.wh-feature`, `.wh-secondary` | `/ai-first/workshop/` |
 | лаборатория Саши | `.dvy.sl` → `.sl-dashboard` | `/ai-first/workshop/sasha/` |
 | сохранённый разбор | `.dvy.sx` → `.sx-board`, `.sx-before`, `.sx-after`, `.sx-review` | `/ai-first/workshop/sasha/returns-r7/` |
-| текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/teaching/`, `/career/`, `/companies/` |
+| преподавание и менторство | `.section-frame` → H1, `.page-lead`, компоненты раздела | `/teaching/`, `/career/` |
+| текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/companies/` |
 | интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона | симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 Каркас новой статьи — `.article` из `style.css`. `.ags` и `.qp` —
