@@ -3,7 +3,7 @@
   const result = document.querySelector('#sasha-plan-result');
   const format = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
   const load = async (name) => {
-    const response = await fetch('data/july/' + name + '.json');
+    const response = await fetch('/ai-first/workshop/data/july/' + name + '.json');
     if (!response.ok) throw new Error('Данные не загрузились');
     return response.json();
   };

@@ -87,12 +87,21 @@
 | хаб | `.page` → `.page-title`, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | статья | `.article` → `h1`, `.article-meta`, `.prose`; `.series-nav` у серии | статьи, страницы кейсов |
 | профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
+| Мастерская | `.dvy.wh` → `.wh-feature`, `.wh-secondary` | `/ai-first/workshop/` |
+| сохранённый разбор | `.dvy.sx` → `.sx-board`, `.sx-before`, `.sx-after`, `.sx-review` | `/ai-first/workshop/sasha/` |
 | текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/teaching/`, `/career/`, `/companies/` |
 | интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона | симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 Каркас новой статьи — `.article` из `style.css`. `.ags` и `.qp` —
 каркасы трёх разборов серии со своим CSS внутри страницы (6–8 КБ
 каждый); для новых не использовать.
+
+Мастерская — короткий вход к Саше, рецептам и практикуму; прежнее
+упражнение и его июльский стенд живут в `/ai-first/workshop/practicum/`.
+Старые фрагменты корня обрабатывает `workshop-entry.js`, исходные URL
+данных/PDF/ZIP не менять. Страница Саши воспроизводит сохранённый разбор:
+не представлять её как новый запуск агента. Её источники — учебные записи
+и принятая версия, прежний вывод при уточнении сохраняется.
 
 **Компоненты — когда какой**
 
