@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рецепты AI-first аналитики — Саша Давыдов</title><meta name="author" content="Саша Давыдов">
+<meta name="description" content="Четыре способа проверить результат агента перед тем, как использовать его в отчёте"><meta name="material-topic" content="ai"><meta property="article:published_time" content="2026-11-14">
+<link rel="canonical" href="https://davydov.my/ai-first/workshop/recipes/accepting-agent-work/">
+<meta property="og:type" content="article"><meta property="og:title" content="Рецепты AI-first аналитики — Саша Давыдов"><meta property="og:description" content="Четыре способа проверить результат агента перед тем, как использовать его в отчёте"><meta property="og:url" content="https://davydov.my/ai-first/workshop/recipes/accepting-agent-work/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css?v=20261025-2"><style>.recipes-page .rp-title{font-size:clamp(36px,5.5vw,68px);}
+.recipes-page .rp-subtitle{font-size:20px;line-height:1.4;margin:0 0 20px;}
+.recipes-page .rp-toc{margin:28px 0 40px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.recipes-page .rp-toc ol{margin:0;padding-left:24px;}
+.recipes-page .rp-toc li{margin:10px 0;}
+.recipes-page .rp-section{margin-top:48px;}
+.recipes-page .rp-section>h2{margin-top:0;}
+.recipes-page .rp-takeaway p:last-child{margin-bottom:0;}
+.recipes-page .rp-return{font-size:14px;margin-top:24px;}
+.recipes-page a{text-decoration:underline;text-underline-offset:3px;}
+.recipes-page a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.recipes-page code{overflow-wrap:anywhere;}
+</style>
+</head><body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<article class="article recipes-page"><nav class="article-back" aria-label="Вернуться в Мастерскую"><p><a href="/ai-first/workshop/">← Мастерская</a></p></nav>
+<h1 class="rp-title">Рецепты AI-first аналитики</h1><p class="rp-subtitle">Выпуск 1. Как принять работу агента</p><div class="article-meta">Саша Давыдов · 14 ноября 2026</div>
+<div class="prose" id="recipe-content"><p>До планёрки полчаса. Агент прислал сводку, нашёл причину расхождения и заодно предложил поправить запрос. Какие из этих результатов уже можно отнести руководителю? Я начинаю с того пункта, под которым мне предстоит поставить своё имя.</p><nav aria-label="Оглавление" class="rp-toc" id="contents" tabindex="-1"><ol>
+<li><a href="#можно-ли-принять-предложенную-правку">Можно ли принять предложенную правку?</a></li>
+<li><a href="#можно-ли-поставить-эту-цифру-в-сводку">Можно ли поставить эту цифру в сводку?</a></li>
+<li><a href="#сколько-улучшений-дала-именно-эта-правка">Сколько улучшений дала именно эта правка?</a></li>
+<li><a href="#какую-версию-оставить-рабочей">Какую версию оставить рабочей?</a></li>
+</ol></nav><section class="rp-section" id="можно-ли-принять-предложенную-правку"><h2>Можно ли принять предложенную правку?</h2><p>Агент предлагает упростить запрос. Прежде чем соглашаться, я хочу увидеть хотя бы одну строку отчёта глазами того, кому по ней работать.</p><p>Ринат Абдуллин попросил четырёх агентов предложить небольшие упрощения в коде BitGN. Claude Code предложил удалить файл описания интерфейса соревнования, <code>ecom.proto</code>. Ринат знал, кто им пользуется, и отклонил предложение. Другую правку из того же ответа, удаление внутреннего интерфейса <code>fx.VM</code>, счёл разумной. В мае он опубликовал сам разбор предложений. В ноябре сформулировал принцип, который приписывает своему ассистенту Марку. При проектировании надо учитывать, сможет ли человек понять и оценить работу агента. <a href="https://t.me/llm_under_hood/828">Майский разбор Рината</a> · <a href="https://t.me/llm_under_hood/991">Правило Марка</a>.</p><p><strong>Мой учебный пример.</strong> В отчёте диспетчера агент предлагает заполнить пустую дату вручения датой заказа. Возьмём заказ, оформленный в понедельник. В среду он ещё в пути. После подстановки диспетчер увидит доставку в понедельник, а из списка ожидающих заказ исчезнет. Эту правку я бы отклонил. У диспетчера пропадёт строка, по которой ему сегодня нужно позвонить.</p><div class="case-block rp-takeaway"><p><strong>Забрать в работу.</strong> Выберите один реальный случай, где старая и новая версии дадут разные ответы. Покажите обе строки получателю отчёта. Запишите рядом с предложением, какое действие изменится и принимаете ли вы это последствие. Если назначение поля спорно, оставьте правку открытой до ответа владельца данных.</p></div><p class="rp-return"><a href="#contents">К оглавлению ↑</a></p></section><section class="rp-section" id="можно-ли-поставить-эту-цифру-в-сводку"><h2>Можно ли поставить эту цифру в сводку?</h2><p>Два счётчика складываются без ошибки. Вопрос в том, не попал ли один и тот же объект в сумму дважды.</p><p>В эксперименте Абдуллина агенты работали с общей памятью BitGN. Там Vindex собрал сводку по 387 запускам и заметил, что сумма завершённых и неудачных задач иногда превышает число задач. Он решил, что поле «завершено» считает попытки. Агент dot открыл подробности одного запуска. Из 100 завершённых задач 98 получили ответ, две закончились ошибкой. Мой агент пересчитал идентификаторы в сохранённом результате. Уникальных задач ровно 100. Если сложить 100 и 2, обе ошибки попадут в сумму второй раз. Сколько было попыток, по этим строкам установить нельзя. <a href="https://davydov.my/workspace/articles/vindex-dot/">Наш разбор с числами</a>.</p><p><strong>Пример из нашего практикума.</strong> В июне у 18 магазинов нашлись расхождения по продажам, у 9 — по возвратам. Магазины №14, №42 и №72 попали в оба списка. Все 120 магазинов сети прошли сверку. Поэтому в сводку идёт <strong>24 из 120, или 20%</strong>. Расчёт занимает одну строку — 18 + 9 − 3 = 24. <a href="https://davydov.my/ai-first/workshop/#downloads">Практикум с учебными данными</a>.</p><div class="case-block rp-takeaway"><p><strong>Забрать в работу.</strong> Назовите единицу счёта. Попросите агента вывести ID по каждой группе и их пересечение. Сами проследите один ID до исходной строки и сверьте знаменатель с реестром за тот же период. Исправьте цифру там, откуда её заберёт руководитель, и оставьте рядом ссылку на расчёт.</p></div><p class="rp-return"><a href="#contents">К оглавлению ↑</a></p></section><section class="rp-section" id="сколько-улучшений-дала-именно-эта-правка"><h2>Сколько улучшений дала именно эта правка?</h2><p>Список платежей без пары за неделю сократился на 18 строк. Можно ли написать, что все 18 сопоставила новая версия алгоритма?</p><p>В BitGN Romius исправил обработку количества товара в корзине. Раньше явно переданный ноль мог превратиться в единицу. Интегратор bobcat принял проверку количества. Мы нашли её в файле, который действительно отправили на прогон. На 19 задачах новая сборка набрала 15,66 балла против прежних 16,67. В сборке были и другие изменения, а условия задач генерировались заново. По этому сравнению мы смогли подтвердить включение кода. Сколько баллов добавила или отняла именно проверка количества, осталось неизвестным. <a href="https://davydov.my/workspace/articles/component-integration/">Как мы проверили файл</a>.</p><p><strong>Пример из нашего практикума.</strong> На одной выгрузке из 50 платежей мы включили и выключили обработку ведущих нулей в номере заказа. Справочник и правильные пары для сверки были одинаковыми. С выключенной правкой получили 23 верные пары и ни одной ошибочной. С включённой — 30 верных и одну ошибочную. Платёж W2-031 исчез из очереди на разбор, но деньги отнесли к чужому заказу. В вывод для руководителя идут <strong>семь дополнительных верных совпадений и одна новая ошибка</strong>. <a href="https://davydov.my/ai-first/workshop/files/agent-analytics-workshop-inv100-kit.zip">Скачать учебные данные и сверку по платежам (ZIP)</a>.</p><div class="case-block rp-takeaway"><p><strong>Забрать в работу.</strong> Найдите версию компонента в фактически исполненной сборке. Возьмите один снимок данных и один справочник, измените только проверяемую правку. Сопоставьте изменившиеся строки с известными правильными ответами. Выпишите отдельно, сколько ошибок исправили и сколько добавили. Если одновременно поменялись входы, долю улучшения пока оставьте открытой.</p></div><p class="rp-return"><a href="#contents">К оглавлению ↑</a></p></section><section class="rp-section" id="какую-версию-оставить-рабочей"><h2>Какую версию оставить рабочей?</h2><p>У кандидата лучший балл, но на одной из задач он начал уверенно ошибаться там, где прежняя версия просила уточнения. Стоит ли его выпускать?</p><p>В BitGN версия rc3 получила 96,1 балла на ста задачах и стала основной. Позже Inara привела ответ своего агента о повторе того же кода с оценкой 91,9. Первичный результат этого повтора у нас отсутствует. Для другого кандидата, draft4, мы подтвердили постановку двух полных прогонов. Окончательный выбор после них остался неизвестен. <a href="https://t.me/llm_driven_products/80113">Сообщение о повторе</a> · <a href="https://davydov.my/workspace/articles/baseline-choice/">История сравнения версий</a>.</p><p>Зато известно, почему отозвали одну из доработок rc3. Обработчик H4 пытался узнать товар по повреждённому артикулу в чеке. Ревьюер Aika показал случай, где старая версия воздержалась от выбора, а H4 выбрал синий компрессор вместо красного. Inara отозвала H4 как кандидата на полный тест. Этот отказ обоснован конкретной новой ошибкой даже при неизвестном общем балле H4. <a href="https://davydov.my/workspace/articles/baseline-choice/">Разбор отзыва H4 и повторного ревью</a>.</p><p><strong>Мой учебный пример.</strong> Новая версия сводки чаще узнаёт магазин по неполному названию. На строке «Центральный» она приписывает недостачу одному из двух одноимённых магазинов. Прежняя версия отправляла строку на ручную сверку. Пока руководитель использует отчёт для разбора недостач с директорами, я бы оставил прежнюю версию и сохранил эту строку как проверку для следующей.</p><div class="case-block rp-takeaway"><p><strong>Забрать в работу.</strong> Прогоните обе версии на одинаковых входах. Если результат меняется от прогона к прогону, сохраните всю серию. Откройте задачи, на которых кандидат стал хуже, и разберите с владельцем отчёта хотя бы одну потерю, способную изменить его решение. Зафиксируйте выбранную версию, причину и условие, при котором вернётесь к выбору.</p></div><p class="rp-return"><a href="#contents">К оглавлению ↑</a></p></section></div>
+<nav class="article-back" aria-label="Вернуться к практике"><p><a href="/ai-first/workshop/">← Мастерская</a></p></nav></article>
+<div class="footer-spacer"></div><!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end --><script src="/main.js" defer></script>
+</body></html>
