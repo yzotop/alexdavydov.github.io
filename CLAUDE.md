@@ -86,14 +86,14 @@
 |---|---|---|
 | главная | `.dvy` → `.dv-intro`, `.dv-section-wrap`, `.dv-work-grid` | только `/` |
 | каталог | `.dvy` → `.dv-catalog-tools`, `.dv-catalog-list`, `.dv-catalog-item` | `/materials/` |
-| хаб | `.page` → `.page-title`, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
+| хаб | `.section-frame` → H1, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | статья | `.article` → `h1`, `.article-meta`, `.prose`; `.series-nav` у серии | статьи, страницы кейсов |
 | профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
 | Мастерская | `.dvy.wh` → `.wh-feature`, `.wh-secondary` | `/ai-first/workshop/` |
 | лаборатория Саши | `.dvy.sl` → `.sl-dashboard` | `/ai-first/workshop/sasha/` |
 | сохранённый разбор | `.dvy.sx` → `.sx-board`, `.sx-before`, `.sx-after`, `.sx-review` | `/ai-first/workshop/sasha/returns-r7/` |
 | преподавание и менторство | `.section-frame` → H1, `.page-lead`, компоненты раздела | `/teaching/`, `/career/` |
-| текстовая | `.page` → `.page-title`, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/companies/` |
+| текстовая | `.section-frame` → H1, `.page-lead`, `.prose`, по месту `.timeline`, `.case-block`, `.cta-strip` | `/talks/`, `/companies/` |
 | интерактивная | своя разметка и свой `<style>`; шапка и подвал из шаблона | симуляторы, карта `question-paths/map`, `/workspace/mechanics/` |
 
 Каркас новой статьи — `.article` из `style.css`. `.ags` и `.qp` —
@@ -176,7 +176,7 @@
 | что | где | генератор |
 |---|---|---|
 | карточки серии на хабе | `ai-analyst/index.html`, между `<!-- shelf:series:start -->` и `<!-- shelf:series:end -->` | `scripts/render_ai_analyst_hub.py` |
-| каталог и постоянные входы | `materials/index.html`, маркеры `catalog`, `catalog:collections`, `catalog:practice` | `scripts/render_materials.py` |
+| каталог и постоянные входы | `materials/index.html`, маркеры `catalog`, `catalog:shortcuts`, `catalog:collections`, `catalog:practice` | `scripts/render_materials.py` |
 | практика, избранное и авторские разборы главной | `index.html`, маркеры `home:practice`, `home:selected`, `home:curiosity` | `scripts/render_home.py` |
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |
