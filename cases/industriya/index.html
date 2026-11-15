@@ -227,6 +227,7 @@
         }
 
         @media (max-width: 560px) {
+            .case-figure canvas { max-width: 100%; }
             .page-header h1 { font-size: 1.7rem; }
             .hero-metric .num { font-size: 2.6rem; }
             .case-metrics { grid-template-columns: 1fr !important; }
@@ -776,10 +777,19 @@
       chart.data.datasets[0].data.forEach((pt, i) => {
         const meta = chart.getDatasetMeta(0).data[i];
         const dx = (pt.label === 'Уголь' || pt.label === 'Нефть') ? 14 : -14;
-        const align = dx > 0 ? 'left' : 'right';
-        ctx.textAlign = align;
+        const width = ctx.measureText(pt.label).width;
+        const left = dx > 0 ? meta.x + dx : meta.x + dx - width;
+        ctx.textAlign = dx > 0 ? 'left' : 'right';
         ctx.textBaseline = 'middle';
-        ctx.fillText(pt.label, meta.x + dx, meta.y);
+        const nearAxis = chart.width < 320 && left < chart.chartArea.left;
+        if (!nearAxis && left >= 0 && left + width <= chart.width) {
+          ctx.fillText(pt.label, meta.x + dx, meta.y);
+        } else {
+          // На узком графике подпись помещается над точкой.
+          ctx.textAlign = 'left';
+          const x = Math.min(chart.width - width, Math.max(chart.chartArea.left, meta.x - width / 2));
+          ctx.fillText(pt.label, x, meta.y - 15);
+        }
       });
       ctx.restore();
     }
