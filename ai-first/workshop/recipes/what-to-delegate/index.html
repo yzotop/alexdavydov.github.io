@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Саша Давыдов" name="author"/><title>Какую часть отчёта поручить агенту? — Саша Давыдов</title><link href="/favicon.svg" rel="icon"/><link href="/style.css?v=fd9a4d20811b" rel="stylesheet"/><meta content="Перед планёркой руководителю розницы нужно решить, кому из управляющих звонить первым. Я могу поручить агенту одну часть июльского отчёта — найти магазин, который сильнее остальных отстал от плана по чистой выручке. Кому звонить и о чём спросить, решит руководитель." name="description"/><link href="https://davydov.my/ai-first/workshop/recipes/what-to-delegate/" rel="canonical"/><meta content="article" property="og:type"/><meta content="Какую часть отчёта поручить агенту? — Саша Давыдов" property="og:title"/><meta content="Перед планёркой руководителю розницы нужно решить, кому из управляющих звонить первым. Я могу поручить агенту одну часть июльского отчёта — найти магазин, который сильнее остальных отстал от плана по чистой выручке. Кому звонить и о чём спросить, решит руководитель." property="og:description"/><meta content="https://davydov.my/ai-first/workshop/recipes/what-to-delegate/" property="og:url"/><meta content="https://davydov.my/assets/og/articles.png" property="og:image"/></head><body><!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">Мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end --><article class="article"><nav class="article-back"><p><a href="/ai-first/workshop/#recipes-heading">← Рецепты AI-first аналитики</a></p></nav><h1>Какую часть отчёта поручить агенту?</h1><div class="prose">
+<p>Перед планёркой руководителю розницы нужно решить, кому из управляющих звонить первым. Я могу поручить агенту одну часть июльского отчёта — найти магазин, который сильнее остальных отстал от плана по чистой выручке. Кому звонить и о чём спросить, решит руководитель.</p>
+<p>В чате Рината Абдуллина Алмаз Бикчурин попросил модель предложить способы анализа одного текста и расставить их по полезности. Он показал список из 11 методов. Ринат предложил следующий шаг оставить человеку — тот выберет, какой метод применить. <a href="https://t.me/llm_driven_products/1994">Поручение Алмаза</a> · <a href="https://t.me/llm_driven_products/2000">Список методов</a> · <a href="https://t.me/llm_driven_products/2009">Комментарий Рината</a>.</p>
+<p><strong>Что я напишу агенту</strong></p>
+<blockquote>
+<p>Руководитель розницы готовится к звонкам по итогам июля 2025 года. Открой запись об утверждении плана и возьми указанную в ней версию. Сопоставь по номеру магазина чистую выручку (<code>net</code>) в плане и факте по всем 24 магазинам. Для каждого вычти план из факта. Принеси короткую записку о магазине с самым большим отставанием в деньгах. Приложи сравнение по всем магазинам, а для выбранного покажи обе исходные строки и арифметику. Если неясно, какой план утверждён, или у магазина нет пары строк, остановись и напиши мне, чего именно не хватает.</p>
+</blockquote>
+<p>В учебном июле утверждён план A. У магазина № 2 получилось 640 000 − 1 000 000 = −360 000. Это самое большое отставание среди 24 магазинов. Следом идёт № 16 с −80 000. Теперь у руководителя есть цифра для первого разговора. Почему магазин отстал, ещё предстоит выяснить. <a href="https://davydov.my/ai-first/workshop/data/july/approval.json">Запись об утверждении</a> · <a href="https://davydov.my/ai-first/workshop/data/july/plan-A.csv">Строки плана A</a> · <a href="https://davydov.my/ai-first/workshop/data/july/actual.csv">Строки факта</a>.</p>
+</div></article><!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end --><script defer="" src="/main.js"></script><script defer="" src="/ai-first/workshop/workshop-entry.js"></script></body></html>
