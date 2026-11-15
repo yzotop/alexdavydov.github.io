@@ -19,6 +19,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any"/>
   <link rel="stylesheet" href="/style.css?v=fd9a4d20811b"/>
   <link rel="stylesheet" href="./palette.css"/>
+  <link rel="stylesheet" href="/cases/case-reading.css"/>
 </head>
 <body>
 <!-- header:start -->
@@ -203,7 +204,7 @@
       d.className = "card" + (r.own ? " own" : "");
       d.innerHTML = '<div class="swatches">' +
         r.parts.map(p => '<div style="background:' + hex(p) + '"></div>').join("") + '</div>' +
-        '<div class="cname">' + esc(r.name) + '</div>' +
+        '<div class="cname"><button type="button" class="palette-action">' + esc(r.name) + '</button></div>' +
         '<div class="cmeta"><span>' + esc(r.sku) + ' · ' + esc(r.gen) + '</span>' +
         '<span class="pat">' + patHTML(r.pat) + '</span></div>' +
         (r.own ? '<div class="ownflag">в коллекции</div>' : '');
@@ -223,13 +224,13 @@
       return String(A).localeCompare(String(B)) * sortDir;
     });
     document.getElementById("thead").innerHTML = "<tr>" + COLS.map(c =>
-      c[0] ? '<th data-s="' + c[0] + '">' + c[1] +
-        (sortKey === c[0] ? '<span class="ar">' + (sortDir > 0 ? "↑" : "↓") + '</span>' : '') + '</th>'
+      c[0] ? '<th data-s="' + c[0] + '"><button type="button" class="palette-action">' + c[1] +
+        (sortKey === c[0] ? '<span class="ar">' + (sortDir > 0 ? "↑" : "↓") + '</span>' : '') + '</button></th>'
         : "<th></th>").join("") + "</tr>";
     document.getElementById("tbody").innerHTML = s.map(r =>
       '<tr class="' + (r.own ? "own" : "") + '" data-sku="' + esc(r.sku) + '">' +
       '<td><div class="tsw">' + r.parts.map(p => '<div style="background:' + hex(p) + '"></div>').join("") + '</div></td>' +
-      '<td>' + esc(r.name) + '</td>' +
+      '<td><button type="button" class="palette-action">' + esc(r.name) + '</button></td>' +
       '<td class="mn">' + esc(r.sku) + '</td><td class="mn">' + esc(r.gen) + '</td>' +
       '<td class="mn">' + esc(r.date) + '</td>' +
       '<td class="mn pat">' + patHTML(r.pat) + '</td>' +
@@ -239,7 +240,9 @@
       th.onclick = () => {
         const k = th.dataset.s;
         if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
+        const focused = th.contains(document.activeElement);
         render();
+        if (focused) document.querySelector('#thead th[data-s="' + k + '"] button').focus();
       };
     });
     document.querySelectorAll("#tbody tr").forEach(tr => {
