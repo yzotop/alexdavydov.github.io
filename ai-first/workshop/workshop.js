@@ -1,4 +1,9 @@
 (() => {
+ const openJuly = () => {
+   if (location.hash === '#colleague') location.replace(document.getElementById('colleague').href);
+ };
+ window.addEventListener('hashchange', openJuly);
+ openJuly();
  const answer=document.querySelector('#first-answer'),button=document.querySelector('#save-answer');
  answer.addEventListener('input',()=>{button.disabled=!answer.value.trim();});
  button.addEventListener('click',()=>{if(!answer.value.trim())return;const u=URL.createObjectURL(new Blob([answer.value],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='colleague-first-answer.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);document.querySelector('#answer-status').textContent='Ответ сохранён в файл.';});
