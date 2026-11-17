@@ -1,1 +1,35 @@
-(() => {const ids=["colleague", "task-download", "first-answer", "save-answer", "answer-status", "solution", "method", "lab-result", "observed-result", "sasha", "sasha-plan", "sasha-plan-result", "recipes", "downloads", "reading"];const route=()=>{const h=decodeURIComponent(location.hash.slice(1));if(!h)return;const routes={sasha:"/ai-first/workshop/sasha/",recipes:"/ai-first/workshop/recipes/accepting-agent-work/"};if(routes[h])location.replace(routes[h]);else if(ids.includes(h))location.replace("/ai-first/workshop/practicum/#"+encodeURIComponent(h));};addEventListener("hashchange",route);route();})();
+(() => {
+  const workshop = '/ai-first/workshop/';
+  const practicum = workshop + 'practicum/';
+  const july = practicum + 'july/';
+  const routes = {
+    colleague: july,
+    'task-download': july + '#source-zip',
+    'first-answer': july + '#finding',
+    'save-answer': july + '#download',
+    'answer-status': july + '#save',
+    solution: july,
+    method: workshop + 'recipes/what-to-delegate/',
+    'lab-result': workshop + 'evidence/review.html',
+    'observed-result': workshop + 'evidence/review.html',
+    sasha: workshop + 'sasha/',
+    'sasha-plan': workshop + 'sasha/',
+    'sasha-plan-result': workshop + 'sasha/',
+    recipes: workshop + '#recipes-heading',
+    reading: '/shared-memory/'
+  };
+
+  function openBookmark() {
+    const id = location.hash.slice(1);
+    if (id === 'downloads') {
+      const downloads = document.getElementById('downloads');
+      if (downloads) downloads.open = true;
+      else location.replace(practicum + '#downloads');
+    } else if (Object.hasOwn(routes, id)) {
+      location.replace(routes[id]);
+    }
+  }
+
+  window.addEventListener('hashchange', openBookmark);
+  openBookmark();
+})();
