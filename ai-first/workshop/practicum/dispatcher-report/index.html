@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://davydov.my/ai-first/workshop/practicum/dispatcher-report/"><meta name="author" content="Саша Давыдов">
+<title>Принять ли правку отчёта диспетчера? — Саша Давыдов</title>
+<style>
+:root{--ink:#232321;--muted:#62625d;--red:#9c372b;--rule:#d4d2ca;--paper:#f7f6f1;--green:#325b48;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;color:var(--ink);background:#fff;font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{border-bottom:1px solid var(--rule)}header>div,main{max-width:1320px;margin:auto;padding:0 44px}.bar{display:flex;align-items:center;gap:17px;min-height:60px}.brand{font-size:21px;font-weight:740;letter-spacing:-.06em}.brand b{color:var(--red);margin-right:5px}.crumb,.num,.meta{font-size:14px;color:var(--muted)}.crumb{padding-left:16px;border-left:1px solid var(--rule)}.num{margin-left:auto}
+main{padding-top:28px;padding-bottom:38px}h1,h2,h3,p,blockquote{margin:0}h1{font:500 clamp(35px,3.6vw,53px)/1.07 Georgia,serif;letter-spacing:-.045em;margin:0 0 10px}h2{font-size:24px;line-height:1.16;letter-spacing:-.035em}h3{font-size:16px}p+p{margin-top:8px}.lead{font-size:18px;margin-bottom:22px;max-width:91ch}.split{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(345px,1fr);gap:32px;align-items:start}.proposal{border-left:3px solid var(--red);padding:1px 0 2px 15px;margin-bottom:21px}.label{font-size:12px;font-weight:700;letter-spacing:.075em;text-transform:uppercase;color:var(--red)}blockquote{font:21px/1.35 Georgia,serif;max-width:62ch;margin-top:4px}
+.doc{border-top:2px solid var(--ink);padding-top:15px}.dochead,.comparehead{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.rule{font-size:15px;margin:7px 0 12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{text-align:left;white-space:nowrap;padding:7px 9px;border-bottom:1px solid var(--rule)}th{font-size:12px;font-weight:650;color:var(--muted);background:var(--paper)}td{font-size:15px}td:first-child{font-weight:650}.comparehead{margin:19px 0 9px;align-items:center}.comparehead h3{font-size:18px}.pair{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule)}.pair>div{padding:12px 15px}.pair>div+div{border-left:1px solid var(--rule);background:var(--paper)}.pair h3{font-size:13px;color:var(--muted);margin-bottom:5px}.datevalue{font-size:20px;font-weight:650;display:block}.action{margin-top:4px;font-size:15px}.field{font-size:13px;color:var(--muted)}
+.panel{background:var(--paper);border-top:3px solid var(--ink);padding:20px 23px}.panel h2{margin:4px 0 12px}.panel label,.panel legend{font-size:15px;font-weight:650}fieldset{padding:0;border:0;margin:0}legend{margin-bottom:7px}.choices{display:flex;gap:5px;flex-wrap:wrap}.choices label{cursor:pointer;background:white;border:1px solid #aaa99f;padding:6px 9px;border-radius:3px;display:flex;gap:6px;align-items:center}.choices label:has(input:checked){border-color:var(--ink);background:var(--ink);color:white}.choices input{margin:0;accent-color:var(--red)}.block{display:block;margin-top:14px}.help{font-size:13px;color:var(--muted);margin-top:5px}textarea{display:block;width:100%;margin:5px 0 0;padding:8px 9px;font:15px/1.4 inherit;font-family:inherit;font-size:15px;line-height:1.4;resize:vertical;border:1px solid #a5a49a;border-radius:3px}
+button,select,.btn{font:inherit;cursor:pointer;border:1px solid #a7a69d;background:#fff;color:var(--ink);border-radius:3px;padding:8px 12px}select{padding:4px 8px;font-size:14px}.primary{background:var(--ink);color:white;border-color:var(--ink);font-weight:600;margin:16px 0 3px}.links{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:13px}a{color:var(--red);text-underline-offset:3px}:focus-visible{outline:3px solid var(--red);outline-offset:2px}.out{white-space:pre-wrap;overflow-wrap:anywhere;margin:3px 0 14px}.packet{border-top:2px solid var(--ink);padding-top:16px}.packet h2{margin:5px 0 16px}.packet h3{color:var(--muted);font-size:14px}.key{margin:13px 0;border-top:1px solid var(--rule);padding-top:13px}.key p{margin-top:7px}footer{font-size:13px;color:var(--muted);padding-top:11px;margin-top:21px;border-top:1px solid var(--rule)}
+@media(max-width:885px){.split{grid-template-columns:1fr}.bar,main{padding-inline:18px}.dochead{align-items:start;flex-direction:column;gap:3px}.lead{font-size:16px}.panel{padding:16px}.bar{gap:9px}.num{font-size:12px}.crumb{padding-left:9px}.comparehead{flex-wrap:wrap}.pair>div{padding:9px}}
+details{margin-top:20px;border-top:1px solid var(--rule);padding:14px 0;max-width:95ch}summary{font-weight:650;cursor:pointer;color:var(--red)}details p,details table{margin:12px 0}details th,details td{white-space:normal;vertical-align:top}details td:first-child{min-width:11em}details th{font-size:14px}</style></head><body>
+<header><div class="bar"><span class="brand"><b>Δ</b>davydov</span><span class="crumb"><a href="/ai-first/workshop/">Мастерская</a> / <a href="../">Практикум</a></span><span class="num">Задание 4</span></div></header>
+<main>
+<section id="exercise"><h1>Принять ли правку отчёта диспетчера?</h1>
+<p class="lead">Владелец отчёта ждёт вашего решения перед утренним обзвоном. Проверьте предложение агента на одном заказе и передайте вывод.</p>
+<div class="split"><div>
+<div class="proposal"><p class="label">Учебное предложение агента</p><blockquote>«Заполним пустую дату вручения датой заказа. Тогда в каждой строке отчёта будет дата».</blockquote></div>
+<section class="doc"><div class="dochead"><h2>Снимок заказов</h2><span class="meta">Среда, 11 ноября 2026 · 09:00 МСК</span></div>
+<p class="rule">Каждое утро в список обзвона попадают заказы с пустой датой вручения в отчёте. По каждому диспетчер до 10:00 звонит курьеру и уточняет срок.</p>
+<div class="scroll"><table aria-label="Исходные заказы на момент среза"><thead><tr><th>Заказ</th><th>Оформлен</th><th>Вручён</th><th>Статус курьера</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="comparehead"><h3>Одна строка до и после правки</h3><label>Заказ <select id="order" aria-label="Заказ для сравнения"></select></label></div>
+<div class="pair" aria-live="polite"><div><h3>Текущий отчёт</h3><span class="field">Дата вручения</span><span id="oldDate" class="datevalue"></span><p id="oldAction" class="action"></p></div>
+<div><h3>После подстановки</h3><span class="field">Дата вручения</span><span id="newDate" class="datevalue"></span><p id="newAction" class="action"></p></div></div>
+<p class="help">Выбранная строка попадёт в вашу записку вместе с обеими версиями.</p></section></div>
+<form id="form" class="panel"><p class="label">Владельцу отчёта</p><h2>Ваше решение</h2>
+<fieldset><legend>Что сделать с правкой?</legend><div class="choices"><label><input required name="decision" type="radio" value="Принять">Принять</label><label><input name="decision" type="radio" value="Отклонить">Отклонить</label><label><input name="decision" type="radio" value="Уточнить">Уточнить</label></div></fieldset>
+<label class="block" for="reason">Что произойдёт с действием диспетчера?</label><textarea id="reason" required rows="3" placeholder="Сопоставьте выбранную строку и список обзвона. Обоснуйте своё решение."></textarea>
+<label class="block" for="next">Кто и что должен сделать дальше?</label><textarea id="next" required rows="2" placeholder="Запишите следующий шаг для владельца отчёта."></textarea>
+<button class="primary" type="submit">Зафиксировать решение →</button>
+<p class="help">После фиксации вы сможете скачать записку и открыть авторскую сверку.</p></form></div></section>
+
+<section id="result" hidden><h1 tabindex="-1">Записка владельцу отчёта</h1><p class="lead">Первое решение зафиксировано. Его можно передать владельцу вместе со строкой, на которой вы проверили правку.</p>
+<div class="split"><article class="packet"><p class="label">Первое решение</p><h2 id="outDecision"></h2><h3>Что показала строка</h3><p id="outRow" class="out"></p><h3>Последствие для диспетчера</h3><p id="outReason" class="out"></p><h3>Следующий шаг</h3><p id="outNext" class="out"></p><button id="download" class="primary">Скачать записку (.txt)</button></article>
+<aside class="panel"><h2>Сверка решения</h2><button id="openKey" type="button" aria-expanded="false" aria-controls="key">Открыть авторскую сверку</button>
+<div id="key" class="key" hidden><h3>Правку в таком виде стоит отклонить</h3><p>У заказа Д-105 статус «В пути». До правки дата вручения пуста, и заказ входит в список обзвона. После подстановки в отчёте появится 09.11.2026. Строка исчезнет, и диспетчер пропустит звонок курьеру.</p><p><a href="/ai-first/workshop/recipes/accepting-agent-work/#report-change-decision">Открыть карточку решения по правке</a></p>
+<p>У вручённого Д-104 дата сохраняется. Проверка только этой строки пропустила бы ошибку. Владельцу стоит сохранить пустую дату до подтверждения вручения и проверить, что Д-105 остался в списке на 11 ноября.</p>
+<div class="links"><a href="https://davydov.my/ai-first/workshop/recipes/accepting-agent-work/#можно-ли-принять-предложенную-правку" target="_blank" rel="noopener">Перейти к рецепту «Можно ли принять предложенную правку?» ↗</a></div>
+<label class="block" for="reflection">Что добавите после сверки?</label><textarea id="reflection" rows="2" placeholder="По желанию. Дополнение войдёт в TXT отдельно."></textarea></div></aside></div><details id="transfer" hidden><summary>Карточка решения по правке для другого отчёта</summary><p><strong>Карточка решения по правке.</strong> Что написать владельцу отчёта, когда агент предлагает изменить расчёт? Для своего ответа замените учебный пример в правой колонке своей строкой и своим решением.</p>
+<table>
+<thead>
+<tr>
+<th>Что записать</th>
+<th>Как я заполнил бы карточку в учебном примере с диспетчером</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Кто пользуется отчётом и что предлагает агент?</td>
+<td>Диспетчер открывает список ожидающих вручения и выбирает, по каким заказам звонить. Агент предлагает подставить дату заказа, если дата вручения пуста.</td>
+</tr>
+<tr>
+<td>Какую строку проверяю? Где видно, что произошло?</td>
+<td>Беру заказ, оформленный в понедельник. В среду заказ ещё в пути, дата вручения пуста. В своём отчёте я бы приложил ссылку на исходную запись заказа.</td>
+</tr>
+<tr>
+<td>Что увидит и сделает человек до и после правки?</td>
+<td>До правки в среду заказ в списке, диспетчер видит, по какому заказу звонить. После подстановки в графе вручения стоит понедельник. Заказ пропадает из списка звонков.</td>
+</tr>
+<tr>
+<td>Что я решил и на каком основании?</td>
+<td>Отклоняю подстановку. Я могу показать заказ, который ещё в пути, но после правки исчезает из работы диспетчера.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Когда можно решить.</strong> Для отказа достаточно одного случая, в котором правка нарушает известное правило работы. Для приёмки я сверяю затронутые случаи с правилом и показываю получателю, как изменится его действие. Принимаю, когда обе версии проверены на исходных строках и новая даёт ожидаемый результат и получатель подтверждает, что именно так ему нужно работать. Если смысл поля или нужное действие ещё спорны, записываю вопрос владельцу. Например, «После какого события заказ должен исчезнуть из списка звонков?»</p>
+</details><p class="links"><a href="../#completed">Завершить практикум →</a></p></section>
+<footer>Учебный отчёт службы доставки · Синтетические заказы <span id="storageStatus" role="status"></span></footer>
+</main>
+<script>
+'use strict';
+const byId=id=>document.getElementById(id);
+const snapshot='11.11.2026, 09:00 МСК';
+const orders=[
+  {id:'Д-104',placed:'09.11.2026',delivered:'10.11.2026',status:'Вручён'},
+  {id:'Д-105',placed:'09.11.2026',delivered:null,status:'В пути'}
+];
+const decisions=['Принять','Отклонить','Уточнить'];
+const storageKey='davydov.dispatcher-report.v1';
+let state={order:'Д-105',decision:'',reason:'',next:'',first:null,keyOpen:false,reflection:''};
+try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved)Object.assign(state,saved);}catch{}
+function persist(){
+  try{localStorage.setItem(storageKey,JSON.stringify(state));}
+  catch{byId('storageStatus').textContent='· Хранилище браузера недоступно. Скачайте записку до закрытия.';}
+}
+function action(date){return date?'Вне списка обзвона':'В списке обзвона';}
+function versions(order){
+  return [order.delivered,order.delivered||order.placed];
+}
+for(const order of orders){
+  const tr=byId('rows').insertRow();
+  for(const value of [order.id,order.placed,order.delivered||'Пусто',order.status])tr.insertCell().textContent=value;
+  byId('order').add(new Option(order.id,order.id));
+}
+function selectedOrder(){return orders.find(item=>item.id===state.order)||orders[1];}
+function compare(){
+  const order=selectedOrder();
+  byId('order').value=order.id;
+  const [before,after]=versions(order);
+  byId('oldDate').textContent=before||'Пусто';byId('newDate').textContent=after;
+  byId('oldAction').textContent=action(before);byId('newAction').textContent=action(after);
+}
+function sourceLine(order){
+  const [before,after]=versions(order);
+  return 'Срез '+snapshot+'. Заказ '+order.id+', оформлен '+order.placed+', статус курьера «'+order.status+'».\nДо правки: дата вручения — '+(before||'пусто')+', '+action(before).toLowerCase()+'.\nПосле правки: дата вручения — '+after+', '+action(after).toLowerCase()+'.';
+}
+function renderResult(){
+  const saved=state.first;
+  byId('exercise').hidden=true;byId('result').hidden=false;
+  for(const [id,value] of Object.entries({outDecision:saved.decision,outRow:saved.row,outReason:saved.reason,outNext:saved.next}))byId(id).textContent=value;
+  byId('key').hidden=!state.keyOpen;
+  byId('transfer').hidden=!state.keyOpen;
+  byId('openKey').setAttribute('aria-expanded',String(state.keyOpen));
+  byId('openKey').textContent=state.keyOpen?'Свернуть авторскую сверку':'Открыть авторскую сверку';
+}
+byId('order').onchange=e=>{state.order=e.target.value;compare();persist();};
+for(const field of ['reason','next','reflection']){
+  const input=byId(field);input.value=state[field];
+  input.oninput=()=>{state[field]=input.value;input.setCustomValidity('');persist();};
+}
+for(const radio of document.getElementsByName('decision')){
+  radio.checked=state.decision===radio.value;
+  radio.onchange=()=>{state.decision=radio.value;persist();};
+}
+byId('form').onsubmit=e=>{
+  e.preventDefault();
+  if(state.first||!decisions.includes(state.decision))return;
+  for(const id of ['reason','next']){
+    if(!state[id].trim()){byId(id).setCustomValidity('Введите текст.');byId(id).reportValidity();return;}
+  }
+  state.first={decision:state.decision,row:sourceLine(selectedOrder()),reason:state.reason.trim(),next:state.next.trim()};
+  persist();renderResult();byId('result').querySelector('h1').focus();window.scrollTo(0,0);
+};
+byId('openKey').onclick=()=>{state.keyOpen=!state.keyOpen;persist();renderResult();};
+byId('download').onclick=()=>{
+  const f=state.first;
+  const text=['Владельцу отчёта диспетчера · Учебная записка','Первое решение: '+f.decision,f.row,'Последствие для диспетчера\n'+f.reason,'Следующий шаг\n'+f.next];
+  if(state.reflection.trim())text.push('Дополнение после авторской сверки\n'+state.reflection.trim());
+  const url=URL.createObjectURL(new Blob([text.join('\n\n')+'\n'],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='Правка отчёта диспетчера — решение.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+};
+compare();if(state.first)renderResult();
+</script><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
