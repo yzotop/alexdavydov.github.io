@@ -31,8 +31,15 @@
 .wk pre{overflow-x:auto;}
 .wk [id]{scroll-margin-top:100px;}
 @media(max-width:650px){.wk .wk-data{grid-template-columns:1fr;}.wk .wk-lead{font-size:18px;}.wk h1{font-size:36px;}}
-.wk .wk-action-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:24px 0 0;}
-.wk .wk-action-nav a{justify-content:flex-start;min-height:52px;font-size:16px;line-height:1.4;}
+.wk .wk-first h2{font-size:24px;line-height:1.25;margin:0 0 6px;}
+.wk .wk-first p{font-size:17px;line-height:1.55;margin:0 0 14px;}
+.wk .wk-first .wk-return{margin:16px 0 24px;max-width:75ch;}
+.wk .wk-next{border-top:1px solid var(--line);padding-top:18px;}
+.wk .wk-next h2{font-size:19px;margin:0 0 12px;}
+.wk .wk-next ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;list-style:none;margin:0;padding:0;}
+.wk .wk-next p{font-size:15px;line-height:1.5;margin:5px 0 0;}
+.wk .wk-next a,.wk .wk-related a{text-decoration:underline;text-underline-offset:3px;}
+.wk .wk-related{display:flex;flex-wrap:wrap;gap:8px 24px;border-top:1px solid var(--line);margin:24px 0 12px;padding-top:14px;font-size:14px;}
 .wk .prose .wk-note{font-size:14px;line-height:1.5;color:var(--muted);}
 .wk .wk-sasha-control{display:grid;gap:8px;max-width:380px;margin:24px 0 16px;}
 .wk .wk-sasha-control label{font-size:16px;font-weight:600;}
@@ -40,7 +47,7 @@
 .wk .wk-sasha-result{padding:18px 20px;margin:0 0 24px;border-left:3px solid var(--accent);background:var(--soft);font-size:18px;line-height:1.55;}
 .wk .wk-save-btn{border:1px solid var(--ink);border-radius:0;font:15px/1.4 var(--sans);appearance:none;}
 .wk a:focus-visible,.wk select:focus-visible,.wk button:focus-visible,.wk summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-@media(max-width:650px){.wk .wk-action-nav{grid-template-columns:minmax(0,1fr);gap:8px;}.wk .wk-action-nav a{min-height:48px;padding:12px 16px;}}
+@media(max-width:650px){.wk .wk-next ul{grid-template-columns:1fr;}}
 .wk h1{font-size:clamp(36px,5.5vw,52px);}</style>
 </head><body>
 <!-- header:start -->
@@ -88,7 +95,25 @@
   </div>
 </nav>
 <!-- header:end -->
-<article class="article wk"><p><a href="/ai-first/workshop/">← Мастерская</a></p><p class="page-sub wk-note"><a href="/materials/?topic=ai">AI-first аналитика</a></p><h1>Практикум «Как работать с агентами в аналитике»</h1><p class="wk-lead">Решите аналитическую задачу сами, с коллегой или со своим агентом. Затем сверьте вывод с разбором и проверьте, что можно передать следующему исполнителю.</p><nav class="wk-action-nav" aria-label="В Мастерской"><a class="btn btn-primary" id="colleague" href="/ai-first/workshop/practicum/july/">Июль · Приёмка записки агента</a><a class="btn btn-ghost" href="/ai-first/workshop/practicum/r7/">R7 · Поправка к недельной сводке</a><a class="btn btn-ghost" href="/ai-first/workshop/practicum/inv-100/">INV-100 · Сверка счёта</a><a class="btn btn-ghost" href="#sasha">Открыть стенд «Саша»</a><a class="btn btn-ghost" href="/ai-first/workshop/recipes/accepting-agent-work/">Читать рецепты</a><a class="btn btn-ghost" href="#downloads">Скачать практикум</a></nav><div class="prose">
+<article class="article wk"><p><a href="/ai-first/workshop/">← Мастерская</a></p><p class="page-sub wk-note"><a href="/materials/?topic=ai">AI-first аналитика</a></p><h1>Практикум «Как работать с агентами в аналитике»</h1><section class="wk-first" aria-labelledby="july-heading">
+  <h2 id="july-heading">Июль · Приёмка записки агента</h2>
+  <p>Проверьте записку агента и решите, что сообщить руководителю перед звонком.</p>
+  <a class="btn btn-primary" id="colleague" href="/ai-first/workshop/practicum/july/">Начать с июля</a>
+  <p class="wk-return">Для первой пробы мне нужен ваш ответ. Сохраните своё решение до авторской сверки. Скачайте «Июль — записка руководителю.txt» и пришлите мне ответом на сообщение, в котором я прислал ссылку. Если где-то пришлось угадывать, что делать дальше, добавьте короткую фразу об этом месте.</p>
+</section>
+<nav class="wk-next" aria-labelledby="later-heading">
+  <h2 id="later-heading">Можно пройти позже</h2>
+  <ul>
+    <li><a href="/ai-first/workshop/practicum/r7/">R7 · Поправка к недельной сводке</a><p>Пересмотрите вывод после ответа второго филиала и объясните коллеге, почему изменилась цифра.</p></li>
+    <li><a href="/ai-first/workshop/practicum/inv-100/">INV-100 · Сверка счёта</a><p>Сверьте счёт с оригиналом и скажите бухгалтеру, какие строки принять и какую сумму уточнить.</p></li>
+  </ul>
+</nav>
+<nav class="wk-related" aria-label="Другие материалы Практикума">
+  <a href="#sasha">Открыть стенд «Саша»</a>
+  <a href="/ai-first/workshop/recipes/accepting-agent-work/">Читать рецепты</a>
+  <a href="#downloads">Скачать весь практикум</a>
+</nav>
+<div class="prose">
 <details class="wk-reveal"><summary>Июльское задание для работы с коллегой или своим агентом</summary><section class="wk-section"><p class="page-sub wk-note">Учебный случай · стенд «Саша» · синтетические данные</p><h2>Коллега продолжает июльский разбор</h2><p><a href="#method">Карточка методики: что оставить коллеге и что проверить</a></p><p>Руководитель может поручить проверку одного магазина. Он выбирает его по наибольшему отрицательному вкладу в отклонение чистой выручки сети от утверждённого плана. Все суммы учебные. Можно выполнить обе роли самому или передать вторую роль коллеге либо агенту.</p>
 <div class="ctas ctas--start" id="task-download"><a class="btn btn-primary" href="/ai-first/workshop/files/july-colleague-task.zip" download>Скачать задание с данными</a></div><p class="page-sub wk-note">ZIP для своего агента: условие июльского задания и исходные данные, без авторского разбора. <a href="#downloads">Весь практикум с разборами — отдельно</a>.</p>
 <p><strong>Первая смена.</strong> Открой принятый июльский пересмотр и оставь второй смене короткую записку по карточке. Укажи, на сколько магазин отстал по чистой выручке, какую часть предстоит исследовать по продажам и что ты хочешь спросить у управляющего. Дай коллеге ссылки, по которым он сможет проверить твою строку. <a href="/ai-first/workshop/data/july/revised-answer.html">Прежний расчёт</a> · <a href="/ai-first/workshop/data/july/approval.json">утверждение плана</a> · <a href="/ai-first/workshop/data/july/inputs.json">паспорт снимка</a> · <a href="/ai-first/workshop/data/july/plan-A.csv">план A</a> · <a href="/ai-first/workshop/data/july/plan-B.csv">рабочий сценарий B</a> · <a href="/ai-first/workshop/data/july/actual.csv">факт</a>.</p>
