@@ -238,7 +238,7 @@ function drawBook(index){
 }
 function routeSources(r){return '<p class="route-refs">'+r.refs.map(id=>ref(id,'Реплика №'+id)).join(' · ')+'</p>'}
 function dataPathPage(index){
- 
+
  const r=routes[index], msg=M[r.id], author=P[msg[0]].n, parent=msg[3];
  const categories=msg[2].map(i=>T[i]);
  const sourcePair=parent?ref(parent,'Исходная реплика №'+parent)+' · '+ref(r.id,'Ответ №'+r.id):ref(r.id,'Реплика №'+r.id);
@@ -258,7 +258,7 @@ function dataPathPage(index){
 }
 
 function projectPage(){
- 
+
  el('detail').innerHTML='<div class="project-note"><h2>Практики под капотом</h2><p class="byline">Личный проект Саши Давыдова · AI-first аналитика</p><p>Как превратить опыт, рассыпанный по чату, в решение для следующей рабочей задачи? Здесь можно пройти этот путь от сообщения участника до собственного выбора.</p>'+
  '<p><a href="#data-0">Пройти путь сообщения Jane от Telegram до выпуска</a></p><h3>Моя роль</h3><p>Я задал критерий отбора: искать людей, которые сами решали задачу и описали, что получилось. Вместе с Codex я превратил разборы в карту и игровые задачи. У каждого сценария есть первоисточник и объяснение, где заканчивается опыт автора и начинается учебное решение.</p>'+
  '<h3>Что можно проверить за один маршрут</h3><ol><li><b>Постановка задачи.</b> У игрока есть получатель результата и критерий решения: например, бухгалтеру нужно найти причину расхождения. <a href="#play-1">Сверить инвойсы</a></li>'+
