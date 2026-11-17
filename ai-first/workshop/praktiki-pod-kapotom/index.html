@@ -1,0 +1,288 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="Саша Давыдов"><meta name="description" content="Пиксельная игра о трёх практиках AI-first аналитики. Проследите путь от сообщения в Telegram до игровой задачи и проверьте решение по первоисточнику."><link rel="canonical" href="https://davydov.my/ai-first/workshop/praktiki-pod-kapotom/"><link rel="icon" href="/favicon.svg"><meta property="og:type" content="website"><meta property="og:url" content="https://davydov.my/ai-first/workshop/praktiki-pod-kapotom/"><meta property="og:title" content="Практики под капотом"><meta property="og:description" content="Пиксельная игра о трёх практиках AI-first аналитики. Проследите путь от сообщения в Telegram до игровой задачи и проверьте решение по первоисточнику."><title>Практики под капотом — Саша Давыдов</title>
+<style>
+:root{color-scheme:light;--ink:#182e2e;--accent:#116e60;--line:#cbd8d3;--paper:#f8faf6}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "Inter",-apple-system,Arial,sans-serif}header,main{max-width:1220px;margin:auto;padding:24px 32px}header{border-bottom:1px solid var(--line)}h1,h2,h3{line-height:1.2}h1{margin:0 0 6px;font-size:32px}h2{margin:0 0 14px;font-size:26px}h3{margin:24px 0 8px;font-size:18px}p{margin:6px 0 12px}main{display:grid;grid-template-columns:minmax(230px,32%) 1fr;gap:40px}input,select,button{font:inherit;color:inherit}input,select{width:100%;padding:8px;margin-bottom:8px;background:white;border:1px solid #94aaa2;border-radius:5px}button{cursor:pointer;color:var(--accent);background:transparent;border:0;padding:3px 0;text-align:left}button:hover,a:hover{text-decoration:underline}a{color:var(--accent)}.person{display:block;width:100%;border-bottom:1px solid var(--line);padding:8px 2px}.person[aria-current=true]{font-weight:700}.small,.meta,small{color:#4a625c;font-size:14px}.entry{border-top:1px solid var(--line);padding:12px 0}.entry strong{display:block}details{margin:12px 0}summary{cursor:pointer;color:var(--accent)}label{font-size:14px;display:block}article{min-width:0;overflow-wrap:anywhere}ul{padding-left:22px}li{margin-bottom:6px}blockquote{margin:8px 0;border-left:2px solid #afc9be;padding-left:12px}.more{border:1px solid var(--line);padding:4px 10px;margin-top:8px;border-radius:4px} @media(max-width:700px){header,main{padding:16px}main{grid-template-columns:1fr;gap:18px}#names{max-height:190px;overflow:auto}}</style>
+
+<style>
+:root{--ink:#172f3c;--accent:#155775;--line:#c9d6db;--paper:#fafcfc;--ocean:#104761;--water:#eaf3f6;--gold:#ffca7d}
+header,main{max-width:1380px}header{padding:18px 32px 14px;display:flex;align-items:baseline;gap:12px 28px;flex-wrap:wrap}header h1{font-size:24px;letter-spacing:-.04em;margin:0}header p{margin:0}header details{margin:0 0 0 auto;font-size:14px}header details[open]{width:100%}header details p{margin:10px 0;max-width:900px}main{grid-template-columns:clamp(230px,23%,300px) minmax(0,1fr);gap:32px}
+aside{min-width:0}aside>label{margin-bottom:4px;font-weight:600}input,select{min-height:40px;border-color:#a7bbc4;border-radius:6px}#total{margin:6px 0}#names{max-height:58vh;overflow-y:auto;scrollbar-width:thin}.person{padding:9px 8px;line-height:1.3}.person[aria-current=true]{background:var(--water);box-shadow:inset 3px 0 var(--accent)}.person small{font-weight:400}.meta,.small,small{color:#4c646f}
+:focus-visible{outline:3px solid #ce7e1c;outline-offset:2px}.mapnav{display:flex;flex-wrap:wrap;gap:6px 18px;border-bottom:1px solid var(--line);margin:0 0 16px}.mapnav a{color:var(--accent);padding:4px 0 7px;text-decoration:none}.mapnav a[aria-current=page]{color:var(--ink);border-bottom:3px solid;font-weight:700}.mapnav a:hover,.focus-node:hover,.neighbor:hover{text-decoration:underline}.map-panel{background:var(--ocean);color:white;border-radius:12px;overflow:hidden}.map-head{padding:19px 24px 0;display:flex;align-items:baseline;justify-content:space-between;gap:12px}.map-head h2{font-size:clamp(24px,3vw,35px);margin:0;letter-spacing:-.04em}.map-caption{padding:0 24px;font-size:14px;color:#d6e8ef;margin:6px 0 0}.network{margin:8px 24px;position:relative;background-image:radial-gradient(#6792a1 0.7px,transparent .8px);background-size:16px 16px}.network svg{position:absolute;width:100%;height:100%;inset:0;pointer-events:none}.network path{stroke:#79a0af;fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke}.network path.chosen{stroke:var(--gold);stroke-width:3}
+.focus-node,.neighbor{position:absolute;display:flex;align-items:center;min-height:42px;border-radius:6px;color:white;font-weight:600;text-decoration:none;line-height:1.14}.focus-node{width:34%;left:0;top:50%;transform:translateY(-50%);background:#103e55;padding:10px 22px 10px 10px}.focus-node:after,.neighbor:before{content:'';position:absolute;border:2px solid #d1e8f2;background:var(--ocean);border-radius:50%;width:10px;height:10px}.focus-node:after{right:-6px}.neighbor:before{left:-6px}.neighbor{width:45%;left:55%;transform:translateY(-50%);background:#174e66;padding:5px 9px 5px 16px;font-size:15px;gap:5px}.neighbor span,.focus-node span{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.neighbor b{font-size:13px;margin-left:auto;font-variant-numeric:tabular-nums}.neighbor[aria-pressed=true]{color:var(--gold);background:#123e52}.neighbor[aria-pressed=true]:before{background:var(--gold);border-color:var(--gold)}
+.map-foot{padding:8px 24px 13px;color:#e0eef3;display:flex;align-items:center;gap:12px;font-size:14px}.map-foot button{color:inherit;border:1px solid #84a7b7;border-radius:4px;min-width:34px;text-align:center}.map-foot button:disabled{opacity:.4;cursor:default}.map-foot .previous{margin-left:auto}.map-empty{padding:22px 24px}.pair{border-left:3px solid #dfaa58;padding:0 16px;margin:20px 0}.pair h3,.case-preview h3{margin:0 0 6px}.pair p{margin:2px 0 6px}.pair details{margin:8px 0}.exchange{margin:8px 0;padding:6px 0;border-top:1px solid var(--line)}.exchange p{font-size:14px}.case-preview{margin:22px 0}.case-preview p{max-width:76ch}.seed-links{margin:14px 0;display:flex;gap:8px 18px;flex-wrap:wrap;align-items:baseline}.seed-links span{font-size:14px;color:#4c646f}.seed-links a{font-size:15px}.more{padding:5px 12px}.index-heading{font-size:22px;margin:0 0 12px}
+@media(max-width:790px){main{gap:16px;grid-template-columns:minmax(190px,26%) minmax(0,1fr)}header,main{padding:16px}.map-head,.map-foot{padding-left:14px;padding-right:14px}.map-caption{padding:0 14px}.network{margin:8px 14px}}
+@media(max-width:700px){main{display:flex;flex-direction:column}aside #names{max-height:180px}aside:not(.expanded) .directory-fields{display:none}#directory-toggle{display:block;width:100%;padding:10px 12px;text-align:left;border:1px solid var(--line);border-radius:6px}.map-head{padding-top:14px}.mapnav{font-size:15px}.index-heading{display:none}header details{margin-left:0}.focus-node,.neighbor{font-size:14px}.map-foot{gap:8px}}
+@media(min-width:701px){#directory-toggle{display:none}}
+</style>
+
+<style>
+.world-title,.identity,.mission-title{display:flex;align-items:center;gap:16px}.world-title{justify-content:space-between;flex-wrap:wrap}.world-title h2{font-size:clamp(30px,4vw,48px);letter-spacing:-.055em;margin:0}.world-title>a,.world-title>span{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:14px}.intro{max-width:80ch;margin:8px 0 18px}.world{position:relative;isolation:isolate;overflow:hidden;background:#a5c793;border:3px solid #425b50;box-shadow:0 4px 0 #c6d2c5}.terrain{position:absolute;inset:0;width:100%;height:100%;z-index:-1}.figures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:20px 12px 18px;gap:22px 8px;align-items:end}.figure{display:flex;align-items:center;flex-direction:column;text-align:center;text-decoration:none;color:#203b38;min-width:0;padding:4px 0}.figure .sprite{width:55px;height:76px;filter:drop-shadow(3px 4px 0 #47604866)}.figure span,.figure small{background:#f9faeb;padding:2px 5px;max-width:100%;line-height:1.15}.figure span{font-size:14px;font-weight:700;border:1px solid #607763;box-shadow:2px 2px 0 #789175}.figure small{margin-top:2px;font-size:12px;background:#ebf1dd;color:#2a413a;border-radius:2px;min-height:16px}.figure:hover .sprite,.figure:focus-visible .sprite{transform:translateY(-4px)}.figure:focus-visible{outline-color:#263f52}.figure:hover span{background:#fff1b5}.quests{display:flex;flex-wrap:wrap;gap:8px}.quests a{flex:1 1 150px;display:block;text-decoration:none;color:var(--ink);border-left:4px solid #499383;background:#edf4ef;padding:8px 12px;font-weight:650}.quests a:hover{text-decoration:underline}.quests small{display:block;font-weight:400}.mission{max-width:760px;margin:24px 0}.mission-title .sprite,.identity .sprite{width:48px;height:68px;flex:none}.mission-title h3,.identity h2{margin:2px 0}.options{display:grid;gap:7px;margin:15px 0}.options button{display:block;background:white;border:1px solid #9bafb6;border-radius:5px;padding:10px 14px}.options button:hover:enabled,.options button.right{background:#e3f0e6;border-color:#3b785a}.options button:disabled:not(.right){opacity:.65}.mission #verdict{font-weight:600}.mapnav a[hidden]{display:none}
+@media(max-width:850px){.figure .sprite{width:44px;height:62px}.figures{padding:15px 6px;gap:24px 4px}.figure span{font-size:12px}.world-title h2{font-size:32px}}
+@media(max-width:470px){.figures{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px 6px;gap:10px 6px}.figure .sprite{width:40px;height:55px}.quests a{flex-basis:100%}.mapnav{gap:6px 13px}.world-title{gap:6px}.world-title h2{font-size:30px}.intro{font-size:15px}.map-caption{font-size:13px}}
+</style>
+<style>
+body.playing{background:#f5f6ee;color:#203a36}
+body.playing>header{max-width:1220px;border:0;padding-bottom:5px}
+body.playing header>p{display:none}
+body.playing main{max-width:1220px;display:block}
+body.playing main>aside{display:none}
+body.playing .mapnav{border-color:#bfcbbb}
+.play-title{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 16px}
+.play-title h2,.project-note h2{font:700 clamp(32px,4.3vw,58px)/1.02 "PT Serif",Georgia,serif;letter-spacing:-.045em;color:#203e34;margin:0}
+.play-title p{margin:8px 0 0}.play-title>a{font-size:14px}
+.task-board{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.task-board a{display:flex;gap:9px;align-items:center;text-decoration:none;font-weight:650;background:#fffdf2;color:#314339;border:1px solid #adbba4;border-bottom:3px solid #acbba6;padding:8px 12px}
+.task-board a:hover,.task-board a[aria-current]{background:#304e40;color:#fff8d9;border-color:#304e40}
+.pixel-item{width:16px;height:13px;display:inline-block;box-shadow:2px 2px #203a35;flex:none}
+.item-0{background:linear-gradient(32deg,transparent 46%,#a3684b 47% 54%,transparent 55%) left/50% 100% no-repeat,linear-gradient(-32deg,transparent 46%,#a3684b 47% 54%,transparent 55%) right/50% 100% no-repeat,#f0cc89}
+.item-1{background:repeating-linear-gradient(0deg,#629180 0 2px,#d4dab1 2px 4px);border:2px solid #547766}
+.item-2{background:linear-gradient(90deg,#c9abd3 26%,#534967 26% 39%,#c9abd3 39% 70%,#534967 70%);border:2px solid #967ea1}
+.play-layout{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(255px,1fr);align-items:start;gap:16px}
+.play-map{min-width:0;background:#e7ecdc;border:2px solid #415f4a;box-shadow:0 3px #b9c8ae}
+.village{position:relative;aspect-ratio:21/11;isolation:isolate}
+.village-art{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.local-npc{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;position:absolute;transform:translate(-50%,-90%);color:#263e36;text-align:center;padding:4px;min-width:54px}
+.local-npc .sprite{height:clamp(27px,4.2vw,52px);width:auto;filter:drop-shadow(2px 2px 0 #41574366)}
+.local-npc span{background:#fff6d9;border:1px solid #586c50;padding:1px 6px;font-weight:700;line-height:1.2;box-shadow:1px 2px #6f8768}
+.local-npc:hover span,.local-npc:focus-visible span{background:#ffdd92}.local-npc:hover .sprite{transform:translateY(-2px)}
+#explorer{position:absolute;width:3.6%;min-width:15px;aspect-ratio:11/16;pointer-events:none;transform:translate(-50%,-80%);filter:drop-shadow(2px 2px 0 #4e574a66);transition:left .12s linear,top .12s linear}
+#explorer svg{width:100%;height:100%;display:block}
+.map-controls{padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:#435b4a}.map-controls button{color:#284b3d;text-decoration:underline}
+.field-book{background:#fffdf2;border:2px solid #627657;box-shadow:3px 3px #c5d2bb;padding:0 15px 12px;min-height:210px}
+.book-banner{margin:0 -15px 12px;padding:6px 15px;background:#354f40;color:#fcf8da;font-size:14px;font-weight:650}
+.field-book h3{margin:8px 0;font-size:21px;color:#284737}
+.field-book p{margin:8px 0 12px}.field-book p:empty{display:none}
+.play-action{display:inline-block;padding:8px 12px;margin:5px 0;background:#315b48;color:white;border:0;text-decoration:none;border-bottom:3px solid #203e32}
+.encounter,#advice:not(:empty){background:#f6edcf;border-left:3px solid #bf9354;padding:8px 10px}.journal-foot,.route-refs,.byline{font-size:14px;color:#536756}
+.project-note{max-width:78ch}.project-note h3{margin:22px 0 8px}.project-note li{margin:10px 0}.project-note .byline{margin-top:8px}
+@media(max-width:760px){.play-layout{grid-template-columns:1fr;gap:13px}.play-title{margin:12px 0}.task-board{gap:4px}.task-board a{padding:6px;font-size:14px}.local-npc{min-width:42px;font-size:12px}.field-book{min-height:0}.map-controls{font-size:12px}.field-book .options button{min-height:44px}.play-map{width:100%}}
+@media(prefers-reduced-motion:reduce){#explorer{transition:none}}
+.trace-steps{padding-left:1.8em}.trace-steps>li{padding:0 0 8px 6px}.trace-tags{padding:0;display:flex;flex-wrap:wrap;gap:5px;list-style:none}.trace-tags li{margin:0;padding:3px 7px;background:#e4edde;color:#304a38}.trace-steps h3{margin-top:16px}
+</style>
+<header><h1>iKBAD · Игровой атлас</h1></header><main><article>
+<nav class="mapnav" aria-label="Разделы игры"><a href="/ai-first/workshop/">← Мастерская</a><a href="#world">Игра</a>
+<a href="#data-0">Путь данных</a><a href="#project">Об авторском проекте</a><a href="#sources">Источники маршрутов</a></nav>
+<div id="detail"></div></article></main><script>'use strict';
+const {P,M,T,S,caseCount}={"P": [{"n": "Jane"}, {"n": "Илья"}, {"n": "Andrey"}], "M": {"74366": [0, "2026-06-12", [2, 6, 9, 10, 11], 74364], "42294": [1, "2025-04-03", [8], 42256], "80581": [2, "2026-11-04", [2, 8, 11], 80577]}, "T": ["Поиск по документам", "Память и базы знаний", "Оценка качества", "Агенты и инструменты", "Данные и аналитика", "Разработка ПО", "Обучение моделей", "Документы и извлечение", "Стоимость и скорость", "Структурированные ответы", "Контекст и промпты", "Сравнение моделей", "Изображения и видео", "Развёртывание и инфраструктура", "Продукт и внедрение", "Голос и аудио"], "S": {"active": 3028, "head": 81201}, "caseCount": 127};
+const el=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n.toLocaleString('ru-RU');
+const ref=(id,label)=>'<a href="https://t.me/llm_driven_products/'+Number(id)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>';
+
+const topAuthors=[0,1,2];
+function sprite(a){
+ const index=topAuthors.indexOf(a),v=index>=0?index:a;
+ const coats=['#cf5648','#32698b','#b86f34','#7c55a1','#318477','#486aba','#a64272','#697338'];
+ const hair=['#41332e','#5b3c2d','#4d3d54','#59412c','#754939','#493e37','#525260','#67452d'];
+ const skin=['#dfa77e','#f2c59e','#c38d67','#eaba96'];
+ const pal={o:'#273747',h:hair[v%8],s:skin[v%4],c:coats[v%8],l:'#f5ddb1',b:'#425263',d:'#182d3b',a:'#ffd480',w:'#f9f4e3',t:'#53a09a',r:'#a74e43',g:'#c0d6b4'};
+ const tops=[
+ ['....ooooo.....','...ohhhhho....','..ohhhhhhoo...'],
+ ['....oooooo....','...occcccco...','..occcccccoo..'],
+ ['.....ooo......','....ohhhoo....','...ohhhhhoo...'],
+ ['...ooooooo....','..ohhhhhhho...','..ohhhhhoho...'],
+ ['....ooooo.....','...occccco....','..oaaaaaaao...'],
+ ['....oooooo....','...ohhhhhhho..','..ooohhhhoo...'],
+ ['...oooooo.....','..ohhhhhho....','..ohhhhhhhoo..'],
+ ['....ooooo.....','...oaaaaao....','..occccccco...']
+ ];
+ const rows=[...tops[v%8],'...ossssso....',v%3===0?'...oddsddo....':'...osdssdo....','...ossssso....','....ossoo.....','...occlcco....','..occclccco...','..oscclccso...',v%2?'..oscccaaso...':'..osaccccso...','...occccco....','....obbbo.....','...obboobo....','...oddooodo...'];
+ let rects='';rows.forEach((line,y)=>[...line].forEach((c,x)=>{if(pal[c])rects+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+pal[c]+'"/>'}));
+ // Small equipment silhouettes keep the figures recognizable at map scale.
+ const equipment=[
+  ['.ooo.','owwwo','owtwo','owwwo','.ooo.'], ['.ooo.','otgto','otgto','.ooo.','..oo.'],
+  ['.ooo.','ogwgo','.ooo.','...oo','....o'], ['..oo.','.oao.','oaaao','.ooo.'],
+  ['ooooo','ogwgo','owgwo','ogwgo','ooooo'], ['oooo.','otwto','otwto','oooo.'],
+  ['ooooo','ogwgo','owrwo','orwwo','ooooo'], ['.ooo.','..wo.','.owwo','otttto','.oooo.']
+ ];
+ equipment[v%8].forEach((line,y)=>[...line].forEach((c,x)=>{
+  if(pal[c])rects+='<rect x="'+(8+x)+'" y="'+(8+y)+'" width="1" height="1" fill="'+pal[c]+'"/>';
+ }));
+ return '<svg class="sprite" viewBox="0 -1 15 17" shape-rendering="crispEdges" aria-hidden="true">'+rects+'</svg>';
+}
+
+const routes=[
+ {id:74366, title:'Разобрать почту клиники', place:'Почтовая станция', hint:'Я сравнивала классификаторы на письмах с ручной разметкой.',
+  brief:'Клиника получает письма пациентов. Короткое «спасибо» иногда попадает в очередь врача. Найди того, кто проверял маршрутизацию писем.',
+  evidence:'Jane разметила около 2 000 реальных писем. На одном эталоне и одной модели прямая классификация дала 73,5%, а схема с промежуточными флагами — 64,3%. Отдельно Jane описала ошибку с короткими благодарностями.',
+  refs:[74363,74366], q:'Как поставить следующий тест перед запуском в другой клинике?',
+  choices:['Включить прямую схему сразу для всей входящей почты.','Взять прямую схему за базовую и отдельно проверить благодарности на разметке новой клиники.','Выбрать схему с флагами, потому что видны промежуточные решения.'],answer:1,
+  feedback:['73,5% получены на письмах одного клиента. Осталось проверить ошибки на новых данных.','','Промежуточные решения удобно читать, но на общей разметке эта схема дала меньше верных ответов.'],
+  key:'На том же эталоне разница составила 9,2 процентного пункта. Это основание выбрать базовый вариант для следующей проверки. Для новой клиники нужна своя разметка.'},
+ {id:42294,title:'Сверить два инвойса',place:'Бюро сверки',hint:'Я сверял коммерческий и предварительный инвойсы в Excel.',
+  brief:'Бухгалтер видит расхождение между двумя инвойсами. Нужно показать, какую ячейку проверить и почему. Найди практика, который отдавал результат заказчику.',
+  evidence:'Илья сравнивал пары документов. Название модели и цену за единицу проверяли на точное совпадение, даты — на порядок. Заказчик получал таблицу с подсветкой полей и пояснениями.',
+  refs:[42280,42294],q:'Что передать бухгалтеру, если цена за единицу разошлась?',
+  choices:['Один балл за весь инвойс.','Автоматически заменить цену меньшей из двух.','Подсветить ячейку и показать обе цены вместе с правилом сверки.'],answer:2,
+  feedback:['По общему баллу бухгалтеру придётся вновь искать поле с ошибкой.','Для выбора верной цены нужно основание. Само расхождение показывает только место проверки.',''],
+  key:'В примере Ильи комментарий указывал причину проверки у конкретной ячейки. В учебном решении обе цены помогают бухгалтеру разобраться, какую из них подтвердить.'},
+ {id:80581,title:'Уложиться в 15 секунд',place:'Мастерская замеров',hint:'Я замерял время и стоимость разбора одного документа в работающем сервисе.',
+  brief:'Документ должен обработаться за 15 секунд. Лимит — 25 копеек за документ. Это условия учебной задачи. Найди того, кто измерял оба показателя.',
+  evidence:'В своём сервисе Andrey сравнил варианты на прикладном бенчмарке. Один занимал около 40 секунд при цене 9–12 копеек, другой — 12 секунд при цене 21–24 копейки за документ.',
+  refs:[80581],q:'Какой вариант взять на проверку с вашими документами?',
+  choices:['Вариант за 12 секунд. Проверить под нагрузкой время, цену и качество.','Вариант за 40 секунд. Он заметно дешевле.','Согласовать любой вариант по средней цене двух замеров.'],answer:0,
+  feedback:['','Цена укладывается в бюджет, но время превышает лимит на 25 секунд.','Лимиты действуют для выбранного варианта. Средняя двух замеров скрывает разницу.'],
+  key:'В замере Andrey быстрый вариант укладывается в оба учебных ограничения. Его результат даёт кандидата на собственный тест. По одному замеру нельзя обещать время каждого запроса.'}
+];
+const stations=[[3,5],[10,4],[17,5]];
+const trailKey='ikbad-practice-routes-v1';
+let notebook={};
+try{const data=JSON.parse(localStorage.getItem(trailKey));if(data&&typeof data==='object')notebook=data}catch{}
+function saveTrail(){try{localStorage.setItem(trailKey,JSON.stringify(notebook))}catch{}}
+function done(r){return notebook[r.id]==='done'}
+let walker=[10,9], visitor=null, currentRoute=null;
+
+function villageArt(){
+ const pieces=[];
+ const rect=(x,y,w,h,c)=>pieces.push('<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'"/>');
+ const poly=(pts,c)=>pieces.push('<polygon points="'+pts+'" fill="'+c+'"/>');
+ rect(0,0,210,110,'#94bc73');
+ for(let i=0;i<520;i++){
+  const x=(i*71+Math.floor(i/7)*3)%210,y=(i*41+Math.floor(i/11)*7)%110;
+  rect(x,y,(i%4)+1,1,i%4?'#a6c780':'#81ab67');
+ }
+ // Riverbanks and the wooden crossing at the centre of the walking trail.
+ for(let y=0;y<110;y+=2){
+  const x=69+Math.round(4*Math.sin(y/8)+2*Math.sin(y/3));
+  rect(x-2,y,15,2,'#d9d097');rect(x,y,11,2,'#63a5ad');rect(x+1,y,2,2,'#81c0bb');
+  if(y%6===0)rect(x+5,y,3,1,'#b1d8ca');
+ }
+ const road=(x,y,w,h)=>{rect(x,y+1,w,h,'#b99e70');rect(x,y,w,h,'#dfca97')};
+ road(31,70,149,9);road(31,51,9,23);road(101,40,9,59);road(171,51,9,24);road(101,96,9,14);
+ for(let x=61;x<89;x+=3){rect(x,70,3,9,'#a27247');rect(x,70,2,8,'#d3ab74')}
+ rect(61,69,28,1,'#74543c');rect(61,78,28,1,'#74543c');
+ function pine(x,y,v){rect(x-3,y+2,8,2,'#7da36b');rect(x,y-2,2,5,'#805d46');
+  for(let k=0;k<3;k++){const w=3-k;rect(x-w,y-2-3*k,2*w+2,3,v?'#407760':'#497f5a');rect(x-w+1,y-3-3*k,w+1,2,v?'#5b9872':'#68a274')}
+ }
+ for(const [x,y] of [[4,15],[10,10],[15,17],[51,7],[55,12],[83,7],[129,10],[138,8],[145,15],[194,11],[201,17],[205,10],[5,51],[10,58],[199,54],[205,62],[8,92],[15,98],[21,90],[41,104],[47,99],[79,104],[86,98],[121,106],[131,101],[140,103],[184,98],[192,105],[201,98],[207,106]])pine(x,y,x%2);
+ function building(cx,ground,roof,light,symbol){
+  const x=cx-15,y=ground-22;
+  rect(x-1,ground-1,35,3,'#79976b');rect(x,y+7,30,15,'#6a634c');rect(x+1,y+7,28,14,'#eed6a0');rect(x+1,y+19,28,2,'#c9aa78');
+  rect(x+22,y-4,4,9,'#776956');rect(x+21,y-5,6,2,'#a89779');
+  poly([[x-3,y+9],[x+4,y],[x+27,y],[x+33,y+8],[x+33,y+10],[x-3,y+10]].map(p=>p.join(',')).join(' '),'#465746');
+  for(let j=0;j<4;j++){rect(x+3-j*2,y+j*2,24+j*4,2,roof);for(let k=0;k<3;k++)rect(x+5-j+k*8,y+j*2,4,1,light)}
+  rect(x+3,y+12,7,6,'#695d49');rect(x+4,y+13,5,3,'#8eb8aa');rect(x+6,y+12,1,6,'#e6cf98');
+  rect(x+19,y+12,6,10,'#655447');rect(x+20,y+13,4,8,'#976e4e');rect(x+23,y+17,1,1,'#f3d98a');
+  rect(x+11,y+10,8,8,'#585849');rect(x+12,y+11,6,6,'#f5dfac');
+  if(symbol===0){rect(x+12,y+12,6,4,'#526c71');rect(x+13,y+13,4,1,'#f1d8a6');rect(x+14,y+14,2,1,'#f1d8a6')}
+  if(symbol===1){rect(x+13,y+11,4,6,'#538377');rect(x+14,y+13,2,1,'#ede3ac');rect(x+14,y+15,2,1,'#ede3ac')}
+  if(symbol===2){rect(x+13,y+14,1,2,'#805973');rect(x+15,y+12,1,4,'#805973');rect(x+17,y+11,1,5,'#805973')}
+ }
+ building(35,40,'#b16447','#df9370',0);building(105,31,'#397b7d','#6ba49c',1);building(175,40,'#776587','#a992ad',2);
+ for(const [x,y] of [[16,68],[48,61],[91,59],[122,63],[146,88],[185,80],[27,92],[118,89]]){
+  rect(x,y,1,3,'#557e54');rect(x-1,y,3,1,'#f6d680');rect(x+3,y+2,2,1,'#f5e6bd');
+ }
+ return '<svg class="village-art" viewBox="0 0 210 110" aria-hidden="true" shape-rendering="crispEdges">'+pieces.join('')+'</svg>';
+}
+const townArt=villageArt();
+function trailTile(x,y){
+ return (y===7&&x>=3&&x<=17)||(x===3&&y>=5&&y<=7)||(x===10&&y>=4&&y<=10)||(x===17&&y>=5&&y<=7);
+}
+function gamePos(x,y){return 'left:'+((x+.5)/21*100)+'%;top:'+((y+.5)/11*100)+'%'}
+function town(){
+ const npcs=routes.map((r,i)=>'<button class="local-npc" data-visit="'+i+'" style="'+gamePos(...stations[i])+'">'+sprite(M[r.id][0])+'<span>'+esc(P[M[r.id][0]].n)+'</span></button>').join('');
+ return '<div class="village" id="village" tabindex="0" aria-label="Карта мастерских. Стрелки — ходить по дорожкам, Enter — поговорить. Можно выбрать персонажа мышью.">'+townArt+npcs+'<div id="explorer" aria-hidden="true" style="'+gamePos(...walker)+'"><svg viewBox="0 0 11 16" shape-rendering="crispEdges"><rect x="3" y="0" width="1" height="1" fill="#e8ae46"/><rect x="4" y="0" width="1" height="1" fill="#e8ae46"/><rect x="5" y="0" width="1" height="1" fill="#e8ae46"/><rect x="2" y="1" width="1" height="1" fill="#e8ae46"/><rect x="3" y="1" width="1" height="1" fill="#e8ae46"/><rect x="4" y="1" width="1" height="1" fill="#7d563b"/><rect x="5" y="1" width="1" height="1" fill="#7d563b"/><rect x="6" y="1" width="1" height="1" fill="#e8ae46"/><rect x="1" y="2" width="1" height="1" fill="#e8ae46"/><rect x="2" y="2" width="1" height="1" fill="#e8ae46"/><rect x="3" y="2" width="1" height="1" fill="#e8ae46"/><rect x="4" y="2" width="1" height="1" fill="#e8ae46"/><rect x="5" y="2" width="1" height="1" fill="#e8ae46"/><rect x="6" y="2" width="1" height="1" fill="#e8ae46"/><rect x="7" y="2" width="1" height="1" fill="#e8ae46"/><rect x="2" y="3" width="1" height="1" fill="#394348"/><rect x="3" y="3" width="1" height="1" fill="#e5ac83"/><rect x="4" y="3" width="1" height="1" fill="#e5ac83"/><rect x="5" y="3" width="1" height="1" fill="#394348"/><rect x="6" y="3" width="1" height="1" fill="#e5ac83"/><rect x="2" y="4" width="1" height="1" fill="#394348"/><rect x="3" y="4" width="1" height="1" fill="#e5ac83"/><rect x="4" y="4" width="1" height="1" fill="#e5ac83"/><rect x="5" y="4" width="1" height="1" fill="#e5ac83"/><rect x="6" y="4" width="1" height="1" fill="#394348"/><rect x="3" y="5" width="1" height="1" fill="#e5ac83"/><rect x="4" y="5" width="1" height="1" fill="#e5ac83"/><rect x="1" y="6" width="1" height="1" fill="#394c41"/><rect x="2" y="6" width="1" height="1" fill="#394c41"/><rect x="3" y="6" width="1" height="1" fill="#394348"/><rect x="4" y="6" width="1" height="1" fill="#394348"/><rect x="5" y="6" width="1" height="1" fill="#394348"/><rect x="6" y="6" width="1" height="1" fill="#394c41"/><rect x="7" y="6" width="1" height="1" fill="#394c41"/><rect x="0" y="7" width="1" height="1" fill="#394c41"/><rect x="1" y="7" width="1" height="1" fill="#394c41"/><rect x="2" y="7" width="1" height="1" fill="#e5ac83"/><rect x="3" y="7" width="1" height="1" fill="#477c9a"/><rect x="4" y="7" width="1" height="1" fill="#477c9a"/><rect x="5" y="7" width="1" height="1" fill="#477c9a"/><rect x="6" y="7" width="1" height="1" fill="#e5ac83"/><rect x="7" y="7" width="1" height="1" fill="#e5ac83"/><rect x="8" y="7" width="1" height="1" fill="#394c41"/><rect x="0" y="8" width="1" height="1" fill="#394c41"/><rect x="1" y="8" width="1" height="1" fill="#7d563b"/><rect x="2" y="8" width="1" height="1" fill="#394c41"/><rect x="3" y="8" width="1" height="1" fill="#477c9a"/><rect x="4" y="8" width="1" height="1" fill="#477c9a"/><rect x="5" y="8" width="1" height="1" fill="#477c9a"/><rect x="6" y="8" width="1" height="1" fill="#e5ac83"/><rect x="7" y="8" width="1" height="1" fill="#394c41"/><rect x="8" y="8" width="1" height="1" fill="#394c41"/><rect x="0" y="9" width="1" height="1" fill="#394c41"/><rect x="1" y="9" width="1" height="1" fill="#7d563b"/><rect x="2" y="9" width="1" height="1" fill="#394c41"/><rect x="3" y="9" width="1" height="1" fill="#477c9a"/><rect x="4" y="9" width="1" height="1" fill="#477c9a"/><rect x="5" y="9" width="1" height="1" fill="#477c9a"/><rect x="6" y="9" width="1" height="1" fill="#e5ac83"/><rect x="7" y="9" width="1" height="1" fill="#394c41"/><rect x="1" y="10" width="1" height="1" fill="#394c41"/><rect x="2" y="10" width="1" height="1" fill="#394c41"/><rect x="3" y="10" width="1" height="1" fill="#394348"/><rect x="4" y="10" width="1" height="1" fill="#394348"/><rect x="5" y="10" width="1" height="1" fill="#394348"/><rect x="6" y="10" width="1" height="1" fill="#394c41"/><rect x="2" y="11" width="1" height="1" fill="#394c41"/><rect x="3" y="11" width="1" height="1" fill="#7d563b"/><rect x="5" y="11" width="1" height="1" fill="#7d563b"/><rect x="6" y="11" width="1" height="1" fill="#394c41"/><rect x="2" y="12" width="1" height="1" fill="#394c41"/><rect x="3" y="12" width="1" height="1" fill="#7d563b"/><rect x="5" y="12" width="1" height="1" fill="#7d563b"/><rect x="6" y="12" width="1" height="1" fill="#394c41"/><rect x="1" y="13" width="1" height="1" fill="#394c41"/><rect x="2" y="13" width="1" height="1" fill="#394348"/><rect x="3" y="13" width="1" height="1" fill="#394348"/><rect x="5" y="13" width="1" height="1" fill="#394348"/><rect x="6" y="13" width="1" height="1" fill="#394348"/><rect x="7" y="13" width="1" height="1" fill="#394c41"/></svg></div></div>';
+}
+function gamePage(index){
+ if(currentRoute!==index){visitor=null;walker=[10,9]}currentRoute=index;
+ const n=routes.filter(done).length;
+ el('detail').innerHTML='<div class="play-title"><div><h2>Практики под капотом</h2><p>Выбери задачу. Найди того, кто её уже решал.</p></div><a href="#project">Проект Саши Давыдова ↗</a></div>'+
+ '<nav class="task-board" aria-label="Выбери задачу">'+routes.map((r,i)=>'<a href="#play-'+i+'" '+(index===i?'aria-current="step"':'')+'><span class="pixel-item item-'+i+'" aria-hidden="true"></span>'+esc(r.title)+(done(r)?' ✓':'')+'</a>').join('')+'</nav>'+
+ '<div class="play-layout"><div class="play-map">'+town()+'<div class="map-controls"><span>Нажми на персонажа или ходи стрелками.</span><button id="greet">Поговорить</button></div></div><section class="field-book" id="field-book" aria-label="Полевой блокнот"></section></div>'+
+ '<p class="journal-foot">В блокноте '+n+' из 3 решений · <a href="#sources">Источники маршрутов</a></p>';
+ drawBook(index);
+ function visit(i,walk=true){
+  visitor=i;if(walk){walker=[stations[i][0],stations[i][1]+1];position()}
+  drawBook(index);const heading=el('field-book').querySelector('h3');heading.tabIndex=-1;heading.focus({preventScroll:window.innerWidth>760});
+ }
+ function position(){el('explorer').setAttribute('style',gamePos(...walker))}
+ function greet(){const i=stations.findIndex(([x,y])=>Math.abs(walker[0]-x)+Math.abs(walker[1]-y)<=1);
+  if(i>=0)visit(i,false);else el('walk-tip').textContent='Подойди ближе к персонажу или нажми на его имя.'}
+ el('greet').onclick=greet;
+ for(const b of el('village').querySelectorAll('[data-visit]'))b.onclick=()=>visit(Number(b.dataset.visit));
+ el('village').onkeydown=e=>{
+  const delta={ArrowDown:[0,1],ArrowUp:[0,-1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];
+  if(!delta){if(e.key==='Enter'&&e.target===el('village')){e.preventDefault();greet()}return}
+  e.preventDefault();const x=walker[0]+delta[0],y=walker[1]+delta[1];
+  if(trailTile(x,y)){walker=[x,y];position();el('walk-tip').textContent=''}
+ };
+}
+function drawBook(index){
+ const r=routes[index],book=el('field-book'),met=routes[visitor];
+ let html='<div class="book-banner">Полевой блокнот</div>';
+ if(!r){
+  html+='<h3>С чего начнёшь?</h3><p>На доске три задачи из работы аналитика. Выбери одну, затем зайди к практику в мастерскую.</p>';
+  if(met)html+='<p><b>'+esc(P[M[met.id][0]].n)+'</b> · '+esc(met.hint)+'</p>';
+  html+='<a class="play-action" href="#play-0">Начать с писем</a>';
+ }else if(done(r)){
+  html+='<h3>Решение записано ✓</h3><p>'+esc(r.key)+'</p>'+routeSources(r)+'<p><a href="#play-'+((index+1)%3)+'">Следующая задача →</a></p><button id="replay-route">Пройти заново</button>';
+ }else if(notebook[r.id]==='decision'){
+  html+='<h3>'+esc(r.q)+'</h3><div class="options">'+r.choices.map((c,i)=>'<button data-pick="'+i+'">'+esc(c)+'</button>').join('')+'</div><p id="advice" role="status"></p><button id="reread">Вернуться к опыту практика</button>';
+ }else if(notebook[r.id]==='evidence'||visitor===index){
+  notebook[r.id]='evidence';saveTrail();
+  html+='<h3>'+esc(P[M[r.id][0]].n)+' · '+esc(r.place)+'</h3><p>'+esc(r.evidence)+'</p>'+routeSources(r)+'<button class="play-action" id="decide">Принять решение</button>';
+ }else{
+  html+='<h3>'+esc(r.title)+'</h3><p>'+esc(r.brief)+'</p>';
+  if(met)html+='<p class="encounter"><b>'+esc(P[M[met.id][0]].n)+'</b><br>'+esc(met.hint)+' Попробуй другую мастерскую.</p>';
+ }
+ book.innerHTML=html+'<p id="walk-tip" role="status"></p>';
+ function stage(value){notebook[r.id]=value;saveTrail();gamePage(index);const h=el('field-book').querySelector('h3');h.tabIndex=-1;h.focus({preventScroll:true})}
+ if(el('decide'))el('decide').onclick=()=>stage('decision');
+ if(el('reread'))el('reread').onclick=()=>stage('evidence');
+ if(el('replay-route'))el('replay-route').onclick=()=>{visitor=null;stage('find')};
+ for(const b of book.querySelectorAll('[data-pick]'))b.onclick=()=>{
+  const pick=Number(b.dataset.pick);
+  if(pick===r.answer){stage('done');return}
+  el('advice').textContent=r.feedback[pick];b.disabled=true;
+ };
+}
+function routeSources(r){return '<p class="route-refs">'+r.refs.map(id=>ref(id,'Реплика №'+id)).join(' · ')+'</p>'}
+function dataPathPage(index){
+ 
+ const r=routes[index], msg=M[r.id], author=P[msg[0]].n, parent=msg[3];
+ const categories=msg[2].map(i=>T[i]);
+ const sourcePair=parent?ref(parent,'Исходная реплика №'+parent)+' · '+ref(r.id,'Ответ №'+r.id):ref(r.id,'Реплика №'+r.id);
+ const reading=[
+  'Фраза про обучение модели попала под правило разметки, хотя Jane поясняла, что модель не обучала. Сравнивались два способа классификации на одной модели и одном эталоне.',
+  'Слово «стоимость» в примере про цену за единицу дало метку «Стоимость и скорость». В контексте ветки Илья обсуждал сверку полей двух инвойсов. Поэтому игровая задача относится к сверке документов.',
+  'Метка «Стоимость и скорость» совпала с предметом сравнения. Сохранили единицу измерения — один документ — и две пары значений, время и цену для каждого варианта.'
+ ];
+ el('detail').innerHTML='<div class="project-note trace"><h2>Путь данных</h2><p>Проследи, как реплика из чата становится решением в игре. Выбери пример и открой оба сообщения, чтобы проверить контекст.</p>'+
+ '<nav class="task-board" aria-label="Пример из чата">'+routes.map((item,i)=>'<a href="#data-'+i+'" '+(i===index?'aria-current="step"':'')+'>'+esc(P[M[item.id][0]].n)+'</a>').join('')+'</nav>'+
+ '<ol class="trace-steps"><li><h3>Получить сообщение</h3><p>'+esc(author)+' · '+esc(msg[1])+' · чат «LLM под капотом». Сборщик сохраняет текст, дату, ID сообщения и ссылку на исходную реплику для ответов. '+ref(r.id,'Открыть №'+r.id)+'</p></li>'+
+ '<li><h3>Проверить запись и восстановить разговор</h3><p>При добавлении нового интервала сборщик сверяет его границы, число записей и контрольные суммы текстов. В атласе участники связаны, если у ответа есть доступная исходная реплика другого автора в этом чате.</p><p>'+sourcePair+'</p></li>'+
+ '<li><h3>Разложить по темам</h3><p>Эти метки поставил сборщик по словам в собственной реплике автора.</p><ul class="trace-tags">'+categories.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul><p>'+esc(reading[index])+'</p></li>'+
+ '<li><h3>Выделить проверяемый результат</h3><p>'+esc(r.evidence)+'</p>'+routeSources(r)+'</li>'+
+ '<li><h3>Сделать игровую задачу</h3><p>'+esc(r.brief)+'</p><a class="play-action" href="#play-'+index+'">'+esc(r.title)+'</a></li>'+
+ '<li><h3>Собрать выпуск для сайта</h3><p>Из атласа на Revolute экспортируются три проверенных сценария, их тематические метки и ссылки. Список остальных участников и журнал чата остаются в рабочей базе. Срез этого выпуска — по сообщению '+ref(S.head,'№'+S.head)+'.</p><p>Новые сообщения могут обновить атлас. Содержание сценария меняется после разбора ветки, а интернет-версия — после выпуска файла на хостинг.</p></li></ol></div>';
+}
+
+function projectPage(){
+ 
+ el('detail').innerHTML='<div class="project-note"><h2>Практики под капотом</h2><p class="byline">Личный проект Саши Давыдова · AI-first аналитика</p><p>Как превратить опыт, рассыпанный по чату, в решение для следующей рабочей задачи? Здесь можно пройти этот путь от сообщения участника до собственного выбора.</p>'+
+ '<p><a href="#data-0">Пройти путь сообщения Jane от Telegram до выпуска</a></p><h3>Моя роль</h3><p>Я задал критерий отбора: искать людей, которые сами решали задачу и описали, что получилось. Вместе с Codex я превратил разборы в карту и игровые задачи. У каждого сценария есть первоисточник и объяснение, где заканчивается опыт автора и начинается учебное решение.</p>'+
+ '<h3>Что можно проверить за один маршрут</h3><ol><li><b>Постановка задачи.</b> У игрока есть получатель результата и критерий решения: например, бухгалтеру нужно найти причину расхождения. <a href="#play-1">Сверить инвойсы</a></li>'+
+ '<li><b>Проверка вывода модели.</b> В задаче Jane сравнение держится на одном эталоне. Игрок выбирает следующий тест и может открыть исходные цифры. <a href="#play-0">Разобрать почту</a></li>'+
+ '<li><b>Цена решения.</b> В мастерской Andrey можно сопоставить два реальных замера с заданными в игре ограничениями. <a href="#play-2">Выбрать режим сервиса</a></li></ol>'+
+ '<h3>Как я проверяю работу с AI</h3><p>Codex помогал разбирать ветки, готовить карточки и собирать игру. Сборщик на Revolute проверяет границы выгрузок, ID и контрольные суммы новых текстов. Связь собеседников строится по прямому ответу. В карте '+fmt(S.active)+' авторов сообщений, персональных разборов — '+caseCount+'. <a href="#sources">Открыть реплики трёх практиков</a></p>'+
+ '<p>Например, в ветке Jane две оценки относятся к одной модели и одному эталону. При разборе я сохраняю пару сравнения и ссылку. При переносе на другую клинику у игрока появляется отдельное условие — получить местную разметку. '+ref(74366,'Проверить основание сравнения')+'</p>'+
+ '<p>Игра демонстрирует работающий прототип и способ проверки источников. Польза для игроков и перенос навыка в их работу пока не измерены.</p></div>';
+}
+
+
+
+function portableView(){
+ const hash=location.hash, choice=hash.match(/^#play-([0-2])$/);
+ if(/^#data-[0-2]$/.test(hash))dataPathPage(Number(hash.slice(-1)));
+ else if(hash==='#project')projectPage();
+ else if(hash==='#sources'){
+  el('detail').innerHTML='<div class="project-note"><h2>Источники маршрутов</h2>'+
+   routes.map(r=>'<section><h3>'+esc(P[M[r.id][0]].n)+' · '+esc(r.title)+'</h3><p>'+esc(r.evidence)+'</p>'+routeSources(r)+'</section>').join('')+'</div>';
+ }else gamePage(choice?Number(choice[1]):null);
+ const navHash=/^#data-[0-2]$/.test(hash)?'#data-0':['#project','#sources'].includes(hash)?hash:'#world';
+ for(const link of document.querySelectorAll('.mapnav a')){
+  if(link.hash===navHash)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+ }
+}
+document.body.classList.add('playing');window.addEventListener('hashchange',portableView);portableView();
+</script><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></html>
