@@ -63,7 +63,7 @@ body.playing .mapnav{border-color:#bfcbbb}
 <nav class="mapnav" aria-label="Разделы игры"><a href="/ai-first/workshop/">← Мастерская</a><a href="#world">Игра</a>
 <a href="#data-0">Путь данных</a><a href="#project">Об авторском проекте</a><a href="#sources">Источники маршрутов</a></nav>
 <div id="detail"></div></article></main><script>'use strict';
-const {P,M,T,S,caseCount}={"P": [{"n": "Jane"}, {"n": "Илья"}, {"n": "Andrey"}], "M": {"74366": [0, "2026-06-12", [2, 6, 9, 10, 11], 74364], "42294": [1, "2025-04-03", [8], 42256], "80581": [2, "2026-11-04", [2, 8, 11], 80577]}, "T": ["Поиск по документам", "Память и базы знаний", "Оценка качества", "Агенты и инструменты", "Данные и аналитика", "Разработка ПО", "Обучение моделей", "Документы и извлечение", "Стоимость и скорость", "Структурированные ответы", "Контекст и промпты", "Сравнение моделей", "Изображения и видео", "Развёртывание и инфраструктура", "Продукт и внедрение", "Голос и аудио"], "S": {"active": 3028, "head": 81201}, "caseCount": 127};
+const {P,M,T,S,caseCount,recent}={"P": [{"n": "Jane"}, {"n": "Илья"}, {"n": "Andrey"}], "M": {"74366": [0, "2026-06-12", [2, 6, 9, 10, 11], 74364], "42294": [1, "2025-04-03", [8], 42256], "80581": [2, "2026-11-04", [2, 8, 11], 80577]}, "T": ["Поиск по документам", "Память и базы знаний", "Оценка качества", "Агенты и инструменты", "Данные и аналитика", "Разработка ПО", "Обучение моделей", "Документы и извлечение", "Стоимость и скорость", "Структурированные ответы", "Контекст и промпты", "Сравнение моделей", "Изображения и видео", "Развёртывание и инфраструктура", "Продукт и внедрение", "Голос и аудио"], "S": {"active": 3028, "head": 81201, "headDate": "2026-11-17T13:20:51+00:00"}, "caseCount": 127, "recent": {"74366": [[78950, "2026-10-04", [], 0], [78932, "2026-10-03", [], 0], [78515, "2026-09-28", [], 78513]], "42294": [[71902, "2026-04-27", [], 71884], [71735, "2026-04-25", [], 71732], [71708, "2026-04-24", [3, 5, 11], 71707]], "80581": [[81127, "2026-11-15", [], 81124], [81116, "2026-11-14", [], 81114]]}};
 const el=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n.toLocaleString('ru-RU');
@@ -99,6 +99,16 @@ function sprite(a){
   if(pal[c])rects+='<rect x="'+(8+x)+'" y="'+(8+y)+'" width="1" height="1" fill="'+pal[c]+'"/>';
  }));
  return '<svg class="sprite" viewBox="0 -1 15 17" shape-rendering="crispEdges" aria-hidden="true">'+rects+'</svg>';
+}
+
+
+function recentThreads(route){
+ const items=recent[String(route.id)] || [];
+ if(!items.length)return '';
+ return '<details class="recent-threads"><summary>Последние обсуждения · '+esc(P[M[route.id][0]].n)+'</summary><p>Темы определены автоматически по словам в сообщениях.</p><ul>'+
+  items.map(([id,date,tags,parent])=>'<li>'+esc(date)+' · '+ref(id,'Обсуждение №'+id)+
+   (tags.length?' · '+tags.map(t=>esc(T[t])).join(', '):'')+
+   (parent?' · '+ref(parent,'Начало разговора'):'')+'</li>').join('')+'</ul></details>';
 }
 
 const routes=[
@@ -236,7 +246,7 @@ function drawBook(index){
   el('advice').textContent=r.feedback[pick];b.disabled=true;
  };
 }
-function routeSources(r){return '<p class="route-refs">'+r.refs.map(id=>ref(id,'Реплика №'+id)).join(' · ')+'</p>'}
+function routeSources(r){return recentThreads(r) + '<p class="route-refs">'+r.refs.map(id=>ref(id,'Реплика №'+id)).join(' · ')+'</p>'}
 function dataPathPage(index){
 
  const r=routes[index], msg=M[r.id], author=P[msg[0]].n, parent=msg[3];
@@ -279,6 +289,10 @@ function portableView(){
   el('detail').innerHTML='<div class="project-note"><h2>Источники маршрутов</h2>'+
    routes.map(r=>'<section><h3>'+esc(P[M[r.id][0]].n)+' · '+esc(r.title)+'</h3><p>'+esc(r.evidence)+'</p>'+routeSources(r)+'</section>').join('')+'</div>';
  }else gamePage(choice?Number(choice[1]):null);
+ const freshness=document.createElement('p');
+ freshness.className='small';
+ freshness.innerHTML='Данные чата по '+esc(S.headDate.slice(0,10))+' · '+ref(S.head,'№'+S.head);
+ el('detail').prepend(freshness);
  const navHash=/^#data-[0-2]$/.test(hash)?'#data-0':['#project','#sources'].includes(hash)?hash:'#world';
  for(const link of document.querySelectorAll('.mapnav a')){
   if(link.hash===navHash)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
