@@ -1,0 +1,183 @@
+Ты — аналитик Саша. Ответь на вопрос руководителя по приложенному JSON.
+Это одноразовый текстовый анализ. Не используй инструменты, файлы, сеть, память,
+подагентов и сведения вне входа. Не выполняй код. Верни только JSON по схеме.
+Не придумывай причины. Учти source_transition и разную зрелость received_at;
+другой режим источника НЕ является доказанной бизнес-причиной. Учебные данные
+не являются реальным бизнес-эффектом. Поток возвратов не является когортной вероятностью.
+Скопируй все восемь числовых фактов точно. Описания, гипотезы (только unverified),
+ограничения и запрос решения раздели. При переходе предложи сдержанное решение:
+принять описательную базу/методику и дождаться сопоставимых наблюдений, без торговых мер.
+В свободном тексте НЕ пиши цифровые числа/даты. Числа записки подставляются только
+маркерами {{sales_amount.current}}, {{sales_amount.previous}}, {{sales_amount.change}},
+{{sales_amount.change_pct}} и аналогично для остальных metric_id. Маркеры
+используй и для чисел в observations. Избегай слов 'вдвое/втрое', если это не
+точный проверенный факт. Периоды/источник добавит заголовок системы.
+memo_template — короткая полезная записка по-русски, примерно до200слов:
+основные изменения продаж, возвратов и чистой выручки, неизвестное, ограничения,
+конкретное предложение/вопрос Александру. Не утверждай, что человек уже принял результат.
+
+{
+  "schema": "sasha-weekly-input.v1",
+  "question": "Что изменилось в продажах и возвратах последней полной модельной недели относительно предыдущей?",
+  "release": {
+    "release_id": "cycle-012-bc3d18b41bfd1ed3",
+    "cycle_id": "cycle-012",
+    "model_cursor": "2025-09-23T00:00:00+00:00",
+    "completed_at": "2026-11-18T08:41:03.850101+00:00",
+    "source_sha256": "460d9dc29a2b0ada264cd827b03d160cda4ff9f3e352dd5baa8c946f23beccd6",
+    "report_sha256": "bc3d18b41bfd1ed3e05ed822f88647a2e2b227b2ab006efac6484287b51bc473",
+    "contract_sha256": "296f6f15dd0b0f5dbb29841f8b29b10721a34700e78ed311c3149a9f9259b26c",
+    "calculation_sha256": "ceed73a35be7de150883540ba6a58f703992cc756c238e42e6ff66946af2522d",
+    "manifest_sha256": "89a2f83cd1910b58b192d5a9ebda3ba6802cac4a5598628a3a76f212fe1a889f",
+    "run_results_sha256": "af11f8d2d83bd3b0126fabd3d23c77244349d174d4f9e4457308b9476df5e795",
+    "build_sha256": "7dbbb1d408adea20b9d62f08baa8ab98096e7671733ee5facee8af5b6b247ab0",
+    "dbt_version": "1.10.15",
+    "numeric": "passed",
+    "semantic": "not_assigned",
+    "owner": "pending",
+    "duration_seconds": 6.788,
+    "source_mode": "continuous-v1",
+    "source_epoch": "continuous-20261118",
+    "source_contract_sha256": "296f6f15dd0b0f5dbb29841f8b29b10721a34700e78ed311c3149a9f9259b26c",
+    "batch_id": "B000001",
+    "batch_number": 1,
+    "batch_rows": 10825,
+    "source_chain_sha256": "2bce091ef97bf7dd42341bd0a71e56af6d10013a1c8d309072fba6e244d98ea9",
+    "seed_sha256": "a86117fc78e1f7ef995b698b7ecfb5b2e5b6c27b6b6b87f4d4b44576585501a3",
+    "generator_sha256": "381d2e162be1f246b4419059371067414dc085d6711c7cf9ac725f7648d14d36",
+    "batch_lower_utc": "2025-09-16T00:00:00+00:00",
+    "batch_upper_utc": "2025-09-23T00:00:00+00:00"
+  },
+  "periods": {
+    "previous": {
+      "start": "2025-09-09T00:00:00Z",
+      "end_exclusive": "2025-09-16T00:00:00Z"
+    },
+    "current": {
+      "start": "2025-09-16T00:00:00Z",
+      "end_exclusive": "2025-09-23T00:00:00Z"
+    }
+  },
+  "common_receipt_cutoff": "2025-09-23T00:00:00+00:00",
+  "scope": "Все24магазина; все каналы и гости; completed; недельные события UTC.",
+  "definitions": {
+    "sales": "qty*unit_price-discount по времени продажи; первая допустимая регистрация позиции",
+    "returns": "qty_returned*unit_price по времени возврата; это поток, не вероятность когортного возврата",
+    "net": "sales_amount-returns_amount",
+    "orders": "distinct order_id среди учтённых строк продаж",
+    "change_pct": "100*(current-previous)/previous; при нуле NULL"
+  },
+  "metrics": [
+    {
+      "metric_id": "completed_orders",
+      "name": "Заказы с учтённой продажей",
+      "unit": "единицы/события",
+      "previous": 4523,
+      "current": 2812,
+      "change": -1711,
+      "change_pct": -37.83
+    },
+    {
+      "metric_id": "sale_lines",
+      "name": "Строки продаж",
+      "unit": "единицы/события",
+      "previous": 11182,
+      "current": 6174,
+      "change": -5008,
+      "change_pct": -44.79
+    },
+    {
+      "metric_id": "sold_units",
+      "name": "Продано единиц",
+      "unit": "единицы/события",
+      "previous": 15073,
+      "current": 8427,
+      "change": -6646,
+      "change_pct": -44.09
+    },
+    {
+      "metric_id": "sales_amount",
+      "name": "Продажи после скидок",
+      "unit": "условные денежные единицы",
+      "previous": 1805302.75,
+      "current": 974623.32,
+      "change": -830679.43,
+      "change_pct": -46.01
+    },
+    {
+      "metric_id": "return_events",
+      "name": "События возврата",
+      "unit": "единицы/события",
+      "previous": 1045,
+      "current": 1035,
+      "change": -10,
+      "change_pct": -0.96
+    },
+    {
+      "metric_id": "returned_units",
+      "name": "Возвращено единиц",
+      "unit": "единицы/события",
+      "previous": 1220,
+      "current": 1236,
+      "change": 16,
+      "change_pct": 1.31
+    },
+    {
+      "metric_id": "returns_amount",
+      "name": "Сумма возвратов",
+      "unit": "условные денежные единицы",
+      "previous": 171173.55,
+      "current": 184284.62,
+      "change": 13111.07,
+      "change_pct": 7.66
+    },
+    {
+      "metric_id": "net_revenue",
+      "name": "Чистая выручка",
+      "unit": "условные денежные единицы",
+      "previous": 1634129.2,
+      "current": 790338.7,
+      "change": -843790.5,
+      "change_pct": -51.64
+    }
+  ],
+  "comparability": {
+    "source_transition": true,
+    "cutover_utc": "2025-09-16T00:00:00Z",
+    "closed_event_windows": true,
+    "arrival_completeness": "not_proven",
+    "common_knowledge_cutoff": true,
+    "previous_source": "legacy known slice plus pending receipts",
+    "current_source": "continuous-20261118",
+    "causal_effect_identified": false
+  },
+  "limitations": [
+    "Учебные синтетические данные; бизнес-эффект не установлен.",
+    "Закрытое бизнес-окно не означает полноту received_at; поздние записи могут пересмотреть итоги.",
+    "Возвраты этих недель могут относиться к продажам других недель; это не когортный return rate.",
+    "На переходе неизвестные прежние продажи не переносятся полностью; сравнение между режимами ограничено."
+  ],
+  "evidence": [
+    {
+      "id": "release",
+      "path": "state/sasha-stream-v1/live/cycles/cycle-012/success.json",
+      "sha256": "f9f79d9a7924b6c14aba1290502fc98b238d1174eef7f2ee84d0a49c03f8b451"
+    },
+    {
+      "id": "source_contract",
+      "path": "experiments/sasha_stream_v1/contract.md",
+      "sha256": "296f6f15dd0b0f5dbb29841f8b29b10721a34700e78ed311c3149a9f9259b26c"
+    },
+    {
+      "id": "weekly_contract",
+      "path": "experiments/sasha_weekly_analysis_v1/contract.md",
+      "sha256": "56d547589dfc813875e10129b2a090c04ac6c19935e77bddd5a4c21ce4bb20b6"
+    },
+    {
+      "id": "weekly_sql",
+      "path": "state/sasha-weekly-analysis-v1/releases/cycle-012-bc3d18b41bfd1ed3/technical/weekly.sql",
+      "sha256": "bb14eb149a8f913176599010cb511c1734e57d6fb7925b5b93c202b5fe9673f1"
+    }
+  ],
+  "human_acceptance": "pending"
+}
