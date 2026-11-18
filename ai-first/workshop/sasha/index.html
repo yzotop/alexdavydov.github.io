@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Саша Давыдов"><title>Саша: аналитическая система с AI-агентом — Саша Давыдов</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/ai-first/workshop/workshop.css?v=bd42a9970b0d"><meta name="description" content="Аналитическая система с AI-агентом на синтетических данных: от исходных строк и витрин до записки и проверки. Один сохранённый выпуск, роль автора и темы занятия."><link rel="canonical" href="https://davydov.my/ai-first/workshop/sasha/"><meta property="og:type" content="website"><meta property="og:title" content="Саша: аналитическая система с AI-агентом — Саша Давыдов"><meta property="og:description" content="Аналитическая система с AI-агентом на синтетических данных: от исходных строк и витрин до записки и проверки. Один сохранённый выпуск, роль автора и темы занятия."><meta property="og:url" content="https://davydov.my/ai-first/workshop/sasha/"><meta property="og:image" content="https://davydov.my/ai-first/workshop/sasha/metabase-dashboard-24-overview.jpg"><link rel="stylesheet" href="/ai-first/workshop/sasha/dashboard.css?v=a5b539a03ff7"></head><body><!-- header:start -->
+<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Саша Давыдов"><title>Саша: аналитическая система с AI-агентом — Саша Давыдов</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/ai-first/workshop/workshop.css?v=bd42a9970b0d"><meta name="description" content="Аналитическая система с AI-агентом на синтетических данных: от исходных строк и витрин до записки и проверки. Один сохранённый выпуск, роль автора и темы занятия."><link rel="canonical" href="https://davydov.my/ai-first/workshop/sasha/"><meta property="og:type" content="website"><meta property="og:title" content="Саша: аналитическая система с AI-агентом — Саша Давыдов"><meta property="og:description" content="Аналитическая система с AI-агентом на синтетических данных: от исходных строк и витрин до записки и проверки. Один сохранённый выпуск, роль автора и темы занятия."><meta property="og:url" content="https://davydov.my/ai-first/workshop/sasha/"><meta property="og:image" content="https://davydov.my/ai-first/workshop/sasha/metabase-dashboard-24-overview.jpg"><link rel="stylesheet" href="/ai-first/workshop/sasha/dashboard.css?v=a5b539a03ff7"><link rel="stylesheet" href="system-map.css"></head><body><!-- header:start -->
 <nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
     <div class="logo-mark"><span>Δ</span></div>
@@ -50,10 +50,53 @@
 <p class="sr-lead">Синтетическая розничная сеть: покупатели, заказы, товары и возвраты. Цель — регулярный автономный цикл от новых событий до проверенной записки о том, что изменилось.</p>
 <p class="sr-current"><strong>Сейчас:</strong> обновление данных и BI проверено. Первая записка прошла числовую и отдельную модельную проверку. Приёмка человеком и регулярный цикл пока не подтверждены.</p>
 <div class="sr-role"><h2>Моя роль</h2><p>Постановка задачи, определения метрик, критерии проверки и приёмка. Реализация — с помощью агентов.</p></div>
-<a class="btn btn-primary" href="#data">Проследить один выпуск →</a></div>
+<a class="btn btn-primary" href="#sasha-map-concept">Открыть карту системы →</a></div>
 <aside class="sr-observation"><p class="sr-label">Наблюдение из расчёта · выпуск №12</p><h2>Продажи после скидок</h2><p class="sr-number">974 623,32</p><p class="sr-unit">условных денежных единиц · 16–22 сентября</p><p class="sr-comparison">Было 1 805 302,75 за 9–15 сентября.<br>Изменение: −46,01%.</p><p class="sr-note">На границе смены источника сравнение ограничено. Эти числа ещё не объясняют причину изменения.</p><a href="#dashboard">Показатели и определения ↓</a></aside>
 </div>
 <p class="sr-stamp">Сохранённый выпуск от 18 ноября 2026 · модельные данные на 23 сентября 2025, 00:00 UTC · без подключения к Metabase</p>
+</section>
+<section class="dv-section-wrap"><div id="sasha-map-concept">
+
+<div class="top"><div class="brand">davydov / Саша</div><div class="small">Локальный черновик · сохранённый cycle-012</div></div>
+<div class="lead"><h2>Как устроен Саша</h2><p>Синтетическая розничная сеть → данные → показатели → вывод агента → проверка.</p></div>
+<div class="tabs" role="tablist" aria-label="Способ посмотреть систему">
+<button class="tab cursor-interaction" role="tab" id="sm-tab-system" aria-controls="sm-system" aria-selected="true">Система целиком</button>
+<button class="tab cursor-interaction" role="tab" id="sm-tab-tables" aria-controls="sm-tables" aria-selected="false">Таблицы и связи</button>
+<button class="tab cursor-interaction" role="tab" id="sm-tab-trace" aria-controls="sm-trace" aria-selected="false">Путь одной продажи</button>
+</div>
+<section id="sm-system" class="panel" role="tabpanel" aria-labelledby="sm-tab-system">
+<div class="map">
+<button class="node cursor-interaction" data-node="source" aria-pressed="false"><strong>Генератор событий</strong><span>Заказы · позиции · возвраты</span><span>Синтетические данные</span></button>
+<div class="arrow" aria-hidden="true">→</div>
+<div class="warehouse"><h3>DWH · хранилище данных</h3><div class="layers">
+<button class="node cursor-interaction" data-node="raw" aria-pressed="false"><strong>Исходные</strong><span>raw</span><span>Как поступило</span></button>
+<button class="node cursor-interaction" data-node="stg" aria-pressed="false"><strong>Подготовка</strong><span>staging</span><span>Повторы · время</span></button>
+<button class="node cursor-interaction" data-node="marts" aria-pressed="true"><strong>Витрины</strong><span>facts</span><span>Продажи · возвраты</span></button>
+</div><div class="layer-flow">Исходные → подготовка → витрины · DuckDB / dbt</div></div>
+<div class="arrow" aria-hidden="true">→</div>
+<div class="outputs"><button class="node cursor-interaction" data-node="bi" aria-pressed="false"><strong>Дашборд</strong><span>SQLite → Metabase · месячный вид</span></button><button class="node cursor-interaction" data-node="ai" aria-pressed="false"><strong>AI-аналитик ↓</strong><span>Факты + вопрос → первая записка</span></button></div>
+</div>
+<div class="sm-connector"><span>Первая выдача → проверка ответа</span><svg viewBox="0 0 1000 40" aria-hidden="true"><path d="M970 0 V18 H150 V34" fill="none" stroke="currentColor" stroke-width="2"/><path d="M144 28 L150 36 L156 28" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="bottom-flow"><button class="node cursor-interaction" data-node="check" aria-pressed="false"><strong>Проверка ответа</strong><span>Арифметика + отдельное модельное ревью</span></button><div class="arrow" aria-hidden="true">→</div><button class="node cursor-interaction" data-node="memo" aria-pressed="false"><strong>Записка</strong><span>Вывод · основания · ограничения</span></button><div class="arrow" aria-hidden="true">→</div><button class="node cursor-interaction" data-node="human" aria-pressed="false"><strong>Решение человека</strong><span>Принять · уточнить · вернуть</span></button></div>
+
+</section>
+<section id="sm-tables" class="panel" role="tabpanel" aria-labelledby="sm-tab-tables" hidden>
+<div class="er">
+<div class="er-mid"><button type="button" class="entity" data-entity="customers"><h3>Покупатели</h3><code>customers</code><code>customer_id</code><code>registered_at · channel</code></button><button type="button" class="entity" data-entity="store_timezones"><h3>Магазины: время</h3><code>store_timezones</code><code>store_id</code><code>utc_offset_hours</code></button></div>
+<div></div>
+<div class="er-mid"><button type="button" class="entity" data-entity="orders"><h3>Заказы</h3><code>orders</code><code>order_id</code><code>customer_id · store_id</code><code>ordered_at · received_at</code></button><div class="join">↓ order_id · у заказа несколько позиций</div><button type="button" class="entity" data-entity="order_items"><h3>Позиции заказа</h3><code>order_items</code><code>order_id + sku</code><code>qty · unit_price · discount</code><code>received_at</code></button></div>
+<div></div>
+<div class="er-mid"><button type="button" class="entity" data-entity="products"><h3>Товары</h3><code>products → позиции по sku</code><code>sku · category</code><code>cost · list_price</code></button><button type="button" class="entity" data-entity="returns"><h3>Возвраты</h3><code>returns → позиции по order_id + sku</code><code>qty · returned_at</code><code>reason · received_at</code></button></div>
+</div>
+<div class="sm-relations" aria-label="Соединения таблиц"><h3>Какие поля связывают строки</h3><ul><li><code>customers.customer_id → orders.customer_id</code> — профиль покупателя; у заказа customer_id может отсутствовать.</li><li><code>store_timezones.store_id → orders.store_id</code> — смещение местного времени магазина.</li><li><code>orders.order_id → order_items.order_id</code> — заказ и регистрации его позиций.</li><li><code>products.sku → order_items.sku</code> — товар позиции.</li><li><code>returns (order_id, sku) → fct_order_items (order_id, sku)</code> — возврат и обработанная позиция после снятия повторов.</li></ul></div><p class="sm-note">У returns нет return_id; возвраты соединяются с обработанными позициями, не с дублями raw. Ограничения PK/FK в базе не объявлены. Логические связи по схеме выпуска №12. В raw допустимы повторы позиций; уникальность пары появляется после обработки. У гостевого заказа customer_id может отсутствовать.</p>
+</section>
+<section id="sm-trace" class="panel" role="tabpanel" aria-labelledby="sm-tab-trace" hidden>
+<div class="trace"><div class="tracebox"><h3>Пришло дважды</h3><table><tr><th>Регистрация*</th><th>Сумма</th></tr><tr><td>18:58:01</td><td>40,04</td></tr><tr><td>18:59:01</td><td>40,04</td></tr></table><p>Одна и та же позиция</p></div><div class="arrow" aria-hidden="true">→</div><div class="tracebox"><h3>Учтено один раз</h3><div class="number">40,04</div><p>stg_order_items → fct_order_items</p><p>1 × 40,04 − 0</p></div><div class="arrow" aria-hidden="true">→</div><div class="tracebox"><h3>Вошло в итог недели</h3><div class="number">974 623,32</div><p>6 174 уникальные позиции</p><p>16–22 сентября 2025 · UTC</p></div></div>
+<p class="sm-note">* 16 сентября, местное время магазина №20 (UTC−7), доли секунды не показаны. SKU-APP-0275. Суммы в условных денежных единицах.</p>
+<div class="sm-links"><a href="#data" data-open-detail="rows-detail">Открыть обе строки →</a><a href="release-012/current-sales-ledger.csv" download>Скачать все строки недели ↓</a><a href="#memo">Записка и обе проверки →</a></div><div class="outcome">Та же сумма в записке агента → независимая сверка по исходным строкам → отдельное модельное ревью → решение Александра.</div>
+</section>
+<div class="detail" aria-live="polite"><div><h3 id="sm-detail-title">Витрины</h3><p id="sm-detail-text">Подготовленные продажи и возвраты с закреплёнными правилами расчёта.</p><p class="code" id="sm-detail-code">fct_order_items · fct_returns</p></div><div id="sm-detail-body"><table><thead><tr><th>Что хранится</th><th>Одна строка</th></tr></thead><tbody><tr><td>Продажа</td><td>Позиция заказа: order_id + sku</td></tr><tr><td>Возврат</td><td>Событие возврата позиции</td></tr></tbody></table></div></div><p class="sm-note">Две ветки используют одну версию входов. BI: проверенная проекция → SQLite → Metabase. AI: отдельный снимок → недельный расчёт. Проверка доставки BI разрешает запуск AI; график не служит входом модели.</p><div class="status"><span>Данные: синтетические</span><span>Выпуск: сохранённый №12</span><span>Сохранённый срез, не live-мониторинг</span></div>
+
+</div>
 </section>
 <div class="dv-section-wrap sr-walk" id="walk">
 <nav class="sr-nav" aria-label="Путь одного выпуска"><p>Один выпуск, по шагам</p>
@@ -127,4 +170,4 @@ WHERE o.status=&#x27;completed&#x27; AND r.returned_at_utc&gt;=? AND r.returned_
 </footer>
 <script data-goatcounter="https://davydov.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-<!-- footer:end --><script src="/main.js" defer></script><script src="/ai-first/workshop/sasha/legacy-state.js" defer></script><script src="/ai-first/workshop/sasha/release-walk.js" defer></script></body></html>
+<!-- footer:end --><script src="/main.js" defer></script><script src="/ai-first/workshop/sasha/legacy-state.js" defer></script><script src="/ai-first/workshop/sasha/release-walk.js" defer></script><script src="system-map.js" defer></script></body></html>
