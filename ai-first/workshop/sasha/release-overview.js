@@ -1,0 +1,1 @@
+(()=>{const link=document.querySelector('[data-sd-zoom]');const dialog=document.getElementById('sd-image-dialog');if(!link||!dialog)return;link.addEventListener('click',event=>{if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();dialog.showModal();});})();
