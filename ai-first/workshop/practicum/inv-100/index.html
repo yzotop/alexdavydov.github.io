@@ -11,7 +11,7 @@
 <section id="start">
 <p class="kicker">Задание 3 · INV-100</p>
 <h1 tabindex="-1">Решить, какие строки счёта можно принять</h1>
-<p class="lead">Агент разобрал счёт Contoso и предлагает загрузить его в реестр. Вы подготовите TXT бухгалтеру с принятыми позициями, расчётом и вопросом для сверки.</p>
+<p class="lead">Агент предлагает внести три позиции счёта в реестр и подтвердить итог к оплате. Сверьте его вывод с изображением счёта на странице и напишите, что можно передать бухгалтеру.</p>
 <div class="grid"><article class="memo"><p class="kicker">Записка агента → аналитику</p><h2>«Предлагаю внести три позиции»</h2><p>Извлёк со страницы 1 строки счёта INV-100. В таблице — значения из документа, суммы в долларах.</p><div class="scroll" id="proposal"><table><thead><tr><th>Код</th><th>Позиция</th><th>Кол-во</th><th>Цена</th><th>Налог</th><th>Сумма</th></tr></thead><tbody><tr><td>A123</td><td>Consulting Services</td><td>2</td><td>$30.00</td><td>10%</td><td>$60.00</td></tr><tr><td>B456</td><td>Document Fee</td><td>3</td><td>$10.00</td><td>5%</td><td>$30.00</td></tr><tr><td>C789</td><td>Printing Fee</td><td>10</td><td>$1.00</td><td>20%</td><td>$10.00</td></tr></tbody></table></div>
 <p class="quote">В счёте напечатано $100.00 без налога и $10.00 налога. Сложение даёт $110.00. С прежним остатком $500.00 получается $610.00. Предлагаю подтвердить эту сумму к оплате.</p>
 <p class="source">Учебная реконструкция записки. В материалах проверки memberz сохранились исходный счёт и результаты сверки. Дословной выдачи агента в них нет.</p></article>
@@ -26,12 +26,12 @@
 <label for="accept">Что принимаю и почему</label><textarea id="accept" rows="2" required placeholder="Коды позиций, суммы и основание"></textarea>
 <label for="verify">Что требует проверки и почему</label><textarea id="verify" rows="2" required placeholder="Поле и причина либо основание принять итог"></textarea>
 <label for="calc">Строка или поле в оригинале и мой расчёт</label><textarea id="calc" rows="3" required placeholder="Где смотрели, что напечатано и что получилось у вас"></textarea>
-<label for="note">Моя записка бухгалтеру</label><textarea id="note" rows="3" required placeholder="Что можно загрузить? Что делать с итогом?"></textarea>
-<div class="actions"><button class="primary" type="submit">Зафиксировать передачу →</button></div><p class="micro">После фиксации можно скачать свою записку и открыть ключ.</p>
+<label for="note">Моя записка бухгалтеру</label><textarea id="note" rows="3" required placeholder="Какие позиции можно внести в реестр? Что делать с итоговой суммой?"></textarea>
+<div class="actions"><button class="primary" type="submit">Сохранить записку →</button></div><p class="micro">После ответа можно открыть разбор и скачать записку для отправки.</p>
 </form></div></section>
 <section id="done" hidden><p class="kicker">Задание 3 · INV-100 · Ответ зафиксирован</p><h1 tabindex="-1">Передача бухгалтеру</h1><p class="lead">Ваша первая записка и расчёт сохранены вместе. Скачайте их для коллеги или сверьте решение с авторским разбором.</p>
 <div class="grid"><article class="memo"><p class="kicker">Моя записка → бухгалтеру</p><p class="finalnote" id="out-note"></p><div class="summary"><h3>Принимаю в реестр</h3><p class="answer" id="out-accept"></p><h3>Решение по проверке</h3><p class="answer" id="out-verify"></p><h3>Основание в документе и расчёт</h3><p class="answer" id="out-calc"></p><p>По рецепту «<a href="/ai-first/workshop/recipes/accepting-agent-work/#можно-ли-поставить-эту-цифру-в-сводку">Можно ли поставить эту цифру в сводку?</a>» сверьте налог по строкам оригинала с налогом, включённым в итог счёта.</p></div></article>
-<aside class="side"><h2>Материалы передачи</h2><div class="actions"><button class="primary" id="download">Скачать записку (.txt)</button><a href="INV-100.pdf" target="_blank" rel="noopener">Оригинал счёта ↗</a></div><p class="source">К письму бухгалтеру приложите записку и оригинал INV-100.</p><div class="actions" id="key-action"></div><p class="source">Авторский ключ открывается отдельно. Первая записка останется в том виде, в котором вы её зафиксировали.</p><p><a href="/ai-first/workshop/practicum/dispatcher-report/">Задание 4. Принять ли правку отчёта диспетчера? →</a></p></aside></div></section>
+<aside class="side"><h2>Материалы передачи</h2><div class="actions"><button class="primary" id="download">Скачать записку (.txt)</button><a href="INV-100.pdf" target="_blank" rel="noopener">Оригинал счёта ↗</a></div><p class="source">К письму бухгалтеру приложите записку и оригинал INV-100.</p><div class="actions" id="key-action"></div><p class="source">Разбор открывается в новой вкладке. Первая записка останется в том виде, в котором вы её зафиксировали.</p><p><a href="/ai-first/workshop/practicum/dispatcher-report/">Задание 4. Принять ли правку отчёта диспетчера? →</a></p></aside></div></section>
 <footer><span>Практикум DAVYDOV · Работа с документами</span><span id="status" role="status"></span></footer></main>
 <script>
 const ids = ['accept','verify','calc','note'];
@@ -55,7 +55,7 @@ function show(stage, focus=true) {
   if (stage === 'done') {
     ids.forEach(id => document.getElementById('out-'+id).textContent = state.fixed[id]);
     const link = document.createElement('a');
-    link.href='key.html'; link.target='_blank'; link.rel='noopener'; link.className='button'; link.textContent='Открыть авторский ключ ↗';
+    link.href='key.html'; link.target='_blank'; link.rel='noopener'; link.className='button'; link.textContent='Открыть разбор ↗';
     document.getElementById('key-action').replaceChildren(link);
   }
   if (focus) {document.querySelector('#'+stage+' h1').focus({preventScroll:true}); window.scrollTo(0,0);}

@@ -23,13 +23,13 @@ button,select{font:inherit;border:1px solid #a6a69c;background:white;border-radi
 </style></head><body>
 <header><div class="bar"><span class="brand"><b>Δ</b>davydov</span><span class="crumb"><a href="/ai-first/workshop/">Мастерская</a> / <a href="../">Практикум</a></span><span class="num">Задание 5</span></div></header>
 <main><section id="work"><h1>Можно ли записать на счёт правки Лены все 18 платежей?</h1>
-<p class="lead">В пятницу одобрили обработку ведущих нулей в номере заказа. К понедельнику обновились выгрузка платежей и справочник заказов. Руководителю финкоманды нужен вывод для недельного отчёта.</p>
+<p class="lead">Агент считает, что правка сопоставила ещё 18 платежей с заказами. За выходные изменились и данные. Сравните расчёты на одних и тех же 50 платежах и проверьте, к каким заказам привязались строки.</p>
 <div class="grid"><div>
 <article class="memo"><p class="label">Учебная записка агента</p><blockquote>«Без пары было 37 платежей, осталось 19. Правка Лены помогла сопоставить ещё 18 платежей. Теперь бухгалтерии нужно вручную проверить на 18 платежей меньше».</blockquote></article>
 <section class="ledger"><div class="head"><h2>Два прогона на одних входах</h2><span class="count">monday-02 · 50 платежей</span></div>
 <p>Одна понедельничная выгрузка и один справочник. Между прогонами изменили только обработку ведущих нулей.</p>
 <table class="summary"><thead><tr><th>Понедельник</th><th>Получили пару</th><th>Остались без пары</th></tr></thead><tbody id="runs"></tbody></table><p class="hint">Предыдущая неделя, прежние выгрузка и справочник: с выключенной правкой без пары осталось 37 из 50 платежей.</p>
-<section class="rowbox"><h3>Проверка платёжных пар</h3><p>Сверьте изменившиеся пары с контрольными заказами. Приложите одну строку, которая обосновывает ваш вывод.</p>
+<section class="rowbox"><h3>Проверка платёжных пар</h3><p>Сверьте изменившиеся пары с контрольными заказами. В поле «Платёж» выберите одну строку, которая подтверждает ваш вывод, и добавьте её к ответу.</p>
 <div class="controls"><label>Строки <select id="scope"><option value="changed">Где пара изменилась</option><option value="all">Все платежи</option></select></label>
 <label>Платёж <select id="payment"></select></label></div>
 <div class="fields" aria-live="polite"><div><small>Номер в назначении</small><strong id="ref"></strong></div><div><small>Правка выключена</small><strong id="before"></strong></div><div><small>Правка включена</small><strong id="after"></strong></div><div><small>Контрольный заказ</small><strong id="expected"></strong></div></div>
@@ -42,7 +42,7 @@ button,select{font:inherit;border:1px solid #a6a69c;background:white;border-radi
 <label for="numbers" class="block">На каких числах он основан?</label><textarea id="numbers" required rows="3" placeholder="Укажите, какие прогоны и какие результаты вы сравнили."></textarea>
 <div id="evidence" class="attached" role="status">Приложите проверенную строку платежа.</div>
 <label for="next" class="block">Кто и что должен проверить дальше?</label><textarea id="next" required rows="2" placeholder="Предложите следующий шаг."></textarea>
-<div class="buttons"><button class="primary" type="submit">Зафиксировать записку →</button></div><p class="hint">После фиксации можно скачать TXT и открыть авторскую сверку.</p></form></div></section>
+<div class="buttons"><button class="primary" type="submit">Зафиксировать записку →</button></div><p class="hint">После ответа можно открыть разбор и скачать записку для отправки.</p></form></div></section>
 
 <section id="done" hidden><h1 tabindex="-1">Записка руководителю финкоманды</h1><p class="lead">Ваш первый ответ сохранён вместе с проверенной строкой платежа.</p>
 <div class="review-flow"><article class="packet"><p class="label">Первое решение</p><h2>Что войдёт в недельный отчёт</h2><h3>Вывод</h3><p class="out" id="outConclusion"></p><h3>Числовое основание</h3><p class="out" id="outNumbers"></p><h3>Проверенная строка</h3><p class="out" id="outRow"></p><h3>Следующий шаг</h3><p class="out" id="outNext"></p><button id="download" class="primary">Скачать записку (.txt)</button></article>
