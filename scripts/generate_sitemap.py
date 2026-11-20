@@ -21,6 +21,7 @@ EXTRA_PATHS = (
     "/cases/macbook-market/",
     "/materials/",
     "/ai-analyst/",
+    "/ai-first/workshop/recipes/",
     "/talks/",
     "/teaching/",
 )

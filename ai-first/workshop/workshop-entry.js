@@ -15,7 +15,8 @@
     sasha: workshop + 'sasha/',
     'sasha-plan': workshop + 'sasha/',
     'sasha-plan-result': workshop + 'sasha/',
-    recipes: workshop + '#recipes-heading',
+    recipes: workshop + 'recipes/',
+    'recipes-heading': workshop + 'recipes/',
     reading: '/shared-memory/'
   };
 
