@@ -8,7 +8,7 @@
 <main><section id="exercise"><h1>Какую версию сводки недостач оставить рабочей?</h1>
 <p class="lead">На утреннем разборе руководитель спрашивает директора магазина о каждой назначенной ему недостаче. Строки без назначения уходят аналитику на сверку. Какую версию отчёта вы дадите руководителю?</p>
 <div class="grid"><article class="doc"><div class="head"><h2>Один снимок, две версии</h2><small>12 ноября 2026 · 09:00 МСК</small></div>
-<p class="context">Текущая версия ищет магазин по полному названию. Новая распознаёт и неполные названия. Обе получили одни и те же три строки.</p>
+<p class="context">Текущая версия ищет магазин по полному названию. Новая распознаёт и неполные названия. Обе получили одни и те же три строки. Выберите акт, сверьте назначенный магазин со справочником и добавьте проверенную строку к ответу.</p>
 <div class="scroll"><table aria-label="Сравнение версий на одной выгрузке"><thead><tr><th>Акт</th><th>Название в акте</th><th class="amount">Недостача, ₽</th><th>Текущая</th><th>Новая</th></tr></thead><tbody id="comparison"></tbody></table></div>
 <p class="sub" id="counts"></p>
 <section class="check"><h3>Проверьте назначение по источникам</h3><div class="picker" id="picker" aria-label="Акт для проверки"></div>
@@ -21,7 +21,7 @@
 <div id="attached" class="attached" aria-live="polite"></div>
 <label class="block" for="next">Кому и что проверить сейчас?</label><textarea id="next" rows="2" required placeholder="Назовите получателя и источник проверки."></textarea>
 <label class="block" for="condition">При каком результате пересмотрите выбор?</label><textarea id="condition" rows="2" required placeholder="Опишите, что должно произойти при повторном прогоне."></textarea>
-<button class="primary" type="submit">Зафиксировать выбор →</button><p class="hint">После фиксации будут доступны TXT и авторская сверка.</p></form></div></section>
+<button class="primary" type="submit">Зафиксировать выбор →</button><p class="hint">После ответа можно открыть разбор и скачать записку для отправки.</p></form></div></section>
 
 <section id="result" hidden><h1 tabindex="-1">Решение владельцу отчёта</h1><p class="lead">Первый выбор сохранён вместе со строками и условием пересмотра.</p><div class="grid"><article class="packet"><p class="micro">Первое решение</p><h2 id="outVersion"></h2><h3>Основание и последствие</h3><p class="out" id="outReason"></p><h3>Приложенные строки</h3><p class="out" id="outRows"></p><h3>Кому и что проверить</h3><p class="out" id="outNext"></p><h3>Условие пересмотра</h3><p class="out" id="outCondition"></p><button class="primary" id="download" type="button">Скачать записку (.txt)</button></article>
 <aside class="panel"><h2>Сверка выбора</h2><button id="toggle" type="button" aria-controls="key" aria-expanded="false">Открыть авторскую сверку</button>
