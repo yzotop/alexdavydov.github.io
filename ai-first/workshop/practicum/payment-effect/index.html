@@ -29,24 +29,25 @@ button,select{font:inherit;border:1px solid #a6a69c;background:white;border-radi
 <section class="ledger"><div class="head"><h2>Два прогона на одних входах</h2><span class="count">monday-02 · 50 платежей</span></div>
 <p>Одна понедельничная выгрузка и один справочник. Между прогонами изменили только обработку ведущих нулей.</p>
 <table class="summary"><thead><tr><th>Понедельник</th><th>Получили пару</th><th>Остались без пары</th></tr></thead><tbody id="runs"></tbody></table><p class="hint">Предыдущая неделя, прежние выгрузка и справочник: с выключенной правкой без пары осталось 37 из 50 платежей.</p>
-<section class="rowbox"><h3>Проверка платёжных пар</h3><p>Сверьте изменившиеся пары с контрольными заказами. В поле «Платёж» выберите одну строку, которая подтверждает ваш вывод, и добавьте её к ответу.</p>
+<section class="rowbox"><h3>Проверка платёжных пар</h3><p>Сверьте изменившиеся пары с контрольными заказами. Посмотрите несколько платежей, затем укажите строку для записки в форме справа.</p>
 <div class="controls"><label>Строки <select id="scope"><option value="changed">Где пара изменилась</option><option value="all">Все платежи</option></select></label>
 <label>Платёж <select id="payment"></select></label></div>
 <div class="fields" aria-live="polite"><div><small>Номер в назначении</small><strong id="ref"></strong></div><div><small>Правка выключена</small><strong id="before"></strong></div><div><small>Правка включена</small><strong id="after"></strong></div><div><small>Контрольный заказ</small><strong id="expected"></strong></div></div>
-<div class="buttons"><button id="attach" type="button">Приложить эту строку</button></div>
+
 <details><summary>Посмотреть все 50 строк рядом с контролем</summary><div class="long" tabindex="0"><table><thead><tr><th>Платёж</th><th>Номер</th><th>Без правки</th><th>С правкой</th><th>Контроль</th></tr></thead><tbody id="allrows"></tbody></table></div></details>
 <details><summary>Исходные файлы и подтверждение запуска</summary><p id="provenance"></p><div id="files" class="files"></div></details>
 </section></section></div>
 <form id="form" class="panel"><p class="label">Руководителю финансовой команды</p><h2>Что вы оставите в отчёте?</h2>
 <label for="conclusion" class="block">Какой вывод вы готовы подписать?</label><textarea id="conclusion" required rows="2" placeholder="Сформулируйте вывод о вкладе правки."></textarea>
 <label for="numbers" class="block">На каких числах он основан?</label><textarea id="numbers" required rows="3" placeholder="Укажите, какие прогоны и какие результаты вы сравнили."></textarea>
-<div id="evidence" class="attached" role="status">Приложите проверенную строку платежа.</div>
+<label for="evidencePayment" class="block">Какой платёж подтверждает вывод?</label><select id="evidencePayment" required aria-describedby="evidence"><option value="">Выберите платёж для записки</option></select>
+<div id="evidence" class="attached" role="status">Строка с выбранным платежом войдёт в записку.</div>
 <label for="next" class="block">Кто и что должен проверить дальше?</label><textarea id="next" required rows="2" placeholder="Предложите следующий шаг."></textarea>
-<div class="buttons"><button class="primary" type="submit">Зафиксировать записку →</button></div><p class="hint">После ответа можно открыть разбор и скачать записку для отправки.</p></form></div></section>
+<div class="buttons"><button class="primary" type="submit">Сохранить ответ и открыть разбор</button></div><p class="hint">После сохранения откроется разбор. Записку можно скачать в конце.</p></form></div></section>
 
 <section id="done" hidden><h1 tabindex="-1">Записка руководителю финкоманды</h1><p class="lead">Ваш первый ответ сохранён вместе с проверенной строкой платежа.</p>
-<div class="review-flow"><article class="packet"><p class="label">Первое решение</p><h2>Что войдёт в недельный отчёт</h2><h3>Вывод</h3><p class="out" id="outConclusion"></p><h3>Числовое основание</h3><p class="out" id="outNumbers"></p><h3>Проверенная строка</h3><p class="out" id="outRow"></p><h3>Следующий шаг</h3><p class="out" id="outNext"></p><button id="download" class="primary">Скачать записку (.txt)</button></article>
-<section class="panel review-panel" aria-labelledby="review-heading"><div class="head"><h2 id="review-heading">Авторская сверка</h2><button type="button" id="toggle" aria-expanded="false" aria-controls="key">Открыть сверку</button></div>
+<div class="review-flow"><article class="packet"><p class="label">Первое решение</p><h2>Что войдёт в недельный отчёт</h2><h3>Вывод</h3><p class="out" id="outConclusion"></p><h3>Числовое основание</h3><p class="out" id="outNumbers"></p><h3>Проверенная строка</h3><p class="out" id="outRow"></p><h3>Следующий шаг</h3><p class="out" id="outNext"></p></article>
+<section class="panel review-panel" aria-labelledby="review-heading"><div class="head"><h2 id="review-heading">Авторская сверка</h2><button type="button" id="toggle" aria-expanded="false" aria-controls="key">Открыть разбор</button></div>
 <div id="key" hidden><h3>За неделю и на одних входах</h3><p>Из 18 платежей, на которые сократился список без пары, 10 объясняются сменой входов: на прежних без правки было 37, на понедельничных без правки осталось 27. На тех же понедельничных данных включение правки сократило список ещё на 8, с 27 до 19.</p>
 <div class="scroll"><table><thead><tr><th>Прогон</th><th>Верный заказ</th><th>Чужой</th><th>Без пары</th></tr></thead><tbody id="audit"></tbody></table></div>
 <h3>Семь верных новых пар и одна ошибочная</h3><p>Платежи W2-024…W2-030 получили ожидаемые заказы. У W2-031 в назначении стоит 000123. После удаления ведущих нулей алгоритм выбрал ORD-123, а контрольный заказ — ORD-00123. Бухгалтеру нужно вернуть этот платёж на сверку.</p>
@@ -63,7 +64,7 @@ button,select{font:inherit;border:1px solid #a6a69c;background:white;border-radi
 <h3>Сколько ручной работы снято?</h3><p>Для этого нужен журнал проверок бухгалтерии. Выгрузки показывают результат сопоставления. Число фактически снятых проверок и сэкономленное время по ним неизвестны.</p>
 <p><a id="recipe" target="_blank" rel="noopener" href="/ai-first/workshop/recipes/accepting-agent-work/#сколько-улучшений-дала-именно-эта-правка">Рецепт «Сколько улучшений дала именно эта правка?» ↗</a></p>
 
-<label class="block" for="revision">Что добавите после сверки?</label><textarea rows="2" id="revision" placeholder="По желанию. Дополнение будет отдельно от первого ответа."></textarea><div class="buttons"><button id="downloadRevision" class="primary" type="button">Скачать записку с дополнением (.txt)</button></div></div></section></div><details id="impact" hidden><summary>Открыть карточку вклада правки</summary><section id="change-impact-card" class="rp-decision"><h3>Карточка вклада правки</h3><p>Карточка для руководителя. Скопируйте среднюю колонку и заполните её по своему отчёту. Справа — пример на учебных платежах Лены.</p>
+<label class="block" for="revision">Что добавите после сверки?</label><textarea rows="2" id="revision" placeholder="По желанию. Дополнение будет отдельно от первого ответа."></textarea></div><div class="buttons"><button id="download" class="primary" type="button">Скачать записку (.txt)</button></div></section></div><details id="impact" hidden><summary>Открыть карточку вклада правки</summary><section id="change-impact-card" class="rp-decision"><h3>Карточка вклада правки</h3><p>Карточка для руководителя. Скопируйте среднюю колонку и заполните её по своему отчёту. Справа — пример на учебных платежах Лены.</p>
 <div class="impact-scroll" role="region" aria-label="Карточка для своего отчёта и пример Лены" tabindex="0"><table><thead><tr><th scope="col">Вопрос</th><th scope="col">Мой отчёт</th><th scope="col">Как я заполнил бы карточку по платежам</th></tr></thead>
 <tbody>
 <tr><th scope="row">Что изменилось за неделю?</th><td>Считали …. Было …, стало …. За это время поменялись ….</td><td>Платежей без пары было 37, стало 19. Обновились выгрузка, справочник заказов и алгоритм. <a href="/ai-first/workshop/data/lena-payments/run.json">Итоги запусков</a></td></tr>
@@ -117,28 +118,43 @@ function rowText(id){
  const r=rowsById.get(id);
  return r.payment+' · назначение '+r.reference+' · без правки: '+order(r.before)+' · с правкой: '+order(r.after)+' · контрольный заказ: '+control[id]+'.';
 }
-function showEvidence(){el('evidence').textContent=state.attached?'Приложена строка '+rowText(state.attached):'Приложите проверенную строку платежа.';}
+function showEvidence(){
+ const chosen=el('evidencePayment').value;
+ el('evidence').textContent=chosen?rowText(chosen):'Строка с выбранным платежом войдёт в записку.';
+}
 function showResult(){
  const f=state.first;
  el('work').hidden=true;el('done').hidden=false;
  for(const [id,value] of Object.entries({outConclusion:f.conclusion,outNumbers:f.numbers,outRow:f.row,outNext:f.next}))el(id).textContent=value;
- el('impact').hidden=!state.open;el('key').hidden=!state.open;el('toggle').textContent=state.open?'Свернуть сверку':'Открыть сверку';el('toggle').setAttribute('aria-expanded',String(state.open));
+ el('impact').hidden=!state.open;el('key').hidden=!state.open;el('toggle').textContent=state.open?'Свернуть разбор':'Открыть разбор';el('toggle').setAttribute('aria-expanded',String(state.open));
 }
 el('scope').onchange=e=>{state.scope=e.target.value;drawOptions();save();};
 el('payment').onchange=e=>{state.payment=e.target.value;drawRow();save();};
-el('attach').onclick=()=>{state.attached=state.payment;showEvidence();save();};
+for(const row of pairs)el('evidencePayment').add(new Option(row.payment,row.payment));
+el('evidencePayment').value=rowsById.has(state.attached)?state.attached:'';
+el('evidencePayment').onchange=e=>{
+ state.attached=e.target.value;
+ const row=rowsById.get(state.attached);
+ if(row){
+  state.payment=row.payment;
+  if(row.before===row.after)state.scope='all';
+  drawOptions();
+ }
+ showEvidence();
+ save();
+};
 for(const id of ['conclusion','numbers','next','revision']){
  el(id).value=state[id];el(id).oninput=()=>{state[id]=el(id).value;el(id).setCustomValidity('');save();};
 }
 el('form').onsubmit=e=>{
  e.preventDefault();if(state.first)return;
  for(const id of ['conclusion','numbers','next'])if(!state[id].trim()){el(id).setCustomValidity('Заполните поле.');el(id).reportValidity();return;}
- if(!state.attached){el('evidence').textContent='Сначала выберите платёж и нажмите «Приложить эту строку».';el('attach').focus();return;}
+ state.open=true;
  state.first={conclusion:state.conclusion.trim(),numbers:state.numbers.trim(),next:state.next.trim(),row:rowText(state.attached)};
  save();showResult();el('done').querySelector('h1').focus();window.scrollTo(0,0);
 };
 el('toggle').onclick=()=>{state.open=!state.open;save();showResult();};
-el('download').onclick=el('downloadRevision').onclick=()=>{
+el('download').onclick=()=>{
  const f=state.first;
  const sections=['Недельный отчёт · Руководителю финансовой команды','Учебные данные · Понедельничная сборка '+run.build,'Первый вывод\n'+f.conclusion,'Числовое основание\n'+f.numbers,'Проверенная строка · pairs.json и expected-orders.json\n'+f.row,'Следующий шаг\n'+f.next];
  if(state.revision.trim())sections.push('Дополнение после авторской сверки\n'+state.revision.trim());

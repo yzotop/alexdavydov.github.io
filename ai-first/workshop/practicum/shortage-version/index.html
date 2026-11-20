@@ -8,20 +8,21 @@
 <main><section id="exercise"><h1>Какую версию сводки недостач оставить рабочей?</h1>
 <p class="lead">На утреннем разборе руководитель спрашивает директора магазина о каждой назначенной ему недостаче. Строки без назначения уходят аналитику на сверку. Какую версию отчёта вы дадите руководителю?</p>
 <div class="grid"><article class="doc"><div class="head"><h2>Один снимок, две версии</h2><small>12 ноября 2026 · 09:00 МСК</small></div>
-<p class="context">Текущая версия ищет магазин по полному названию. Новая распознаёт и неполные названия. Обе получили одни и те же три строки. Выберите акт, сверьте назначенный магазин со справочником и добавьте проверенную строку к ответу.</p>
+<p class="context">Текущая версия ищет магазин по полному названию. Новая распознаёт и неполные названия. Обе получили одни и те же три строки. Выберите акт для просмотра и сверьте назначенный магазин со справочником. Укажите, по каким актам вы приняли решение, в форме ответа.</p>
 <div class="scroll"><table aria-label="Сравнение версий на одной выгрузке"><thead><tr><th>Акт</th><th>Название в акте</th><th class="amount">Недостача, ₽</th><th>Текущая</th><th>Новая</th></tr></thead><tbody id="comparison"></tbody></table></div>
 <p class="sub" id="counts"></p>
 <section class="check"><h3>Проверьте назначение по источникам</h3><div class="picker" id="picker" aria-label="Акт для проверки"></div>
 <div class="proof" aria-live="polite"><h3 id="act"></h3><p id="raw"></p><p id="reference"></p></div>
-<div class="actionrow"><button type="button" id="attach">Приложить строку к решению</button></div>
+
 <details><summary>Открыть справочник магазинов и исходные файлы</summary><p class="sub">Полный справочник для этого снимка. У каждой площадки свой постоянный код. В сводной выгрузке код заполнен не во всех актах.</p><div class="scroll"><table><thead><tr><th>Магазин</th><th>Название</th><th>Площадка</th><th>Адрес</th></tr></thead><tbody id="directory"></tbody></table></div><div id="files" class="files"></div></details></section></article>
 
 <form class="panel" id="form"><p class="micro">Владельцу отчёта</p><h2>Решение перед планёркой</h2><fieldset><legend>Какая версия останется рабочей?</legend><div class="choices"><label><input type="radio" name="version" value="Текущая" required>Текущая</label><label><input type="radio" name="version" value="Новая">Новая</label></div></fieldset>
 <label class="block" for="reason">Почему? Что изменится для руководителя?</label><textarea id="reason" rows="2" required placeholder="Свяжите вывод по строке с разговором с директором."></textarea>
-<div id="attached" class="attached" aria-live="polite"></div>
+<fieldset><legend>Какие акты подтверждают ваш выбор?</legend><p class="hint" id="evidenceHelp">Отметьте хотя бы один акт. Его строка войдёт в записку.</p>
+<div id="evidenceActs" class="choices" aria-describedby="evidenceHelp"></div><p id="evidenceError" class="attached" role="status" hidden></p></fieldset>
 <label class="block" for="next">Кому и что проверить сейчас?</label><textarea id="next" rows="2" required placeholder="Назовите получателя и источник проверки."></textarea>
 <label class="block" for="condition">При каком результате пересмотрите выбор?</label><textarea id="condition" rows="2" required placeholder="Опишите, что должно произойти при повторном прогоне."></textarea>
-<button class="primary" type="submit">Зафиксировать выбор →</button><p class="hint">После ответа можно открыть разбор и скачать записку для отправки.</p></form></div></section>
+<button class="primary" type="submit">Сохранить ответ и открыть разбор</button><p class="hint">После сохранения откроется разбор. Записку можно скачать в конце.</p></form></div></section>
 
 <section id="result" hidden><h1 tabindex="-1">Решение владельцу отчёта</h1><p class="lead">Первый выбор сохранён вместе со строками и условием пересмотра.</p><div class="grid"><article class="packet"><p class="micro">Первое решение</p><h2 id="outVersion"></h2><h3>Основание и последствие</h3><p class="out" id="outReason"></p><h3>Приложенные строки</h3><p class="out" id="outRows"></p><h3>Кому и что проверить</h3><p class="out" id="outNext"></p><h3>Условие пересмотра</h3><p class="out" id="outCondition"></p><button class="primary" id="download" type="button">Скачать записку (.txt)</button></article>
 <aside class="panel"><h2>Сверка выбора</h2><button id="toggle" type="button" aria-controls="key" aria-expanded="false">Открыть авторскую сверку</button>
@@ -70,7 +71,7 @@
 </tbody>
 </table>
 <p><a href="/ai-first/workshop/recipes/accepting-agent-work/#version-choice-card">Карточка в рецепте</a></p>
-</details><p class="actionrow"><a href="../rule-use/">Задание 7. Три сессии. Новое правило уже работает? →</a></p></section>
+</details><p class="actionrow"><a href="../rule-use/">Задание 7. Агент уже работает по новому правилу? →</a></p></section>
 <footer>Учебная розничная сеть · Синтетические акты и справочник <span id="status" role="status"></span></footer></main>
 <script type="application/json" id="source">{"snapshot.json": {"synthetic": true, "as_of": "2026-11-12T09:00:00+03:00", "rows": [{"act": "А-101", "name": "Озёрный", "site": "П-09", "shortage_rub": 3200}, {"act": "А-102", "name": "Сев. парк", "site": "П-14", "shortage_rub": 7600}, {"act": "А-103", "name": "Центральный", "site": null, "shortage_rub": 18400}]}, "stores.json": [{"id": "М-09", "name": "Озёрный", "site": "П-09", "address": "Озёрная ул., 5"}, {"id": "М-14", "name": "Северный парк", "site": "П-14", "address": "Парковая ул., 8"}, {"id": "М-21", "name": "Центральный", "site": "П-21", "address": "Торговая ул., 2"}, {"id": "М-37", "name": "Центральный", "site": "П-37", "address": "Площадная ул., 11"}], "runs.json": {"А-101": {"current": "М-09", "candidate": "М-09"}, "А-102": {"current": null, "candidate": "М-14"}, "А-103": {"current": null, "candidate": "М-21"}}}</script><script>
 'use strict';
@@ -109,18 +110,20 @@ function capture(id){
 function renderAct(){
  for(const btn of el('picker').children)btn.setAttribute('aria-pressed',String(btn.dataset.id===state.act));
  const {raw,ref}=sourceLines(state.act);el('act').textContent='Акт '+state.act;el('raw').textContent=raw;el('reference').textContent=ref;
- el('attach').disabled=state.attached.includes(state.act);el('attach').textContent=el('attach').disabled?'Строка приложена':'Приложить строку к решению';
 }
-function renderAttached(){
- const box=el('attached');box.replaceChildren();
- if(!state.attached.length){box.textContent='Приложите хотя бы одну строку из снимка.';return;}
- for(const id of state.attached){
-  const row=document.createElement('div');row.textContent='Приложен акт '+id+' ';
-  const btn=document.createElement('button');btn.type='button';btn.textContent='Убрать';btn.setAttribute('aria-label','Убрать '+id);
-  btn.onclick=()=>{state.attached=state.attached.filter(x=>x!==id);renderAttached();renderAct();save();};row.append(btn);box.append(row);
- }
+for(const act of acts){
+ const label=document.createElement('label'),input=document.createElement('input');
+ input.type='checkbox';input.value=act.act;
+ input.checked=state.attached.includes(act.act);
+ input.onchange=()=>{
+  state.attached=Array.from(el('evidenceActs').querySelectorAll(':checked'), choice=>choice.value);
+  el('evidenceError').hidden=true;
+  if(input.checked){state.act=input.value;renderAct();}
+  save();
+ };
+ label.append(input, ' '+act.act);
+ el('evidenceActs').append(label);
 }
-el('attach').onclick=()=>{if(!state.attached.includes(state.act))state.attached.push(state.act);renderAttached();renderAct();save();};
 for(const input of document.getElementsByName('version')){
  input.checked=input.value===state.version;input.onchange=()=>{state.version=input.value;save();};
 }
@@ -135,7 +138,13 @@ function renderResult(){
 el('form').onsubmit=e=>{
  e.preventDefault();if(state.first||!state.version)return;
  for(const id of ['reason','next','condition'])if(!state[id].trim()){el(id).setCustomValidity('Введите текст.');el(id).reportValidity();return;}
- if(!state.attached.length){el('attached').textContent='Выберите акт и нажмите «Приложить строку к решению».';el('attach').focus();return;}
+ if(!state.attached.length){
+  el('evidenceError').textContent='Отметьте акт, по которому можно проверить ваш вывод.';
+  el('evidenceError').hidden=false;
+  el('evidenceActs').querySelector('input').focus();
+  return;
+ }
+ state.open=true;
  state.first={version:state.version,reason:state.reason.trim(),next:state.next.trim(),condition:state.condition.trim(),rows:state.attached.map(capture)};
  save();renderResult();el('result').querySelector('h1').focus();window.scrollTo(0,0);
 };
@@ -147,5 +156,5 @@ el('download').onclick=()=>{
  const url=URL.createObjectURL(new Blob([parts.join('\n\n')+'\n'],{type:'text/plain;charset=utf-8'}));
  const a=document.createElement('a');a.href=url;a.download='Сводка недостач — выбор версии.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
 };
-renderAct();renderAttached();if(state.first)renderResult();
+renderAct();if(state.first)renderResult();
 </script><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
