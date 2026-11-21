@@ -1,0 +1,26 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Заказ 4 апреля 2011 · Мастерская Давыдова</title><link rel="stylesheet" href="../davydov.css"><link rel="stylesheet" href="style.css"><script defer src="order.js"></script><script defer src="examples.js"></script><script defer src="app.js"></script></head>
+<body><nav class="dv-nav" aria-label="Основное меню"><a href="https://davydov.my/" class="logo"><span class="logo-mark">Δ</span><span class="logo-wordmark">davydov</span></a><a href="https://davydov.my/ai-first/workshop/">AI-мастерская</a></nav>
+<main>
+<div class="intro"><div><p class="date">4 апреля 2011 · рубли по курсу на дату заказа</p><h1>Заказ поставщику</h1></div><p>Измените бюджет закупки и проверьте, какие товары поместятся в заказ.</p></div>
+<div class="spread">
+<section class="budget"><h2>Бюджет закупки</h2>
+<div class="money-field"><input id="money" type="text" inputmode="decimal" value="414 560,93" aria-label="Бюджет в рублях" aria-describedby="inputError"><span>₽</span></div>
+<p id="inputError" role="status" hidden></p>
+<label class="sr" for="slider">Изменить бюджет в рублях</label><input id="slider" type="range" min="0" max="600000" step="0.01" value="414560.93">
+<div class="axis"><span>0 ₽</span><span id="axisMax">600 000 ₽</span></div>
+<div class="presets"><button data-kopecks="30000000">300 000 ₽</button><button data-kopecks="41456093">Исходный</button><button data-kopecks="44663778">Вся заявка</button></div>
+<div class="receipt"><div><span>Лимит на всю заявку</span><strong id="needed"></strong></div><div class="total"><span>Сумма заказа</span><strong id="spend"></strong></div><div><span>Остаток бюджета</span><strong id="left"></strong></div></div>
+<div class="quant"><div><strong id="units"></strong><span>штук заказать</span></div><div><strong id="removed"></strong><span>штук сократили</span></div></div>
+</section>
+<section class="pair"><h2>Две сумки в одном заказе</h2><p class="sub">Заявка до ограничения и количество к закупке</p>
+<div id="bags"></div>
+<div class="legend"><span><i></i>В заказе</span><span><i class="stripe"></i>Сокращено</span></div>
+<div class="analysis"><div class="ai-head"><h3>Почему столько?</h3><button id="ask">Показать пояснение</button></div><div id="reason" aria-live="polite"></div><div id="ai" aria-live="polite"></div></div>
+</section></div>
+<section class="price-note"><h2>Что стоит за ценой</h2><p>Красная и розовая — большие хозяйственные сумки. В британских счетах цена такой сумки соответствует 88,89 ₽. Набор из 72 бумажных формочек — 25,07 ₽ за упаковку, подвесной подсвечник — 134,48 ₽ за штуку.</p><p>В симуляции закупка стоит 60% от цены продажи. Для этих трёх товаров это 53,33 ₽, 15,04 ₽ и 80,69 ₽ соответственно. Все суммы в рублях 2011 года по курсу 45,5852 ₽ за фунт. Для сегодняшнего российского заказа понадобятся цены поставщика. <a href="https://www.cbr.ru/scripts/XML_daily.asp?date_req=04/04/2011">Архив Банка России</a></p></section>
+<section class="lines" id="lines"><div class="linehead"><div><h2>Позиции заказа</h2><p class="sub" id="linecount"></p></div><label class="toggle"><input type="checkbox" id="onlycut"> Только сокращённые</label></div>
+<div class="scroll" tabindex="0" aria-label="Прокручиваемая таблица заказа"><table><thead><tr><th>Товар / артикул</th><th>Цена закупки, ₽</th><th>Заявка, шт.</th><th>К заказу, шт.</th><th>Сокращено, шт.</th><th>Сумма, ₽</th></tr></thead><tbody id="table"></tbody></table></div>
+<p id="empty" hidden>Все позиции помещаются в бюджет.</p>
+</section>
+<details><summary>Как устроен расчёт</summary><p>На утро 4 апреля зафиксированы продажи, складской остаток после прихода и товар в пути. Меняется только лимит этого заказа. Правило B берёт четыре последних таких же дня недели, прогнозирует 14 дней и добавляет 20% буфера. По красной сумке целевой запас 2 751 минус 1 507 на складе даёт заявку 1 244. По розовой 1 433 минус 926 даёт 507. Открытых прежних заказов для обеих после утреннего прихода нет.</p><p>Если бюджет меньше полной заявки, все количества умножаются на одну долю и округляются вниз. Затем по одной доступной единице добавляется в порядке убывания дробного остатка, при равенстве — по артикулу. Закупка обеих сумок в симуляции стоит 53,33 ₽ за штуку. Суммы строк и заказа переводятся по точному курсу до округления. Для покрытия всей заявки лимит округляется вверх до копейки.</p><p>На обучении обе сумки встречались вместе в 560 из 9 787 счетов выбранного ассортимента. Совместные покупки — повод обсудить наличие обеих расцветок. В этом заказе к ним применяется общее правило.</p><p>Источник покупок — Daqing Chen, <a href="https://doi.org/10.24432/C5CG6D">UCI Online Retail II</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Остатки, закупочные цены и сроки поставки заданы в симуляции. <a href="../evidence/e1.txt">Результаты эксперимента</a> · <a href="../evidence/april-order.csv">Исходный заказ CSV</a>.</p></details>
+</main><footer><span>Исторический разбор · Мастерская Давыдова</span><span><a href="/ai-first/workshop/inventory/april/">Демо null с российскими ценами</a></span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>

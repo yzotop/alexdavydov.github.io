@@ -69,8 +69,8 @@ class PublicationChecks(unittest.TestCase):
 
     def test_handwritten_workshop_entry_is_detected_without_writing(self):
         page = self.root / "materials/index.html"
-        self.assertIn("Открыть мастерскую →", page.read_text())
-        page.write_text(page.read_text().replace("Открыть мастерскую →", "Непроверенная копия", 1))
+        self.assertIn("Открыть AI-мастерскую →", page.read_text())
+        page.write_text(page.read_text().replace("Открыть AI-мастерскую →", "Непроверенная копия", 1))
         changed = page.read_bytes()
         self.assertNotEqual(self.run_script("render_materials.py", "--check").returncode, 0)
         self.assertEqual(page.read_bytes(), changed)
