@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Избранное и кейсы — из материалов; текущая практика — из JSON.
+"""Избранное и кейсы — из материалов; проекты — из JSON.
 
 Постоянное представление правится в HTML. --check не пишет файлы.
 """
@@ -9,7 +9,6 @@ import argparse
 import html
 import json
 import sys
-from urllib.parse import urlsplit
 
 from site_materials import ROOT, cases, materials, replace_block, validate_url
 
@@ -56,30 +55,20 @@ def curiosity_block() -> str:
     return "\n".join(rows)
 
 
-def practice_block() -> str:
+def projects_block() -> str:
+    validate_url("/ai-first/workshop/")
     data = json.loads((ROOT / "assets/home-practice.json").read_text())
-    e = html.escape
-    updates = []
-    for update in data["updates"]:
-        url = update["url"]
-        if url.startswith("/"):
-            validate_url(url)
-        elif urlsplit(url).scheme != "https" or not urlsplit(url).netloc:
-            raise ValueError(f"Недопустимая ссылка обновления: {url}")
-        updates.append('        <article class="dv-update">\n'
-                       f'          <div class="dv-update-meta">{e(update["label"])}</div>\n'
-                       f'          <h3><a href="{e(url, quote=True)}">{e(update["title"])}</a></h3>\n'
-                       f'          <p>{e(update["text"])}</p>\n'
-                       '        </article>')
-    return ('      <div class="dv-section-heading"><h2 id="practice-title">Сейчас в практике'
-            '</h2>'
-            f'<span class="dv-date">{e(data["updated"])}</span></div>\n'
-            '      <div class="dv-practice-grid">\n'
-            '        <div class="dv-focus">\n'
-            f'          <h3>{e(data["title"])}</h3><p>{e(data["text"])}</p>\n'
-            f'          <p class="dv-muted">{e(data["stage"])}</p>\n'
-            '        </div>\n'
-            '        <div class="dv-updates">\n' + "\n".join(updates) + '\n        </div>\n      </div>')
+    cards = []
+    for project in data["projects"]:
+        url = project["url"]
+        validate_url(url)
+        cards.append('        <a class="dv-work-card" href="'+html.escape(url, quote=True)+'">\n'
+                     f'          <h3>{html.escape(project["title"])}</h3>\n'
+                     f'          <p>{html.escape(project["text"])}</p>\n'
+                     '          <span class="dv-read">Открыть проект <span aria-hidden="true">↗</span></span>\n'
+                     '        </a>')
+    return ('      <div class="dv-section-heading"><h2 id="practice-title">Проекты</h2></div>\n'
+            '      <div class="dv-work-grid">\n' + "\n".join(cards) + '\n      </div>')
 
 
 def main() -> int:
@@ -87,7 +76,7 @@ def main() -> int:
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     try:
-        blocks = {"practice": practice_block(), "selected": selected_block(), "curiosity": curiosity_block()}
+        blocks = {"practice": projects_block(), "selected": selected_block(), "curiosity": curiosity_block()}
         path = ROOT / "index.html"
         old = path.read_text()
         new = old
@@ -101,7 +90,7 @@ def main() -> int:
         return 1
     if old != new:
         path.write_text(new)
-    print("  главная: практика, избранное, авторские разборы — " + ("без изменений" if old == new else "обновлены"))
+    print("  главная: проекты, избранное, авторские разборы — " + ("без изменений" if old == new else "обновлены"))
     return 0
 
 

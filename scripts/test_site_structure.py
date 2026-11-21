@@ -171,10 +171,10 @@ class PublicationChecks(unittest.TestCase):
         self.assertEqual(self.run_script("render_materials.py", "--check").returncode, 0)
         self.assertNotIn(f'href="{url}"', (self.root / "materials/index.html").read_text())
 
-    def test_invalid_update_url_does_not_publish(self):
+    def test_invalid_project_url_does_not_publish(self):
         config = self.root / "assets/home-practice.json"
         data = json.loads(config.read_text())
-        data["updates"][0]["url"] = "javascript:alert(1)"
+        data["projects"][0]["url"] = "javascript:alert(1)"
         config.write_text(json.dumps(data))
         page = self.root / "index.html"
         old = page.read_bytes()
