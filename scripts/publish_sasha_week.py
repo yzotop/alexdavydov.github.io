@@ -78,6 +78,8 @@ def attempt(runtime, candidate, live=confirm_live):
         live(page,canonical(prior)+b"\n",prior["revision_sha256"])
         print("Already delivered:",prior["release_id"],prior["revision_sha256"])
         return
+    if b"<!-- sasha-week:report:start -->" not in page:
+        raise OSError("site template has not been deployed")
     data=canonical(candidate)+b"\n"
     updated=render(page.decode(),candidate).encode()
     require(updated!=page, "renderer made no change")

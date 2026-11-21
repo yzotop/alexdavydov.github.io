@@ -23,7 +23,6 @@ STATUS = {
               "needs_review": "требует проверки", "error": "завершилась ошибкой"},
     "human": {"pending": "ожидается", "accepted": "принята", "rejected": "отклонена"},
 }
-INITIAL = {"model": "not_run", "human": "pending"}
 LABELS = {"numeric": "Числовая сверка", "model": "Модельная проверка", "human": "Приёмка человеком"}
 PRIVATE = re.compile(
     r"/(?:Users|home|Volumes|private/tmp)/|https?://|[\w.+-]+@[\w.-]+\.[a-z]{2,}|"
@@ -141,17 +140,8 @@ def should_update(candidate, current):
         return False
     immutable = FIELDS - {"checks","revision_sha256"}
     require(all(candidate[k]==current[k] for k in immutable), "same release facts changed")
-    for role, before in current["checks"].items():
-        after = candidate["checks"][role]
-        if after == before:
-            continue
-        require(role != "numeric", "numeric proof changed")
-        if after["status"] == INITIAL[role] or (before["status"]=="passed" and after["status"]=="error"):
-            return False
-        past,new = before["checked_at_utc"],after["checked_at_utc"]
-        if past and (not new or timestamp(new)<=timestamp(past)):
-            return False
-        require(after["evidence_sha256"], "status update lacks evidence")
+    require(candidate["checks"]["numeric"] == current["checks"]["numeric"], "numeric proof changed")
+    # The queue's latest ledger revision is authoritative for model and human status.
     return True
 
 
