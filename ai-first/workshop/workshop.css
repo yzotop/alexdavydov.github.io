@@ -101,3 +101,86 @@
 .wh .wh-catalogue-nav{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;margin-bottom:26px;}
 .wh .wh-catalogue-nav a{text-decoration:underline;text-underline-offset:4px;}
 .wh .wh-recipe-group[id],.wh .wh-recipe-group li[id]{scroll-margin-top:100px;}
+
+/* Входы на главной AI-мастерской. */
+.wh .wh-landing h2 {
+  font-size: clamp(24px, 2.2vw, 28px);
+  font-weight: 600;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+.wh .wh-landing h3 {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+  line-height: 1.25;
+  margin: 0 0 10px;
+}
+.wh .wh-landing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 40px;
+}
+.wh .wh-landing-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 0 0 26px;
+}
+.wh .wh-landing-jumps a {
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+.wh .wh-landing-jumps a:hover { background: var(--soft); }
+.wh .wh-landing-section {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) minmax(0, 3fr);
+  gap: 20px 40px;
+  border-top: 1px solid var(--line);
+  padding-block: 22px;
+  scroll-margin-top: 90px;
+}
+.wh .wh-landing-section:target { border-top-color: var(--accent); }
+.wh .wh-landing-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.wh .wh-landing-item p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 48ch;
+  margin: 0 0 14px;
+}
+.wh .wh-landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: auto;
+}
+.wh .wh-landing .wh-landing-action {
+  font-size: 14px;
+  margin-top: auto;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.wh .wh-landing .wh-landing-action:hover,
+.wh .wh-landing a.wh-landing-item:hover .wh-landing-action {
+  text-decoration-thickness: 2px;
+}
+@media (max-width: 760px) {
+  .wh .wh-landing-grid { grid-template-columns: minmax(0, 1fr); }
+  .wh .wh-landing-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .wh .wh-landing-grid { row-gap: 18px; }
+}
