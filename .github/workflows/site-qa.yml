@@ -124,14 +124,17 @@ jobs:
 
   link-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      # Без continue-on-error: битая ссылка должна валить сборку.
-      # Хосты, которые блокируют ботов целиком (LinkedIn, Telegram,
-      # Medium), исключены в lychee.toml — они не создают ложных красных.
       - name: Link check (HTML)
+        id: lychee
         uses: lycheeverse/lychee-action@v2
         with:
+          # Итог job выставляет следующий шаг по коду выхода и отчёту.
+          fail: false
+          format: json
+          output: ${{ runner.temp }}/site-links.json
           # Версия закреплена намеренно. Без неё action тянет свою, и числа
           # прогона меняются без единой правки в репозитории: 0.22 и 0.24.2
           # на одном коммите дали 2172 и 2853 проверки. Закрепление делает
@@ -145,8 +148,14 @@ jobs:
           # не данные из PR.
           args: >-
             --config lychee.toml
+            --cache=false
             --remap '^https://davydov\.my/(.*)$ file://${{ github.workspace }}/$1'
             './**/*.html'
+      - name: Retry transient external link failures and check result
+        env:
+          LYCHEE_EXIT_CODE: ${{ steps.lychee.outputs.exit_code }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/retry_link_check.py "$RUNNER_TEMP/site-links.json" "$LYCHEE_EXIT_CODE"
 
   lighthouse-sample:
     if: github.event_name != 'pull_request'
