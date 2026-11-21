@@ -19,13 +19,13 @@ def practice_entry() -> str:
     return ('<div class="case-block">\n'
             f'  <h3>{html.escape(title)}</h3>\n'
             f'  <p>{html.escape(blurb)}</p>\n'
-            f'  <a class="sec-link" href="{url}">Открыть мастерскую →</a>\n'
+            f'  <a class="sec-link" href="{url}">Открыть AI-мастерскую →</a>\n'
             '</div>')
 
 
 def collection_blocks() -> tuple[str, str]:
     cards = []
-    links = [f'<a href="{WORKSHOP_URL}">Мастерская</a>']
+    links = [f'<a href="{WORKSHOP_URL}">AI-мастерская</a>']
     for url in ["/shared-memory/", "/ai-analyst/"]:
         validate_url(url)
         source = (ROOT / url.strip("/") / "index.html").read_text()

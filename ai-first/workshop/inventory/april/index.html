@@ -1,0 +1,53 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Заказ поставщику · студия null</title><link rel="stylesheet" href="../davydov.css"><link rel="stylesheet" href="style.css"><script defer src="order.js"></script><script defer src="client-prices.js"></script><script defer src="client-examples.js"></script><script defer src="app.js"></script></head>
+<body data-scenario="null"><nav class="dv-nav" aria-label="Основное меню"><a href="https://davydov.my/" class="logo"><span class="logo-mark">Δ</span><span class="logo-wordmark">davydov</span></a><a href="https://davydov.my/ai-first/workshop/">AI-мастерская</a></nav>
+<main>
+<div class="intro"><div><p class="date">Студия null · демо для закупщика</p><h1>Заказ поставщику</h1></div><p>Сколько заказать на этой неделе? Задайте бюджет и посмотрите, что изменится, если сначала выкупить красные и розовые сумки. <a href="#two-weeks">Что получилось за две недели</a></p></div>
+<div class="spread">
+<section class="budget"><h2>Бюджет закупки</h2><p class="sub">Условные закупочные цены в рублях · ноябрь 2026</p>
+<div class="money-field"><input id="money" type="text" inputmode="decimal" value="1 000 000" aria-label="Бюджет в рублях" aria-describedby="inputError"><span>₽</span></div>
+<p id="inputError" role="status" hidden></p>
+<label class="sr" for="slider">Изменить бюджет в рублях</label><input id="slider" type="range" min="0" max="2000000" step="1" value="1000000">
+<div class="axis"><span>0 ₽</span><span id="axisMax">2 000 000 ₽</span></div>
+<div class="presets"><button data-kopecks="30000000">300 000 ₽</button><button data-kopecks="100000000">1 млн ₽</button><button data-kopecks="150000000">1,5 млн ₽</button><button id="full-preset">Вся заявка</button></div>
+<fieldset class="policy"><legend>Как распределить бюджет</legend>
+<label><input type="radio" name="policy" value="proportional" checked>Все позиции пропорционально</label>
+<label><input type="radio" name="policy" value="bags">Сначала красные и розовые сумки</label></fieldset>
+<div class="receipt"><div><span>Лимит на всю заявку</span><strong id="needed"></strong></div><div class="total"><span>Сумма заказа</span><strong id="spend"></strong></div><div><span>Остаток бюджета</span><strong id="left"></strong></div></div>
+<div class="quant"><div><strong id="units"></strong><span>единиц заказать</span></div><div><strong id="removed"></strong><span>единиц сократили</span></div></div>
+</section>
+<section class="pair"><h2>Две расцветки одной сумки</h2><p class="sub">180 ₽ за штуку. В заявке 1 244 красных и 507 розовых.</p>
+<div id="bags"></div>
+<div class="legend"><span><i></i>В заказе</span><span><i class="stripe"></i>Сокращено</span></div>
+<div class="analysis"><div class="ai-head"><h3>Почему столько?</h3><button id="ask">Показать пояснение</button></div><div id="reason" aria-live="polite"></div><div id="ai" aria-live="polite"></div></div>
+</section></div>
+<section class="tradeoff" aria-labelledby="trade-title"><h2 id="trade-title">Что меняет приоритет сумок</h2>
+<p id="trade-summary" aria-live="polite"></p><div id="top-cuts"></div></section>
+<section class="lines" id="lines"><div class="linehead"><div><h2>Позиции заказа</h2><p class="sub" id="linecount"></p></div><label class="toggle"><input type="checkbox" id="onlycut"> Только сокращённые</label></div>
+<div class="scroll" tabindex="0" aria-label="Прокручиваемая таблица заказа"><table><thead><tr><th>Товар / единица заказа</th><th>Цена за ед., ₽</th><th>Заявка, ед.</th><th>Пропорционально,<br>ед.</th><th>Сначала сумки,<br>ед.</th><th>Сокращено по<br>выбранному правилу, ед.</th><th>Заказ по выбранному<br>правилу, ₽</th></tr></thead><tbody id="table"></tbody></table></div>
+<p id="empty" hidden>Все позиции помещаются в бюджет.</p>
+</section>
+<!-- two-week replay: start -->
+<section id="two-weeks" class="followup" aria-labelledby="follow-title">
+<p class="date">Проверка на покупках 4–17 апреля 2011 года · фиксированный бюджет 1 млн ₽</p>
+<h2 id="follow-title">Сколько корзин собрал каждый заказ</h2>
+<div class="follow-stats"><div><span>Все позиции пропорционально</span><strong>245 <small>из 345</small></strong></div>
+<div><span>Сначала красные и розовые сумки</span><strong>220 <small>из 345</small></strong></div></div>
+<p>При приоритете сумок 25 прежде полных корзин стали неполными. В обратную сторону перешло 0. Полная корзина здесь означает, что склад выдал всё запрошенное количество по товарам из выбранных 30 артикулов.</p>
+<p>Оба заказа прибыли утром 11 апреля. До прихода оба склада полностью собрали 117 из 154 корзин. За неделю после прихода пропорциональный заказ собрал 128 из 191, заказ с приоритетом — 103.</p>
+<h3>Что вышло с двумя сумками</h3>
+<p>Обе расцветки запросили вместе в 23 чеках. Пропорциональный заказ полностью выдал пару в 23 случаях, приоритет — в 23. Дополнительная закупка осталась на складе. В таблице первым указан результат общего правила, вторым — приоритета сумок.</p>
+<div class="scroll" tabindex="0" aria-label="Выдача и остатки сумок"><table><thead><tr><th>Расцветка</th><th>Спрос, шт.</th><th>Выдано, шт.</th><th>Осталось 17 апреля, шт.</th></tr></thead><tbody><tr><td>Красная</td><td>1 331</td><td>1 331 / 1 331</td><td>951 / 1 420</td></tr><tr><td>Розовая</td><td>224</td><td>224 / 224</td><td>1 018 / 1 209</td></tr></tbody></table></div>
+<h3>Чего не хватило при приоритете</h3>
+<p>Дополнительная недовыдача составила 688 единиц по 12 артикулам. В 9 из 25 изменившихся корзин не хватило подсвечника-сердца, в 6 — стакана для попкорна. Больше всего по количеству потеряли планеры, ещё 272 шт. Все затронутые этим дефицитом корзины уже были неполными при общем правиле.</p>
+<p>Например, в чеке № 549916 от 13 апреля запросили «Подвесной стеклянный подсвечник», 16 шт. При общем правиле выдали 16, при приоритете — 14.</p>
+<details><summary>Все 12 позиций с дополнительным дефицитом</summary>
+<p>Колонки показывают недовыданные единицы за обе недели. Последняя колонка считает корзины, которые стали неполными и в которых не хватило этого артикула. В одной корзине могли закончиться несколько товаров.</p>
+<div class="scroll" tabindex="0" aria-label="Дополнительный дефицит по артикулам"><table><thead><tr><th>Товар</th><th>Пропорционально,<br>недовыдано</th><th>Сначала сумки,<br>недовыдано</th><th>Разница, ед.</th><th>Изменившиеся<br>корзины</th></tr></thead><tbody><tr><td>Игрушечный планер<small>84077 · шт.</small></td><td>831</td><td>1103</td><td>+272</td><td>0</td></tr><tr><td>Стакан для попкорна<small>22197 · шт.</small></td><td>240</td><td>313</td><td>+73</td><td>6</td></tr><tr><td>Подвесной подсвечник-сердце<small>85123A · шт.</small></td><td>23</td><td>86</td><td>+63</td><td>9</td></tr><tr><td>Формочки Teatime, 60 шт.<small>84991 · уп. 60 шт.</small></td><td>38</td><td>96</td><td>+58</td><td>3</td></tr><tr><td>Декоративная птица<small>84879 · шт.</small></td><td>375</td><td>424</td><td>+49</td><td>0</td></tr><tr><td>Стеклянный подсвечник<small>22178 · шт.</small></td><td>133</td><td>181</td><td>+48</td><td>1</td></tr><tr><td>Формочки Retro Spot, 72 шт.<small>21212 · уп. 72 шт.</small></td><td>8</td><td>52</td><td>+44</td><td>2</td></tr><tr><td>Формочки Pink Paisley, 60 шт.<small>21977 · уп. 60 шт.</small></td><td>0</td><td>30</td><td>+30</td><td>4</td></tr><tr><td>Подвесной стеклянный подсвечник<small>84755 · шт.</small></td><td>306</td><td>322</td><td>+16</td><td>1</td></tr><tr><td>Формочки Skull, 72 шт.<small>21213 · уп. 72 шт.</small></td><td>224</td><td>238</td><td>+14</td><td>0</td></tr><tr><td>Подсвечник в банке<small>71459 · шт.</small></td><td>693</td><td>705</td><td>+12</td><td>0</td></tr><tr><td>Салфетки Red Spotty<small>21980 · уп. 12 шт.</small></td><td>0</td><td>9</td><td>+9</td><td>2</td></tr></tbody></table></div></details>
+<p class="sub">Остатки на старте, срок поставки и порядок чеков общие для обоих заказов. Продажи из архива UCI использованы как запросы к складу. Выдача смоделирована без замен и отмен. <a href="replay.json">Расчёт по артикулам и изменившимся чекам</a>.</p></section>
+<!-- two-week replay: end -->
+<details><summary>Откуда взялись цены</summary>
+<p>Каждая цена задана за штуку или за заводскую упаковку. Для четырёх больших сумок приняли 180 ₽ за штуку, для формочек — 65 ₽ за пачку из 60 и 80 ₽ за пачку из 72. В заказ попадают целые сумки и целые пачки.</p>
+<p>Ориентиры на 21 ноября 2026 года взяты из российских оптовых каталогов. У «Аква-ТК» хозяйственная сумка сходного размера стоит 158–169 ₽ в зависимости от объёма. У Korobki39 простые формы для маффинов стоят оптом 108–125 ₽ за 100 штук. В демо цены округлены, часть ассортимента оценена по категории. Доставка и минимальная партия поставщика в сценарий не входят. <a href="http://akva-tk.ru/akva-tk.ru_A.pdf">Прайс «Аква-ТК»</a> · <a href="https://s.siteapi.org/27d307544fe830a.ru/docs/p8jfmjbh8g000gs84wow08s4o0oc4k">Прайс Korobki39</a>.</p></details>
+<details><summary>Как распределяется бюджет</summary><p>За основу взяли потребность в 30 товарах из расчёта на 4 апреля 2011 года. Полная заявка равна сумме количеств, умноженных на условные закупочные цены. При общем правиле каждая строка при дефиците денег получает одну и ту же долю запрошенного количества. После округления вниз остаток идёт на целые единицы в порядке убывания дробной части. При равенстве первым идёт меньший артикул.</p>
+<p>Красную и розовую сумки находили вместе в 560 из 9 787 обучающих счетов выбранного ассортимента. При приоритете на обе расцветки сначала выделяется до 315 180 ₽. Если денег меньше, лимит делится между расцветками пропорционально их заявке, остальные позиции ждут. После полного покрытия сумок оставшиеся деньги распределяются по другим товарам по общему правилу. Приоритет задаёт закупщик. AI получает рассчитанные количества и объясняет сокращение закупщику. История покупок — Daqing Chen, <a href="https://doi.org/10.24432/C5CG6D">UCI Online Retail II</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="history.html">Исторический заказ в разборе для davydov.my</a>.</p></details>
+</main><footer><span>Демо студии null · Мастерская Давыдова</span><span>Учебная симуляция · один склад · 30 товаров</span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
