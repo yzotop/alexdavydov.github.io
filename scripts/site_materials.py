@@ -12,6 +12,29 @@ from render_ai_analyst_hub import collect, collect_base, field
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS = {"ai": "AI-first аналитика", "ab": "Эксперименты",
           "money": "Монетизация", "everywhere": "Аналитика везде"}
+WORKSHOP_MATERIALS = (
+    {
+        "url": "/ai-first/workshop/sasha/",
+        "title": "Саша. Еженедельный отчёт по продажам",
+        "blurb": "Проект Мастерской. Агент готовит отчёт по продажам. На примере магазина №20 видно, как проверяли его вывод.",
+        "topic": "ai",
+        "format": "Проект",
+    },
+    {
+        "url": "/ai-first/workshop/inventory/",
+        "title": "Запасы. Заказ поставщику",
+        "blurb": "Проект Мастерской. Слепая закупка показывает, как проверить бюджет заказа, составленного агентом.",
+        "topic": "ai",
+        "format": "Проект",
+    },
+    {
+        "url": "/ai-first/workshop/inventory/comparison/",
+        "title": "Запасы. Один заказ, две модели",
+        "blurb": "Сравнение Qwen и Astra. Одна закупка, два ответа на уточнение приоритета и независимая сверка бюджета.",
+        "topic": "ai",
+        "format": "Разбор",
+    },
+)
 # Датированные справочники и замороженные исследования сохраняют свои URL,
 # но не попадают в витрину. Включение обратно — редакционное решение.
 NOT_PROMOTED = {
@@ -86,7 +109,7 @@ def materials() -> list[dict]:
     # При одинаковой дате URL даёт устойчивый порядок независимо от индекса.
     ai = sorted((a for a in independent if a["topic"] == "ai"),
                 key=lambda a: (-a["published_date"].toordinal(), a["url"]))
-    out = ai + out + [a for a in independent if a["topic"] != "ai"]
+    out = ai + list(WORKSHOP_MATERIALS) + out + [a for a in independent if a["topic"] != "ai"]
     urls = [a["url"] for a in out]
     if len(set(urls)) != len(urls):
         raise ValueError("Один материал повторяется в каталоге")
