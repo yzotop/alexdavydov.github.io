@@ -1,0 +1,47 @@
+.catalog-lookup:not([hidden]) {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px 0 28px;
+}
+.catalog-lookup label:not([hidden]) {
+  display: grid;
+  gap: 5px;
+  font-size: 14px;
+}
+.catalog-lookup label:first-child { flex: 1 1 16rem; }
+.catalog-lookup .dv-catalog-search { max-width: none; }
+.catalog-lookup select {
+  background: white;
+  color: inherit;
+  font: inherit;
+  border: 1px solid #d4d4d4;
+  padding: 10px;
+}
+.material-shelf { border-top: 1px solid var(--line); scroll-margin-top: 80px; }
+.material-shelf summary {
+  cursor: pointer;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 18px 2px;
+  gap: 3px 16px;
+}
+.material-shelf summary::-webkit-details-marker { display: none; }
+.material-shelf summary strong { font-size: clamp(19px, 3vw, 25px); }
+.material-shelf summary span { grid-column: 1; color: #555; font-size: 15px; }
+.material-shelf summary::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  margin-right: 8px;
+}
+.material-shelf[open] > summary::after { transform: rotate(225deg); }
+.material-shelf summary:focus-visible { outline: 2px solid var(--accent); }
+.shelf-link { margin: 0 0 15px; }

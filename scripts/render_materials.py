@@ -1,74 +1,70 @@
 #!/usr/bin/env python3
-"""Собрать каталог статей, кейсов и материалов Мастерской. --check проверяет без записи."""
+"""Собрать тематические полки каталога. --check проверяет без записи."""
 import argparse
 import html
 import sys
 
-from site_materials import ROOT, TOPICS, catalog_item, field, materials, replace_block, validate_url
+from render_shared_memory_hub import READING_ORDER
+from site_materials import ROOT, TOPICS, catalog_item, materials, replace_block, validate_url
 
 
-WORKSHOP_URL = "/ai-first/workshop/"
+SHELVES = {
+    "workshop": ("Проекты и практика", "Саша, Запасы, книга и проверка работы агента.",
+                 "/ai-first/workshop/", "Открыть AI-мастерскую →"),
+    "ai": ("AI в работе аналитика", "Постановка задачи, контекст, метрики и приёмка результата.",
+           "/ai-analyst/", "Читать серию «AI-аналитик» →"),
+    "memory": ("Общая память агентов", "Разборы экспериментов Рината Абдуллина и сообщества BitGN.",
+               "/shared-memory/", "Читать подборку по порядку →"),
+    "ab": (TOPICS["ab"], "Дизайн A/B-тестов, ошибки и интерпретация результатов.", "", ""),
+    "money": (TOPICS["money"], "Доход продукта, рекламные аукционы и экономика решений.", "", ""),
+    "everywhere": (TOPICS["everywhere"], "Математика в историях, играх и повседневных вещах.", "", ""),
+}
 
 
-def practice_entry() -> str:
-    url = WORKSHOP_URL
-    validate_url(url)
-    source = (ROOT / url.strip("/") / "index.html").read_text()
-    title = field(source, r"<title>(.*?) — Саша Давыдов</title>", "название практики", url)
-    blurb = field(source, r'<meta name="description" content="([^"]+)"', "описание практики", url)
-    return ('<div class="case-block">\n'
-            f'  <h3>{html.escape(title)}</h3>\n'
-            f'  <p>{html.escape(blurb)}</p>\n'
-            f'  <a class="sec-link" href="{url}">Открыть AI-мастерскую →</a>\n'
-            '</div>')
+def shelf_key(row):
+    if row["url"].startswith("/ai-first/workshop/"):
+        return "workshop"
+    if row["url"] in READING_ORDER:
+        return "memory"
+    return row["topic"]
 
 
-def collection_blocks() -> tuple[str, str]:
-    cards = []
-    links = [f'<a href="{WORKSHOP_URL}">AI-мастерская</a>']
-    for url in ["/shared-memory/", "/ai-analyst/"]:
-        validate_url(url)
-        source = (ROOT / url.strip("/") / "index.html").read_text()
-        title = field(source, r"<title>(.*?) — Саша Давыдов</title>", "название подборки", url)
-        blurb = field(source, r'<meta name="description" content="([^"]+)"', "описание", url)
-        links.append(f'<a href="{url}">{html.escape(title)}</a>')
-        cards.append(
-            f'  <a class="course" href="{html.escape(url, quote=True)}">\n'
-            f'    <h3>{html.escape(title)}</h3>\n'
-            f'    <p>{html.escape(blurb)}</p>\n'
-            '    <span class="course-arrow" aria-hidden="true">↗</span>\n'
-            '  </a>')
-    grid = '<div class="courses-grid">\n' + "\n".join(cards) + "\n</div>"
-    return grid, ' <span aria-hidden="true">·</span> '.join(links)
+def grouped_items(rows):
+    shelves = {key: [] for key in SHELVES}
+    for row in rows:
+        shelves[shelf_key(row)].append(row)
 
-
-def grouped_items(rows: list[dict]) -> str:
-    groups = []
-    for topic, title in TOPICS.items():
-        items = [catalog_item(a) for a in rows if a["topic"] == topic]
-        if not items:
+    blocks = []
+    for key, (title, description, url, label) in SHELVES.items():
+        entries = shelves[key]
+        if not entries:
             continue
-        groups.append(
-            f'<section class="dv-catalog-group" data-catalog-topic="{topic}" aria-labelledby="topic-{topic}">\n'
-            f'  <h3 id="topic-{topic}">{html.escape(title)}</h3>\n'
-            '  <ul class="dv-catalog-list">\n' + "\n".join(items) + '\n  </ul>\n</section>')
-    return "\n".join(groups)
+        link = ""
+        if url:
+            validate_url(url)
+            link = f'<p class="shelf-link"><a href="{url}">{html.escape(label)}</a></p>'
+        if key == "workshop":
+            entries.sort(key=lambda entry: entry["format"] == "Статья")
+        if key == "memory":
+            entries.sort(key=lambda entry: READING_ORDER.index(entry["url"]))
+        items = "\n".join(catalog_item(entry) for entry in entries)
+        topic = entries[0]["topic"]
+        blocks.append(
+            f'<details class="material-shelf" data-catalog-topic="{topic}" id="topic-{key}">\n'
+            f'  <summary><strong>{html.escape(title)}</strong><span>{html.escape(description)}</span></summary>\n'
+            f'{link}\n  <ul class="dv-catalog-list">\n{items}\n  </ul>\n</details>')
+    return "\n".join(blocks)
 
 
-def main() -> int:
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     try:
         rows = materials()
-        items = grouped_items(rows)
         page = ROOT / "materials/index.html"
         old = page.read_text()
-        new = replace_block(old, "catalog", items)
-        cards, links = collection_blocks()
-        new = replace_block(new, "catalog:collections", cards)
-        new = replace_block(new, "catalog:shortcuts", links)
-        new = replace_block(new, "catalog:practice", practice_entry())
+        new = replace_block(old, "catalog", grouped_items(rows))
     except (ValueError, OSError) as exc:
         print(f"ОСТАНОВ: {exc}. Ничего не записано.", file=sys.stderr)
         return 1
