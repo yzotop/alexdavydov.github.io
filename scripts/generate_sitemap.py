@@ -24,6 +24,7 @@ EXTRA_PATHS = (
     "/ai-first/workshop/recipes/",
     "/ai-first/workshop/book/",
     "/ai-first/workshop/inventory/",
+    "/ai-first/workshop/projects/cookie-cats/",
     "/talks/",
     "/teaching/",
 )
