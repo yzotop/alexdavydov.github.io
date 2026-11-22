@@ -1,4 +1,4 @@
-"""Compare the internal primary navigation pages with the materials catalog."""
+"""Check the shared frame across menu sections and Workshop entry pages."""
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -9,6 +9,17 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = "/materials/"
+WORKSHOP = "/ai-first/workshop/"
+WORKSHOP_ENTRIES = (
+    "practicum/",
+    "sasha/",
+    "inventory/",
+    "inventory/comparison/",
+    "projects/cookie-cats/",
+    "projects/cookie-cats/memos.html",
+    "recipes/",
+    "book/",
+)
 MEASURE = """heading => {
     const frame = heading.closest(".section-frame");
     if (!frame) throw Error("H1 is outside .section-frame");
@@ -16,11 +27,13 @@ MEASURE = """heading => {
     const css = getComputedStyle(frame);
     const h1 = heading.getBoundingClientRect();
     return {
+        frameWidth: box.width,
         left: box.left + parseFloat(css.paddingLeft),
         right: box.right - parseFloat(css.paddingRight),
         headingLeft: h1.left,
         headingTop: h1.top,
         fontSize: getComputedStyle(heading).fontSize,
+        fontFamily: getComputedStyle(heading).fontFamily,
         overflow: document.documentElement.scrollWidth - innerWidth
     };
 }"""
@@ -41,18 +54,31 @@ def check_pages(browser, origin, width):
     )
     if REFERENCE not in paths:
         raise AssertionError("Materials missing from primary navigation")
-    reference = None
-    for path in [REFERENCE, *(p for p in paths if p != REFERENCE)]:
+    def measure(path):
         response = page.goto(origin + path)
         assert response.ok, (path, response.status)
         page.evaluate("document.fonts.ready")
         metrics = page.locator("main h1").evaluate(MEASURE)
         assert metrics["overflow"] == 0, (width, path, metrics)
-        if reference is None:
-            reference = metrics
+        return metrics
+
+    reference = measure(REFERENCE)
+    for path in paths:
+        if path == REFERENCE:
+            continue
+        metrics = measure(path)
         assert metrics == reference, (width, path, metrics, "expected", reference)
+
+    # Breadcrumbs may push the H1 down. The frame and heading scale stay shared.
+    reference.pop("headingTop")
+    for suffix in WORKSHOP_ENTRIES:
+        path = WORKSHOP + suffix
+        metrics = measure(path)
+        metrics.pop("headingTop")
+        assert metrics == reference, (width, path, metrics, "expected", reference)
+
     page.close()
-    print(f"{width}px: {len(paths)} sections match {REFERENCE} {reference}")
+    print(f"{width}px: {len(paths)} menu sections and {len(WORKSHOP_ENTRIES)} Workshop entries match {REFERENCE} {reference}")
 
 
 if __name__ == "__main__":
