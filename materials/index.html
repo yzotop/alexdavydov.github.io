@@ -18,6 +18,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <link rel="icon" href="/favicon.ico" sizes="any"/>
   <link rel="stylesheet" href="/style.css?v=fd9a4d20811b"/>
+  <link rel="stylesheet" href="/assets/materials.css?v=1"/>
 </head>
 <body>
 <!-- header:start -->
@@ -68,115 +69,27 @@
 <main class="dvy">
   <div class="section-frame">
     <h1>Материалы</h1>
-    <nav class="dv-catalog-shortcuts" aria-label="Мастерская и серии">
-      <!-- catalog:shortcuts:start -->
-<a href="/ai-first/workshop/">AI-мастерская</a> <span aria-hidden="true">·</span> <a href="/shared-memory/">Общая память и работа агентов</a> <span aria-hidden="true">·</span> <a href="/ai-analyst/">AI-аналитик</a>
-<!-- catalog:shortcuts:end -->
-    </nav>
-    <section aria-labelledby="all-materials-title">
-      <h2 class="dv-catalog-section-title" id="all-materials-title">Материалы по темам</h2>
-<div class="dv-catalog-tools"><label class="dv-catalog-description" for="catalog-query">Найти по названию или описанию</label><input autocomplete="off" class="dv-catalog-search" id="catalog-query" placeholder="Например, контекст или аукцион" type="search"/><div aria-label="Темы материалов" class="dv-catalog-filters" role="group"><button aria-pressed="true" data-topic-filter="all" type="button">Все материалы</button><button aria-pressed="false" data-topic-filter="ai" type="button">AI-first аналитика</button><button aria-pressed="false" data-topic-filter="ab" type="button">Эксперименты</button><button aria-pressed="false" data-topic-filter="money" type="button">Монетизация</button><button aria-pressed="false" data-topic-filter="everywhere" type="button">Аналитика везде</button></div></div>
+    <section aria-label="Каталог материалов">
+      <div class="catalog-lookup" hidden>
+        <label for="catalog-query">Найти материал
+          <input autocomplete="off" class="dv-catalog-search" id="catalog-query" placeholder="Название или тема" type="search"/>
+        </label>
+        <label for="catalog-topic">Область поиска
+          <select id="catalog-topic">
+            <option value="all">Все темы</option>
+            <option value="ai">AI-first аналитика</option>
+            <option value="ab">Эксперименты</option>
+            <option value="money">Монетизация</option>
+            <option value="everywhere">Аналитика везде</option>
+          </select>
+        </label>
+      </div>
       <div id="catalog-grid">
         <!-- catalog:start -->
-<section class="dv-catalog-group" data-catalog-topic="ai" aria-labelledby="topic-ai">
-  <h3 id="topic-ai">AI-first аналитика</h3>
+<details class="material-shelf" data-catalog-topic="ai" id="topic-workshop">
+  <summary><strong>Проекты и практика</strong><span>Саша, Запасы, книга и проверка работы агента.</span></summary>
+<p class="shelf-link"><a href="/ai-first/workshop/">Открыть AI-мастерскую →</a></p>
   <ul class="dv-catalog-list">
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/ai-first/workshop/recipes/accepting-agent-work/">
-            <div class="dv-material-copy"><h4>Рецепты AI-first аналитики</h4>
-              <p>Четыре способа проверить результат агента перед тем, как использовать его в отчёте</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/baseline-choice/">
-            <div class="dv-material-copy"><h4>Почему рекорда не хватило для выбора рабочей версии</h4>
-              <p>Как в рое Абдуллина сравнивали версии, отзывали кандидата после новой ошибки и почему итоговый выбор после draft4 остался неизвестным.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/component-integration/">
-            <div class="dv-material-copy"><h4>Как чужой компонент попал в общую сборку</h4>
-              <p>Romius → bobcat: как правку приняли, нашли в запущенной сборке и почему её вклад в общий результат остался неизвестным.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/inara-bobcat/">
-            <div class="dv-material-copy"><h4>Как передать работу другому агенту</h4>
-              <p>Inara → bobcat: что оставили в общей памяти, как подтвердили приём работы и чем проверили продолжение.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/lanes-lost-updates/">
-            <div class="dv-material-copy"><h4>Как агенты теряли чужие правки</h4>
-              <p>Как lea-code нашёл потерю чужих записей в LANES, china-brother признал причину и участники изменили порядок редактирования.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/rule-delivery/">
-            <div class="dv-material-copy"><h4>Как новое правило доходило до агентов</h4>
-              <p>AGENTS r5 → Emilcodex → bobcat: как новое правило появилось в документах и почему его получение всеми работающими агентами осталось непроверенным.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/vindex-dot/">
-            <div class="dv-material-copy"><h4>Как агент проверил чужую аналитику</h4>
-              <p>Vindex → dot: как проверили смысл счётчиков на 100 записях и почему публикация возражения ещё не означает исправления сводки.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/check-agent-fix/">
-            <div class="dv-material-copy"><h4>Как проверить исправление агента</h4>
-              <p>Одна строка в recordwatch: как воспроизвели ошибку, проверили исправление в двух средах и передали результат другим агентам.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/company-brain/">
-            <div class="dv-material-copy"><h4>Как я ходил изучать Company Brain</h4>
-              <p>В итоге я успел поучаствовать в разработке инструмента, которым рой проверял собственную работу.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/knowledge-for-ai-analysts/">
-            <div class="dv-material-copy"><h4>Почему знания разбросаны по всей компании?</h4>
-              <p>Для конкретной задачи определить нужные источники. Разобраться, какие правила действуют, кто их поддерживает и что делать с противоречиями.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/knowledge-across-ai-systems/">
-            <div class="dv-material-copy"><h4>Система знаний в мире нескольких AI</h4>
-              <p>У проекта есть цель, файлы, данные, решения, текущий статус и следующие шаги. А ChatGPT, Claude или Codex просто подключаются к нему как исполнители.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-        <li class="dv-catalog-item" data-topic="ai">
-          <a href="/workspace/articles/ai-first-preparation/">
-            <div class="dv-material-copy"><h4>Чем AI-first аналитика отличается от привычной и как к ней подготовиться</h4>
-              <p>Хранилище, витрины и код сборки переделывать не нужно. Вопрос в том, что из этого агент видит.</p></div>
-            <span class="dv-material-meta">AI-first аналитика</span>
-            <span class="dv-material-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
         <li class="dv-catalog-item" data-topic="ai">
           <a href="/ai-first/workshop/sasha/">
             <div class="dv-material-copy"><h4>Саша. Еженедельный отчёт по продажам</h4>
@@ -197,6 +110,52 @@
           <a href="/ai-first/workshop/inventory/comparison/">
             <div class="dv-material-copy"><h4>Запасы. Один заказ, две модели</h4>
               <p>Сравнение Qwen и Astra. Одна закупка, два ответа на уточнение приоритета и независимая сверка бюджета.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/ai-first/workshop/book/">
+            <div class="dv-material-copy"><h4>Как строят AI-системы</h4>
+              <p>18 историй из практики Рината Абдуллина и сообщества „LLM под капотом“.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/ai-first/workshop/recipes/accepting-agent-work/">
+            <div class="dv-material-copy"><h4>Рецепты AI-first аналитики</h4>
+              <p>Четыре способа проверить результат агента перед тем, как использовать его в отчёте</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+  </ul>
+</details>
+<details class="material-shelf" data-catalog-topic="ai" id="topic-ai">
+  <summary><strong>AI в работе аналитика</strong><span>Постановка задачи, контекст, метрики и приёмка результата.</span></summary>
+<p class="shelf-link"><a href="/ai-analyst/">Читать серию «AI-аналитик» →</a></p>
+  <ul class="dv-catalog-list">
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/knowledge-for-ai-analysts/">
+            <div class="dv-material-copy"><h4>Почему знания разбросаны по всей компании?</h4>
+              <p>Для конкретной задачи определить нужные источники. Разобраться, какие правила действуют, кто их поддерживает и что делать с противоречиями.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/knowledge-across-ai-systems/">
+            <div class="dv-material-copy"><h4>Система знаний в мире нескольких AI</h4>
+              <p>У проекта есть цель, файлы, данные, решения, текущий статус и следующие шаги. А ChatGPT, Claude или Codex просто подключаются к нему как исполнители.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/ai-first-preparation/">
+            <div class="dv-material-copy"><h4>Чем AI-first аналитика отличается от привычной и как к ней подготовиться</h4>
+              <p>Хранилище, витрины и код сборки переделывать не нужно. Вопрос в том, что из этого агент видит.</p></div>
             <span class="dv-material-meta">AI-first аналитика</span>
             <span class="dv-material-arrow" aria-hidden="true">↗</span>
           </a>
@@ -266,9 +225,80 @@
           </a>
         </li>
   </ul>
-</section>
-<section class="dv-catalog-group" data-catalog-topic="ab" aria-labelledby="topic-ab">
-  <h3 id="topic-ab">Эксперименты</h3>
+</details>
+<details class="material-shelf" data-catalog-topic="ai" id="topic-memory">
+  <summary><strong>Общая память агентов</strong><span>Разборы экспериментов Рината Абдуллина и сообщества BitGN.</span></summary>
+<p class="shelf-link"><a href="/shared-memory/">Читать подборку по порядку →</a></p>
+  <ul class="dv-catalog-list">
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/company-brain/">
+            <div class="dv-material-copy"><h4>Как я ходил изучать Company Brain</h4>
+              <p>В итоге я успел поучаствовать в разработке инструмента, которым рой проверял собственную работу.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/check-agent-fix/">
+            <div class="dv-material-copy"><h4>Как проверить исправление агента</h4>
+              <p>Одна строка в recordwatch: как воспроизвели ошибку, проверили исправление в двух средах и передали результат другим агентам.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/vindex-dot/">
+            <div class="dv-material-copy"><h4>Как агент проверил чужую аналитику</h4>
+              <p>Vindex → dot: как проверили смысл счётчиков на 100 записях и почему публикация возражения ещё не означает исправления сводки.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/inara-bobcat/">
+            <div class="dv-material-copy"><h4>Как передать работу другому агенту</h4>
+              <p>Inara → bobcat: что оставили в общей памяти, как подтвердили приём работы и чем проверили продолжение.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/lanes-lost-updates/">
+            <div class="dv-material-copy"><h4>Как агенты теряли чужие правки</h4>
+              <p>Как lea-code нашёл потерю чужих записей в LANES, china-brother признал причину и участники изменили порядок редактирования.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/component-integration/">
+            <div class="dv-material-copy"><h4>Как чужой компонент попал в общую сборку</h4>
+              <p>Romius → bobcat: как правку приняли, нашли в запущенной сборке и почему её вклад в общий результат остался неизвестным.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/rule-delivery/">
+            <div class="dv-material-copy"><h4>Как новое правило доходило до агентов</h4>
+              <p>AGENTS r5 → Emilcodex → bobcat: как новое правило появилось в документах и почему его получение всеми работающими агентами осталось непроверенным.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li class="dv-catalog-item" data-topic="ai">
+          <a href="/workspace/articles/baseline-choice/">
+            <div class="dv-material-copy"><h4>Почему рекорда не хватило для выбора рабочей версии</h4>
+              <p>Как в рое Абдуллина сравнивали версии, отзывали кандидата после новой ошибки и почему итоговый выбор после draft4 остался неизвестным.</p></div>
+            <span class="dv-material-meta">AI-first аналитика</span>
+            <span class="dv-material-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+  </ul>
+</details>
+<details class="material-shelf" data-catalog-topic="ab" id="topic-ab">
+  <summary><strong>Эксперименты</strong><span>Дизайн A/B-тестов, ошибки и интерпретация результатов.</span></summary>
+
   <ul class="dv-catalog-list">
         <li class="dv-catalog-item" data-topic="ab">
           <a href="/workspace/articles/ab-test-lies/">
@@ -319,9 +349,10 @@
           </a>
         </li>
   </ul>
-</section>
-<section class="dv-catalog-group" data-catalog-topic="money" aria-labelledby="topic-money">
-  <h3 id="topic-money">Монетизация</h3>
+</details>
+<details class="material-shelf" data-catalog-topic="money" id="topic-money">
+  <summary><strong>Монетизация</strong><span>Доход продукта, рекламные аукционы и экономика решений.</span></summary>
+
   <ul class="dv-catalog-list">
         <li class="dv-catalog-item" data-topic="money">
           <a href="/workspace/articles/pctr-calibration/">
@@ -356,9 +387,10 @@
           </a>
         </li>
   </ul>
-</section>
-<section class="dv-catalog-group" data-catalog-topic="everywhere" aria-labelledby="topic-everywhere">
-  <h3 id="topic-everywhere">Аналитика везде</h3>
+</details>
+<details class="material-shelf" data-catalog-topic="everywhere" id="topic-everywhere">
+  <summary><strong>Аналитика везде</strong><span>Математика в историях, играх и повседневных вещах.</span></summary>
+
   <ul class="dv-catalog-list">
         <li class="dv-catalog-item" data-topic="everywhere">
           <a href="/cases/nikifilini/">
@@ -425,37 +457,10 @@
           </a>
         </li>
   </ul>
-</section>
+</details>
 <!-- catalog:end -->
       </div>
       <p class="dv-catalog-empty" hidden id="catalog-empty">По этому запросу материалов нет. Попробуйте другое слово или выберите все темы.</p>
-    </section>
-    <section class="dv-catalog-resources" aria-labelledby="practice-title">
-      <h2 id="practice-title">Практика</h2>
-      <!-- catalog:practice:start -->
-<div class="case-block">
-  <h3>AI-мастерская</h3>
-  <p>Проекты «Саша» и «Запасы», практикум на учебных задачах и рецепты аналитической работы с ИИ.</p>
-  <a class="sec-link" href="/ai-first/workshop/">Открыть AI-мастерскую →</a>
-</div>
-<!-- catalog:practice:end -->
-    </section>
-    <section class="dv-catalog-resources" aria-labelledby="collections-title">
-      <h2 id="collections-title">Серии и подборки</h2>
-      <!-- catalog:collections:start -->
-<div class="courses-grid">
-  <a class="course" href="/shared-memory/">
-    <h3>Общая память и работа агентов</h3>
-    <p>Как агенты используют общую память, передают работу и проверяют результаты. Разборы по материалам эксперимента Рината Абдуллина и собственного участия в BitGN.</p>
-    <span class="course-arrow" aria-hidden="true">↗</span>
-  </a>
-  <a class="course" href="/ai-analyst/">
-    <h3>AI-аналитик</h3>
-    <p>Сколько работы аналитика можно отдать агенту и чем это проверять — серия разборов. И основа, без которой агенту нечего объявить: A/B-эксперименты и монетизация.</p>
-    <span class="course-arrow" aria-hidden="true">↗</span>
-  </a>
-</div>
-<!-- catalog:collections:end -->
     </section>
     <section class="dv-catalog-resources" aria-labelledby="references-title">
       <h2 id="references-title">Справочники</h2>
@@ -482,6 +487,6 @@
         async src="//gc.zgo.at/count.js"></script>
 <!-- footer:end -->
 <script src="/main.js" defer></script>
-<script src="/assets/materials.js?v=20261105-rules" defer></script>
+<script src="/assets/materials.js?v=20261121-shelves" defer></script>
 </body>
 </html>

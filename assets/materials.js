@@ -1,50 +1,60 @@
-/* Фильтры улучшают статический каталог: без JavaScript видны все материалы. */
+/* Без JavaScript тематические полки открываются штатными средствами браузера. */
 (() => {
-  const grid = document.querySelector('#catalog-grid');
-  if (!grid) return;
   const search = document.querySelector('#catalog-query');
-  const buttons = [...document.querySelectorAll('[data-topic-filter]')];
-  const items = [...grid.querySelectorAll('.dv-catalog-item')];
-  const groups = [...grid.querySelectorAll('[data-catalog-topic]')];
+  const topic = document.querySelector('#catalog-topic');
+  const shelves = [...document.querySelectorAll('[data-catalog-topic]')];
   const empty = document.querySelector('#catalog-empty');
-  let topic = 'all';
+  const manuallyOpened = new Set();
 
   function readAddress() {
     const params = new URLSearchParams(location.search);
-    const requested = params.get('topic') || 'all';
-    topic = buttons.some(b => b.dataset.topicFilter === requested) ? requested : 'all';
+    topic.value = params.get('topic') || 'all';
+    if (!topic.value) topic.value = 'all';
     search.value = params.get('q') || '';
   }
 
   function update(writeAddress = true) {
     const query = search.value.toLocaleLowerCase('ru').trim();
+    const filtering = Boolean(query || topic.value !== 'all');
+    topic.closest('label').hidden = !filtering;
     let visible = 0;
-    items.forEach(item => {
-      item.hidden = !((topic === 'all' || item.dataset.topic === topic)
-        && item.textContent.toLocaleLowerCase('ru').includes(query));
-      if (!item.hidden) visible++;
-    });
-    groups.forEach(group => {
-      group.hidden = !group.querySelector('.dv-catalog-item:not([hidden])');
-    });
-    buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.topicFilter === topic)));
+    for (const shelf of shelves) {
+      const inTopic = topic.value === 'all' || shelf.dataset.catalogTopic === topic.value;
+      let matches = 0;
+      for (const item of shelf.querySelectorAll('.dv-catalog-item')) {
+        item.hidden = !inTopic || !item.textContent.toLocaleLowerCase('ru').includes(query);
+        if (!item.hidden) matches++;
+      }
+      visible += matches;
+      shelf.hidden = !matches;
+      shelf.open = filtering ? Boolean(matches) : manuallyOpened.has(shelf.id);
+    }
     empty.hidden = visible > 0;
-    if (writeAddress) {
-      const params = new URLSearchParams(location.search);
-      topic === 'all' ? params.delete('topic') : params.set('topic', topic);
-      query ? params.set('q', search.value) : params.delete('q');
-      const suffix = params.toString();
-      history.replaceState(null, '', location.pathname + (suffix ? '?' + suffix : '') + location.hash);
+    if (writeAddress && location.protocol !== 'file:') {
+      const url = new URL(location.href);
+      topic.value === 'all' ? url.searchParams.delete('topic') : url.searchParams.set('topic', topic.value);
+      query ? url.searchParams.set('q', search.value) : url.searchParams.delete('q');
+      history.replaceState(null, '', url);
     }
   }
 
-  buttons.forEach(button => button.addEventListener('click', () => {
-    topic = button.dataset.topicFilter;
-    update();
-  }));
+  for (const shelf of shelves) {
+    shelf.addEventListener('toggle', () => {
+      if (search.value.trim() || topic.value !== 'all') return;
+      if (shelf.open) manuallyOpened.add(shelf.id);
+      else manuallyOpened.delete(shelf.id);
+    });
+  }
+  function restore() {
+    readAddress();
+    const anchored = document.getElementById(location.hash.slice(1));
+    if (anchored?.matches('.material-shelf')) manuallyOpened.add(anchored.id);
+    update(false);
+  }
   search.addEventListener('input', () => update());
-  addEventListener('popstate', () => { readAddress(); update(false); });
-  addEventListener('pageshow', () => { readAddress(); update(false); });
-  readAddress();
-  update(false);
+  topic.addEventListener('change', () => update());
+  addEventListener('popstate', restore);
+  addEventListener('pageshow', restore);
+  document.querySelector('.catalog-lookup').hidden = false;
+  restore();
 })();

@@ -25,7 +25,7 @@ class PublicationChecks(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(path, target)
         for name in ["site_materials.py", "render_materials.py", "render_home.py",
-                     "render_ai_analyst_hub.py", "check_class_collisions.py",
+                     "render_ai_analyst_hub.py", "render_shared_memory_hub.py", "check_class_collisions.py",
                      "render_site_header.py"]:
             target = cls.fixture / "scripts" / name
             target.parent.mkdir(exist_ok=True)
@@ -120,7 +120,7 @@ class PublicationChecks(unittest.TestCase):
         page = self.root / "materials/index.html"
         def urls():
             return re.findall(r'<li class="dv-catalog-item".*?<a href="([^"]+)"',
-                              page.read_text(), re.S)
+                              page.read_text().split('id="topic-ai">', 1)[1].split("</details>", 1)[0], re.S)
         before = urls()
         index = self.root / "assets/search-index.json"
         entries = json.loads(index.read_text())
