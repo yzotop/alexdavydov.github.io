@@ -1,44 +1,94 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Запасы. Можно ли передать агенту заказ поставщику? — Мастерская Давыдова</title>
+<meta name="author" content="Саша Давыдов">
+<title>Я поручил агенту составить заказ поставщику — Саша Давыдов</title>
 <link rel="stylesheet" href="davydov.css">
 <style>
-*{box-sizing:border-box}body{line-height:1.6}main,footer{max-width:1152px;margin:auto;padding:32px 24px}main a,footer a{color:inherit;text-underline-offset:4px}a:hover{text-decoration-color:var(--accent)}.back,.meta,.small{font-size:14px;color:#575757}h1,h2,h3,p{margin:0}h1{font-size:clamp(35px,4vw,52px);font-weight:500;letter-spacing:-.048em;line-height:1.1;max-width:25ch;margin:15px 0}h2{font-weight:500;font-size:clamp(24px,3vw,34px);letter-spacing:-.04em;line-height:1.18;margin:0 0 15px}h3{font-size:19px;font-weight:600;letter-spacing:-.025em}p+p{margin-top:12px}.lead{font-size:19px;max-width:72ch;margin:22px 0 14px}.board,.pair{display:grid;grid-template-columns:1fr 1fr;gap:44px}.board,section.chapter{border-top:1px solid var(--ink);padding:24px 0 32px}.inventory-comparison{max-width:70ch;margin:0 0 24px}.inventory-comparison>a{font-weight:700;text-decoration-color:var(--accent)}.inventory-comparison>p{margin-top:8px}.big{font-size:clamp(52px,6vw,74px);line-height:1.1;letter-spacing:-.06em;margin:9px 0}.remark{border-left:3px solid var(--accent);padding-left:18px}.board p{max-width:53ch}.chapter>p{max-width:74ch}.chapter>p:last-child{margin-top:14px}.table-wrap{overflow-x:auto;margin:18px 0 12px}table{width:100%;border-collapse:collapse;text-align:right;font-size:15px;font-variant-numeric:tabular-nums}th,td{border-bottom:1px solid var(--line);padding:10px 8px;font-weight:400;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{font-weight:600}thead th{font-size:13px;color:#555;background:#fafafa}td small{display:block;font-size:12px;color:#555}.col-focus{font-weight:600}details{padding:12px 0;max-width:84ch}summary{font-weight:600;cursor:pointer}details p{margin:10px 0}blockquote{padding-left:14px;margin:10px 0;border-left:2px solid var(--line-d)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}footer{border-top:1px solid var(--line);font-size:14px;display:flex;justify-content:space-between;gap:20px}.sources a{display:inline-block;margin-right:15px}.pair p{max-width:58ch} @media(max-width:700px){.board,.pair{grid-template-columns:1fr;gap:22px}main,footer{padding-inline:18px}.dv-nav{padding:14px 18px}.dv-nav>a:last-child{font-size:12px}.board,section.chapter{padding:21px 0}}
+* { box-sizing: border-box }
+body { line-height: 1.6 }
+main, footer { max-width: 1010px; margin: auto; padding: 28px clamp(18px, 4vw, 48px) }
+main a, footer a { color: inherit; text-underline-offset: .2em }
+a:hover { text-decoration-color: var(--accent) }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
+h1, h2, p { margin: 0 }
+h1, h2 { font-weight: 500; letter-spacing: -.045em; line-height: 1.12; text-wrap: balance }
+h1 { max-width: 22ch; margin: 10px 0 18px; font-size: clamp(36px, 4.8vw, 58px) }
+h2 { font-size: clamp(25px, 3vw, 34px); margin-bottom: 14px }
+main p, details { max-width: 72ch }
+p + p { margin-top: 12px }
+.lead { font-size: clamp(18px, 2.1vw, 22px); line-height: 1.5; max-width: 62ch }
+header { padding: 20px 0 28px }
+.meta, .back, caption, footer { font-size: 14px; color: #575757 }
+section { border-top: 1px solid var(--line-d); padding: 24px 0 }
+table { width: 100%; max-width: 700px; border-collapse: collapse; font-variant-numeric: tabular-nums; margin: 20px 0 14px }
+caption { text-align: left; padding-bottom: 6px }
+th, td { text-align: right; border-bottom: 1px solid var(--line); padding: 9px 6px; line-height: 1.4 }
+th:first-child { text-align: left; padding-left: 0 }
+tbody th { font-weight: 500 }
+thead th { font-size: 14px }
+td { white-space: nowrap }
+.verdict { border-top: 2px solid var(--accent) }
+details { margin: 18px 0 0 }
+summary { cursor: pointer; text-decoration: underline; text-underline-offset: .2em }
+details p { margin: 10px 0 }
+footer { border-top: 1px solid var(--line); display: flex; gap: 12px; justify-content: space-between }
+@media(max-width: 600px) {
+  main { padding-top: 18px }
+  th, td { font-size: 14px; padding: 8px 3px }
+  thead th { font-size: 13px }
+  .dv-nav { padding: 14px 18px }
+}
 </style></head><body>
 <nav class="dv-nav" aria-label="Основное меню"><a class="logo" href="https://davydov.my/"><span class="logo-mark">Δ</span><span class="logo-wordmark">davydov</span></a><a href="https://davydov.my/ai-first/workshop/">AI-мастерская</a></nav>
-<main><a class="back" href="https://davydov.my/ai-first/workshop/">← В Мастерскую</a>
-<h1>Запасы. Можно ли передать агенту заказ поставщику?</h1>
-<p class="meta">Второй проект Мастерской после Саши · слепая закупка 13 июня 2011 · разбор 21 ноября 2026</p>
-<p class="lead">У закупщика шесть товаров и 127 009,33 ₽. Агенту дали остатки, два прогноза, цены и калькулятор. Он вернул заказ, объяснил выбор и предложил вопрос руководителю. Как понять, можно ли отправлять такой заказ?</p>
+<main>
+<a class="back" href="/ai-first/workshop/">← В AI-мастерскую</a>
+<header>
+<p class="meta">Саша Давыдов · Закупка на данных 13 июня 2011 года</p>
+<h1>Я поручил агенту составить заказ поставщику</h1>
+<p class="lead">Понедельник. На складе заканчиваются одни товары, других ещё хватает. На закупку есть 127 009,33 ₽. Я передал агенту шесть позиций и попросил решить, сколько заказать. Вот заявка, по которой мне предстояло принять решение.</p>
+</header>
 
-<div class="inventory-comparison">
-<a href="/ai-first/workshop/inventory/comparison/">Один заказ, две модели — сравнить решения</a>
-<p>Qwen сохранила заказ с перерасходом после предупреждения. Astra сразу уложилась в бюджет и после уточнения приоритета изменила четыре строки. Astra предупреждения не получала.</p>
-</div>
-<p class="small">Суммы в рублях 2011 года по курсу 45,2182 ₽ за фунт. Первичные ответы сохранены в валюте опыта. <a href="https://www.cbr.ru/scripts/XML_daily.asp?date_req=13/06/2011">Курс Банка России</a>.</p>
-<div class="board"><div><h2>Что ответил агент</h2><p class="small">Заявленная стоимость шести строк</p><div class="big">20 836,55 ₽</div><p>Агент взял весь допустимый объём по каждому артикулу. В объяснении написал, что укладывается в бюджет и стремится сохранить полные пары и корзины.</p><details><summary>Посмотреть первую выдачу</summary><p>Содержание ответа в переводе: агент считает заказ допустимым, предполагает дополнительные покупки формочек Teatime при их появлении и спрашивает, есть ли у руководителя сомнения по этой позиции. Количества и исходный английский текст сохранены до уточнения. <a href="evidence/qwen/first-answer.json">Оригинал</a>.</p></details></div>
-<div class="remark"><h2>Что показала сверка</h2><p class="small">Стоимость тех же количеств по закупочным ценам</p><div class="big">169 345,78 ₽</div><p>Превышение — <strong>42 336,44 ₽</strong>. Перед финальным ответом агент запросил пересчёт. Калькулятор вернул полную стоимость и отрицательный остаток бюджета. Агент сохранил и количества, и ошибочную сумму.</p><p class="small">Все шесть строк по отдельности проходят проверку количества. Ошибку ловит проверка заказа целиком. <a href="evidence/qwen/arithmetic-feedback.json">Что увидел агент после пересчёта</a>.</p></div></div>
+<section>
+<h2>Что я дал агенту</h2>
+<p>По каждому товару у агента были остаток на утро, закупочная цена, два прогноза спроса на ближайшие 14 дней и предельное количество к заказу. Поставка пришла бы через семь дней. Будущих продаж агент в задании не видел.</p>
+<p>Например, на складе было 640 красных сумок. Два прогноза давали примерно 1 279 и 1 413 штук спроса, а в эту закупку разрешалось включить до 1 055 сумок. Сколько именно взять, я оставил агенту: каждый рубль, потраченный на сумки, уменьшал бюджет на формочки и подсвечники.</p>
+<p>Я попросил Qwen2.5-Coder 7B вернуть количество по каждому артикулу, итоговую стоимость и короткое объяснение выбора. Агент мог проверить свой черновик калькулятором. <a href="evidence/qwen/packet.json">Исходные данные по шести товарам</a>.</p>
+</section>
 
-<section class="chapter"><h2>Какое уточнение меняет закупку</h2>
-<p>Формочки Retro Spot и Teatime были в 675 из 9 787 обучающих чеков выбранного ассортимента. У Teatime на складе 297 штук, прогноз B на две недели — 243,5. С учётом буфера новых формочек Teatime заказывать не требуется. Агент назвал товар недоступным, хотя положительный остаток был во входных данных. Что сделает покупатель при дефиците, по этим чекам неизвестно.</p>
-<p>Рабочий вопрос закупщика: <strong>«Сохраняем всю заявку на Retro Spot для этой пары, даже если придётся урезать сумки и подсвечники?»</strong> Для проверки постановщик заранее выбрал ответ «да». Это условие сценария. Заказ по умолчанию распределяет лимит пропорционально. После уточнения сначала покрываем потребность пары, остаток распределяем тем же способом.</p>
-<div class="table-wrap" tabindex="0" aria-label="Сравнение количеств"><table><thead><tr><th>Товар</th><th>Лимит позиции, шт.</th><th>Агент до / после</th><th>Обычный заказ</th><th>Приоритет пары</th></tr></thead><tbody>
-<tr><td>Формочки Retro Spot <small>21212</small></td><td>388</td><td>388 / 388</td><td>292</td><td class="col-focus">388</td></tr>
-<tr><td>Формочки Pink Paisley <small>21977</small></td><td>1 297</td><td>1 297 / 1 297</td><td>973</td><td>962</td></tr>
-<tr><td>Формочки Teatime <small>84991</small></td><td>0</td><td>0 / 0</td><td>0</td><td>0</td></tr>
-<tr><td>Красная сумка <small>85099B</small></td><td>1 055</td><td>1 055 / 1 055</td><td>791</td><td>782</td></tr>
-<tr><td>Сумка Strawberry <small>85099F</small></td><td>589</td><td>589 / 589</td><td>442</td><td>436</td></tr>
-<tr><td>Подсвечник-сердце <small>85123A</small></td><td>715</td><td>715 / 715</td><td>536</td><td>530</td></tr>
-</tbody><tfoot><tr><th>Фактическая стоимость</th><td>169 345,78 ₽</td><td>169 345,78 ₽ оба раза</td><td>127 007,98 ₽</td><td>127 002,55 ₽</td></tr></tfoot></table></div>
-<p>Приоритет добавляет 96 упаковок Retro Spot и сокращает четыре другие строки. Агент переставил Teatime в списке, но не изменил ни одного количества. После уточнения суммы у него было достаточно информации для однозначного пересчёта. <a href="evidence/qwen/clarified-answer.json">Ответ на уточнение</a>.</p></section>
+<section>
+<h2>Какую заявку я получил</h2>
+<p>Агент взял максимум по каждой позиции и указал итог <strong>20 836,55 ₽</strong>. Я подставил его количества в прайс, который дал ему утром. В последнем столбце — мой пересчёт.</p>
+<table>
+<caption>Финальная заявка Qwen · 13 июня</caption>
+<thead><tr><th scope="col">Товар</th><th scope="col">Заказать</th><th scope="col">По прайсу, ₽</th></tr></thead>
+<tbody>
+<tr><th scope="row">Формочки Retro Spot, уп.</th><td>388</td><td>5 789,74</td></tr>
+<tr><th scope="row">Формочки Pink Paisley, уп.</th><td>1 297</td><td>19 353,84</td></tr>
+<tr><th scope="row">Формочки Teatime, уп.</th><td>0</td><td>0,00</td></tr>
+<tr><th scope="row">Красная сумка, шт.</th><td>1 055</td><td>55 815,09</td></tr>
+<tr><th scope="row">Сумка «Клубника», шт.</th><td>589</td><td>31 161,22</td></tr>
+<tr><th scope="row">Подсвечник-сердце, шт.</th><td>715</td><td>57 225,89</td></tr>
+</tbody>
+<tfoot><tr><th scope="row" colspan="2">Всего по прайсу</th><td><strong>169 345,78</strong></td></tr></tfoot>
+</table>
+<p>Уже по красным сумкам видно расхождение. Одна эта строка стоит 55 815,09 ₽ — больше, чем агент указал за весь заказ. <a href="evidence/qwen/first-answer.json">Ответ агента с количествами и объяснением</a>.</p>
+</section>
 
-<section class="chapter"><h2>Что произошло в следующие две недели</h2>
-<p>Только после фиксации обоих ответов открыли покупки с 13 по 26 июня. Два допустимых заказа пришли утром 20 июня, до этого склад был одинаков. Для агента результат продаж не считали: его закупка требовала дополнительных 42 336,44 ₽.</p>
-<div class="table-wrap" tabindex="0" aria-label="Последствия двух допустимых заказов"><table><thead><tr><th>Результат в симуляции</th><th>Обычный заказ</th><th>Приоритет пары</th></tr></thead><tbody>
-<tr><td>Выдано из 4 555 единиц</td><td>4 219</td><td>4 204</td></tr><tr><td>Полностью собраны корзины из 158</td><td>147</td><td>143</td></tr><tr><td>Полная выдача трёх выбранных пар, из 39 случаев</td><td>35</td><td>33</td></tr><tr><td>Полная выдача целевой пары, из 15 случаев</td><td>15</td><td>15</td></tr><tr><td>Потерянная маржа и хранение</td><td>12 606,93 ₽</td><td>13 137,21 ₽</td></tr></tbody></table></div>
-<p>На этом потоке обычного заказа уже хватило для всех 15 совместных покупок целевой пары. Дополнительные упаковки не улучшили её комплектность. Среди шести товаров у прогноза B ошибка за горизонт составила 49,56% WAPE, у A — 74,30%. Оба допустимых заказа используют одну заявку по B. Разница между ними возникла при распределении денег.</p></section>
+<section>
+<h2>Что я проверил</h2>
+<p><strong>Количество.</strong> Все шесть артикулов на месте, количества целые, каждое укладывается в свой предел. Ноль у формочек Teatime тоже допустим: утром на складе было 297 упаковок.</p>
+<p><strong>Бюджет.</strong> Я умножил количество по каждой строке на исходную закупочную цену и сложил результаты. Заказ стоит 169 345,78 ₽ при лимите 127 009,33 ₽. Денег не хватает примерно на 42,3 тысячи рублей.</p>
+<p><strong>Что агент знал в момент ответа.</strong> Я открыл журнал: перед финальным ответом Qwen сама запросила проверку. Калькулятор сообщил ей стоимость заказа и отрицательный остаток бюджета. После этого она вернула те же количества и прежний итог. <a href="evidence/qwen/arithmetic-feedback.json">Сообщение калькулятора</a>.</p>
+</section>
 
-<section class="chapter pair"><div><h2>Что поручить агенту</h2><p>Он собрал шесть строк в читаемый проект и поднял тему комплектности. Предложенная им формулировка вопроса опиралась на ошибку об остатке. В этом прогоне проверка суммы, соблюдение приоритета и проверка причинных утверждений остались обязанностью человека и расчётного кода.</p></div><div><h2>Как принять следующий заказ</h2><p>Прежде чем показывать заявку закупщику, код пересчитывает стоимость строк и сравнивает её с лимитом. При провале заказ возвращается на пересчёт. Руководитель выбирает приоритет, после чего код заново распределяет бюджет. Текст агента можно проверять отдельно по утверждённым строкам.</p></div></section>
-
-<section class="chapter"><h2>Как устроена слепая проверка</h2><p>Дату выбрали по календарю до просмотра результата: первый понедельник после всех периодов E1, включая продление. Локальная Qwen2.5-Coder 7B получила новый контекст, пакет на утро заказа и доступ к проверке стоимости собственного черновика. В её запросах нет прежних выводов, эталона и будущих продаж. Все сообщения и первые ответы сохранены. Пределы по артикулам уже посчитал код. Проверяли распределение бюджета и объяснение решения.</p><p>Источник покупок — Daqing Chen, <a href="https://doi.org/10.24432/C5CG6D">Online Retail II</a>, CC BY 4.0. Запас, закупочная цена, потерянные запросы, срок поставки и приоритет руководителя заданы симуляцией. Один прогон позволяет отклонить этот заказ. Надёжность других моделей и реальные потери магазина остаются открытыми.</p><p class="sources"><a href="evidence/protocol.txt">Протокол</a><a href="evidence/qwen/packet.json">Вход агента</a><a href="evidence/qwen/evaluation.json">Сверка и метрики</a><a href="evidence/qwen-notes.txt">Доказательства и воспроизведение</a></p></section>
-<section class="chapter"><h2>Предыстория проекта</h2><p><a href="april/history.html">Изменить бюджет заказа 4 апреля</a> и посмотреть, как расчёт распределяет деньги между 30 товарами. В этом демо AI получает готовые количества. В слепой закупке ему поручили предложить их самому.</p><p><a href="evidence/e1.txt">E1: два правила пополнения и проверка пар</a> · <a href="https://davydov.my/ai-first/workshop/sasha/">Первый проект Мастерской — Саша</a>.</p></section></main><footer><span>Мастерская AI-first аналитики</span><span>davydov.my · 2026</span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
+<section class="verdict">
+<h2>Отправил бы я этот заказ? Нет.</h2>
+<p>Поставщику ушли бы именно шесть количеств из таблицы. Для них понадобилось бы на треть больше согласованного бюджета. Я вернул бы заявку агенту с одним поручением: пересобрать её в пределах 127 009,33 ₽ и показать, какие строки пришлось сократить. Перед отправкой я бы снова сверил финальные количества с прайсом.</p>
+<p>После этого опыта я бы оставил агенту выбор количеств и объяснение компромисса. Проверку лимита поставил бы после его последнего ответа, а решение об отправке оставил бы закупщику. В этом прогоне предупреждение модели уже показали. Оно не остановило ошибочную заявку.</p>
+<details><summary>Условия опыта и источники</summary>
+<p>Это симуляция на открытых покупках британского магазина. Остатки, закупочные цены и сроки поставки заданы моделью склада. Суммы в рублях 2011 года пересчитаны по курсу 45,2182 ₽ за фунт. Я считал по исходным ценам и округлял результат для показа. Поставщику заказ не отправлялся.</p>
+<p><a href="evidence/protocol.txt">Протокол опыта</a> · <a href="evidence/qwen/evaluation.json">Независимая сверка заявки</a> · <a href="https://doi.org/10.24432/C5CG6D">Данные Daqing Chen, Online Retail II (CC BY 4.0)</a> · <a href="https://www.cbr.ru/scripts/XML_daily.asp?date_req=13/06/2011">Курс Банка России</a>.</p>
+</details>
+<p style="margin-top:20px"><a href="comparison/index.html">Как с тем же заказом справилась другая модель →</a></p>
+</section>
+</main><footer><span>Мастерская AI-first аналитики</span><span>davydov.my · 2026</span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body></html>
