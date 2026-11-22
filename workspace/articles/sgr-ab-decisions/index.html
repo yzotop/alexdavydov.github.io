@@ -18,6 +18,11 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <link rel="icon" href="/favicon.ico" sizes="any"/>
   <link rel="stylesheet" href="/style.css?v=fd9a4d20811b"/>
+  <style>
+    @media (min-width: 901px) {
+      .prose > .table-wrap { overflow: visible; }
+    }
+  </style>
 </head>
 <body>
 <!-- header:start -->
@@ -123,33 +128,35 @@
 
   <p>Что показали данные:</p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>метрика</th>
-        <th>контроль</th>
-        <th>тест</th>
-        <th>Δ</th>
-        <th>p-value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>revenue</td>
-        <td>1 692 592</td>
-        <td>1 705 794</td>
-        <td>+0.78%</td>
-        <td>0.005</td>
-      </tr>
-      <tr>
-        <td>ctr</td>
-        <td>0.0512</td>
-        <td>0.0508</td>
-        <td>−0.75%</td>
-        <td>0.628</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrap" role="region" aria-label="Показатели контрольной и тестовой групп" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th>метрика</th>
+          <th>контроль</th>
+          <th>тест</th>
+          <th>Δ</th>
+          <th>p-value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>revenue</td>
+          <td>1 692 592</td>
+          <td>1 705 794</td>
+          <td>+0.78%</td>
+          <td>0.005</td>
+        </tr>
+        <tr>
+          <td>ctr</td>
+          <td>0.0512</td>
+          <td>0.0508</td>
+          <td>−0.75%</td>
+          <td>0.628</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <p>Прочитайте это как аналитик. Revenue вырос на 0.78%, и рост статистически значим — p=0.005, сильно ниже α. Guardrail цел: CTR просел на 0.75%, в пределах допустимых 3%, и просадка незначима (p=0.63). Соблазн очевиден: значимый рост выручки, ограничители не пробиты — катить?</p>
 
@@ -161,42 +168,44 @@
 
   <p>Точность на 85 наблюдаемых кейсах — свободный режим против режима по схеме:</p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>модель</th>
-        <th>свободно</th>
-        <th>по схеме</th>
-        <th>разница</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Opus 4.8</td>
-        <td>97.6%</td>
-        <td>89.4%</td>
-        <td>−8.2 п.п.</td>
-      </tr>
-      <tr>
-        <td>Opus 4.7</td>
-        <td>96.5%</td>
-        <td>94.1%</td>
-        <td>−2.4 п.п.</td>
-      </tr>
-      <tr>
-        <td>Sonnet 4.6</td>
-        <td>92.9%</td>
-        <td>98.8%</td>
-        <td>+5.9 п.п.</td>
-      </tr>
-      <tr>
-        <td>Haiku 4.5</td>
-        <td>89.4%</td>
-        <td>89.4%</td>
-        <td>0.0 п.п.</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-wrap" role="region" aria-label="Точность моделей в двух режимах" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th>модель</th>
+          <th>свободно</th>
+          <th>по схеме</th>
+          <th>разница</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Opus 4.8</td>
+          <td>97.6%</td>
+          <td>89.4%</td>
+          <td>−8.2 п.п.</td>
+        </tr>
+        <tr>
+          <td>Opus 4.7</td>
+          <td>96.5%</td>
+          <td>94.1%</td>
+          <td>−2.4 п.п.</td>
+        </tr>
+        <tr>
+          <td>Sonnet 4.6</td>
+          <td>92.9%</td>
+          <td>98.8%</td>
+          <td>+5.9 п.п.</td>
+        </tr>
+        <tr>
+          <td>Haiku 4.5</td>
+          <td>89.4%</td>
+          <td>89.4%</td>
+          <td>0.0 п.п.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <p>Читайте таблицу не по строкам, а по тому, как меняется знак. У Opus 4.8 — самой сильной модели — схема не помогла, а заметно навредила: минус 8.2 пункта. Это не шум: парный тест McNemar показал, что схема не исправила ни одного кейса и сломала несколько, а доверительный интервал на разницу не пересекает ноль. Ухудшение статистически значимо.</p>
 
