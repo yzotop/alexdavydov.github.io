@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Сколько улучшений дала именно эта правка? — AI-мастерская</title><link href="/style.css" rel="stylesheet"/><style>.recipes-page .rp-title{font-size:clamp(36px,5.5vw,68px);}
+.recipes-page .rp-subtitle{font-size:20px;line-height:1.4;margin:0 0 20px;}
+.recipes-page .rp-toc{margin:28px 0 40px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.recipes-page .rp-toc ol{margin:0;padding-left:24px;}
+.recipes-page .rp-toc li{margin:10px 0;}
+.recipes-page .rp-section{margin-top:48px;scroll-margin-top:100px;}
+.recipes-page .rp-brief p:last-child{margin-bottom:0;}
+.recipes-page .rp-section>h2{margin-top:0;}
+.recipes-page .rp-decision{scroll-margin-top:100px;margin:32px 0;}
+.recipes-page .impact-scroll{overflow-x:auto;}
+.recipes-page :is(#change-impact-card,#version-choice-card) table{min-width:620px;}
+.recipes-page :is(#change-impact-card,#version-choice-card) th:first-child{width:22%;}
+.recipes-page :is(#change-impact-card,#version-choice-card) thead th:nth-child(2){width:30%;}
+.recipes-page .rp-decision table{width:100%;table-layout:fixed;}
+.recipes-page .rp-decision th,.recipes-page .rp-decision td{width:auto;font-family:inherit;font-size:inherit;text-transform:none;letter-spacing:normal;white-space:normal;vertical-align:top;overflow-wrap:break-word;}
+.recipes-page .rp-decision th:first-child{width:36%;}
+.recipes-page .rp-takeaway p:last-child{margin-bottom:0;}
+.recipes-page .rp-return{font-size:14px;margin-top:24px;}
+.recipes-page a{text-decoration:underline;text-underline-offset:3px;}
+.recipes-page a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.recipes-page code{overflow-wrap:anywhere;}
+</style><link href="../assets/reader-route.css" rel="stylesheet"/><script defer="" src="../assets/reader-route.js"></script><meta content="noindex,follow" name="robots"/></head><body><nav aria-label="Путь чтения" class="reader-trail" data-origins='{"letters": "Глава 11. Шестьсот писем против красивой схемы"}'><a href="/ai-first/workshop/#book">Мастерская</a><span aria-hidden="true"> / </span><a href="/ai-first/workshop/book/">Оглавление</a><span aria-hidden="true"> / </span><a data-origin="" href="../chapters/letters.html#practice">Глава 11. Шестьсот писем против красивой схемы</a></nav><main class="article recipes-page reader-recipe"><section class="rp-section" id="сколько-улучшений-дала-именно-эта-правка"><p class="article-meta">Рецепт 04</p><h1>Сколько улучшений дала именно эта правка?</h1><p class="reader-jump"><a data-reader-route="" href="../practicum/payment-effect.html">Упражнение · Проверить вклад правки в 18 платежей →</a></p>
+<div class="case-block rp-brief"><p><strong>Что получится.</strong> Список исправленных и новых ошибок на одной и той же выгрузке.</p><p>На своей выгрузке включите и выключите одну правку. Проверьте изменившиеся строки по известным ответам и запишите, где стало лучше, а где появилась ошибка.</p></div>
+<p>Список платежей без пары за неделю сократился на 18 строк. Можно ли написать, что все 18 сопоставила новая версия алгоритма?</p><p>В BitGN Romius исправил обработку количества товара в корзине. Раньше явно переданный ноль мог превратиться в единицу. Интегратор bobcat принял проверку количества. Мы нашли её в файле, который действительно отправили на прогон. На 19 задачах новая сборка набрала 15,66 балла против прежних 16,67. В сборке были и другие изменения, а условия задач генерировались заново. По этому сравнению мы смогли подтвердить включение кода. Сколько баллов добавила или отняла именно проверка количества, осталось неизвестным. <a href="/workspace/articles/component-integration/">Как мы проверили файл</a>.</p><div class="case-block rp-takeaway"><p><strong>Забрать в работу.</strong> Найдите версию компонента в фактически исполненной сборке. Возьмите один снимок данных и один справочник, измените только проверяемую правку. Сопоставьте изменившиеся строки с известными правильными ответами. Выпишите отдельно, сколько ошибок исправили и сколько добавили. Если одновременно поменялись входы, долю улучшения пока оставьте открытой.</p></div><section class="rp-decision" id="change-impact-card"><h3>Карточка вклада правки</h3><p>Запишите основания для своего решения. После первой попытки в практикуме можно свериться с заполненным примером.</p>
+<div aria-label="Вопросы для своего отчёта" class="impact-scroll" role="region" tabindex="0"><table><thead><tr><th scope="col">Вопрос</th><th scope="col">Мой отчёт</th></tr></thead>
+<tbody>
+<tr><th scope="row">Что изменилось за неделю?</th><td>Считали …. Было …, стало …. За это время поменялись ….</td></tr>
+<tr><th scope="row">Какая версия отработала?</th><td>В запуске … использована версия …. Это видно по ….</td></tr>
+<tr><th scope="row">Что дала правка на одних данных?</th><td>Выгрузка и справочник …. Без правки получили … верных, … ошибочных, … без ответа. С правкой получили … / … / ….</td></tr>
+<tr><th scope="row">Сколько строк исправили и сколько испортили?</th><td>По эталону … получили верный ответ, … получили новую ошибку.</td></tr>
+<tr><th scope="row">Кто разберёт спорную строку?</th><td>Строка …. Получили …, ожидали …. Прошу … сделать ….</td></tr>
+<tr><th scope="row">Какую экономию можем подтвердить?</th><td>Пока неизвестно …. Для оценки нужны ….</td></tr>
+</tbody></table></div></section>
+</section><div id="exercises"><section class="reader-exercises"><h2>Попробовать на учебных данных</h2><ul><li><a data-reader-route="" href="../practicum/payment-effect.html">Проверить вклад правки в 18 платежей</a><p>Сравните два прогона на одной выгрузке и проверьте изменившиеся пары по контрольным заказам.</p></li></ul></section></div></main><script async="" data-goatcounter="https://davydov.goatcounter.com/count" src="//gc.zgo.at/count.js"></script></body></html>

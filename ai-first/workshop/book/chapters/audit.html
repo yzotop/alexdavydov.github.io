@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Саша Давыдов" name="author"/><title>Как тридцать два гигабайта превратились в короткий отчёт — Саша Давыдов</title><link href="/favicon.svg" rel="icon"/><link href="/style.css?v=fd9a4d20811b" rel="stylesheet"/><link href="/ai-first/workshop/workshop.css" rel="stylesheet"/><meta content="Как тридцать два гигабайта превратились в короткий отчёт · Как строят AI-системы" name="description"/><link href="../assets/book.css" rel="stylesheet"/><link href="https://davydov.my/ai-first/workshop/book/chapters/audit.html" rel="canonical"/><meta content="https://davydov.my/ai-first/workshop/book/chapters/audit.html" property="og:url"/><meta content="Как тридцать два гигабайта превратились в короткий отчёт" property="og:title"/><meta content="Как тридцать два гигабайта превратились в короткий отчёт · Как строят AI-системы" property="og:description"/></head><body><!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end --><main class="dvy wh volume"><article class="section-frame" id="audit">
+<nav aria-label="Путь по сайту" class="crumb"><a href="/ai-first/workshop/#book">AI-мастерская</a> / <a href="/ai-first/workshop/book/">Оглавление</a></nav>
+<p class="folio">Часть 6 · Что остаётся решать команде</p>
+<h1>Как тридцать два гигабайта превратились в короткий отчёт</h1><p class="counter">Глава 16 из 18</p>
+<div class="prose"><p>С прототипом можно было проследить путь одного архива. При аудите компании Ринату пришлось распределить между агентами уже 32 ГБ текстов и JSON. Руководители ждали короткий отчёт о том, что исправить в первую очередь и почему. Сначала Ринат поручил собрать описания того, как устроена работа в похожих компаниях. Потом агенты искали примеры в материалах самой компании и сопоставляли её реальные процессы с этими ориентирами. <span class="sources"><a href="https://t.me/llm_under_hood/997">Рассказ Рината об аудите · <time>19.11.2026</time></a></span></p><p>Антон спросил, как первая система запускала агентов во второй. «да просто ручками», — ответил Ринат. Исследование он запускал отдельно. Затем сам начинал в Codex очередной этап анализа, а уже внутри этапа Codex распределял задания. По подсчёту Рината, система завела больше 30 тысяч тикетов. Для их хранения хватило двух таблиц SQLite. Когда Егор Колосов спросил, сводил ли Ринат тикеты в крупные блоки, тот объяснил, что передачу работы оставил Codex. <span class="sources"><a href="https://t.me/llm_driven_products/81279">Вопрос Антона · <time>19.11.2026</time></a>, <a href="https://t.me/llm_driven_products/81281">Кто запускал этапы · <time>19.11.2026</time></a>, <a href="https://t.me/llm_driven_products/81285">Где лежали тикеты · <time>19.11.2026</time></a>, <a href="https://t.me/llm_driven_products/81295">Вопрос Егора · <time>19.11.2026</time></a>, <a href="https://t.me/llm_driven_products/81296">Для кого велись тикеты · <time>19.11.2026</time></a></span></p><p>В сумме система проработала больше суток. Ринат получил короткий список приоритетов с обоснованиями и ссылками на исходные материалы. Но в конце поста Ринат пересказал и совет самой системы: прежде чем действовать, разослать короткий список вопросов конкретным людям, собрать ответы и вернуть их в анализ. Разослали ли вопросы и что решили руководители, Ринат в этом посте не сообщает.</p><aside><strong>Что остаётся в силе</strong><p>Я бы открыл в отчёте первую рекомендацию. На какие записи она опирается? Какой ответ сотрудника мог бы поменять её место в списке? Если такой ответ возможен, с этого человека и стоит начать.</p></aside></div>
+<a class="recipe-end" href="../recipes/choice.html?from=audit" id="practice"><span>Рецепт и упражнение</span><strong>Какую часть отчёта поручить агенту?</strong><span>Возьмите одну рекомендацию для руководителя. Сформулируйте поручение агенту: какие исходные записи отыскать и с каким вопросом вернуться к человеку.</span></a>
+<nav aria-label="Чтение по порядку" class="page-turn"><a href="shared.html" rel="prev"><small>← Предыдущая глава</small>Зачем Ринат переслал прототип ещё раз</a><a href="rules.html" rel="next"><small>Следующая глава →</small>Откуда агенты узнают о следующем испытании?</a></nav>
+<a class="all-chapters" href="/ai-first/workshop/book/">Все главы книги</a> · <a href="../glossary.html">Глоссарий</a>
+</article></main><!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end --><script defer="" src="/main.js"></script></body></html>
