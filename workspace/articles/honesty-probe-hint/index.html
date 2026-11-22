@@ -18,6 +18,11 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <link rel="icon" href="/favicon.ico" sizes="any"/>
   <link rel="stylesheet" href="/style.css?v=fd9a4d20811b"/>
+  <style>
+    @media (min-width: 375px) {
+      .prose > .table-wrap { overflow: visible; }
+    }
+  </style>
 </head>
 <body>
 <!-- header:start -->
@@ -104,15 +109,17 @@
 
   <p>Дальше — два арма на одних и тех же шестидесяти кейсах, две модели, 240 вызовов.</p>
 
-  <table>
-    <thead>
-      <tr><th>арм</th><th>novelty (n=30)</th><th>reversal (n=30)</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><strong>без notes</strong></td><td>30 × <code>ship</code> у обеих моделей</td><td>30 × <code>no_ship</code> у обеих</td></tr>
-      <tr><td><strong>с notes</strong></td><td>30 × <code>investigate</code> у обеих</td><td>Sonnet 29 × <code>investigate</code> + 1 × <code>no_ship</code>; Haiku 22 + 8</td></tr>
-    </tbody>
-  </table>
+  <div class="table-wrap" role="region" aria-label="Результаты для novelty и reversal" tabindex="0">
+    <table>
+      <thead>
+        <tr><th>арм</th><th>novelty (n=30)</th><th>reversal (n=30)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>без notes</strong></td><td>30 × <code>ship</code> у обеих моделей</td><td>30 × <code>no_ship</code> у обеих</td></tr>
+        <tr><td><strong>с notes</strong></td><td>30 × <code>investigate</code> у обеих</td><td>Sonnet 29 × <code>investigate</code> + 1 × <code>no_ship</code>; Haiku 22 + 8</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <p>Ноль промежуточных случаев. Не «стало хуже» — переключилось целиком, у обеих моделей, во всех тридцати кейсах.</p>
 
