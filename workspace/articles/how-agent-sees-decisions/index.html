@@ -24,7 +24,7 @@
  grid-template-columns:1fr 232px;gap:0 56px}.ags header,.ags .body,.ags footer,.ags .series-nav{grid-column:1}.ags header{border-bottom:2px solid var(--ink);padding:28px 0 16px;margin-bottom:34px}.ags .kick{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
  color:var(--sec);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.ags h1{font-size:clamp(28px,4.8vw,50px);line-height:1.08;letter-spacing:-.02em;margin:24px 0 0;
  font-weight:500;max-width:18ch}.ags .lede{font-size:21px;color:var(--sec);margin:20px 0 4px;max-width:60ch}.ags h2{font-size:clamp(23px,3.2vw,29px);line-height:1.2;margin:70px 0 14px;padding-top:22px;
- border-top:1.5px solid var(--ink);scroll-margin-top:20px}.ags h3{font-size:21px;font-weight:700;margin:40px 0 10px}.ags p{margin:0 0 17px;max-width:66ch}.ags code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}.ags nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;padding-top:34px;font-size:14.5px}.ags nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+ border-top:1.5px solid var(--ink);scroll-margin-top:96px}.ags h3{font-size:21px;font-weight:700;margin:40px 0 10px}.ags p{margin:0 0 17px;max-width:66ch}.ags code{font-family:var(--mono);font-size:.85em;background:var(--fill);padding:1px 5px}.ags nav{grid-column:2;grid-row:1/99;position:sticky;top:26px;align-self:start;padding-top:34px;font-size:14.5px}.ags nav .h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
  color:var(--sec);padding-bottom:9px;border-bottom:1.5px solid var(--ink);margin-bottom:6px}.ags nav ol{list-style:none;margin:0;padding:0}.ags nav a{display:flex;gap:10px;padding:6px 0;color:var(--sec);text-decoration:none;line-height:1.3}.ags nav a:hover{color:var(--ink)}.ags nav a.on{color:var(--ink);font-weight:500}.ags nav a.on .tn{color:var(--acc)}.ags nav .tn{font-family:var(--mono);font-size:11.5px;flex:0 0 20px;padding-top:2px}.ags .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px;
  margin:28px 0 34px;border-top:1.5px solid var(--ink);padding-top:16px}.ags .big div b{font-family:var(--mono);font-size:34px;display:block;line-height:1.05}.ags .big div span{font-size:14.5px;color:var(--sec);line-height:1.35;display:block;margin-top:5px}.ags .big div.hot b{color:var(--acc)}.ags table{border-collapse:collapse;width:100%;margin:24px 0;font-size:16.5px}.ags th,.ags td{text-align:left;padding:11px 14px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}.ags th{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
  color:var(--sec);font-weight:500;border-bottom:1.5px solid var(--ink)}.ags td.num,.ags th.num{text-align:right;font-family:var(--mono);padding-right:0;white-space:nowrap}.ags tr:last-child td{border-bottom:1.5px solid var(--ink)}.ags .tw{overflow-x:auto}.ags .split{margin:26px 0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}.ags .split div{display:flex;align-items:baseline;gap:20px;padding:13px 0;
@@ -47,6 +47,10 @@
 .ags table code{white-space:nowrap}
 @media(max-width:560px){.ags table code{white-space:normal}}
 .ags table:has(thead th:nth-child(2)):not(:has(thead th:nth-child(3))){width:auto;min-width:55%}
+.ags .article-sections{margin:1.2rem 0 1.5rem;border-block:1px solid var(--rule)}
+.ags .article-sections summary{cursor:pointer;padding:12px 0;min-height:44px;font:500 1rem/1.4 var(--sans)}
+.ags .article-sections nav{position:static;margin:0;padding:0 0 12px;border:0}
+.ags .article-sections .h{display:none}
 </style>
 </head>
 <body>
@@ -105,7 +109,12 @@
   <h1>AI-аналитик видит не ваш проект, а промпт</h1>
 </header>
 
-<nav>
+<div class="body">
+
+<p class="lede">Модель отвечает по витринам. Витрина — не данные, а результат чьих-то решений, принятых задолго до вопроса. Я пошёл считать, сколько их и видит ли их модель.</p>
+<details class="article-sections">
+  <summary>Разделы статьи</summary>
+<nav class="article-outline" aria-label="Разделы статьи">
   <div class="h">Разделы</div>
   <ol>
     <li><a href="#s1"><span class="tn">01</span>Семь артефактов</a></li>
@@ -120,10 +129,7 @@
     <li><a href="#s10"><span class="tn">10</span>Как я это мерил</a></li>
   </ol>
 </nav>
-
-<div class="body">
-
-<p class="lede">Модель отвечает по витринам. Витрина — не данные, а результат чьих-то решений, принятых задолго до вопроса. Я пошёл считать, сколько их и видит ли их модель.</p>
+</details>
 
 <h2 id="s1">Семь артефактов</h2>
 
@@ -463,7 +469,23 @@
 <footer>davydov.my · AI-аналитик · разбор седьмой</footer>
 </div>
 <script>
-const links=[...document.querySelectorAll(".ags nav a")];
+const disclosure = document.querySelector(".ags .article-sections");
+const outline = disclosure.querySelector("nav");
+const articleBody = disclosure.closest(".body");
+const desktop = matchMedia("(min-width: 901px)");
+
+function placeOutline() {
+  if (desktop.matches) {
+    articleBody.before(outline);
+  } else {
+    disclosure.append(outline);
+  }
+  disclosure.hidden = desktop.matches;
+}
+
+placeOutline();
+desktop.addEventListener("change", placeOutline);
+const links=[...outline.querySelectorAll("a")];
 const secs=links.map(a=>document.getElementById(a.getAttribute("href").slice(1)));
 const io=new IntersectionObserver(es=>{
   es.forEach(e=>{ if(e.isIntersecting){
