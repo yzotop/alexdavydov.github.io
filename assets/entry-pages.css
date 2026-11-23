@@ -1,4 +1,4 @@
-/* Главная, Мастерская и Материалы используют одну палитру и набор заголовка. */
+/* Палитра и заголовки главной и разделов основного меню. */
 :root {
   --bg: #fff;
   --ink: #20211f;
@@ -9,7 +9,8 @@
   --accent-d: #8b202a;
 }
 
-.dvy h1 {
+.dvy h1,
+.section-frame > h1 {
   font-family: var(--sans);
   font-weight: 500;
   letter-spacing: -.027em;
@@ -37,7 +38,8 @@
 .dvy .dv-text-link,
 .dvy .dv-contact a,
 .wh .wh-landing .wh-landing-action,
-.shelf-link a {
+.shelf-link a,
+.dv-profile-entry a {
   text-decoration-color: var(--accent);
 }
 
@@ -54,4 +56,22 @@
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
+}
+
+.tl-body a,
+.page-sub a {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: .2em;
+}
+
+@media (max-width: 650px) {
+  .timeline--talks .tl-row {
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 10px 16px;
+  }
+
+  .timeline--talks .tl-body {
+    overflow-wrap: anywhere;
+  }
 }
