@@ -1,29 +1,71 @@
-.cats-body {max-width: 912px}
-.cats table {width: 100%; max-width: 48rem; border-collapse: collapse; font-variant-numeric: tabular-nums}
-.cats caption {text-align: left; font-weight: 650; padding: 1rem 0 .7rem}
-.cats th,.cats td {text-align: right; padding: .8rem .45rem; border-bottom: 1px solid #ccc}
-.cats thead th {font-size: .9em; border-top: 2px solid currentColor}
-.cats tr > :first-child {text-align: left; padding-left: 0}
-.cats p {max-width: 65ch; line-height: 1.55}
-.cats .source-note {border: 0; padding: 0; color: #555; font-size: .92rem}
-.cats section {margin-top: 2rem}
-.cats table + .source-note {margin-top: .75rem}
-.cats h2 {margin: 0; font-size: clamp(1.5rem,3vw,2rem)}
-.cats-body > h2 {margin-block-start: clamp(2rem, 4vw, 3rem)}
-.cats .choices {display: flex; flex-wrap: wrap; gap: .7rem}
-.cats button {font: inherit; font-weight: 600; padding: .7rem 1rem; color: #222; border: 1px solid #555; background: white; cursor: pointer}
-.cats button:hover,.cats button[aria-pressed="true"] {background: #222; color: white}
-.cats button:focus-visible {outline: 2px solid #aa2833; outline-offset: 3px}
-.cats #review {border-top: 2px solid #222; padding-top: 1rem}
-.cats #chosen {color: #555; margin-top: 0}
-@media(max-width: 480px){.cats td,.cats th {padding: .7rem .22rem; font-size: .9rem}.cats .choices button {width: 100%}}
-
-.cats .memo {max-width: 48rem; padding-top: 1.2rem; border-top: 2px solid #222}
-.cats .memo-review {padding: 1rem; margin: 1rem 0; background: #f6f6f4}
-.cats .memo-review label,.cats .memo-review textarea {display: block}
-.cats .memo-review textarea {box-sizing: border-box; width: 100%; margin: .5rem 0 .75rem; padding: .55rem; font: inherit}
-.cats .memo-review [role=status] {margin: .8rem 0 0}
-.cats .memo-review [role=status]:empty {display: none}
-.cats .next-memo {display: inline-block; margin: .6rem 0; font-weight: 650}
-
-.cats .memo { scroll-margin-top: 90px; }
+/* Читательская колонка и указатель разделов внутри общей рамки Мастерской. */
+.cats .crumb, .cats-outline, .cats caption, .cats thead, .cats .source-note {
+  font: 400 .84rem/1.55 var(--mono);
+  color: var(--muted);
+}
+.cats h1 { max-width: 25ch; text-wrap: balance; }
+.cats-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42rem) minmax(12rem, 16rem);
+  grid-template-areas: "reading outline";
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+  margin-top: 2rem;
+}
+.cats-body { grid-area: reading; min-width: 0; color: var(--ink); font-size: 1.0625rem; line-height: 1.7; }
+.cats-body p, .cats-body ol { margin: .9rem 0; }
+.cats-body li + li { margin-top: .65rem; }
+.cats .lead { font-size: 1.18rem; line-height: 1.6; }
+.cats-body a { text-decoration: underline; text-underline-offset: .2em; text-decoration-color: var(--accent); }
+.cats a:hover { color: var(--accent); }
+.cats-body > h2, .cats-body > section {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  padding-top: clamp(1.4rem, 3vw, 2rem);
+  border-top: 1px solid var(--line);
+}
+.cats h2 { font-size: clamp(1.45rem, 2.5vw, 1.95rem); line-height: 1.22; letter-spacing: -.035em; }
+.cats section h2 { margin: 0; }
+.cats-body :is(h2, section)[id] { scroll-margin-top: 6rem; }
+.cats-outline {
+  grid-area: outline;
+  position: sticky;
+  top: 6rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid var(--line);
+}
+.cats-outline summary { text-decoration: none; }
+.cats-outline nav { display: grid; padding-top: .4rem; }
+.cats-outline a { width: fit-content; padding-block: .38rem; text-decoration: none; }
+.cats-outline a:hover { text-decoration: underline; }
+.cats-body details { margin-block: 1.3rem; padding: .85rem 1rem; background: var(--soft); }
+.cats-body details summary { font: 500 .9rem/1.55 var(--mono); }
+.cats-body details summary::marker, .cats-outline summary::marker { color: var(--accent); }
+.cats table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.cats caption { text-align: left; padding: .9rem 0 .6rem; }
+.cats th, .cats td { text-align: right; padding: .7rem .45rem; border-bottom: 1px solid var(--line); }
+.cats thead th { border-top: 1px solid var(--ink); font-weight: 500; }
+.cats tr > :first-child { text-align: left; padding-left: 0; }
+.cats td { font: 400 .95rem/1.45 var(--mono); white-space: nowrap; }
+.cats .source-note { border: 0; padding: 0; margin: .8rem 0 1rem; }
+.cats .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.cats button { font: 600 .94rem/1.5 var(--sans); text-align: start; padding: .75rem 1rem; color: var(--ink); border: 1px solid var(--muted); background: var(--bg); cursor: pointer; }
+.cats button:hover { color: var(--accent); border-color: var(--accent); }
+.cats button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.cats #chosen { font: 400 .86rem/1.55 var(--mono); color: var(--muted); margin: 0 0 1rem; }
+.cats .next-memo { font-weight: 650; }
+.cats .memo aside { background: var(--soft); border-left: 2px solid var(--accent); }
+.cats .memo-review { padding: 1rem; background: var(--soft); margin: 1.2rem 0; }
+.cats details .memo-review { margin-bottom: 0; padding: 0; }
+.cats .memo-review h3 { font-size: 1.2rem; }
+.cats .memo-review textarea { display: block; width: 100%; margin: .4rem 0 .8rem; padding: .65rem; font: inherit; }
+.cats .memo-review [role="status"]:empty { display: none; }
+@media (max-width: 850px) {
+  .cats-layout { grid-template-columns: minmax(0, 42rem); grid-template-areas: "outline" "reading"; gap: 1.3rem; }
+  .cats-outline { position: static; border-inline: 0; border-block: 1px solid var(--line); padding: .75rem 0; }
+}
+@media (max-width: 480px) {
+  .cats-body { font-size: 1rem; }
+  .cats .lead { font-size: 1.08rem; }
+  .cats .choices { grid-template-columns: 1fr; }
+  .cats th, .cats td { padding: .6rem .18rem; font-size: .82rem; }
+}

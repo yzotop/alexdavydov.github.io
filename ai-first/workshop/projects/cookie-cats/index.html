@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Саша Давыдов" name="author"/><title>Cookie Cats. Решение о релизе — Саша Давыдов</title><link href="/favicon.svg" rel="icon"/><link href="/style.css?v=fd9a4d20811b" rel="stylesheet"/><link href="/ai-first/workshop/workshop.css" rel="stylesheet"/><meta content="Примите решение по результатам A/B-теста и сравните его с рекомендацией агента." name="description"/><link href="/ai-first/workshop/book/assets/book.css?v=0a6129e45418" rel="stylesheet"/><link href="case.css?v=e8aa3bcb657d" rel="stylesheet"/><link href="https://davydov.my/ai-first/workshop/projects/cookie-cats/" rel="canonical"/><meta content="website" property="og:type"/><meta content="Cookie Cats. От A/B-теста до решения о релизе" property="og:title"/><meta content="https://davydov.my/ai-first/workshop/projects/cookie-cats/" property="og:url"/><meta content="Примите решение по результатам A/B-теста и сравните его с рекомендацией агента." property="og:description"/></head><body><!-- header:start -->
+<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Саша Давыдов" name="author"/><title>Cookie Cats. Решение о релизе — Саша Давыдов</title><link href="/favicon.svg" rel="icon"/><link href="/style.css?v=fd9a4d20811b" rel="stylesheet"/><link href="/ai-first/workshop/workshop.css" rel="stylesheet"/><meta content="Примите решение по результатам A/B-теста и сравните его с рекомендацией агента." name="description"/><link href="/ai-first/workshop/book/assets/book.css?v=0a6129e45418" rel="stylesheet"/><link href="/assets/entry-pages.css?v=b9bd1ff252a1" rel="stylesheet"/><link href="case.css?v=fc7013d1eaaa" rel="stylesheet"/><link href="https://davydov.my/ai-first/workshop/projects/cookie-cats/" rel="canonical"/><meta content="website" property="og:type"/><meta content="Cookie Cats. От A/B-теста до решения о релизе" property="og:title"/><meta content="https://davydov.my/ai-first/workshop/projects/cookie-cats/" property="og:url"/><meta content="Примите решение по результатам A/B-теста и сравните его с рекомендацией агента." property="og:description"/></head><body><!-- header:start -->
 <nav class="nav" aria-label="Основное меню">
   <a href="/" class="logo">
     <div class="logo-mark"><span>Δ</span></div>
@@ -47,16 +47,26 @@
 <!-- header:end --><main class="dvy wh volume cats"><article class="section-frame">
 <nav aria-label="Путь по сайту" class="crumb"><a href="/ai-first/workshop/#projects">Проекты Мастерской</a> / Cookie Cats</nav>
 <h1 class="workshop-title">От A/B-теста до решения о релизе</h1>
+<div class="cats-layout">
+<details class="cats-outline">
+  <summary>На этой странице</summary>
+  <nav aria-label="На этой странице">
+    <a href="#about-project">Задача агентов</a>
+    <a href="#source-data">Исходные данные</a>
+    <a href="#release">Решение о релизе</a>
+    <a href="#choice-title">Ваш ответ команде</a>
+  </nav>
+</details>
 <div class="cats-body">
 <p class="lead">Cookie Cats — мобильная головоломка. Представьте, что вы дошли до ворот: следующий уровень закрыт. Можно подождать или заплатить и продолжить сразу. В одной версии игры первые ворота стояли на 30-м уровне, в другой — на 40-м. Стоит ли дать всем игрокам ещё десять уровней до первого такого выбора?</p>
 <p>У команды есть повод смотреть сразу на две вещи. Более длинная игра без перерыва может повлиять на то, вернётся ли человек через неделю. Вместе с воротами сдвигается и возможность заплатить за продолжение. <a href="https://github.com/yufung/ab-testing-cookie-cats#problem-statement">Описание игры и эксперимента</a>.</p>
 <h2 id="about-project">Какую работу мы поручили агентам</h2>
 <p>«Саша» показывает, как из данных розницы каждую неделю получать записку руководителю. Здесь мы разбираем другую работу аналитика: после эксперимента продакт спрашивает, выпускать ли изменение. Ему нужен ответ с основанием, а иногда — конкретный запрос на недостающие данные.</p>
 <p>Для Мастерской я взял один завершённый эксперимент и дважды поставил агенту вопрос «Переносить ли ворота?». В первом задании целью было удержание, во втором — выручка. Два агента независимо получили один и тот же исходный файл. Каждый сам посчитал показатели и написал рекомендацию. Я проверил расчёты и решил, какую записку команда уже может использовать, а какую стоит вернуть с вопросом. В конце кейса можно увидеть и первый ответ, и то, что агент изменил после замечания.</p>
-<h2>С чего начинал каждый агент</h2>
+<h2 id="source-data">С чего начинал каждый агент</h2>
 <p>Мы скачали с Kaggle файл <code>cookie_cats.csv</code> с данными 90 189 участников исторического теста. Одна строка — один игрок. В ней пять полей: ID, назначенная версия игры, число сыгранных раундов, вернулся ли игрок на следующий день и на седьмой день после установки. Платежей в файле нет. Таблицу ниже мы рассчитали по этим строкам. <a href="https://www.kaggle.com/datasets/yufengsui/mobile-games-ab-testing">Исходный набор на Kaggle</a>.</p>
 <details><summary>Посмотреть пример строки</summary><p>Игрок 377 получил версию с воротами на 40-м уровне, сыграл 165 раундов и вернулся и на первый, и на седьмой день. По этой строке можно посчитать его вклад в удержание группы. Сколько он заплатил и доходил ли до ворот, в ней не указано.</p></details>
-<h2>Ваше решение о релизе</h2><p>Посмотрите на результаты глазами продакта. Какой следующий шаг вы предложите команде?</p>
+<h2 id="release">Ваше решение о релизе</h2><p>Посмотрите на результаты глазами продакта. Какой следующий шаг вы предложите команде?</p>
 <table><caption>Кто вернулся в игру после установки</caption>
 <thead><tr><th scope="col">Первый барьер</th><th scope="col">Игроков</th><th scope="col">На 1-й день</th><th scope="col">На 7-й день</th></tr></thead>
 <tbody><tr><th scope="row">Уровень 30</th><td>44 700</td><td>44,82%</td><td>19,02%</td></tr>
@@ -73,7 +83,7 @@
 <p>При барьере на 40-м уровне через неделю вернулось примерно на восемь игроков меньше из каждой тысячи. Что делать с этой разницей, зависит от цели релиза.</p>
 <p><a class="next-memo" href="memos.html">Сравнить записки двух агентов →</a><br/>Один CSV, две постановки задачи — удержание и выручка.</p>
 <a href="/ai-first/workshop/#projects">Вернуться к проектам Мастерской</a>
-</section></div></article></main>
+</section></div></div></article></main>
 <!-- footer:start -->
 <footer class="footer">
   <nav class="footer-links" aria-label="Подвал">
@@ -88,4 +98,4 @@
 </footer>
 <script data-goatcounter="https://davydov.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-<!-- footer:end --><script defer="" src="/main.js"></script><script defer="" src="case.js"></script></body></html>
+<!-- footer:end --><script defer="" src="outline.js"></script><script defer="" src="/main.js"></script><script defer="" src="case.js"></script></body></html>
