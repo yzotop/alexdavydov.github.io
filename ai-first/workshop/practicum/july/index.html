@@ -1,14 +1,33 @@
 <!doctype html>
-<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="canonical" href="https://davydov.my/ai-first/workshop/practicum/july/"><meta name="author" content="Саша Давыдов"><title>Кому из управляющих позвонить первым? — задание 1 практикума</title>
-<style>*{box-sizing:border-box}body{margin:0;color:#191918;font:16px/1.5 Manrope,Arial,sans-serif}header{border-bottom:1px solid #ddd}header>div,main{max-width:1240px;margin:auto;padding:17px 36px}header>div{display:flex;align-items:center;gap:14px;font-size:14px}header a,footer a{color:inherit}header a{text-decoration:none}header a:first-child{font-size:19px;font-weight:700}header b{display:inline-block;background:#181818;color:white;padding:1px 7px;font-size:17px}header span{color:#aaa}main{padding-top:32px}h1,h2,h3,p{margin:0 0 12px}h1{font-size:clamp(34px,3.6vw,55px);line-height:1.08;letter-spacing:-.05em;font-weight:600}.eyebrow,.notehead span,small,footer,.brief{color:#5c5c57}.eyebrow,.notehead span{font-size:13px}.lead{font-size:clamp(18px,1.6vw,23px);letter-spacing:-.025em}.brief{max-width:84ch}h2{font-size:27px;letter-spacing:-.04em;line-height:1.2}h3{font-size:19px}label{display:block;font-size:14px;font-weight:600;margin:10px 0}textarea,select,button{font:inherit;color:inherit}textarea,select{display:block;background:#fff;border:1px solid #9e9e98;padding:8px;margin-top:4px;border-radius:3px;max-width:100%}textarea{width:100%;resize:vertical;font-weight:400}.filters{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin:14px 0}.filters label{margin:0}button{cursor:pointer;background:white;padding:8px 12px;border:1px solid #aaa;border-radius:3px}.primary{background:#20201e;border-color:#20201e;color:white}.textbtn{border:0;background:transparent;text-decoration:underline;padding:0}.gridbox{overflow:auto;max-height:250px;border-block:1px solid #cfcfca}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}th,td{text-align:right;padding:6px 9px;border-bottom:1px solid #e7e7e0;white-space:nowrap}th:first-child,td:first-child{text-align:left}thead th{position:sticky;top:0;background:#f5f5f2}summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}details{margin:14px 0}details p{margin-top:8px}a{color:inherit}small{display:block;margin-top:6px}#feedback,#planmsg,#attachedmsg{color:#8a281d;font-size:14px;margin:6px 0}.attached{border-left:2px solid #777;padding-left:10px;font-size:14px;margin:10px 0}.attached button{margin-left:7px;font-size:12px}footer{margin:26px 0 12px;padding:14px 0;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:space-between;font-size:13px}button:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #a22d21;outline-offset:2px}@media(max-width:790px){header>div,main{padding-inline:16px}footer{flex-direction:column}.filters{gap:8px}}
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+<link rel="stylesheet" href="/assets/entry-pages.css?v=b9bd1ff252a1">
+<style>
+.july-exercise { line-height: 1.55; }
+.july-exercise > h1 { max-width: 26ch; text-wrap: balance; }
+.july-exercise .july-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .25rem .6rem;
+  margin-bottom: 1rem;
+  color: var(--muted);
+  font: 400 .84rem/1.6 var(--mono);
+}
+.july-path span[aria-hidden] { color: var(--line-d); }
+.july-exercise .lead { max-width: 65ch; margin: 0 0 1.65rem; font-size: clamp(1.06rem, 1.6vw, 1.2rem); line-height: 1.6; }
+.july-exercise h2 { margin: 0 0 .8rem; font-size: clamp(1.45rem, 2.5vw, 1.95rem); font-weight: 500; line-height: 1.22; letter-spacing: -.035em; }
+.july-exercise h3 { font-size: clamp(1.12rem, 1.6vw, 1.35rem); font-weight: 600; line-height: 1.3; letter-spacing: -.02em; }
+.july-exercise .memohead span { font: 400 .82rem/1.55 var(--mono); }
+.july-exercise :is(h2, h3, button, textarea, select) { scroll-margin-top: 6rem; }
+p{margin:0 0 12px}label{display:block;font-size:14px;font-weight:600;margin:10px 0}textarea,select,main button{font:inherit;color:inherit}textarea,select{display:block;background:#fff;border:1px solid #9e9e98;padding:8px;margin-top:4px;border-radius:3px;max-width:100%}textarea{width:100%;resize:vertical;font-weight:400}.filters{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin:14px 0}.filters label{margin:0}main button{cursor:pointer;background:white;padding:8px 12px;border:1px solid #aaa;border-radius:3px}.primary{background:#20201e;border-color:#20201e;color:white}.textbtn{border:0;background:transparent;text-decoration:underline;padding:0}.gridbox{overflow:auto;max-height:250px;border-block:1px solid #cfcfca}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}th,td{text-align:right;padding:6px 9px;border-bottom:1px solid #e7e7e0;white-space:nowrap}th:first-child,td:first-child{text-align:left}thead th{position:sticky;top:0;background:#f5f5f2}summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}details{margin:14px 0}details p{margin-top:8px}main a{color:inherit;text-decoration:underline;text-underline-offset:.2em}small{display:block;margin-top:6px}#feedback,#planmsg,#attachedmsg{color:var(--accent-d);font-size:14px;margin:6px 0}.attached{border-left:2px solid #777;padding-left:10px;font-size:14px;margin:10px 0}.attached button{margin-left:7px;font-size:12px}footer{margin:26px 0 12px;padding:14px 0;border-top:1px solid #ddd;display:flex;gap:12px;justify-content:space-between;font-size:13px}main :is(button,summary,a,input,textarea,select):focus-visible{outline:2px solid var(--accent);outline-offset:2px}@media(max-width:790px){footer{flex-direction:column}.filters{gap:8px}}
 
-h1{font-size:clamp(34px,3.4vw,50px);margin-bottom:12px}.lead{font-size:18px;max-width:84ch;margin-bottom:27px}
-
-.memohead{display:flex;align-items:baseline;gap:12px;justify-content:space-between}.memohead span,.caption{font-size:13px;color:#5c5c57}
-.extracts{border-left:3px solid #a2261e;padding:0 0 0 18px;margin:19px 0 15px}.extracts p{margin:0 0 12px}.extracts p:first-child{font-size:19px;line-height:1.45}.original{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f5f2;padding:16px;max-height:350px;overflow:auto}.back{margin-bottom:14px}
+.memohead{display:flex;align-items:baseline;gap:12px;justify-content:space-between}.memohead span,.caption{font-size:13px;color:var(--muted)}
+.extracts{border-left:3px solid var(--accent);padding:0 0 0 18px;margin:19px 0 15px}.extracts p{margin:0 0 12px}.extracts p:first-child{font-size:19px;line-height:1.45}.original{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f5f2;padding:16px;max-height:350px;overflow:auto}.textbtn.back{margin-bottom:14px}
 .filters{margin:10px 0}.gridbox{max-height:190px}#work article h3{margin:21px 0 6px}#attachMonth,#attach{margin-top:9px}
-@media(max-width:790px){.memohead{display:block}.lead{margin-bottom:15px}}
+@media(max-width:790px){.memohead{display:block}}
 .attached{overflow-wrap:anywhere}
 .exercise-steps {
   display: flex;
@@ -17,10 +36,10 @@ h1{font-size:clamp(34px,3.4vw,50px);margin-bottom:12px}.lead{font-size:18px;max-
   margin: 0 0 25px;
   padding: 0 0 12px 22px;
   border-bottom: 1px solid #cfcfca;
-  color: #5c5c57;
+  color: var(--muted);
   font-size: 14px;
 }
-.exercise-steps [aria-current="step"] { color: #8a281d; font-weight: 700; }
+.exercise-steps [aria-current="step"] { color: var(--accent-d); font-weight: 700; }
 #work { min-width: 0; max-width: 880px; }
 #work p { max-width: 76ch; }
 #work .extracts p { max-width: 72ch; }
@@ -34,10 +53,58 @@ footer details { margin: 0; }
 @media (max-width: 480px) {
   .exercise-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 26px; }
 }
-</style>
-<header><div><a href="/"><b>Δ</b> davydov</a><span>/</span><a href="/ai-first/workshop/">Мастерская</a><span>/</span><a href="/ai-first/workshop/practicum/">Практикум</a></div></header>
-<main>
-<p class="eyebrow">Практикум · задание 1</p>
+</style></head><body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame july-exercise">
+<nav class="july-path" aria-label="Путь по сайту">
+  <a href="/ai-first/workshop/">Мастерская</a><span aria-hidden="true">/</span>
+  <a href="/ai-first/workshop/practicum/">Практикум</a><span aria-hidden="true">/</span>
+  <span aria-current="page">Задание 1</span>
+</nav>
 <h1>Кому из управляющих позвонить первым?</h1>
 <p class="lead">Руководитель успеет позвонить одному управляющему. Агент предложил магазин по отчёту о продажах. Проверьте его выбор и напишите, с какого вопроса начать разговор. Таблицы и поле для ответа уже на странице.</p>
 <ol class="exercise-steps" aria-label="Шаги задания">
@@ -246,4 +313,4 @@ $('attach').onclick=()=>{
 $('finish').onclick=freezeNote;
 $('export2').onclick=exportNote;
 monthly();lockNote();show(state.view,false);
-</script><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></html>
+</script><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script src="/main.js" defer></script></body></html>
