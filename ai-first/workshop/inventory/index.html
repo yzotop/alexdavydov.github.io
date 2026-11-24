@@ -3,10 +3,45 @@
 <meta name="author" content="Саша Давыдов">
 <title>Я поручил агенту составить заказ поставщику — Саша Давыдов</title>
 <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+<link rel="stylesheet" href="/assets/entry-pages.css?v=b9bd1ff252a1">
 <style>
 * { box-sizing: border-box }
 body { line-height: 1.6 }
-.inventory-content { max-width: 914px }
+/* Как в «Рецептах»: колонка чтения и указатель разделов справа. */
+.inventory-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42rem) minmax(12rem, 17rem);
+  grid-template-areas: "intro issues" "case issues";
+  column-gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+  margin-top: 1rem;
+}
+.inventory-layout > header { grid-area: intro; padding: 0 0 1.5rem; }
+.inventory-content { grid-area: case; min-width: 0; }
+.inventory-layout h1 { font-weight: 500; letter-spacing: -.027em; line-height: 1.13; text-wrap: balance; }
+.inventory-layout .lead { font-size: clamp(1.06rem, 1.6vw, 1.2rem); line-height: 1.6; }
+.inventory-issues {
+  grid-area: issues;
+  position: sticky;
+  top: 6rem;
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+  font: 400 .86rem/1.5 var(--mono);
+  color: var(--muted);
+}
+.inventory-issues summary { padding-block: .45rem; text-decoration: none; color: var(--ink); }
+.inventory-issues summary::marker { color: var(--accent); }
+.inventory-issues nav { display: grid; }
+.inventory-issues a { padding-block: .45rem; text-decoration: none; }
+.inventory-issues a:hover { color: var(--accent); text-decoration: underline; }
+.inventory-layout .meta, main .back, .inventory-content caption { font-family: var(--mono); font-size: .84rem; }
+@media (max-width: 850px) {
+  .inventory-layout { display: block; }
+  .inventory-issues { position: static; padding: 0; border: 0; border-top: 1px solid var(--line); }
+  .inventory-issues summary, .inventory-issues a { padding-block: .7rem; min-height: 44px; }
+  .inventory-issues nav { padding-bottom: .4rem; }
+}
 footer { max-width: 1010px; margin: auto; padding: 28px clamp(18px, 4vw, 48px) }
 main a, footer a { color: inherit; text-decoration: underline; text-underline-offset: .2em }
 main a:hover, footer a:hover { text-decoration-color: var(--accent) }
@@ -18,7 +53,6 @@ header .meta { margin-bottom: 10px }
 main p, details { max-width: 72ch }
 p + p { margin-top: 12px }
 .lead { font-size: clamp(18px, 2.1vw, 22px); line-height: 1.5; max-width: 62ch }
-header { padding: 20px 0 28px }
 .meta, .back, caption, footer { font-size: 14px; color: #575757 }
 section { border-top: 1px solid var(--line-d); padding: 24px 0 }
 table { width: 100%; max-width: 700px; border-collapse: collapse; font-variant-numeric: tabular-nums; margin: 20px 0 14px }
@@ -85,17 +119,23 @@ footer { border-top: 1px solid var(--line); display: flex; gap: 12px; justify-co
 <!-- header:end -->
 <main class="section-frame">
 <a class="back" href="/ai-first/workshop/">← В AI-мастерскую</a>
+<div class="inventory-layout">
 <header>
 <p class="meta">Саша Давыдов · Закупка на данных 13 июня 2011 года</p>
 <h1>Я поручил агенту составить заказ поставщику</h1>
 <p class="lead">Понедельник. На складе заканчиваются одни товары, других ещё хватает. На закупку есть 127 009,33 ₽. Я передал агенту шесть позиций и попросил решить, сколько заказать. Вот заявка, по которой мне предстояло принять решение.</p>
-<p class="meta"><a href="#results">Итог пяти серий. Когда агент выиграл и какой вопрос я оставил бы закупщику →</a></p>
-<p class="meta"><a href="#four-mondays">Четыре понедельника. Как один заказ дал четыре полные корзины, а через неделю стоил девяти →</a></p>
-<p class="meta"><a href="#august">Август. Почему агент передумал и какой сумки не хватило для ничьей →</a></p>
-<p class="meta"><a href="#september">Сентябрь. Чек на 200 красных сумок и ничья за четыре недели →</a></p>
-<p class="meta"><a href="#october">Октябрь. Обоим складам хватило сумок. Почему агент проиграл две корзины →</a></p>
-<p class="meta"><a href="#november">Ноябрь. Пять корзин на формочках Teatime и одна недостающая сумка →</a></p>
 </header>
+<details class="inventory-issues">
+<summary>Выпуски и итог</summary>
+<nav aria-label="Выпуски и итог">
+  <a href="#results">Итог пяти серий</a>
+  <a href="#four-mondays">Четыре понедельника</a>
+  <a href="#august">Август · Красная сумка</a>
+  <a href="#september">Сентябрь · Заказ на 200 сумок</a>
+  <a href="#october">Октябрь · Запас формочек</a>
+  <a href="#november">Ноябрь · Формочки Teatime</a>
+</nav>
+</details>
 <div class="inventory-content">
 
 <section>
@@ -314,4 +354,4 @@ footer { border-top: 1px solid var(--line); display: flex; gap: 12px; justify-co
 <p>В июле и октябре запас формочек помогал собирать корзины, пока на полке ещё был товар. Но из-за этого остатка следующий заказ получался меньше. Когда он приезжал к пустой полке, склад терял больше корзин, чем выиграл неделей раньше. В ноябре агент заранее заказал ещё 81 упаковку Teatime и собрал пять дополнительных корзин. А 8 декабря покупателю хватало пяти позиций из шести — целую покупку решила одна сумка «Клубника».</p>
 <p>Я бы начинал с обычной заявки. Перед отправкой попросил бы агента положить рядом свой вариант и показать в штуках, что приедет к пустой полке, чем оплачена добавка и для каких прошлых чеков изменится комплектность. Тогда у закупщика есть основание принять конкретную правку или оставить обычный заказ. Последнее решение об отправке остаётся за ним.</p>
 </section>
-</div></main><footer><span>Мастерская AI-first аналитики</span><span>davydov.my · 2026</span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script src="/main.js" defer></script></body></html>
+</div></div></main><footer><span>Мастерская AI-first аналитики</span><span>davydov.my · 2026</span></footer><script data-goatcounter="https://davydov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script src="issues.js" defer></script><script src="/main.js" defer></script></body></html>
