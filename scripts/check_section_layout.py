@@ -17,6 +17,7 @@ WORKSHOP_ENTRIES = (
     "inventory/comparison/",
     "projects/cookie-cats/",
     "projects/upworthy/",
+    "projects/ab-atlas/",
     "projects/cookie-cats/memos.html",
     "recipes/",
     "book/",
