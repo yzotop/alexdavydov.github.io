@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Саша Давыдов">
+  <title>Проверка выводов A/B-тестов перед встречей — Саша Давыдов</title>
+  <meta name="description" content="На данных ASOS агент проверяет вывод для слайда. Два слепых прогона на Upworthy показывают, как проверить самого агента.">
+  <link rel="canonical" href="https://davydov.my/ai-first/workshop/projects/upworthy/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Проверка выводов A/B-тестов перед встречей">
+  <meta property="og:description" content="На данных ASOS агент проверяет вывод для слайда. Два слепых прогона на Upworthy показывают, как проверить самого агента.">
+  <meta property="og:url" content="https://davydov.my/ai-first/workshop/projects/upworthy/">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+  <style>
+    .upworthy .prose { max-width: 70ch }
+    .upworthy table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+    .upworthy :is(th,td) { text-align: right; padding: .55em .2em; border-bottom: 1px solid var(--line) }
+    .upworthy tr > :first-child { text-align: left }
+    .upworthy summary { cursor: pointer; padding-block: .7em; text-decoration: underline; text-underline-offset: .2em }
+    .upworthy pre { white-space: pre-wrap; overflow-wrap: anywhere }
+  </style>
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame upworthy">
+  <p class="article-back"><a href="/ai-first/workshop/#projects">← Проекты Мастерской</a></p>
+  <h1>Проверка выводов A/B-тестов перед встречей</h1>
+  <p id="asos" class="page-lead">В черновике слайда по данным ASOS — 24 из 99. По расчёту агента, <strong>на последнем срезе вариант значимо опередил контроль в 16 из 99 сравнений.</strong></p>
+  <div class="prose">
+    <p>Откуда взялись 24? В 24 сравнениях преимущество варианта достигало порога значимости хотя бы раз за время теста. У восьми из них к последнему замеру разница уже не достигала порога значимости.</p>
+    <details><summary>Проверить исправление на одном эксперименте ASOS</summary>
+      <p>В эксперименте <code>0bad33</code> среднее значение метрики 1 у варианта было выше, чем у контроля, и на 10-й день, и через 45,5 дня. На 10-й день двустороннее p составляло 0,0455 при пороге 0,05. На последнем замере p выросло до 0,1736. Этот вариант входит в число 24 и выпадает при подсчёте последних замеров.</p>
+      <p>Агент получил исходные данные, словарь полей и учебный черновик. Критерии проверки были записаны заранее. В первом ответе он исправил слайд, объяснил происхождение числа 24 и назвал этот эксперимент. Отдельный расчёт подтвердил результат. Всего в архиве 78 экспериментов и 99 сравнений вариантов с контролем. Для оценки пользы от роста метрики нужно знать её смысл.</p>
+      <p><a href="asos-review.zip" download>Скачать черновик, данные и словарь (ZIP, 1 МБ)</a></p>
+      <p>ASOS Digital Experiments Dataset, Liu, Cardoso, Couturier и McCoy, 2021. Записка составлена для Мастерской. <a href="https://osf.io/download/hq8sc/">Исходный CSV</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+    </details>
+    <h2 id="editorial-review">Upworthy. Почему после 9 из 9 понадобилась вторая проверка?</h2>
+    <p>Задача агента — подготовить вопросы к редакционной встрече. По каждому тесту у него были показы, клики и отметка редакции о выбранном пакете заголовка и изображения. До запуска я зафиксировал, какие решения стоит обсудить и почему.</p>
+    <p>В первой подборке агент разобрал все девять тестов по ключу. Но все три случая, которые стоило обсудить, были двухвариантными. В остальных вариантов было больше. Угадать, что вынести на встречу, здесь можно было просто по числу вариантов.</p>
+    <details><summary>Посмотреть, как разделились девять случаев</summary>
+      <p>В трёх тестах выбранный пакет заметно уступил другому по доле кликов. В трёх разрыв оказался слишком неопределённым. Ещё в трёх единственный выбор редакции восстановить не удалось. В двух из них не было ни одной отметки, а в одном отметили сразу два пакета.</p>
+      <p><a href="editorial-review.zip" download>Скачать первую записку и девять тестов (ZIP)</a></p>
+    </details>
+    <h3 id="four-packages">Восемь новых тестов по четыре варианта</h3>
+    <p>Во второй подборке редакция каждый раз выбирала пакет, который уступал лидеру по доле кликов. Все восемь тестов выглядели похоже. Агент сравнил варианты с учётом числа пар в каждом тесте и выделил <strong>четыре случая для обсуждения</strong>. В остальных четырёх свидетельства отставания были слабыми или пограничными. Все восемь выводов совпали с ключом.</p>
+    <p>Вот вопрос для встречи. 27 февраля 2014 года выбранный пакет получил 420 переходов из 4 635 показов (9,06%), другой — 534 из 4 678 (11,42%). <strong>Какие цифры видел редактор в момент выбора?</strong> В архиве сохранились итоговые счётчики. Мотив решения может объяснить сам редактор.</p>
+    <details><summary>Повторить вторую проверку</summary>
+      <p>Попробуйте составить повестку по восьми тестам. Записки учебные, а случаи специально подобраны. Совпадение с ключом показывает результат на этих примерах. Чтобы оценить надёжность на обычном потоке задач, понадобятся записки реальной команды.</p>
+      <p><a href="editorial-review-matched.zip" download>Скачать вторую записку и восемь тестов (ZIP)</a> · <a href="https://osf.io/download/vy8mj/">Архив Upworthy</a></p>
+    </details>
+    <h2>Данные и код для самостоятельной проверки</h2>
+    <details><summary>Upworthy. Можно ли выбрать заголовок по кликам?</summary>
+    <p>В архиве за 28 июня 2013 года сохранились показы и клики по обоим вариантам. Оба заголовка вели к одной истории. Вариант A начинался с упоминания Quaker Oats, вариант B — со слов «Social Media Smackdown». Буквы обозначают порядок создания вариантов в архиве.</p>
+    <table>
+      <caption>Переходы по двум вариантам одной публикации</caption>
+      <thead><tr><th scope="col">Вариант</th><th scope="col">Показы</th><th scope="col">Клики</th><th scope="col">CTR</th></tr></thead>
+      <tbody><tr><th scope="row">A</th><td>9 347</td><td>61</td><td>0,653%</td></tr>
+      <tr><th scope="row">B</th><td>8 437</td><td>30</td><td>0,356%</td></tr></tbody>
+    </table>
+    <p>Разница A минус B составляет <strong>+0,297 процентного пункта</strong>. Предположим, редактор хочет написать «Выбираем A, потому что этот заголовок увеличивает вероятность клика». Какая часть этой фразы требует ещё одной проверки?</p>
+    <details><summary>Посмотреть, что обнаружил агент</summary>
+      <p>В июне 2024 года исследователи опубликовали поправку. Они обнаружили признаки проблем со случайным распределением показов и рекомендовали исключать из подтверждающего анализа тесты с 25 июня 2013-го по 10 января 2014-го. Дата обоих вариантов попадает внутрь интервала. По двум строкам установить, как именно раздавались показы в этом тесте, невозможно. <a href="https://upworthy.natematias.com/2024-06-upworthy-archive-update.html">Поправка авторов архива</a>.</p>
+      <p><strong>Записка редактору.</strong> В этом выпуске доля кликов у A была выше на 0,297 п. п. Архив позволяет показать эту разницу. Чтобы рекомендовать A именно за эффект заголовка, нужен новый тест с проверенным распределением показов. Решение о повторном запуске остаётся у редактора.</p>
+    </details>
+    <h3>Как повторить расчёт</h3>
+    <p>Агент выбрал пример, прочитал поправку и подготовил записку. В файл проверки внесены даты из источника и условие применимости. Скрипт пересчитывает доли по исходным числам и сопоставляет даты с интервалом. Это открытый разбор с известной поправкой.</p>
+    <details><summary>Скачать данные и код</summary>
+      <p><a href="experiment.json" download>Две строки эксперимента и правило (JSON)</a> · <a href="review.py" download>Проверка на Python</a></p>
+      <pre><code>python3 review.py experiment.json</code></pre>
+      <p>Для сверки с полным архивом скачайте <a href="https://osf.io/download/3vqmp/">исследовательскую выборку OSF (CSV)</a> и <a href="extract.py" download>скрипт отбора</a>. Скрипт проверяет SHA-256 файла и берёт хронологически первый тест из указанного периода с двумя различными заголовками, общим идентификатором картинки и ненулевыми показами. Число кликов на выбор теста не влияет.</p>
+      <pre><code>python3 extract.py exploratory.csv &gt; experiment.json</code></pre>
+      <p>Источник данных — Matias, Munger, Le Quéré и Ebersole, Upworthy Research Archive (2021), CC BY 4.0. Из исходного CSV извлечены счётчики, даты и идентификаторы. Интервал риска добавлен из поправки авторов. <a href="https://doi.org/10.1038/s41597-021-00934-7">Публикация</a> · <a href="https://upworthy.natematias.com/about-the-archive.html">Описание полей и лицензии</a>.</p>
+    </details>
+    </details>
+    <details><summary>Cookie Cats. Проверка записки об удержании</summary>
+    <p>Тот же скрипт проверяет <a href="../cookie-cats/memos.html#retention">записку об удержании в Cookie Cats</a>. Там разница между группами составляет −0,82 п. п. Для окончательного решения нужны план распределения и подтверждение семи дней наблюдения. Скрипт запрашивает оба документа. Аналитику остаётся проверить их содержание.</p>
+    <p><a href="cookie-cats.json" download>Вход для Cookie Cats (JSON)</a></p>
+    <pre><code>python3 review.py cookie-cats.json</code></pre>
+    </details>
+  </div>
+</main>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script src="/main.js" defer></script>
+</body></html>
