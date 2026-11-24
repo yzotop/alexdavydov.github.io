@@ -225,6 +225,9 @@ function renderCard(c) {
     (c.has_review
       ? '<p><a href="reviews/' + encodeURIComponent(c.id) + '.html">Как агент проверил записку</a></p>'
       : "") +
+    (c.goal_case
+      ? '<p><a href="goal-clarification/' + encodeURIComponent(c.goal_case) + '">До и после уточнения цели</a></p>'
+      : "") +
     facts +
     '<p><a href="' +
     esc(c.source) +
@@ -243,7 +246,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=c8e44b1fa4b4", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=e166f74376bb", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));

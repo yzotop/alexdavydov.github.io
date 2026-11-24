@@ -27,6 +27,7 @@ EXTRA_PATHS = (
     "/ai-first/workshop/projects/cookie-cats/",
     "/ai-first/workshop/projects/upworthy/",
     "/ai-first/workshop/projects/ab-atlas/",
+    "/ai-first/workshop/projects/ab-atlas/goal-clarification/",
     "/talks/",
     "/teaching/",
 )
