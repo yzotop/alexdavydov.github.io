@@ -222,6 +222,9 @@ function renderCard(c) {
     "<p>" +
     esc(c.note) +
     "</p>" +
+    (c.has_review
+      ? '<p><a href="reviews/' + encodeURIComponent(c.id) + '.html">Как агент проверил записку</a></p>'
+      : "") +
     facts +
     '<p><a href="' +
     esc(c.source) +
@@ -240,7 +243,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=c8e44b1fa4b4", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
@@ -350,9 +353,6 @@ async function init() {
       el.scrollIntoView();
     }
   }
-  document.querySelector(".example a").addEventListener("click", () => {
-    if (location.hash === "#GOOG-search-delay-400") openLinkedCase();
-  });
   window.addEventListener("hashchange", openLinkedCase);
   openLinkedCase();
 }
