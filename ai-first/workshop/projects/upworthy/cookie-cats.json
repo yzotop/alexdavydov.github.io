@@ -1,0 +1,31 @@
+{
+  "source": "https://github.com/yufung/ab-testing-cookie-cats",
+  "metric": "D7 retention",
+  "claim": "Можно окончательно выбрать уровень барьера по удержанию на седьмой день.",
+  "arms": [
+    {
+      "label": "gate_40",
+      "events": 8279,
+      "total": 45489
+    },
+    {
+      "label": "gate_30",
+      "events": 8502,
+      "total": 44700
+    }
+  ],
+  "checks": [
+    {
+      "kind": "requires_document",
+      "name": "План назначения игроков",
+      "document": "assignment_plan",
+      "basis": "Для интерпретации численности групп нужен план назначения."
+    },
+    {
+      "kind": "requires_document",
+      "name": "Окно наблюдения",
+      "document": "followup_coverage",
+      "basis": "Для каждого игрока должно пройти семь дней наблюдения."
+    }
+  ]
+}

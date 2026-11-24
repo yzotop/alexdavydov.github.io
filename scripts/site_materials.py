@@ -42,6 +42,13 @@ WORKSHOP_MATERIALS = (
         "format": "Проект",
     },
     {
+        "url": "/ai-first/workshop/projects/upworthy/",
+        "title": "Проверка выводов A/B-тестов перед встречей",
+        "blurb": "Как агент исправил цифру для слайда по данным ASOS и зачем ему дали второй набор тестов Upworthy.",
+        "topic": "ai",
+        "format": "Проект",
+    },
+    {
         "url": "/ai-first/workshop/book/",
         "title": "Как строят AI-системы",
         "blurb": "18 историй из практики Рината Абдуллина и сообщества „LLM под капотом“.",
