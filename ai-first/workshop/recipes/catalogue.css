@@ -1,0 +1,54 @@
+/* Каталог методов: сначала выбор задачи, затем метод и связанное упражнение. */
+.wh-recipe-choices .wh-catalogue-back,
+.wh-recipe-choices .wh-catalogue-author,
+.wh-recipe-choices .wh-recipe-number,
+.wh-recipe-choices .wh-catalogue-nav {
+  font-family: var(--mono);
+}
+.wh .wh-recipe-choices .page-lead {
+  max-width: 42rem;
+  margin-bottom: 0;
+  font-size: clamp(1.06rem, 1.6vw, 1.2rem);
+  line-height: 1.6;
+}
+.wh-catalogue-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42rem) minmax(12rem, 17rem);
+  grid-template-areas: "recipes navigation";
+  align-items: start;
+  gap: clamp(2rem, 7vw, 7rem);
+  margin-top: clamp(1.75rem, 4vw, 3.25rem);
+}
+.wh-catalogue-methods { grid-area: recipes; min-width: 0; }
+.wh .wh-catalogue-nav {
+  grid-area: navigation;
+  position: sticky;
+  top: 6rem;
+  display: grid;
+  gap: .1rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .85rem;
+  line-height: 1.55;
+}
+.wh .wh-catalogue-nav a { width: fit-content; padding: .45rem 0; text-decoration: none; }
+.wh .wh-catalogue-nav a::after { content: "↓" / ""; margin-inline-start: .5em; color: var(--accent); }
+.wh .wh-catalogue-nav a:hover { text-decoration: underline; }
+.wh .wh-recipe-group { margin: 0 0 clamp(2.25rem, 5vw, 4rem); }
+.wh .wh-recipe-group:last-child { margin-bottom: 0; }
+.wh .wh-recipe-group h2 { margin-bottom: 1rem; font-size: clamp(1.45rem, 2.5vw, 1.95rem); line-height: 1.22; }
+.wh .wh-recipe-group li { padding: 1.4rem 0 1.55rem; }
+.wh .wh-recipe-group li:last-child { border-bottom: 0; }
+.wh .wh-recipe-group .wh-recipe-number { font-size: .81rem; margin-bottom: .55rem; }
+.wh .wh-recipe-group h3 { font-size: clamp(1.15rem, 1.9vw, 1.45rem); line-height: 1.35; margin-bottom: .8rem; }
+.wh .wh-recipe-group h3 a { font: inherit; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.wh .wh-recipe-group p { font-size: 1rem; line-height: 1.6; margin-top: .4rem; }
+.wh .wh-recipe-group .wh-recipe-exercises { margin-top: .8rem; }
+.wh .wh-recipe-exercises a { color: var(--muted); text-underline-offset: .22em; }
+.wh-recipe-choices a:hover { color: var(--accent); }
+@media (max-width: 850px) {
+  .wh-catalogue-layout { display: block; }
+  .wh .wh-catalogue-nav { position: static; margin-bottom: 2rem; padding: .35rem 0; border-inline: 0; border-block: 1px solid var(--line); }
+  .wh .wh-catalogue-nav a { display: flex; align-items: center; min-height: 44px; }
+}
