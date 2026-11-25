@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Саша Давыдов">
+  <title>Coop Norge · Стоит ли менять форму кнопки? — Саша Давыдов</title>
+  <meta name="description" content="Сейчас кнопки скруглены. Переходим на прямоугольные, только если они прибавят хотя бы 2 добавивших в корзину на 1000 пользователей. Что говорит наблюдаемый результат?">
+  <link rel="canonical" href="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/RC-obs.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Coop Norge · Стоит ли менять форму кнопки?">
+  <meta property="og:description" content="Сейчас кнопки скруглены. Переходим на прямоугольные, только если они прибавят хотя бы 2 добавивших в корзину на 1000 пользователей. Что говорит наблюдаемый результат?">
+  <meta property="og:url" content="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/RC-obs.html">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+  <link rel="stylesheet" href="../reviews/review.css">
+  <link rel="stylesheet" href="../goal-clarification/series.css">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame atlas-review goal-series">
+<nav class="goal-nav" aria-label="Навигация по выпуску"><a href="./">← К выпуску</a><a href="../#RC-obs">Эксперимент в атласе</a></nav>
+<header><p class="context">Coop Norge · Два независимых ответа</p><h1>Стоит ли менять форму кнопки?</h1></header>
+<section><h2>Вопрос перед встречей</h2><p class="context">Сценарий AI-мастерской</p><blockquote>Сейчас кнопки скруглены. Переходим на прямоугольные, только если они прибавят хотя бы 2 добавивших в корзину на 1000 пользователей. Что говорит наблюдаемый результат?</blockquote></section>
+<details class="review-detail"><summary>Данные, которые получили оба агента</summary><p>Сравнивали формы кнопок. В таблице первые два числа — события и пользователи для прямоугольной формы, последние два — для скруглённой. Событие считается по пользователям.</p><dl><dt>Добавление в корзину</dt><dd>Прямоугольные — 98442 / 977499<br>Скруглённые — 99070 / 976653</dd></dl></details>
+<section class="agent-answer"><h2>Независимый ответ 1</h2><p>Оставляем скруглённые кнопки. На тысячу пользователей в корзину добавили 100,71 при прямоугольных кнопках и 101,44 при скруглённых. Наблюдаемая разница при переходе на прямоугольные составляет −0,73 на тысячу, ниже порога +2.</p></section>
+<section class="agent-answer"><h2>Независимый ответ 2</h2><p>Сохранить скруглённые кнопки. На 1000 пользователей с прямоугольной кнопкой добавили в корзину 100,71 человека, со скруглённой — 101,44. При переходе наблюдаемая разница составила −0,73 на 1000 при требуемых +2.</p></section>
+<section class="decision"><h2>Критерий проверки</h2><p>Переход на прямоугольные даёт наблюдаемое снижение примерно на 0,73 на 1000. Сохранить текущую форму при указанном пороге. Не объявлять скругление новой версией.</p></section>
+<p class="review-source"><a href="https://sites.stat.columbia.edu/gelman/research/published/KohaviEtAlMarch2026.pdf">Первоисточник · Coop Norge</a></p>
+</main>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script defer src="/main.js"></script>
+</body></html>

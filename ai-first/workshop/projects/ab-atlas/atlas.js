@@ -26,15 +26,23 @@ function table(headers, rows) {
   );
 }
 const analysisSeries = {
+  paired: { label: "Два независимых ответа", link: "Сравнить ответы и критерий проверки" },
+  author: { label: "Проверка вывода авторов", link: "Сопоставить вывод команды с таблицами" },
   memo: { label: "Проверка записки", link: "Как агент проверил записку" },
   goal: { label: "Уточнение цели", link: "До и после уточнения цели" },
 };
 function renderAnalysis(report) {
   const series = analysisSeries[report.kind];
+  const attribution = report.kind === "author"
+    ? `<a href="${esc(report.claim_source)}">Вывод авторов эксперимента</a>`
+    : "Сценарий AI-мастерской";
+  const claimTag = report.kind === "author" ? "p" : "blockquote";
+  const claim = report.claim ? `<${claimTag}>${esc(report.claim)}</${claimTag}>` : "";
+  const ownerLabel = { memo: "Чья записка", author: "Чей вывод" }[report.kind] ?? "Чей вопрос";
   return `<section class="analysis-report" aria-label="${esc(series.label)}">
     <h3>${esc(series.label)}</h3><dl>
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
-    <dt>${report.kind === "memo" ? "Чья записка" : "Чей вопрос"}</dt><dd>Сценарий AI-мастерской${report.claim ? `<blockquote>${esc(report.claim)}</blockquote>` : ""}</dd>
+    <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
     <a href="${esc(report.href)}">${esc(series.link)}</a></section>`;
 }
@@ -257,7 +265,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=f2b85d57105c", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=576e0537d634", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));

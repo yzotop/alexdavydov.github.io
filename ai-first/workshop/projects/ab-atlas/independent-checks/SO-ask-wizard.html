@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Саша Давыдов">
+  <title>Stack Overflow · Сколько новичков сохранили первый вопрос? — Саша Давыдов</title>
+  <meta name="description" content="Можно ли посчитать, на сколько выросло число новичков с первым вопросом, оставшимся через три дня, на 1000 назначенных новичков?">
+  <link rel="canonical" href="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/SO-ask-wizard.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Stack Overflow · Сколько новичков сохранили первый вопрос?">
+  <meta property="og:description" content="Можно ли посчитать, на сколько выросло число новичков с первым вопросом, оставшимся через три дня, на 1000 назначенных новичков?">
+  <meta property="og:url" content="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/SO-ask-wizard.html">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+  <link rel="stylesheet" href="../reviews/review.css">
+  <link rel="stylesheet" href="../goal-clarification/series.css">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame atlas-review goal-series">
+<nav class="goal-nav" aria-label="Навигация по выпуску"><a href="./">← К выпуску</a><a href="../#SO-ask-wizard">Эксперимент в атласе</a></nav>
+<header><p class="context">Stack Overflow · Два независимых ответа</p><h1>Сколько новичков сохранили первый вопрос?</h1></header>
+<section><h2>Вопрос перед встречей</h2><p class="context">Сценарий AI-мастерской</p><blockquote>Можно ли посчитать, на сколько выросло число новичков с первым вопросом, оставшимся через три дня, на 1000 назначенных новичков?</blockquote></section>
+<details class="review-detail"><summary>Данные, которые получили оба агента</summary><p>Сравнивали стандартную и пошаговую формы. Публикации посчитаны на клики открытия формы и включают вторые и третьи вопросы части пользователей. Удаления отслеживали три дня только среди опубликованных первых вопросов.</p><dl><dt>Публикация вопроса на клик Ask question</dt><dd>Стандартная форма — 18243 / 35967<br>Пошаговая форма — 18516 / 35801</dd><dt>Удаление за три дня среди первых опубликованных вопросов</dt><dd>Стандартная форма — 2185 / 13854<br>Пошаговая форма — 1880 / 13448</dd></dl></details>
+<section class="agent-answer"><h2>Независимый ответ 1</h2><p>Нет. Через три дня оставались первые вопросы 11 669 новичков в стандартной группе (13 854 − 2 185) и 11 568 в пошаговой (13 448 − 1 880). Для пересчёта на тысячу нужны числа всех назначенных новичков в каждой группе. Клики открытия формы могут повторяться, а публикации включают повторные вопросы.</p></section>
+<section class="agent-answer"><h2>Независимый ответ 2</h2><p>Нет. Через три дня сохранилось 13 854 − 2185 = 11 669 первых вопросов в стандартной группе и 13 448 − 1880 = 11 568 в пошаговой. Для разницы на 1000 нужны числа всех назначенных уникальных новичков по группам. Клики открытия формы могут повторяться, а в числе публикаций есть повторные вопросы.</p></section>
+<section class="decision"><h2>Критерий проверки</h2><p>Для каждой группы нужны все назначенные уникальные новички. Числители сохранившихся первых вопросов уже выводятся: 13854−2185 и 13448−1880. Не перемножать опубликованные проценты.</p></section>
+<p class="review-source"><a href="https://meta.stackoverflow.com/questions/418491/ask-wizard-test-results-and-next-steps">Первоисточник · Stack Overflow</a></p>
+</main>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script defer src="/main.js"></script>
+</body></html>
