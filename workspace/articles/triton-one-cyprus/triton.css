@@ -253,3 +253,33 @@
   white-space: nowrap;
 }
 .tp-article .tp-payout-table tr.tp-record { background: var(--soft); }
+
+.tp-article .tp-comparison-metric {
+  padding: .75rem 0;
+  border-top: 1px solid var(--line);
+}
+.tp-article .tp-comparison-metric ul {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: .4rem;
+  margin: .4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tp-article .tp-comparison-metric li {
+  margin: 0;
+  padding: .45rem clamp(.25rem, 1.3vw, .8rem);
+  font-size: .82rem;
+}
+.tp-article .tp-comparison-metric li.tp-record { background: var(--soft); }
+.tp-article .tp-comparison-metric span { display: block; min-height: 2.8em; }
+.tp-article .tp-comparison-metric b {
+  display: block;
+  font: 650 clamp(.95rem, 2.3vw, 1.25rem)/1.3 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.tp-article .tp-comparison-metric small { color: var(--muted); }
+.tp-article .tp-comparison-metric meter { max-width: none; }
+.tp-article .tp-comparison-metric :not(.tp-record) > meter::-webkit-meter-optimum-value { background: var(--ink); }
+.tp-article .tp-comparison-metric :not(.tp-record) > meter::-moz-meter-bar { background: var(--ink); }
