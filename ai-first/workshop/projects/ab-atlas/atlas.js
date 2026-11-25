@@ -41,7 +41,7 @@ function renderReply(text) {
     return "<p>" + esc(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") + "</p>";
   }).join("");
 }
-function renderAnalysis(report) {
+function renderAnalysis(report, caseId) {
   const series = analysisSeries[report.kind];
   const attribution = report.kind === "author"
     ? `<a href="${esc(report.claim_source)}">Вывод авторов эксперимента</a>`
@@ -54,10 +54,10 @@ function renderAnalysis(report) {
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
     <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
-    ${(report.details ?? []).map((detail) => `<details class="analysis-reply"><summary>${esc(detail.label)}</summary>${renderReply(detail.text)}<a href="${esc(detail.href)}">Исходная реплика · TXT</a></details>`).join("")}
+    ${(report.details ?? []).map((detail, index) => `<details class="analysis-reply"${report.kind === "paired_goal" && index === 0 ? ` id="${esc(caseId)}-paired-goal-answers"` : ""}><summary>${esc(detail.label)}</summary>${renderReply(detail.text)}<a href="${esc(detail.href)}">Исходная реплика · TXT</a></details>`).join("")}
     <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
-function caseSummary(company, title, note, reports) {
+function caseSummary(company, title, note, reports, caseId) {
   const status = reports.length
     ? reports.map((r) => analysisSeries[r.kind].label).join(" · ")
     : "Пока без публичного разбора";
@@ -66,7 +66,11 @@ function caseSummary(company, title, note, reports) {
     esc(company) +
     '</span><span class="case-name">' +
     esc(title) +
-    '</span><span class="summary-note">' +
+    '</span>' +
+    (reports.some((report) => report.kind === "paired_goal")
+      ? `<a class="answer-jump" href="#${esc(caseId)}-paired-goal-answers">Почему агент сменил A на B</a>`
+      : "") +
+    '<span class="summary-note">' +
     esc(note) +
     '</span><span class="analysis-status">' + esc(status) + "</span></summary>"
   );
@@ -248,8 +252,8 @@ function renderCard(c) {
     '<details id="' +
     esc(c.id) +
     '">' +
-    caseSummary(c.company, c.title, shortResult(c), reports) +
-    '<div class="body">' + reports.map(renderAnalysis).join("") + "<p>" +
+    caseSummary(c.company, c.title, shortResult(c), reports, c.id) +
+    '<div class="body">' + reports.map((report) => renderAnalysis(report, c.id)).join("") + "<p>" +
     esc(c.design) +
     "</p><h3>" +
     esc(c.evidence) +
@@ -388,7 +392,11 @@ async function init() {
   filter();
   function openLinkedCase() {
     if (!location.hash) return;
-    const id = location.hash.slice(1);
+    const replySuffix = "-paired-goal-answers";
+    const toReplies = location.hash.endsWith(replySuffix);
+    const id = toReplies
+      ? location.hash.slice(1, -replySuffix.length)
+      : location.hash.slice(1);
     if (
       !selected.some((e) => e.id === id) &&
       entries.some((e) => e.id === id)
@@ -406,9 +414,25 @@ async function init() {
       renderPage();
       const el = byId(selected[i].id);
       el.open = true;
-      el.scrollIntoView();
+      const target = toReplies && byId(id + replySuffix);
+      if (target) {
+        const replies = target.parentElement.querySelectorAll(".analysis-reply");
+        for (const reply of Array.from(replies).slice(0, 2)) reply.open = true;
+        target.querySelector("summary").focus({ preventScroll: true });
+        target.scrollIntoView({ block: "start" });
+      } else {
+        el.scrollIntoView();
+      }
     }
   }
+  byId("list").addEventListener("click", (event) => {
+    const link = event.target.closest("a.answer-jump");
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (location.hash === link.hash) openLinkedCase();
+    else location.hash = link.hash;
+  });
   window.addEventListener("hashchange", openLinkedCase);
   openLinkedCase();
 }
