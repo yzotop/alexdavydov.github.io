@@ -44,7 +44,7 @@ function renderAnalysis(report) {
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
     <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
-    <a href="${esc(report.href)}">${esc(series.link)}</a></section>`;
+    <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
 function caseSummary(company, title, note, reports) {
   const status = reports.length
@@ -265,7 +265,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=dcd7cf6bdfec", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=c4e84f8758a0", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
