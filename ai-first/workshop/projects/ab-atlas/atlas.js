@@ -26,11 +26,21 @@ function table(headers, rows) {
   );
 }
 const analysisSeries = {
+  paired_goal: { label: "Парный прогон с целью", link: "Открыть парный прогон" },
   paired: { label: "Два независимых ответа", link: "Сравнить ответы и критерий проверки" },
   author: { label: "Проверка вывода авторов", link: "Сопоставить вывод команды с таблицами" },
   memo: { label: "Проверка записки", link: "Как агент проверил записку" },
   goal: { label: "Уточнение цели", link: "До и после уточнения цели" },
 };
+function renderReply(text) {
+  return text.trim().split(/\n\n+/).map((block) => {
+    if (block.startsWith("|")) {
+      const rows = block.split("\n").map((line) => line.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim()));
+      return table(rows[0], rows.slice(2));
+    }
+    return "<p>" + esc(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") + "</p>";
+  }).join("");
+}
 function renderAnalysis(report) {
   const series = analysisSeries[report.kind];
   const attribution = report.kind === "author"
@@ -44,6 +54,7 @@ function renderAnalysis(report) {
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
     <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
+    ${(report.details ?? []).map((detail) => `<details class="analysis-reply"><summary>${esc(detail.label)}</summary>${renderReply(detail.text)}<a href="${esc(detail.href)}">Исходная реплика · TXT</a></details>`).join("")}
     <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
 function caseSummary(company, title, note, reports) {
@@ -265,7 +276,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=c4e84f8758a0", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=080380eb8b0d", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
