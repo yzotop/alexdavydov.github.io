@@ -25,7 +25,23 @@ function table(headers, rows) {
     "</tbody></table></div>"
   );
 }
-function caseSummary(company, title, note) {
+const analysisSeries = {
+  memo: { label: "Проверка записки", link: "Как агент проверил записку" },
+  goal: { label: "Уточнение цели", link: "До и после уточнения цели" },
+};
+function renderAnalysis(report) {
+  const series = analysisSeries[report.kind];
+  return `<section class="analysis-report" aria-label="${esc(series.label)}">
+    <h3>${esc(series.label)}</h3><dl>
+    <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
+    <dt>${report.kind === "memo" ? "Чья записка" : "Чей вопрос"}</dt><dd>Сценарий AI-мастерской${report.claim ? `<blockquote>${esc(report.claim)}</blockquote>` : ""}</dd>
+    <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
+    <a href="${esc(report.href)}">${esc(series.link)}</a></section>`;
+}
+function caseSummary(company, title, note, reports) {
+  const status = reports.length
+    ? reports.map((r) => analysisSeries[r.kind].label).join(" · ")
+    : "Пока без публичного разбора";
   return (
     '<summary><span class="org">' +
     esc(company) +
@@ -33,7 +49,7 @@ function caseSummary(company, title, note) {
     esc(title) +
     '</span><span class="summary-note">' +
     esc(note) +
-    "</span></summary>"
+    '</span><span class="analysis-status">' + esc(status) + "</span></summary>"
   );
 }
 function shortResult(c) {
@@ -197,6 +213,7 @@ function renderCard(c) {
       ["Метрика", "Что сообщила команда"],
       c.results.map((r) => [r.metric, r.reported]),
     );
+  const reports = c.analyses ?? [];
   const facts =
     '<details class="facts"><summary>Дизайн и параметры</summary><dl>' +
     fields
@@ -212,8 +229,8 @@ function renderCard(c) {
     '<details id="' +
     esc(c.id) +
     '">' +
-    caseSummary(c.company, c.title, shortResult(c)) +
-    '<div class="body"><p>' +
+    caseSummary(c.company, c.title, shortResult(c), reports) +
+    '<div class="body">' + reports.map(renderAnalysis).join("") + "<p>" +
     esc(c.design) +
     "</p><h3>" +
     esc(c.evidence) +
@@ -222,12 +239,6 @@ function renderCard(c) {
     "<p>" +
     esc(c.note) +
     "</p>" +
-    (c.has_review
-      ? '<p><a href="reviews/' + encodeURIComponent(c.id) + '.html">Как агент проверил записку</a></p>'
-      : "") +
-    (c.goal_case
-      ? '<p><a href="goal-clarification/' + encodeURIComponent(c.goal_case) + '">До и после уточнения цели</a></p>'
-      : "") +
     facts +
     '<p><a href="' +
     esc(c.source) +
@@ -246,18 +257,19 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=e166f74376bb", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=f2b85d57105c", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
   const companies = {};
   for (const card of cards)
     companies[card.company] = (companies[card.company] || 0) + 1;
-  const entries = cards.map((c) => ({
+  const entries = Array.from(full.values()).map((c) => ({
     id: c.id,
     title: c.title,
     company: c.company,
-    hasReview: c.has_review,
+    hasReview: (c.analyses ?? []).some((report) => report.kind === "memo"),
+    hasAnalysis: Boolean(c.analyses?.length),
     task: c.task,
     change: c.change,
     family: c.intervention_family,
@@ -267,6 +279,16 @@ async function init() {
     search: JSON.stringify(c).toLocaleLowerCase(),
   }));
   const fmt = (n) => n.toLocaleString("ru-RU");
+  const analysed = entries.filter((entry) => entry.hasAnalysis).length;
+  byId("coverage").textContent = `К ${fmt(analysed)} из ${fmt(entries.length)} экспериментов опубликованы разборы агента`;
+  for (const [scope, count] of Object.entries({
+    all: entries.length, with: analysed, without: entries.length - analysed,
+  })) byId("count-" + scope).textContent = fmt(count);
+
+  const featured = ["NA-2715", "LA-teamleader-signup-customer-logos"];
+  const rank = (id) => featured.includes(id) ? featured.indexOf(id) : featured.length;
+  entries.sort((a, b) => rank(a.id) - rank(b.id));
+
   function option(id, label, value) {
     const o = document.createElement("option");
     o.textContent = label;
@@ -295,7 +317,7 @@ async function init() {
       slice.map((e) => renderCard(full.get(e.id))).join("") ||
       "<p>Совпадений нет. Измените запрос или сбросьте фильтры.</p>";
     byId("total").textContent =
-      "Найдено " + fmt(selected.length) + " из " + fmt(cards.length);
+      "Найдено " + fmt(selected.length) + " из " + fmt(entries.length);
     byId("page").textContent = selected.length
       ? fmt(page * pageSize + 1) + "–" + fmt(page * pageSize + slice.length)
       : "";
@@ -306,10 +328,12 @@ async function init() {
     event.preventDefault(),
   );
   function filter() {
+    const scope = byId("atlas-filter").elements.scope.value;
     const reviewsOnly = byId("with-review").checked;
     const words = byId("q").value.trim().toLocaleLowerCase().split(/\s+/);
     selected = entries.filter(
       (e) =>
+        (scope === "all" || e.hasAnalysis === (scope === "with")) &&
         (!reviewsOnly || e.hasReview) &&
         (!byId("task").value || e.task === byId("task").value) &&
         (!byId("change").value || e.change === byId("change").value) &&
@@ -323,14 +347,15 @@ async function init() {
         (!byId("risk").value || e.risk === (byId("risk").value === "flag")) &&
         words.every((w) => e.search.includes(w)),
     );
-    if (reviewsOnly) {
-      const featuredId = "NA-2715";
-      selected.sort((a, b) => Number(b.id === featuredId) - Number(a.id === featuredId));
-    }
     page = 0;
     renderPage();
   }
-  byId("atlas-filter").addEventListener("input", filter);
+  byId("atlas-filter").addEventListener("input", ({ target }) => {
+    if (target.name === "scope") byId("with-review").checked = false;
+    if (target.id === "with-review" && target.checked)
+      byId("atlas-filter").elements.scope.value = "with";
+    filter();
+  });
   byId("atlas-filter").addEventListener("reset", () => setTimeout(filter, 0));
   for (const [id, delta] of [
     ["prev", -1],
@@ -349,6 +374,7 @@ async function init() {
       !selected.some((e) => e.id === id) &&
       entries.some((e) => e.id === id)
     ) {
+      byId("atlas-filter").elements.scope.value = "all";
       byId("with-review").checked = false;
       for (const el of byId("atlas-filter").querySelectorAll('input[type="search"], select'))
         el.value = "";
