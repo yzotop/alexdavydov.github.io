@@ -257,6 +257,7 @@ async function init() {
     id: c.id,
     title: c.title,
     company: c.company,
+    hasReview: c.has_review,
     task: c.task,
     change: c.change,
     family: c.intervention_family,
@@ -305,9 +306,11 @@ async function init() {
     event.preventDefault(),
   );
   function filter() {
+    const reviewsOnly = byId("with-review").checked;
     const words = byId("q").value.trim().toLocaleLowerCase().split(/\s+/);
     selected = entries.filter(
       (e) =>
+        (!reviewsOnly || e.hasReview) &&
         (!byId("task").value || e.task === byId("task").value) &&
         (!byId("change").value || e.change === byId("change").value) &&
         (!byId("family").value || byId("family").value === e.family) &&
@@ -320,6 +323,10 @@ async function init() {
         (!byId("risk").value || e.risk === (byId("risk").value === "flag")) &&
         words.every((w) => e.search.includes(w)),
     );
+    if (reviewsOnly) {
+      const featuredId = "NA-2715";
+      selected.sort((a, b) => Number(b.id === featuredId) - Number(a.id === featuredId));
+    }
     page = 0;
     renderPage();
   }
@@ -342,7 +349,8 @@ async function init() {
       !selected.some((e) => e.id === id) &&
       entries.some((e) => e.id === id)
     ) {
-      for (const el of byId("atlas-filter").querySelectorAll("input,select"))
+      byId("with-review").checked = false;
+      for (const el of byId("atlas-filter").querySelectorAll('input[type="search"], select'))
         el.value = "";
       filter();
     }
