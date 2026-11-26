@@ -38,7 +38,7 @@ function renderReply(text) {
       const rows = block.split("\n").map((line) => line.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim()));
       return table(rows[0], rows.slice(2));
     }
-    return "<p>" + esc(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") + "</p>";
+    return "<p>" + esc(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>") + "</p>";
   }).join("");
 }
 function renderAnalysis(report, caseId) {
@@ -54,6 +54,7 @@ function renderAnalysis(report, caseId) {
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
     <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
+    ${report.highlight ? `<p><strong>${esc(report.highlight)}</strong></p>` : ""}
     ${(report.details ?? []).map((detail, index) => `<details class="analysis-reply"${report.kind === "paired_goal" && index === 0 ? ` id="${esc(caseId)}-paired-goal-answers"` : ""}><summary>${esc(detail.label)}</summary>${renderReply(detail.text)}<a href="${esc(detail.href)}">Исходная реплика · TXT</a></details>`).join("")}
     <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
@@ -280,7 +281,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=080380eb8b0d", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=89a38653e39b", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
