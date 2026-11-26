@@ -54,7 +54,7 @@ function renderAnalysis(report, caseId) {
     <dt>Что проверял агент</dt><dd>${esc(report.question)}</dd>
     <dt>${ownerLabel}</dt><dd>${attribution}${claim}</dd>
     <dt>Что показала проверка</dt><dd>${esc(report.finding)}</dd></dl>
-    ${report.highlight ? `<p><strong>${esc(report.highlight)}</strong></p>` : ""}
+    ${report.highlight ? `<p class="analysis-highlight"><strong>${esc(report.highlight)}</strong></p>` : ""}
     ${(report.details ?? []).map((detail, index) => `<details class="analysis-reply"${report.kind === "paired_goal" && index === 0 ? ` id="${esc(caseId)}-paired-goal-answers"` : ""}><summary>${esc(detail.label)}</summary>${renderReply(detail.text)}<a href="${esc(detail.href)}">Исходная реплика · TXT</a></details>`).join("")}
     <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
@@ -420,7 +420,8 @@ async function init() {
         const replies = target.parentElement.querySelectorAll(".analysis-reply");
         for (const reply of Array.from(replies).slice(0, 2)) reply.open = true;
         target.querySelector("summary").focus({ preventScroll: true });
-        target.scrollIntoView({ block: "start" });
+        const scrollTarget = target.parentElement.querySelector(".analysis-highlight") ?? target;
+        scrollTarget.scrollIntoView({ block: "start" });
       } else {
         el.scrollIntoView();
       }
