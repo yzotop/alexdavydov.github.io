@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Саша Давыдов">
+  <title>Uber · Изменить суммы чаевых, предложенные после поездки — Саша Давыдов</title>
+  <meta name="description" content="Выигрыш в моменте уточнения и управлении допущением. После ответа команды обе версии выбирают A для обратимого пилота. Выигрыша в конечном действии нет.">
+  <link rel="canonical" href="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/uber-tip-presets-goal-rule.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Uber · Изменить суммы чаевых, предложенные после поездки">
+  <meta property="og:description" content="Выигрыш в моменте уточнения и управлении допущением. После ответа команды обе версии выбирают A для обратимого пилота. Выигрыша в конечном действии нет.">
+  <meta property="og:url" content="https://davydov.my/ai-first/workshop/projects/ab-atlas/independent-checks/uber-tip-presets-goal-rule.html">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+  <link rel="stylesheet" href="../reviews/review.css">
+  <link rel="stylesheet" href="subscription-goal.css">
+  <link rel="stylesheet" href="../goal-clarification/series.css">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame atlas-review goal-series">
+<nav class="goal-nav" aria-label="Навигация по разбору"><a href="./">← К выпускам</a><a href="../#uber-tip-presets">Эксперимент в атласе</a></nav>
+<header><p class="context">Парный прогон с правилом · 26 ноября 2026</p><h1>Uber · Изменить суммы чаевых, предложенные после поездки</h1></header>
+<p>Сценарий AI-мастерской. Цель и ограничения в сообщении команды заданы для этого прогона. Оба агента получили одни данные; агенту с правилом дополнительно предложили сначала уточнить цель.</p>
+<section class="decision"><h2>Что получилось</h2><p>После уточнения оба выбрали A для обратимого пилота. Правило изменило момент вопроса, итоговое действие совпало.</p><p>Выигрыш в моменте уточнения и управлении допущением. После ответа команды обе версии выбирают A для обратимого пилота. Выигрыша в конечном действии нет.</p></section>
+<section><h2>Общие данные</h2><p>Пассажиру случайно назначали один из восьми наборов подсказок чаевых на все его поездки. Наблюдение длилось четыре недели, анализ поездок учитывал повторные поездки пассажира. Ниже два крайних набора.</p>
+<div class="atlas-table"><table>
+<thead>
+<tr>
+<th>Метрика</th>
+<th>A ($1/$3/$5)</th>
+<th>B ($2/$4/$6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Доля поездок с чаевыми</td>
+<td>16,2%</td>
+<td>14,9%</td>
+</tr>
+<tr>
+<td>Средние чаевые среди поездок с чаевыми</td>
+<td>$2,89</td>
+<td>$3,23</td>
+</tr>
+<tr>
+<td>Средние чаевые на любую поездку</td>
+<td>$0,467</td>
+<td>$0,479</td>
+</tr>
+</tbody>
+</table></div>
+<p>Что делаем?</p>
+<p><a href="uber-tip-presets-goal-rule-packet.txt">Исходный пакет · TXT</a></p></section>
+<details class="review-detail"><summary>Обычный агент · первый ответ</summary><p>Если цель — увеличить чаевые на поездку, <strong>B выглядит предпочтительнее A, но данных для полного перехода пока недостаточно</strong>.</p>
+<p>С B средние чаевые на поездку выше на <strong>1,2 цента (+2,6%)</strong>. Доля поездок с чаевыми снизилась на <strong>1,3 процентного пункта</strong>, а средняя сумма среди поездок с чаевыми выросла на <strong>34 цента</strong>. Для решения важнее среднее по всем поездкам, поскольку оно учитывает оба изменения.</p>
+<p>Я бы пока оставил текущие настройки и проверил доверительный интервал для разницы B−A с учётом повторных поездок пассажира. Затем сравнил бы все восемь наборов с поправкой на множественные сравнения, если победителя выбираем по этим же данным. Внедрять стоит набор с подтверждённым и практически значимым приростом чаевых на поездку. Если доля поездок с чаевыми тоже важна, допустимое снижение стоит определить до выбора.</p>
+<p><a href="uber-tip-presets-goal-rule-standard-first.txt">Исходное сообщение · TXT</a></p></details>
+<details class="review-detail"><summary>Агент с правилом · первый ответ</summary><p>Какую цель команда ставит на первое место: увеличить средние чаевые на любую поездку или повысить долю поездок, в которых пассажиры оставляют чаевые? Есть ли минимальный эффект, ради которого стоит менять подсказки?</p>
+<p>По наблюдаемым результатам B даёт на 1,2 цента больше в среднем на любую поездку, а A — на 1,3 процентного пункта больше поездок с чаевыми. После уточнения цели стоит проверить неопределённость по выбранной метрике с учётом повторных поездок пассажиров и сравнить все восемь наборов. В таблице есть только точечные оценки для двух из них.</p>
+<p><a href="uber-tip-presets-goal-rule-goal-rule-first.txt">Исходное сообщение · TXT</a></p></details>
+<details class="review-detail"><summary>Точное правило</summary><p>Перед рекомендацией по варианту сначала уточни у команды цель решения.</p>
+<p><a href="uber-tip-presets-goal-rule-rule.txt">Исходное сообщение · TXT</a></p></details>
+<details class="review-detail"><summary>Точное сообщение команды · одно для обоих</summary><p>Выбираем один из этих двух наборов для обратимого пилота на сопоставимых поездках. Цель — увеличить долю поездок с чаевыми. Допускаем снижение средних чаевых на любую поездку до $0,02 относительно B. Для выбора пилота используем наблюдаемые оценки, полный раскат сейчас не решаем.</p>
+<p><a href="uber-tip-presets-goal-rule-team_reply.txt">Исходное сообщение · TXT</a></p></details>
+<details class="review-detail"><summary>Обычный агент · после уточнения</summary><p><strong>Для пилота выбираем A ($1/$3/$5).</strong> По наблюдаемым оценкам, с A доля поездок с чаевыми выше на <strong>1,3 процентного пункта</strong> (16,2% против 14,9%). Средние чаевые на любую поездку ниже на <strong>$0,012</strong> ($0,467 против $0,479), что укладывается в допустимое снижение на <strong>$0,02</strong> относительно B.</p>
+<p><a href="uber-tip-presets-goal-rule-standard-second.txt">Исходное сообщение · TXT</a></p></details>
+<details class="review-detail"><summary>Агент с правилом · после уточнения</summary><p>Для обратимого пилота на сопоставимых поездках выбираем <strong>A ($1/$3/$5)</strong>.</p>
+<p>По наблюдаемым оценкам с A чаевые оставляли в 16,2% поездок против 14,9% с B. Прирост по целевой метрике составил <strong>1,3 процентного пункта</strong>. Средние чаевые на любую поездку снизились на <strong>$0,012</strong> ($0,467 против $0,479), что укладывается в допустимый предел $0,02.</p>
+<p><a href="uber-tip-presets-goal-rule-goal-rule-second.txt">Исходное сообщение · TXT</a></p></details>
+<section><h2>Редакторская оценка · Обычный агент</h2><p>Условно предпочитает B, предполагая приоритет суммы на поездку, затем предлагает сохранить текущие настройки до проверки. В конце косвенно поднимает вопрос цели и порога по частоте, после условного выбора B.</p><p>Меняет условное предпочтение B и первоначальную осторожную отсрочку на A для пилота. Верно сопоставляет +1,3 п.п. и −$0,012 с допуском $0,02. Дополнительных данных не требует. В первом ходе интервалы и все восемь наборов уместны для поиска победителя и раската, шире задачи пилота.</p></section>
+<section><h2>Редакторская оценка · Агент с правилом</h2><p>Без выбора напрямую противопоставляет две цели и правильно показывает компромисс. Вопрос о минимальном эффекте менее точен, чем вопрос о допустимой потере суммы на поездку. Предлагает интервалы и все восемь вариантов, что шире задачи из последующего ответа команды.</p><p>Разрешает выбор после уточнения, выбирает A только для обратимого пилота. Верно применяет обе оценки и допуск. Дополнительных данных для этого решения не требует. Существенных ошибок во втором ходе нет.</p></section>
+<details class="review-detail"><summary>Критерии до запуска</summary><dl><dt>question</dt><dd>Вопрос полезен, если выводит на выбор между частотой и суммой чаевых на любую поездку либо выясняет допустимую потерю по второй метрике. Одна формула «какая цель?» без привязки к данным получает частичный зачёт.</dd><dt>initial_action</dt><dd>Зафиксировать выбор A/B, условный выбор, запрос цели или отсрочку. До цели корректно указать компромисс: A даёт +1,3 п.п. частоты и −$0,012 на поездку относительно B. Безусловный выбор по одной метрике требует явно заявленного допущения.</dd><dt>change</dt><dd>После ответа обоснован A для пилота, так как $0,012 укладываются в допуск $0,02. Переход от запроса или условия к A — разрешение выбора. Если A уже рекомендован на тех же основаниях, отдельно отметить, что действие не изменилось.</dd><dt>data_request</dt><dd>Для текущего выбора по точечным оценкам дополнительные данные не обязательны. Для последующего раската уместны интервалы для частоты и суммы на поездку с учётом кластеризации по пассажиру.</dd><dt>no_rule_benefit</dt><dd>Если обычный ответ уже дал корректную условную развилку и после цели обосновал A с теми же ограничениями, дополнительной пользы для действия может не быть.</dd></dl></details>
+<section><h2>Расчёт и границы вывода</h2><p>B−A: −1,3 п.п. по доле поездок с чаевыми и +$0,012 на любую поездку. Скрипт показывает арифметику и отсутствие расчётных ДИ. Применимость допуска $0,02 и обратимость пилота выводятся из ответа команды.</p><p>У набора $1/$3/$5 против $2/$4/$6 доля поездок с чаевыми 16,2% против 14,9% до десятых процента. Среди поездок с чаевыми среднее $2,89 против $3,23 до центов. Среди всех поездок $0,467 против $0,479 до тысячных доллара.</p><p>Авторы считают, что предложенные суммы влияли на выбор: более высокие суммы сопровождались меньшей частотой чаевых и небольшим приростом суммы на поездку. Точные размеры каждой группы и доля наличных чаевых неизвестны.</p><p>Один парный прогон на этом опыте. Частоту поведения модели и выигрыш в конечном действии по нему не оценивали.</p></section>
+<p class="review-source"><a href="https://www.nber.org/system/files/working_papers/w26380/w26380.pdf">Первичный источник</a> · §4.2 Effects of Defaults, первый эксперимент, Figures 22–24</p>
+</main>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script defer src="/main.js"></script>
+</body></html>

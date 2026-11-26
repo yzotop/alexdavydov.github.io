@@ -130,6 +130,10 @@ function renderCard(c) {
     ],
     ["Статкритерий команды", c.reported_test],
   ];
+  if (c.source_summary) fields.push(["Что опубликовано", c.source_summary]);
+  if (c.design_evidence) fields.push(["Назначение в группы", c.design_evidence === "randomized"
+    ? "Случайное назначение описано в источнике."
+    : "Контролируемый онлайн-опыт. Механизм назначения не раскрыт."]);
   if (c.outcome) fields.unshift(["Результат теста", c.outcome]);
   if (c.selection_reason) fields.unshift(["Почему выбран", c.selection_reason]);
   if (c.variant_count != null)
@@ -156,12 +160,24 @@ function renderCard(c) {
           ]),
         )
       : table(
-          ["Группа", "Клиентов"],
-          c.groups.map((g) => [g.label, number(g.n)]),
+          ["Группа", "Размер группы"],
+          c.groups.map((g) => [g.label, g.n == null ? "Не указано" : number(g.n)]),
         )
     : "";
   let results;
-  if (!c.results.length) {
+  if (c.source_summary) {
+    results = table(["Метрика и сравнение", "Опубликовано", "Пересчёт по уровням"], c.results.map((result) => {
+      const levels = [result.baseline, result.treatment].map((value) => value == null
+        ? "Не опубликовано"
+        : number(result.unit === "п.п." ? value * 100 : value) + (result.unit === "п.п." ? "%" : " " + (result.unit ?? "")));
+      const published = [result.reported, "Уровни: " + levels.join(" → ")];
+      if (result.reported_ci) published.push("ДИ авторов: " + result.reported_ci.bounds.map(number).join("…") + " " + result.reported_ci.unit);
+      const calculated = result.absolute == null
+        ? "Недостаточно исходных уровней для пересчёта."
+        : number(result.absolute) + " " + result.unit + " (" + relativePercent(result.relative_pct) + " относительно базы). Входные уровни округлены.";
+      return [result.metric + " · " + result.comparison + ". Знаменатель: " + result.denominator, published.filter(Boolean).join(". "), calculated];
+    })) + "<p>Точных пар «события / участники» для обеих групп нет. Собственные доверительные интервалы здесь не рассчитаны.</p>";
+  } else if (!c.results.length) {
     results = "<p>Для сравнения нужен второй опубликованный вариант.</p>";
   } else if (c.results[0].base_events != null) {
     const percent = (v) =>
@@ -292,7 +308,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=0280af82392c", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=9f2aa43ca535", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
