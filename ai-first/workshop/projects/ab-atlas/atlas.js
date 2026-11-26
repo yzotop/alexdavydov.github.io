@@ -33,12 +33,22 @@ const analysisSeries = {
   goal: { label: "Уточнение цели", link: "До и после уточнения цели" },
 };
 function renderReply(text) {
+  const format = (value) => esc(value)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
   return text.trim().split(/\n\n+/).map((block) => {
     if (block.startsWith("|")) {
       const rows = block.split("\n").map((line) => line.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim()));
       return table(rows[0], rows.slice(2));
     }
-    return "<p>" + esc(block).replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>") + "</p>";
+    const lines = block.split("\n");
+    if (lines.every((line) => /^(?:\d+\.|-)\s/.test(line))) {
+      const tag = /^\d+\./.test(block) ? "ol" : "ul";
+      return "<" + tag + ">" + lines.map((line) =>
+        "<li>" + format(line.replace(/^(?:\d+\.|-)\s/, "")) + "</li>"
+      ).join("") + "</" + tag + ">";
+    }
+    return "<p>" + format(block) + "</p>";
   }).join("");
 }
 function renderAnalysis(report, caseId) {
@@ -59,6 +69,7 @@ function renderAnalysis(report, caseId) {
     <a href="${esc(report.href)}">${esc(report.link_label ?? series.link)}</a></section>`;
 }
 function caseSummary(company, title, note, reports, caseId) {
+  const pairedGoal = reports.find((report) => report.kind === "paired_goal");
   const status = reports.length
     ? reports.map((r) => analysisSeries[r.kind].label).join(" · ")
     : "Пока без публичного разбора";
@@ -68,8 +79,8 @@ function caseSummary(company, title, note, reports, caseId) {
     '</span><span class="case-name">' +
     esc(title) +
     '</span>' +
-    (reports.some((report) => report.kind === "paired_goal")
-      ? `<a class="answer-jump" href="#${esc(caseId)}-paired-goal-answers">Почему агент сменил A на B</a>`
+    (pairedGoal
+      ? `<a class="answer-jump" href="#${esc(caseId)}-paired-goal-answers">${esc(pairedGoal.jump_label ?? "Почему агент сменил A на B")}</a>`
       : "") +
     '<span class="summary-note">' +
     esc(note) +
@@ -281,7 +292,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=89a38653e39b", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=0280af82392c", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
