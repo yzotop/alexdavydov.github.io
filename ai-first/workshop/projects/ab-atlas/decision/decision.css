@@ -1,0 +1,43 @@
+.decision { padding-top: 24px; line-height: 1.55; }
+.decision header { max-width: 64ch; margin-block: 24px; }
+.decision h1 { font-size: clamp(32px, 4vw, 52px); line-height: 1.12; letter-spacing: -.04em; font-weight: 500; }
+.decision h2 { font-size: 24px; line-height: 1.25; font-weight: 600; }
+.decision h3 { font-size: 20px; line-height: 1.3; letter-spacing: -.02em; }
+.decision p { margin-block: 12px; }
+.decision a { text-decoration: underline; text-underline-offset: .2em; }
+.decision input, .decision select, .decision textarea, .decision button { font: inherit; color: var(--ink); }
+.decision input, .decision select, .decision textarea { display: block; width: 100%; min-width: 0; border: 1px solid #a5a7a9; border-radius: 4px; padding: 10px; background: var(--bg); font-size: 16px; }
+.decision textarea { resize: vertical; min-height: 100px; }
+.decision label { display: block; margin-block: 14px; font-size: .9rem; font-weight: 600; }
+.decision label input, .decision label select, .decision label textarea { margin-top: 6px; font-weight: 400; }
+.decision button { min-height: 44px; padding: 8px 14px; border: 1px solid var(--ink); background: var(--bg); border-radius: 4px; cursor: pointer; }
+.decision button:hover, .decision button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.decision button:disabled { opacity: .45; cursor: default; }
+.decision :is(button,input,textarea,select,a,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.decision small, .decision #matches, .decision #save-status, .decision .decision-help { color: var(--muted); }
+.decision .decision-nav, .decision .decision-actions, .decision .decision-pager { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.decision .decision-nav a { min-height: 44px; display: inline-flex; align-items: center; }
+.decision .decision-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(24px, 5vw, 64px); align-items: start; }
+.decision #memo { background: var(--soft); padding: 20px; border-radius: 8px; }
+.decision #memo, .decision #compare { scroll-margin-top: 6rem; }
+.decision .decision-case { border-top: 1px solid var(--line); padding-block: 20px; min-width: 0; overflow-wrap: anywhere; }
+.decision .decision-case h3 { margin-block: 4px 10px; }
+.decision details summary { cursor: pointer; min-height: 44px; padding-block: 10px; }
+.decision .decision-actions { margin-block: 16px; }
+.decision dl { margin-block: 12px; }
+.decision dt { font-weight: 600; margin-top: 10px; }
+.decision dd { margin-left: 0; }
+.decision li { margin-block: 10px; }
+.decision li p { margin-block: 4px; }
+.decision #compare { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 20px; }
+.decision .compare-items { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+.decision .compare-items article { min-width: 0; overflow-wrap: anywhere; }
+.decision .compare-items button { display: block; margin-top: 12px; }
+.decision #preview { min-height: 300px; }
+.decision #memo-source { overflow-wrap: anywhere; }
+.decision [hidden] { display: none; }
+@media(max-width: 760px) {
+ .decision .decision-layout, .decision .compare-items { grid-template-columns: minmax(0,1fr); }
+ .decision #memo { padding: 16px; }
+ .decision h1 { font-size: 32px; }
+}
