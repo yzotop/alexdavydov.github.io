@@ -28,6 +28,7 @@ EXTRA_PATHS = (
     "/ai-first/workshop/projects/upworthy/",
     "/ai-first/workshop/projects/ab-atlas/",
     "/ai-first/workshop/projects/ab-atlas/decision/",
+    "/ai-first/workshop/projects/ab-atlas/practice/",
     "/ai-first/workshop/projects/ab-atlas/goal-clarification/",
     "/ai-first/workshop/projects/ab-atlas/independent-checks/",
     "/talks/",

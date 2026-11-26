@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Саша Давыдов">
+  <title>Прими решение сам — Саша Давыдов</title>
+  <meta name="description" content="Решите задачу по данным эксперимента, затем откройте цель команды и сравните свои два хода с ответами агентов.">
+  <link rel="canonical" href="https://davydov.my/ai-first/workshop/projects/ab-atlas/practice/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Прими решение сам">
+  <meta property="og:description" content="Решите задачу по данным эксперимента, затем откройте цель команды и сравните свои два хода с ответами агентов.">
+  <meta property="og:url" content="https://davydov.my/ai-first/workshop/projects/ab-atlas/practice/">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css?v=fd9a4d20811b">
+  <link rel="stylesheet" href="../decision/decision.css">
+  <link rel="stylesheet" href="practice.css?v=61c318d39bc2">
+</head>
+<body>
+<!-- header:start -->
+<nav class="nav" aria-label="Основное меню">
+  <a href="/" class="logo">
+    <div class="logo-mark"><span>Δ</span></div>
+    <span class="logo-wordmark">davydov</span>
+  </a>
+  <div class="nav-links">
+    <span class="nav-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </span>
+    <span class="nav-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </span>
+    <span class="nav-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </span>
+  </div>
+  <button type="button" class="nav-burger" id="nav-burger" aria-expanded="false" aria-controls="nav-drawer" aria-label="Меню"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+</nav>
+<div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+<nav class="nav-drawer" id="nav-drawer" aria-label="Мобильное меню">
+  <div class="nav-drawer-section nav-drawer-section--primary">
+    <div class="nav-drawer-group">
+      <a href="/ai-first/workshop/">AI-мастерская</a>
+      <a href="/materials/">Материалы</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/teaching/">Преподаю</a>
+      <a href="/career/">Менторство</a>
+    </div>
+    <div class="nav-drawer-group">
+      <a href="/about/">Обо мне</a>
+      <a href="https://null.davydov.my/" rel="noopener">∅ Сад</a>
+    </div>
+  </div>
+  <hr class="nav-drawer-divider" aria-hidden="true"/>
+  <div class="nav-drawer-section nav-drawer-section--secondary">
+    <a href="/companies/">Для компаний</a>
+    <a href="/career/results/">Результаты менторства</a>
+  </div>
+</nav>
+<!-- header:end -->
+<main class="section-frame decision exercise">
+<nav class="decision-nav" aria-label="Навигация"><a id="back-atlas" href="../">← Атлас A/B-тестов</a><a href="../decision/">Подготовить записку</a></nav>
+<header><h1>Прими решение сам</h1><p>Сначала решите задачу по данным. Затем откройте цель команды и посмотрите, изменится ли ваше решение.</p></header>
+<section id="picker" aria-labelledby="picker-title"><h2 id="picker-title">Выберите опыт</h2><ul class="exercise-list" id="exercise-list"></ul></section>
+<p id="load-status" role="status">Загружаем упражнения…</p>
+<div id="exercise" hidden>
+<label for="case-select">Эксперимент<select id="case-select"></select></label>
+<h2 id="case-title"></h2><p class="decision-help">Данные — из публикации об эксперименте. Цель и ограничения для встречи задаёт сценарий AI-мастерской.</p>
+<div id="packet" class="exercise-packet"></div><p><a id="source-link">Первичный источник</a></p><p id="source-locator" class="decision-help"></p>
+<form id="first-form"><h2>Ваш первый ход</h2><label for="first-action">Что предлагаете?<select id="first-action" required><option value="">Выберите действие</option><option value="A">Выбрать A</option><option value="B">Выбрать B</option><option value="clarify">Уточнить цель</option><option value="data">Запросить данные</option><option value="wait">Пока отложить выбор</option></select></label><label for="first-reason">Краткое основание<textarea id="first-reason" rows="4" required></textarea></label>
+<button type="submit">Зафиксировать первый ход и раскрыть цель</button></form>
+<section id="first-record" hidden><h2>Ваш первый ход</h2><dl><dt>Вы предложили</dt><dd id="first-choice"></dd><dt>Ваше основание</dt><dd id="first-basis" class="reader-text"></dd></dl></section>
+<section id="team-section" hidden><h2 id="team-heading" tabindex="-1">Сообщение команды</h2><p class="decision-help">Цель и ограничения сценария Мастерской.</p><blockquote id="team-reply"></blockquote>
+<form id="second-form"><h2>Ваш ход после уточнения</h2><label for="second-action">Что предлагаете теперь?<select id="second-action" required><option value="">Выберите действие</option><option value="A">Выбрать A</option><option value="B">Выбрать B</option><option value="clarify">Уточнить цель</option><option value="data">Запросить данные</option><option value="wait">Пока отложить выбор</option></select></label><label for="second-reason">Краткое основание<textarea id="second-reason" rows="4" required></textarea></label><button type="submit">Зафиксировать второй ход</button></form></section>
+<section id="second-record" hidden><h2>Ваш ход после уточнения</h2><dl><dt>Вы предложили</dt><dd id="second-choice"></dd><dt>Ваше основание</dt><dd id="second-basis" class="reader-text"></dd></dl><p id="choice-change"></p></section>
+<div id="compare-entry" hidden><button id="show-comparison" type="button">Сравнить с агентами</button></div>
+<section id="comparison" hidden><h2 id="comparison-heading" tabindex="-1">Сопоставьте решения</h2><h3>Редакторская подсказка по сценарию</h3><p>Это подготовленное объяснение условий. Сопоставьте с ним свои основания.</p><dl id="guidance"></dl>
+<h3>Сохранённые ответы агентов</h3><p id="agent-rule"></p><p id="agent-verdict"></p><div id="agent-responses"></div><p><a id="full-review">Полный разбор с исходными сообщениями</a></p></section>
+<p id="save-status" role="status"></p><button id="reset" class="exercise-reset" type="button">Сбросить оба хода в этом опыте</button>
+</div>
+<noscript><p>Для упражнения нужен JavaScript. <a href="../">Открыть Атлас</a>.</p></noscript>
+</main>
+<!-- footer:start -->
+<footer class="footer">
+  <nav class="footer-links" aria-label="Подвал">
+    <!-- footer:contacts:start -->
+    <a href="https://t.me/Datalake">Telegram</a>
+    <a href="https://www.linkedin.com/in/alexanderdavydow/">LinkedIn</a>
+    <!-- footer:contacts:end -->
+    <a href="/companies/">Для компаний</a>
+  </nav>
+  <span class="footer-center">DAVYDOV.MY — SINCE 2020</span>
+  <span class="footer-right">© 2026</span>
+</footer>
+<script data-goatcounter="https://davydov.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!-- footer:end -->
+<script defer src="/main.js"></script>
+<script type="module" src="practice.js?v=5db866b83ea9"></script>
+</body></html>

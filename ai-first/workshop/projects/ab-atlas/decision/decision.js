@@ -172,6 +172,11 @@ async function init() {
     });
     compareButtons.set(item.id, compare);
     actions.append(use, compare);
+    if (item.practice_url) {
+      const practice = element("a", "Прими решение сам");
+      practice.href = "../" + item.practice_url;
+      actions.append(practice);
+    }
     card.append(actions);
     const searchable = [item.company, item.title, item.task, item.change, item.industry,
       item.note, ...item.results.map((row) => row.metric)].join(" ");

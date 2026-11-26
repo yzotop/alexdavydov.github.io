@@ -291,6 +291,7 @@ function renderCard(c) {
     esc(c.note) +
     "</p>" +
     '<p><a href="decision/?case=' + encodeURIComponent(c.id) + '#memo">Подготовить решение по этому опыту</a></p>' +
+    (c.practice_url ? '<p><a href="' + esc(c.practice_url) + '">Прими решение сам</a></p>' : "") +
     facts +
     '<p><a href="' +
     esc(c.source) +
@@ -309,7 +310,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=fa82c0d1cc81", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=f229f5c340a0", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
