@@ -89,7 +89,7 @@
 | хаб | `.section-frame` → H1, `.page-lead`, сетка карточек, `.cta-strip` | `/ai-analyst/`, `/cases/` |
 | статья | `.article` → `h1`, `.article-meta`, `.prose`; `.series-nav` у серии | статьи, страницы кейсов |
 | профиль | `.dvy` → `.dv-profile-grid`, `.dv-section-wrap`, `.dv-profile-history` | `/about/` |
-| Мастерская | `.dvy.wh` → `.wh-feature`, `.wh-secondary` | `/ai-first/workshop/` |
+| Мастерская | `.dvy.wh` → `.wh-landing`, `.wh-landing-section`, `.wh-landing-grid` | `/ai-first/workshop/` |
 | инженерный проект Саша | `.dvy.sr` → `.sr-intro`, `.sr-walk`, `.sr-step` | `/ai-first/workshop/sasha/` |
 | сохранённый разбор | `.dvy.sx` → `.sx-board`, `.sx-before`, `.sx-after`, `.sx-review` | `/ai-first/workshop/sasha/returns-r7/` |
 | преподавание и менторство | `.section-frame` → H1, `.page-lead`, компоненты раздела | `/teaching/`, `/career/` |
@@ -99,6 +99,10 @@
 Каркас новой статьи — `.article` из `style.css`. `.ags` и `.qp` —
 каркасы трёх разборов серии со своим CSS внутри страницы (6–8 КБ
 каждый); для новых не использовать.
+
+В проектах Мастерской — «Саша», «Атлас A/B-тестов», «Запасы» в этом порядке.
+Cookie Cats — отдельный кейс Практикума; ASOS/Upworthy — исследование, связанное
+с Атласом. Старые адреса и якоря сохраняются.
 
 Учебный маршрут Мастерской — рецепты (методы) и практикум (применение
 человеком). Отдельное направление — «Инженерный проект: Саша»; он не является
