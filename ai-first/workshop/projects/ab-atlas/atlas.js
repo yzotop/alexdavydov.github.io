@@ -1,6 +1,18 @@
 const byId = (id) => document.getElementById(id);
 const relativePercent = (value) =>
   value == null ? "Не определено" : number(value) + "%";
+// Display rounding for the four count-based memo reviews; source data stays exact.
+const countReviewIds = new Set([
+  "wm-en-add-a-link", "workbc-direct-enrollment-email",
+  "mit-solve-email-timeframe", "collage-upfront-registration",
+]);
+const reviewDelta = (value) => value.toLocaleString("ru-RU", {
+  maximumFractionDigits: Math.abs(value) < 0.1 ? 3 : 2,
+  signDisplay: "exceptZero",
+});
+const reviewRelative = (value) => value.toLocaleString("ru-RU", {
+  maximumFractionDigits: 2, signDisplay: "exceptZero",
+}) + "%";
 const esc = (v) =>
   String(v).replace(
     /[&<>"']/g,
@@ -94,7 +106,7 @@ function shortResult(c) {
   if (c.results.length === 1 && r.reported && r.reported.length < 110)
     return r.reported;
   if (c.results.length === 1 && r.absolute != null && r.unit === "п.п.") {
-    const pp = r.absolute.toLocaleString("ru-RU", {
+    const pp = countReviewIds.has(c.id) ? reviewDelta(r.absolute) : r.absolute.toLocaleString("ru-RU", {
       maximumFractionDigits: Math.abs(r.absolute) < 0.01 ? 4 : 2,
       signDisplay: "exceptZero",
     });
@@ -206,8 +218,8 @@ function renderCard(c) {
           c.variant_count > 2 ? r.metric + " · " + r.comparison : r.metric,
           arm(r.base_events, r.base_n, r.baseline),
           arm(r.variant_events, r.variant_n, r.treatment),
-          number(r.absolute),
-          relativePercent(r.relative_pct),
+          countReviewIds.has(c.id) ? reviewDelta(r.absolute) : number(r.absolute),
+          countReviewIds.has(c.id) ? reviewRelative(r.relative_pct) : relativePercent(r.relative_pct),
         ]),
       ) +
       "<small>В каждой группе указаны число событий, знаменатель и доля. Разница рассчитана до округления.</small>";
