@@ -39,14 +39,14 @@ WORKSHOP_MATERIALS = (
         "title": "Cookie Cats. От A/B-теста до решения о релизе",
         "blurb": "Один A/B-тест и две записки агентов: по удержанию и выручке. Выберите, что ответить команде, и сравните с решением автора.",
         "topic": "ai",
-        "format": "Проект",
+        "format": "Практикум",
     },
     {
         "url": "/ai-first/workshop/projects/upworthy/",
         "title": "Проверка выводов A/B-тестов перед встречей",
         "blurb": "Как агент исправил цифру для слайда по данным ASOS и зачем ему дали второй набор тестов Upworthy.",
         "topic": "ai",
-        "format": "Проект",
+        "format": "Разбор",
     },
     {
         "url": "/ai-first/workshop/projects/ab-atlas/",
