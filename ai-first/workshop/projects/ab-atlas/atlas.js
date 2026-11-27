@@ -1,9 +1,9 @@
 const byId = (id) => document.getElementById(id);
 const relativePercent = (value) =>
   value == null ? "Не определено" : number(value) + "%";
-// Display rounding for the four count-based memo reviews; source data stays exact.
+// Display rounding for count-based reviews; source data stays exact.
 const countReviewIds = new Set([
-  "wm-en-add-a-link", "workbc-direct-enrollment-email",
+  "catalog-depth", "wm-en-add-a-link", "workbc-direct-enrollment-email",
   "mit-solve-email-timeframe", "collage-upfront-registration",
 ]);
 const reviewDelta = (value) => value.toLocaleString("ru-RU", {
@@ -38,6 +38,7 @@ function table(headers, rows) {
   );
 }
 const analysisSeries = {
+  decision: { label: "Первый ответ о решении", link: "Разбор первого ответа" },
   paired_goal: { label: "Парный прогон с целью", link: "Открыть парный прогон" },
   paired: { label: "Два независимых ответа", link: "Сравнить ответы и критерий проверки" },
   author: { label: "Проверка вывода авторов", link: "Сопоставить вывод команды с таблицами" },
@@ -82,6 +83,7 @@ function renderAnalysis(report, caseId) {
 }
 function caseSummary(company, title, note, reports, caseId) {
   const pairedGoal = reports.find((report) => report.kind === "paired_goal");
+  const firstAnswer = reports.find((report) => report.answer_href);
   const status = reports.length
     ? reports.map((r) => analysisSeries[r.kind].label).join(" · ")
     : "Пока без публичного разбора";
@@ -96,7 +98,9 @@ function caseSummary(company, title, note, reports, caseId) {
       : "") +
     '<span class="summary-note">' +
     esc(note) +
-    '</span><span class="analysis-status">' + esc(status) + "</span></summary>"
+    '</span>' +
+    (firstAnswer ? `<a class="first-answer-jump" href="${esc(firstAnswer.answer_href)}">К первому ответу</a>` : "") +
+    '<span class="analysis-status">' + esc(status) + "</span></summary>"
   );
 }
 function shortResult(c) {
@@ -277,6 +281,10 @@ function renderCard(c) {
       ["Метрика", "Что сообщила команда"],
       c.results.map((r) => [r.metric, r.reported]),
     );
+  if (c.conditional_results) results += "<h3>Условные средние · публикация авторов</h3>" +
+    table(["Показатель", ...(c.conditional_labels ?? ["A", "B"]), "Разница"],
+      c.conditional_results.map((r) => [r.metric, number(r.baseline), number(r.treatment), number(r.absolute) + " " + r.unit])) +
+    "<p>" + esc(c.conditional_note) + "</p>";
   const reports = c.analyses ?? [];
   const facts =
     '<details class="facts"><summary>Дизайн и параметры</summary><dl>' +
@@ -323,7 +331,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=a9fc186d4c5d", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=fcb3522450cd", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
@@ -470,6 +478,7 @@ async function init() {
     }
   }
   byId("list").addEventListener("click", (event) => {
+    if (event.target.closest("a.first-answer-jump")) { event.stopPropagation(); return; }
     const link = event.target.closest("a.answer-jump");
     if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
