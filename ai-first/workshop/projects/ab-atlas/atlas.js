@@ -130,6 +130,7 @@ function renderCard(c) {
     ],
     ["Статкритерий команды", c.reported_test],
   ];
+  if (c.verification_level) fields.unshift(["Уровень проверки источника", c.verification_level]);
   if (c.source_summary) fields.push(["Что опубликовано", c.source_summary]);
   if (c.design_evidence) fields.push(["Назначение в группы", c.design_evidence === "randomized"
     ? "Случайное назначение описано в источнике."
@@ -310,7 +311,7 @@ function renderCard(c) {
 }
 
 async function init() {
-  const response = await fetch(new URL("cases.json?v=f229f5c340a0", import.meta.url));
+  const response = await fetch(new URL("cases.json?v=a9fc186d4c5d", import.meta.url));
   if (!response.ok) throw new Error("Не удалось загрузить подборку");
   const cards = await response.json();
   const full = new Map(cards.map((card) => [card.id, card]));
