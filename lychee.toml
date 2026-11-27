@@ -100,3 +100,9 @@ exclude_path = [
   "\\.claude",       # escaped dot — matches ".claude"
   "node_modules",
 ]
+
+# Hendon Mob ограничивает частые запросы: CI получал 429 на ссылках Triton.
+# Проверяем все адреса, но последовательно с паузой; 429 остаётся ошибкой.
+[hosts."pokerdb.thehendonmob.com"]
+concurrency = 1
+request_interval = "3s"
