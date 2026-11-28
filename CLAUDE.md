@@ -201,6 +201,7 @@ R7 — один из сохранённых разборов: не предст�
 | блок «Вся серия» | разборы серии в `workspace/articles/`, между `<!-- series:start -->` и `<!-- series:end -->` | `scripts/render_series_block.py` |
 | карта сайта | `sitemap.xml` целиком | `scripts/generate_sitemap.py` |
 | продолжение турнира | `ai-first/workshop/tournament/index.html`, маркер `repeat`; публичные данные `ai-first/workshop/tournament/repeat/RESULTS.json` и оригиналы | `scripts/render_tournament_repeat.py`; соответствие и хеши проверяет `check_tournament.py` в существующем `seo-artifacts` |
+| контрольная пара турнира | `ai-first/workshop/tournament/index.html`, маркер `pair`; `ai-first/workshop/tournament/review-pair/RESULTS.json`, 4 ответа и 2 подготовленных входа | `scripts/render_tournament_pair.py`; проверка в `check_tournament.py` |
 | шапка: меню и шторка | все страницы с шапкой, между `<!-- header:start -->` и `<!-- header:end -->` | `scripts/render_site_header.py` из шаблона `_partials/site-header.html` |
 | версия общей таблицы стилей | ссылка на `/style.css` на страницах с шаблонной шапкой | после правки CSS запустить `scripts/render_site_header.py`: он ставит одну версию по содержимому файла |
 | подвал | те же страницы, между `<!-- footer:start -->` и `<!-- footer:end -->` | тот же `scripts/render_site_header.py` из `_partials/site-footer.html` |

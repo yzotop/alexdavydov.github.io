@@ -39,6 +39,17 @@ class PublicationChecks(unittest.TestCase):
         html.write_text(html.read_text().replace("Повтор: уточнили условие закупки", "Ручная правка блока", 1))
         with self.assertRaisesRegex(AssertionError, "Generated repeat block drift"):
             check(self.root)
+        html.write_text(html.read_text().replace("Ручная правка блока", "Повтор: уточнили условие закупки", 1))
+        for name in ("review-pair/raw/case-42-review-answer.json", "review-pair/inputs/case-17-draft.json"):
+            original = target / name
+            saved = original.read_bytes()
+            original.write_bytes(saved + b"\n")
+            with self.assertRaisesRegex(AssertionError, "Changed pair original"):
+                check(self.root)
+            original.write_bytes(saved)
+        html.write_text(html.read_text().replace("Найдёт ошибку и сохранит верный заказ?", "Ручная правка контрольной пары", 1))
+        with self.assertRaisesRegex(AssertionError, "Generated pair block drift"):
+            check(self.root)
 
     @classmethod
     def setUpClass(cls):
