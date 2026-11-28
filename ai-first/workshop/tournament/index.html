@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Турнир AI-команд — Саша Давыдов</title>
-<meta name="author" content="Саша Давыдов"><meta name="description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:type" content="website"><meta property="og:title" content="Турнир AI-команд — Саша Давыдов"><meta property="og:description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:url" content="https://davydov.my/ai-first/workshop/tournament/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png"><link rel="canonical" href="https://davydov.my/ai-first/workshop/tournament/"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/assets/entry-pages.css"><link rel="stylesheet" href="season.css?v=caf279c682f7">
+<meta name="author" content="Саша Давыдов"><meta name="description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:type" content="website"><meta property="og:title" content="Турнир AI-команд — Саша Давыдов"><meta property="og:description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:url" content="https://davydov.my/ai-first/workshop/tournament/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png"><link rel="canonical" href="https://davydov.my/ai-first/workshop/tournament/"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/assets/entry-pages.css"><link rel="stylesheet" href="season.css?v=5a3a4eb8d37f">
 </head>
 <body>
 <!-- header:start -->
@@ -62,6 +62,7 @@
       <div class="trn-actions">
         <a class="trn-button trn-solid" href="#rounds" id="play">Пройти раунд</a>
         <a class="trn-button" href="#scoreboard" id="spectate">Смотреть результаты</a>
+        <a class="trn-button" href="#stocks-repeat">Повтор: уточнили условие</a>
       </div>
     </div>
     <aside aria-labelledby="roster-title">
@@ -101,6 +102,195 @@
     <div id="mobile-score"></div>
     <p class="trn-muted" id="cost-note"></p>
   </section>
+
+<!-- repeat:start -->
+<section id="stocks-repeat" class="trn-section trn-repeat" aria-labelledby="repeat-title">
+<div class="trn-section-head"><h2 id="repeat-title">Повтор: уточнили условие закупки</h2></div>
+<p class="trn-context">Отдельный повтор · 10 новых вызовов · gpt-6.2-sol / medium</p>
+<p class="trn-statement">В первом раунде четыре команды потратили весь бюджет. Мы уточнили: бюджет — потолок, приоритетный товар — по максимуму. В этом повторе все пять команд сошлись. Проверяющий подтвердил расчёт, но правильный заказ уже был в черновике.</p>
+<p class="trn-muted">Это отдельный результат. <a href="#scoreboard">Предварительный счёт первого сезона</a> — 2/3 и 3/3 — сохранён.</p>
+<div id="repeat-conditions" class="trn-repeat-conditions">
+<p class="trn-repeat-unit">Ниже — редакторская адаптация условий для сравнения, не дословная цитата. Для наглядности суммы показаны в рублях в условном масштабе £1 = 100 ₽. Это не валютный курс; исходное задание и ответы — в фунтах.</p>
+<div class="trn-repeat-condition-grid">
+<article id="repeat-before"><h3>Старое условие</h3><p><strong>Бюджет строго 280 881 ₽.</strong></p><p>«Сначала выделите допустимые количества для пары…»</p><p>Слово «строго» допускало два прочтения: потратить всю сумму или не превысить её. Требование к количеству приоритетного товара допускало трактовку.</p><details class="trn-repeat-original"><summary>Полное задание · оригинал, суммы в фунтах</summary><pre>Предложите утренний заказ на 13 июня 2011, приход 20 июня. Бюджет строго 2808810 mGBP, 1000 mGBP = £1. Количества — целые единицы товара; одна строка на каждый SKU, включая ноль. Максимум заказа задан по каждой строке. Доставка не меняется по SKU. Все значения для такого решения есть в таблице.
+
+SKU | Закупка за единицу, mGBP | Остаток | Максимум заказа | Продано за 28 дней
+21212 | 330 | 477 | 388 | 1441
+21977 | 330 | 685 | 1297 | 3302
+84991 | 330 | 297 | 0 | 487
+85099B | 1170 | 640 | 1055 | 2825
+85099F | 1170 | 240 | 589 | 1381
+85123A | 1770 | 943 | 715 | 2763
+
+Доступные исторические совместные покупки (обучающие агрегаты):
+21212 + 84991: 675 из 9787 корзин
+85099B + 85099F: 629 из 9787 корзин
+21212 + 21977: 609 из 9787 корзин
+
+Нейтральный способ — отдать одинаковую долю максимума каждого SKU. Доля = бюджет / стоимость заказа всех максимумов. Округлите количество вниз, затем один раз пройдите строки по убыванию дробного остатка (при равенстве по коду SKU), добавляя по единице там, где позволяют лимит и максимум. На первом шаге можно выбрать другой выполнимый заказ с конкретным объяснением обмена между целями. Назовите минимум две позиции или одну пару. Исторические совместные покупки показывают ассоциацию.
+
+Верните JSON: lines — массив шести объектов «sku», «qty»; total_mGBP — целая точная стоимость; evidence — обоснование до 120 слов и изменения по отношению к первому заказу, если получено уточнение; questions — массив 0–2 вопросов, если ответ может изменить заказ. Решение в первой выдаче должно быть выполнимым сразу.
+</pre><p><a href="repeat/conditions/before-stocks.txt">Скачать оригинал без изменений</a></p></details><details class="trn-repeat-original"><summary>Уточнение заказа · оригинал, суммы в фунтах</summary><pre>Сначала выделите допустимые количества для пары 21212 и 84991. Для 84991 сохраняется максимум 0 из входа. Остаток бюджета распределите пропорционально по максимумам остальных позиций по правилу из задачи. Лимит, цены, ограничения и срок прихода сохраняются. Сдайте все шесть строк, новую стоимость, причины и конкретные изменения относительно своей первой заявки.
+</pre><p><a href="repeat/conditions/before-stock-clarification.txt">Скачать оригинал без изменений</a></p></details></article>
+<article id="repeat-after"><h3>Новое условие</h3><p><strong>Бюджет — потолок: не больше 280 881 ₽. Остаток допустим.</strong></p><p>Приоритетный SKU 21212 — по максимуму таблицы. Не уменьшать его количество ради расходования всей суммы.</p><p>Цены, таблица, ограничения и правило распределения остатка сохранены.</p><details class="trn-repeat-original"><summary>Полное задание · оригинал, суммы в фунтах</summary><pre>Предложите утренний заказ на 13 июня 2011, приход 20 июня. Бюджет — верхний предел: стоимость заказа должна быть не больше 2808810 mGBP. Тратить всю сумму не требуется; неиспользованный остаток допустим. 1000 mGBP = £1. Количества — целые единицы товара; одна строка на каждый SKU, включая ноль. Максимум заказа задан по каждой строке. Доставка не меняется по SKU. Все значения для такого решения есть в таблице.
+
+SKU | Закупка за единицу, mGBP | Остаток | Максимум заказа | Продано за 28 дней
+21212 | 330 | 477 | 388 | 1441
+21977 | 330 | 685 | 1297 | 3302
+84991 | 330 | 297 | 0 | 487
+85099B | 1170 | 640 | 1055 | 2825
+85099F | 1170 | 240 | 589 | 1381
+85123A | 1770 | 943 | 715 | 2763
+
+Доступные исторические совместные покупки (обучающие агрегаты):
+21212 + 84991: 675 из 9787 корзин
+85099B + 85099F: 629 из 9787 корзин
+21212 + 21977: 609 из 9787 корзин
+
+Нейтральный способ — отдать одинаковую долю максимума каждого SKU. Доля = бюджет / стоимость заказа всех максимумов. Округлите количество вниз, затем один раз пройдите строки по убыванию дробного остатка (при равенстве по коду SKU), добавляя по единице там, где позволяют лимит и максимум. На первом шаге можно выбрать другой выполнимый заказ с конкретным объяснением обмена между целями. Назовите минимум две позиции или одну пару. Исторические совместные покупки показывают ассоциацию.
+
+Верните JSON: lines — массив шести объектов «sku», «qty»; total_mGBP — целая точная стоимость; evidence — обоснование до 120 слов и изменения по отношению к первому заказу, если получено уточнение; questions — массив 0–2 вопросов, если ответ может изменить заказ. Решение в первой выдаче должно быть выполнимым сразу.
+</pre><p><a href="repeat/conditions/after-stocks.txt">Скачать оригинал без изменений</a></p></details><details class="trn-repeat-original"><summary>Уточнение заказа · оригинал, суммы в фунтах</summary><pre>Бюджет — потолок: стоимость заказа не должна превышать 2808810 mGBP; потратить всю сумму не требуется. Приоритетный товар 21212 необходимо заказать в максимально допустимом количестве по таблице. Для 84991 сохраняется максимум 0 из входа. Не уменьшайте количество приоритетного товара ради полного расходования бюджета. После выделения этих количеств остаток бюджета распределите пропорционально по максимумам остальных позиций по правилу из задачи: округление вниз и один проход по убыванию дробного остатка. Неиспользованный остаток после этого прохода допустим. Лимит, цены, ограничения и срок прихода сохраняются. Сдайте все шесть строк, новую стоимость, причины и конкретные изменения относительно своей первой заявки.
+</pre><p><a href="repeat/conditions/after-stock-clarification.txt">Скачать оригинал без изменений</a></p></details></article>
+</div></div>
+<div id="repeat-teams" class="trn-repeat-part"><h3>Все пять команд сошлись</h3>
+<table class="trn-repeat-table"><caption>Количество приоритетного товара · SKU 21212, единиц</caption><thead><tr><th scope="col">Команда</th><th scope="col" class="trn-number">Раньше</th><th scope="col" class="trn-number">В повторе</th></tr></thead><tbody><tr><th scope="row"><a href="#repeat-T1">Одиночка</a></th><td class="trn-number">376</td><td class="trn-number">388</td></tr><tr><th scope="row"><a href="#repeat-T2">По рецепту</a></th><td class="trn-number">376</td><td class="trn-number">388</td></tr><tr><th scope="row"><a href="#repeat-T3">Самопроверка</a></th><td class="trn-number">376</td><td class="trn-number">388</td></tr><tr><th scope="row"><a href="#repeat-T4">С ревью</a></th><td class="trn-number">388</td><td class="trn-number">388</td></tr><tr><th scope="row"><a href="#repeat-T5">Два решения</a></th><td class="trn-number">376</td><td class="trn-number">388</td></tr></tbody></table>
+<p>Совпало не только количество приоритетного товара: у всех пяти команд одинаков <strong>весь заказ</strong>.</p>
+<table class="trn-repeat-order"><caption>Одинаковый итоговый заказ всех команд</caption><thead><tr><th scope="col">SKU</th><th scope="col" class="trn-number">Количество, ед.</th></tr></thead><tbody><tr><th scope="row">21212</th><td class="trn-number">388</td></tr><tr><th scope="row">21977</th><td class="trn-number">962</td></tr><tr><th scope="row">84991</th><td class="trn-number">0</td></tr><tr><th scope="row">85099B</th><td class="trn-number">782</td></tr><tr><th scope="row">85099F</th><td class="trn-number">436</td></tr><tr><th scope="row">85123A</th><td class="trn-number">530</td></tr></tbody></table>
+<p class="trn-statement">Бюджет 280 881 ₽ · стоимость 280 866 ₽ · остаток 15 ₽.</p>
+</div>
+<div id="repeat-T4" class="trn-repeat-part"><h3 id="repeat-review">С ревью: подтвердил верный черновик</h3>
+<ol class="trn-review-summary"><li><b>Правильный черновик.</b> Все количества и смета уже соответствовали явному условию.</li><li><b>Проверяющий подтвердил расчёт.</b> Проверил порядок дробных остатков и смету.</li><li><b>Финал побайтно совпал с черновиком.</b> 0 исправленных и 0 внесённых ошибок решения.</li></ol>
+<p>Это подтверждение в одном повторе, а не вывод о том, что ревью вообще бесполезно. Самопроверка и сведение двух независимых решений также сохранили уже правильные количества.</p>
+<p><a href="raw/stocks-T4-final-answer.json">Прежняя первая заявка команды · оригинал, суммы в фунтах</a></p>
+<div class="trn-step"><h4>Правильный черновик</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций (доля 2680770/3617040). После округления вниз за один проход добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T4-draft-answer.json">Скачать оригинал без изменений</a></p></details></div><div class="trn-step"><h4>Проверяющий подтвердил расчёт</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{&quot;review&quot;:&quot;Черновик обоснован. После фиксации 21212 на 388 и 84991 на 0 остаётся 2 680 770 mGBP. Порядок дробных остатков верен: 85123A, 85099B, 85099F, 21977. После первых двух добавлений остаётся 480 mGBP: на 85099F не хватает, а на 21977 хватает. Все шесть количеств в пределах максимумов; точная стоимость — 2 808 660 mGBP, остаток — 150 mGBP. Изменения относительно первой заявки и дата прихода указаны верно.&quot;}
+</pre><p><a href="repeat/raw/stocks-clarified-T4-review-answer.json">Скачать оригинал без изменений</a></p></details></div><div class="trn-step"><h4>Финал совпал с черновиком</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций (доля 2680770/3617040). После округления вниз за один проход добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T4-final-answer.json">Скачать оригинал без изменений</a></p></details></div>
+</div>
+<div class="trn-repeat-part"><h3>Ответы остальных команд</h3><details class="trn-repeat-team" id="repeat-T1"><summary>Одиночка</summary><p><a href="raw/stocks-T1-final-answer.json">Прежняя первая заявка · оригинал, суммы в фунтах</a></p><div class="trn-step"><h4>Итоговый ответ</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ на 13 июня с приходом 20 июня: 21212 заказан по максимуму (388), для 84991 сохранён нулевой максимум. Оставшиеся 2 680 770 mGBP распределены пропорционально максимумам четырёх позиций. После округления вниз за один проход по дробным остаткам добавлено по единице к 85123A, 85099B и 21977; для 85099F средств на добавление не хватило. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +96, 21977 −11, 84991 без изменений, 85099B −9, 85099F −3, 85123A −8.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T1-final-answer.json">Скачать оригинал без изменений</a></p></details></div></details><details class="trn-repeat-team" id="repeat-T2"><summary>По рецепту</summary><p><a href="raw/stocks-T2-final-answer.json">Прежняя первая заявка · оригинал, суммы в фунтах</a></p><div class="trn-step"><h4>Итоговый ответ</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Критерий — заказать максимум 21212 и распределить остаток пропорционально максимумам. Ограничения: целые количества в пределах максимумов, 84991 — 0, бюджет ≤ 2 808 810 mGBP, приход 20 июня. После выделения 128 040 mGBP на 21212 доля для остальных — 2 680 770 / 3 617 040. После округления вниз осталось 3 420 mGBP. За один проход добавлено по единице к 85123A, 85099B и 21977; для 85099F оставшихся 480 mGBP не хватило. Изменения к первой заявке в порядке строк: +96, −11, 0, −9, −3, −8. Проверка: 445 500 + 1 425 060 + 938 100 = 2 808 660 mGBP (£2 808,66); остаток 150 mGBP. Совместные покупки показывают ассоциацию, но не доказывают эффект заказа.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T2-final-answer.json">Скачать оригинал без изменений</a></p></details></div></details><details class="trn-repeat-team" id="repeat-T3"><summary>Самопроверка</summary><p><a href="raw/stocks-T3-final-answer.json">Прежняя первая заявка · оригинал, суммы в фунтах</a></p><div class="trn-step"><h4>Верный черновик</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ на 13 июня с приходом 20 июня. Приоритетный 21212 заказан по максимуму: 388 единиц за 128 040 mGBP. Максимум 84991 — 0. Для остальных позиций доля составила 2 680 770 / 3 617 040. После округления вниз один проход добавил по единице к 85123A, 85099B и 21977; для 85099F на его очереди средств не хватило. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T3-draft-answer.json">Скачать оригинал без изменений</a></p></details></div><div class="trn-step"><h4>После самопроверки</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ на утро 13 июня, приход 20 июня. Приоритетный 21212 заказан по максимуму: 388 единиц за 128 040 mGBP. Для 84991 максимум — 0. Для остальных позиций применена доля 2 680 770 / 3 617 040. После округления вниз осталось 3 420 mGBP. Проход по дробным остаткам добавил по единице к 85123A и 85099B, пропустил 85099F (оставалось 480 mGBP при цене 1 170) и добавил единицу к 21977. Все максимумы соблюдены, остаток бюджета — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T3-final-answer.json">Скачать оригинал без изменений</a></p></details></div></details><details class="trn-repeat-team" id="repeat-T5"><summary>Два решения</summary><p><a href="raw/stocks-T5-final-answer.json">Прежняя первая заявка · оригинал, суммы в фунтах</a></p><div class="trn-step"><h4>Независимое решение А</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;На приход 20 июня заказываю 21212 по максимуму (388), а 84991 оставляю на нуле. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных SKU: доля 2680770 / 3617040 ≈ 74,115%. После округления вниз остаётся 3420 mGBP. За один проход по убыванию дробных остатков добавляю по единице 85123A и 85099B, пропускаю 85099F (на него не хватает бюджета), затем добавляю единицу 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −10, 85099F −7, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T5-solution-a-answer.json">Скачать оригинал без изменений</a></p></details></div><div class="trn-step"><h4>Независимое решение Б</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказываю максимум 388 единиц приоритетного 21212; для 84991 сохраняю ноль. Оставшиеся 2680770 mGBP распределяю по максимумам четырёх позиций с долей 2680770/3617040. После округления вниз один проход добавляет по единице 85123A и 85099B, пропускает 85099F из-за нехватки средств и добавляет единицу 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −10, 85099F −7, 85123A −6. Дата прихода — 20 июня.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T5-solution-b-answer.json">Скачать оригинал без изменений</a></p></details></div><div class="trn-step"><h4>После сведения</h4><details class="trn-repeat-original"><summary>Полный ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;На приход 20 июня: 21212 — максимум 388 за 128040 mGBP, 84991 — ноль. Доля для остальных: 2680770/3617040. Округление вниз даёт 961, 781, 436 и 529 единиц соответственно для 21977, 85099B, 85099F и 85123A, оставляя 3420 mGBP. По убыванию дробных остатков добавляю по единице 85123A и 85099B: остаётся 480 mGBP. На 85099F этого не хватает; добавляю единицу 21977. Проверка по ценам таблицы: 2808660 mGBP, на 150 ниже лимита; все количества в пределах максимумов. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −10, 85099F −7, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="repeat/raw/stocks-clarified-T5-final-answer.json">Скачать оригинал без изменений</a></p></details></div></details></div>
+<div class="trn-repeat-part"><h3>Что повтор показывает и чего не доказывает</h3>
+<p>После явного уточнения в этом повторе все пять конфигураций сошлись. Модель — gpt-6.2-sol / medium; роли и таблица прежние. Каждая команда получила свою прежнюю первую заявку. Первые заявки у команд различались: это повтор прежней стадии, а не полностью одинаковая история между командами.</p>
+<p>Прежние ответы уточнённого раунда, его оценки и ключ агентам не показывали. Пять прежних первых заявок — сохранённые входы, не новые вызовы. В повторе 10 новых вызовов и 10 новых оригинальных ответов.</p>
+<p class="trn-ranking-note">Один повтор: влияние формулировки и случайность генерации не разделены. Смысловая оценка организатора не слепая. Этот результат не устанавливает надёжность конфигураций и не доказывает превосходство архитектуры.</p>
+<p><a href="repeat/RESULTS.json">Публичная сводка повтора · JSON</a> · <a href="#scoreboard">Вернуться к первому сезону</a></p></div>
+</section>
+<!-- repeat:end -->
 
   <section class="trn-closing trn-section" aria-labelledby="apply-title">
     <p id="season-takeaway" class="trn-statement"></p>

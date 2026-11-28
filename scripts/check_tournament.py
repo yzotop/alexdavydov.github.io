@@ -50,9 +50,28 @@ EXPECTED = {
 }
 
 
+REPEAT_EXPECTED = {
+    "repeat/raw/stocks-clarified-T1-final-answer.json": "5c3fb495d88637e475ac96a011b2ab939e4275e308f3b406543f796a619df595",
+    "repeat/raw/stocks-clarified-T2-final-answer.json": "9e87e5e5be98dc322e1c0da87110eadd3c1f1b28d8360c2b6c0ae1a70572a55e",
+    "repeat/raw/stocks-clarified-T3-draft-answer.json": "a84708e4dce30450ac53c2e7e59fa2d7bc7010cfdb5f63f83d70518d0621d6c7",
+    "repeat/raw/stocks-clarified-T3-final-answer.json": "313dcf753788a5fafa9c9f71ceb70021f859380e93e8676ec8dba4537bc1595f",
+    "repeat/raw/stocks-clarified-T4-draft-answer.json": "51b25e492a9af7af7c6b90fb57e1139ac42441ffafccad11418af2866a93f926",
+    "repeat/raw/stocks-clarified-T4-final-answer.json": "51b25e492a9af7af7c6b90fb57e1139ac42441ffafccad11418af2866a93f926",
+    "repeat/raw/stocks-clarified-T4-review-answer.json": "fc5a0eea6d4471416eaf77419db79f36b45cc5d6a13d5a224a50eb1a05ed4b25",
+    "repeat/raw/stocks-clarified-T5-final-answer.json": "dbd01daee52f877c885b53c6b228ff9bd09ec7af1a0b846956856030c4258295",
+    "repeat/raw/stocks-clarified-T5-solution-a-answer.json": "3a2ccfb16394b7fe812b308b3fe536cc555c5a332df7a1e89c0f8814ac01c43e",
+    "repeat/raw/stocks-clarified-T5-solution-b-answer.json": "58b8b12c28fb8cf1e6630edc9b1a49714464e3ab69c0f957a9f7643e2cd3c9c4"
+}
+CONDITION_EXPECTED = {
+    "repeat/conditions/before-stocks.txt": "9915a9475636c0d2ccb779f1d7e1933920be15a72b2b4ecfa9067317390bb8c8",
+    "repeat/conditions/before-stock-clarification.txt": "9f4e497df0b545b9bcafcc5247ec1b75e1f96509636d1f6737324f8c90b12d9e",
+    "repeat/conditions/after-stocks.txt": "cb43d7906a5f42b834cf20a78fb396f7098d772622ba52b4ff28b9c5304021e6",
+    "repeat/conditions/after-stock-clarification.txt": "2e0cfa8e51b14e3dd9fee864978d4313eb8b05d0d128fdb4d4116f2682c73ad2"
+}
+
 def check(root=ROOT):
     page = root / "ai-first/workshop/tournament"
-    allowed = {"index.html", "season.css", "season.js", "RESULTS.json", *EXPECTED}
+    allowed = {"index.html", "season.css", "season.js", "RESULTS.json", "repeat/RESULTS.json", *EXPECTED, *REPEAT_EXPECTED, *CONDITION_EXPECTED}
     actual = {str(p.relative_to(page)) for p in page.rglob("*") if p.is_file()}
     assert actual == allowed, ("Unexpected or missing public files", actual ^ allowed)
     data = json.loads((page / "RESULTS.json").read_text())
@@ -85,6 +104,34 @@ def check(root=ROOT):
     assert "Предварительный итог по зафиксированному ключу" in html
     assert "Судья видел конфигурации" in html and "одна серия не доказывает надёжность" in html
     assert 'style="' not in html and 'style="' not in (page / "season.js").read_text()
+    for filename, sha in {**REPEAT_EXPECTED, **CONDITION_EXPECTED}.items():
+        assert hashlib.sha256((page / filename).read_bytes()).hexdigest() == sha, ("Changed repeat original", filename)
+    repeated = json.loads((page / "repeat/RESULTS.json").read_text())
+    assert set(repeated) == {"model", "effort", "calls_count", "budget_mGBP", "total_mGBP", "order", "teams", "review"}
+    assert repeated["model"] == "gpt-6.2-sol" and repeated["effort"] == "medium" and repeated["calls_count"] == 10
+    assert repeated["review"] == {"fixed_errors": 0, "new_errors": 0, "byte_identical": True}
+    assert [r["before_priority_qty"] for r in repeated["teams"]] == [376, 376, 376, 388, 376]
+    assert [r["new_priority_qty"] for r in repeated["teams"]] == [388] * 5
+    for team in repeated["teams"]:
+        old = data["calls"]["stocks-clarified-" + team["id"] + "-final"]["answer"]
+        assert next(r["qty"] for r in old["lines"] if r["sku"] == "21212") == team["before_priority_qty"]
+        assert set(team) == {"id", "name", "before_priority_qty", "new_priority_qty", "stages"}
+        for stage in team["stages"]:
+            assert set(stage) == {"label", "file"} and "repeat/" + stage["file"] in REPEAT_EXPECTED
+            answer = json.loads((page / "repeat" / stage["file"]).read_text())
+            if "lines" in answer:
+                assert answer["lines"] == repeated["order"] and answer["total_mGBP"] == repeated["total_mGBP"]
+    assert all(set(row) == {"sku", "qty"} for row in repeated["order"])
+    assert [row["qty"] for row in repeated["order"]] == [388, 962, 0, 782, 436, 530]
+    skus = data["references"]["stocks"]["skus"]
+    assert sum(row["qty"] * skus[row["sku"]]["price"] for row in repeated["order"]) == repeated["total_mGBP"]
+    assert all(isinstance(row["qty"], int) and 0 <= row["qty"] <= skus[row["sku"]]["cap"] for row in repeated["order"])
+    assert repeated["budget_mGBP"] == 2808810 and repeated["total_mGBP"] == 2808660
+    assert (page / "repeat/raw/stocks-clarified-T4-draft-answer.json").read_bytes() == (page / "repeat/raw/stocks-clarified-T4-final-answer.json").read_bytes()
+    from render_tournament_repeat import render
+    block = re.search(r'<!-- repeat:start -->\n?(.*?)<!-- repeat:end -->', html, re.S)
+    assert block and block[1].strip() == render(root).strip(), "Generated repeat block drift"
+    print("Tournament: 40 frozen originals + 10 repeat originals, original conditions and repeat generator PASS")
     print("Tournament: 40 frozen originals, public-only files/data, scores and preliminary caveats PASS")
 
 

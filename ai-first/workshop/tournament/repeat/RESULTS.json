@@ -1,0 +1,120 @@
+{
+  "model": "gpt-6.2-sol",
+  "effort": "medium",
+  "calls_count": 10,
+  "budget_mGBP": 2808810,
+  "total_mGBP": 2808660,
+  "order": [
+    {
+      "sku": "21212",
+      "qty": 388
+    },
+    {
+      "sku": "21977",
+      "qty": 962
+    },
+    {
+      "sku": "84991",
+      "qty": 0
+    },
+    {
+      "sku": "85099B",
+      "qty": 782
+    },
+    {
+      "sku": "85099F",
+      "qty": 436
+    },
+    {
+      "sku": "85123A",
+      "qty": 530
+    }
+  ],
+  "teams": [
+    {
+      "id": "T1",
+      "name": "Одиночка",
+      "before_priority_qty": 376,
+      "new_priority_qty": 388,
+      "stages": [
+        {
+          "label": "Итоговый ответ",
+          "file": "raw/stocks-clarified-T1-final-answer.json"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "По рецепту",
+      "before_priority_qty": 376,
+      "new_priority_qty": 388,
+      "stages": [
+        {
+          "label": "Итоговый ответ",
+          "file": "raw/stocks-clarified-T2-final-answer.json"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "name": "Самопроверка",
+      "before_priority_qty": 376,
+      "new_priority_qty": 388,
+      "stages": [
+        {
+          "label": "Верный черновик",
+          "file": "raw/stocks-clarified-T3-draft-answer.json"
+        },
+        {
+          "label": "После самопроверки",
+          "file": "raw/stocks-clarified-T3-final-answer.json"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "name": "С ревью",
+      "before_priority_qty": 388,
+      "new_priority_qty": 388,
+      "stages": [
+        {
+          "label": "Правильный черновик",
+          "file": "raw/stocks-clarified-T4-draft-answer.json"
+        },
+        {
+          "label": "Проверяющий подтвердил расчёт",
+          "file": "raw/stocks-clarified-T4-review-answer.json"
+        },
+        {
+          "label": "Финал совпал с черновиком",
+          "file": "raw/stocks-clarified-T4-final-answer.json"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "name": "Два решения",
+      "before_priority_qty": 376,
+      "new_priority_qty": 388,
+      "stages": [
+        {
+          "label": "Независимое решение А",
+          "file": "raw/stocks-clarified-T5-solution-a-answer.json"
+        },
+        {
+          "label": "Независимое решение Б",
+          "file": "raw/stocks-clarified-T5-solution-b-answer.json"
+        },
+        {
+          "label": "После сведения",
+          "file": "raw/stocks-clarified-T5-final-answer.json"
+        }
+      ]
+    }
+  ],
+  "review": {
+    "fixed_errors": 0,
+    "new_errors": 0,
+    "byte_identical": true
+  }
+}
