@@ -14,6 +14,7 @@ WORKSHOP_ENTRIES = (
     "practicum/",
     "sasha/",
     "inventory/",
+    "tournament/",
     "inventory/comparison/",
     "projects/cookie-cats/",
     "projects/upworthy/",
