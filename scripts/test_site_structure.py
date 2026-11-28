@@ -13,6 +13,22 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class PublicationChecks(unittest.TestCase):
+    def test_tournament_preserves_originals_and_public_only_projection(self):
+        from check_tournament import check
+        check()
+        source = ROOT / "ai-first/workshop/tournament"
+        target = self.root / "ai-first/workshop/tournament"
+        shutil.copytree(source, target, dirs_exist_ok=True)
+        original = target / "raw/atlas-T1-final-answer.json"
+        saved = original.read_bytes()
+        original.write_bytes(saved + b"\n")
+        with self.assertRaisesRegex(AssertionError, "Changed original"):
+            check(self.root)
+        original.write_bytes(saved)
+        (target / "raw/private-request.json").write_text("{}")
+        with self.assertRaisesRegex(AssertionError, "Unexpected or missing public files"):
+            check(self.root)
+
     @classmethod
     def setUpClass(cls):
         cls.base = tempfile.TemporaryDirectory(prefix="davydov-fixture-")
