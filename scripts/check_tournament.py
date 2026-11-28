@@ -2,6 +2,7 @@
 """Guard the frozen, reader-only tournament publication without running models."""
 from pathlib import Path
 import hashlib
+from fractions import Fraction
 import json
 import re
 
@@ -69,9 +70,20 @@ CONDITION_EXPECTED = {
     "repeat/conditions/after-stock-clarification.txt": "2e0cfa8e51b14e3dd9fee864978d4313eb8b05d0d128fdb4d4116f2682c73ad2"
 }
 
+PAIR_EXPECTED = {
+    "review-pair/raw/case-17-final-answer.json": "51b25e492a9af7af7c6b90fb57e1139ac42441ffafccad11418af2866a93f926",
+    "review-pair/raw/case-42-final-answer.json": "98d7588b40e80ddd619aaaadb1a84d2b875f2ef5e1c0d73d016f022288c218f9",
+    "review-pair/raw/case-17-review-answer.json": "aceedd2f5f2bf54ca0d19ba295bc51d76d4928d5d61b87709204740d6534de46",
+    "review-pair/raw/case-42-review-answer.json": "c59cf0005a81ab7a1a5a2e30dafce7c9021c5ee73c4651a8c2f76bcb23c480b5"
+}
+DRAFT_EXPECTED = {
+    "review-pair/inputs/case-17-draft.json": "51b25e492a9af7af7c6b90fb57e1139ac42441ffafccad11418af2866a93f926",
+    "review-pair/inputs/case-42-draft.json": "70be1f85322000f21ae8b7b3a6c6ea98aa3d57903f51760eb7287d4a368d2a41"
+}
+
 def check(root=ROOT):
     page = root / "ai-first/workshop/tournament"
-    allowed = {"index.html", "season.css", "season.js", "RESULTS.json", "repeat/RESULTS.json", *EXPECTED, *REPEAT_EXPECTED, *CONDITION_EXPECTED}
+    allowed = {"index.html", "season.css", "season.js", "RESULTS.json", "repeat/RESULTS.json", "review-pair/RESULTS.json", *EXPECTED, *REPEAT_EXPECTED, *CONDITION_EXPECTED, *PAIR_EXPECTED, *DRAFT_EXPECTED}
     actual = {str(p.relative_to(page)) for p in page.rglob("*") if p.is_file()}
     assert actual == allowed, ("Unexpected or missing public files", actual ^ allowed)
     data = json.loads((page / "RESULTS.json").read_text())
@@ -131,6 +143,43 @@ def check(root=ROOT):
     from render_tournament_repeat import render
     block = re.search(r'<!-- repeat:start -->\n?(.*?)<!-- repeat:end -->', html, re.S)
     assert block and block[1].strip() == render(root).strip(), "Generated repeat block drift"
+    for filename, sha in {**PAIR_EXPECTED, **DRAFT_EXPECTED}.items():
+        assert hashlib.sha256((page / filename).read_bytes()).hexdigest() == sha, ("Changed pair original", filename)
+    paired = json.loads((page / "review-pair/RESULTS.json").read_text())
+    assert set(paired) == {"model", "effort", "model_calls", "prepared_drafts", "budget_mGBP", "total_mGBP", "order", "cases"}
+    assert paired["model"] == "gpt-6.2-sol" and paired["effort"] == "medium" and paired["model_calls"] == 4 and paired["prepared_drafts"] == 2
+    assert paired["budget_mGBP"] == repeated["budget_mGBP"] and paired["total_mGBP"] == repeated["total_mGBP"] and paired["order"] == repeated["order"]
+    assert [c["id"] for c in paired["cases"]] == ["case-17", "case-42"] and [c["artificial_error"] for c in paired["cases"]] == [False, True]
+    # Recompute the public allocation rule independently of model/judge outputs.
+    allocation = {"21212": skus["21212"]["cap"], "84991": 0}
+    rest = paired["budget_mGBP"] - allocation["21212"] * skus["21212"]["price"]
+    other = {k: v for k, v in skus.items() if k not in allocation}
+    share = Fraction(rest, sum(v["cap"] * v["price"] for v in other.values()))
+    exact = {k: share * v["cap"] for k, v in other.items()}
+    floor = {k: v.numerator // v.denominator for k, v in exact.items()}
+    left = rest - sum(floor[k] * other[k]["price"] for k in other)
+    for sku in sorted(other, key=lambda k: (-(exact[k] - floor[k]), k)):
+        if floor[sku] < other[sku]["cap"] and left >= other[sku]["price"]:
+            floor[sku] += 1
+            left -= other[sku]["price"]
+    allocation.update(floor)
+    assert allocation == {r["sku"]: r["qty"] for r in paired["order"]} and left == 150
+    for case in paired["cases"]:
+        assert set(case) == {"id", "title", "artificial_error", "draft", "review", "final"}
+        assert "review-pair/" + case["draft"] in DRAFT_EXPECTED
+        assert all("review-pair/" + case[k] in PAIR_EXPECTED for k in ("review", "final"))
+        draft = json.loads((page / "review-pair" / case["draft"]).read_text())
+        final = json.loads((page / "review-pair" / case["final"]).read_text())
+        assert final["lines"] == paired["order"] and final["total_mGBP"] == paired["total_mGBP"]
+        assert sum(r["qty"] * skus[r["sku"]]["price"] for r in draft["lines"]) == paired["total_mGBP"]
+        assert all(isinstance(r["qty"], int) and 0 <= r["qty"] <= skus[r["sku"]]["cap"] for r in draft["lines"])
+        delta = {a["sku"]: a["qty"] - b["qty"] for a,b in zip(draft["lines"], final["lines"]) if a["qty"] != b["qty"]}
+        assert delta == ({"85099B": 1, "85099F": -1} if case["artificial_error"] else {})
+    assert (page / "review-pair/inputs/case-17-draft.json").read_bytes() == (page / "review-pair/raw/case-17-final-answer.json").read_bytes() == (page / "repeat/raw/stocks-clarified-T4-draft-answer.json").read_bytes()
+    from render_tournament_pair import render as render_pair
+    pair_block = re.search(r'<!-- pair:start -->\n?(.*?)<!-- pair:end -->', html, re.S)
+    assert pair_block and pair_block[1].strip() == render_pair(root).strip(), "Generated pair block drift"
+    print("Tournament: 54 model answers + 2 prepared inputs; unchanged correct draft, exact injected delta and pair generator PASS")
     print("Tournament: 40 frozen originals + 10 repeat originals, original conditions and repeat generator PASS")
     print("Tournament: 40 frozen originals, public-only files/data, scores and preliminary caveats PASS")
 

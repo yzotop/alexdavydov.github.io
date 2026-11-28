@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Турнир AI-команд — Саша Давыдов</title>
-<meta name="author" content="Саша Давыдов"><meta name="description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:type" content="website"><meta property="og:title" content="Турнир AI-команд — Саша Давыдов"><meta property="og:description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:url" content="https://davydov.my/ai-first/workshop/tournament/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png"><link rel="canonical" href="https://davydov.my/ai-first/workshop/tournament/"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/assets/entry-pages.css"><link rel="stylesheet" href="season.css?v=5a3a4eb8d37f">
+<meta name="author" content="Саша Давыдов"><meta name="description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:type" content="website"><meta property="og:title" content="Турнир AI-команд — Саша Давыдов"><meta property="og:description" content="Одна модель gpt-6.2-sol, пять способов организации работы и три аналитические задачи. Предварительные результаты и оригинальные ответы."><meta property="og:url" content="https://davydov.my/ai-first/workshop/tournament/"><meta property="og:image" content="https://davydov.my/assets/og/articles.png"><link rel="canonical" href="https://davydov.my/ai-first/workshop/tournament/"><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css?v=fd9a4d20811b"><link rel="stylesheet" href="/assets/entry-pages.css"><link rel="stylesheet" href="season.css?v=1772b4ae94f0">
 </head>
 <body>
 <!-- header:start -->
@@ -63,6 +63,7 @@
         <a class="trn-button trn-solid" href="#rounds" id="play">Пройти раунд</a>
         <a class="trn-button" href="#scoreboard" id="spectate">Смотреть результаты</a>
         <a class="trn-button" href="#stocks-repeat">Повтор: уточнили условие</a>
+        <a class="trn-button" href="#review-pair">Верный и ошибочный черновики</a>
       </div>
     </div>
     <aside aria-labelledby="roster-title">
@@ -291,6 +292,93 @@ SKU | Закупка за единицу, mGBP | Остаток | Максиму
 <p><a href="repeat/RESULTS.json">Публичная сводка повтора · JSON</a> · <a href="#scoreboard">Вернуться к первому сезону</a></p></div>
 </section>
 <!-- repeat:end -->
+
+<!-- pair:start -->
+<section id="review-pair" class="trn-section trn-repeat trn-pair" aria-labelledby="pair-title">
+<div class="trn-section-head"><h2 id="pair-title">Найдёт ошибку и сохранит верный заказ?</h2></div>
+<p class="trn-context">Контрольная пара · 4 новых вызова · 2 подготовленных входа</p>
+<p class="trn-statement">На этой паре ревью нашло ошибку распределения и сохранило верный заказ. Ошибка внесена организатором специально; это не новый естественный сбой модели.</p>
+<p>Одна модель gpt-6.2-sol / medium. Два первых ревью и два финальных ответа — четыре новых вызова. Два подготовленных черновика — входы проверки, не новые модельные ответы.</p>
+<p class="trn-muted">В редакторском объяснении — условные рубли: £1 = 100 ₽. Это не валютный курс. Исходные JSON и дословные ответы ниже сохраняют оригинальные единицы.</p>
+<p><a href="#pair-case-17">Верный черновик</a> · <a href="#pair-case-42">Черновик с внесённой ошибкой</a></p>
+<div class="trn-pair-grid"><article id="pair-case-17" class="trn-pair-case">
+<h3>Верный черновик</h3><p class="trn-muted">Подготовленный контрольный вход без внесённой ошибки.</p><p>Верный черновик взят из предыдущего повтора без изменения. Проверяющий признал его обоснованным; финальный ответ сохранился побайтно, включая обоснование.</p>
+<p class="trn-pair-outcome"><strong>Финальный ответ сохранён побайтно.</strong></p>
+<table class="trn-repeat-table"><caption>Две проверяемые строки · количество, единиц</caption><thead><tr><th scope="col">SKU</th><th scope="col" class="trn-number">Черновик</th><th scope="col" class="trn-number">Итог</th></tr></thead><tbody><tr><th scope="row">85099B</th><td class="trn-number">782</td><td class="trn-number">782</td></tr><tr><th scope="row">85099F</th><td class="trn-number">436</td><td class="trn-number">436</td></tr></tbody></table>
+<div class="trn-step trn-pair-stage" data-kind="draft"><h4>Подготовленный черновик</h4><p class="trn-muted">Вход проверки, не новый модельный ответ.</p><details class="trn-repeat-original"><summary>Прочитать подготовленный вход · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций (доля 2680770/3617040). После округления вниз за один проход добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="review-pair/inputs/case-17-draft.json">Скачать исходный JSON без изменений</a></p></details></div>
+<div class="trn-step trn-pair-stage" data-kind="review"><h4>Первый ответ проверяющего</h4><p class="trn-muted">Редакторское пояснение: Проверяющий подтвердил расчёт. В этом контрольном случае — ни ложных замечаний, ни новых ошибок.</p><details class="trn-repeat-original"><summary>Прочитать первое ревью дословно · оригинал, суммы в фунтах</summary><blockquote class="trn-task-quote">Черновик обоснован. После заказа 388 единиц 21212 и 0 единиц 84991 остаётся 2 680 770 mGBP. Дробные остатки убывают в порядке 85123A, 85099B, 85099F, 21977. После прибавления единицы к первым двум остаётся 480 mGBP: на 85099F не хватает, на 21977 хватает. Итоговая стоимость — 2 808 660 mGBP, на 150 mGBP ниже потолка. Все шесть строк, максимумы, даты и изменения относительно первой заявки указаны верно.</blockquote><p><a href="review-pair/raw/case-17-review-answer.json">Скачать исходный JSON без изменений</a></p></details></div>
+<div class="trn-step trn-pair-stage" data-kind="final"><h4>Итоговый заказ</h4><p class="trn-muted">Финальный ответ сохранён побайтно. Стоимость 280 866 ₽, остаток 15 ₽.</p><details class="trn-repeat-original"><summary>Прочитать итоговый ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций (доля 2680770/3617040). После округления вниз за один проход добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="review-pair/raw/case-17-final-answer.json">Скачать исходный JSON без изменений</a></p></details></div>
+</article><article id="pair-case-42" class="trn-pair-case">
+<h3>Черновик с внесённой ошибкой</h3><p class="trn-pair-injected"><strong>Ошибка внесена специально для контрольной проверки.</strong></p><p>Организатор перенёс одну единицу между товарами одинаковой цены: 85099B — с 782 до 783, 85099F — с 436 до 435. Поясняющие изменения к первой заявке согласованы с новыми количествами. Общая сумма, бюджет, максимумы и приоритетный товар остаются правильными, но нарушен алгоритм распределения.</p>
+<p class="trn-pair-outcome"><strong>Ошибка распределения исправлена.</strong></p>
+<table class="trn-repeat-table"><caption>Две проверяемые строки · количество, единиц</caption><thead><tr><th scope="col">SKU</th><th scope="col" class="trn-number">Черновик</th><th scope="col" class="trn-number">Итог</th></tr></thead><tbody><tr><th scope="row">85099B</th><td class="trn-number">783</td><td class="trn-number">782</td></tr><tr><th scope="row">85099F</th><td class="trn-number">435</td><td class="trn-number">436</td></tr></tbody></table>
+<div class="trn-step trn-pair-stage" data-kind="draft"><h4>Подготовленный черновик</h4><p class="trn-muted">Вход проверки, не новый модельный ответ.</p><details class="trn-repeat-original"><summary>Прочитать подготовленный вход · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 783},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 435},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций (доля 2680770/3617040). После округления вниз за один проход добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −8, 85099F −9, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="review-pair/inputs/case-42-draft.json">Скачать исходный JSON без изменений</a></p></details></div>
+<div class="trn-step trn-pair-stage" data-kind="review"><h4>Первый ответ проверяющего</h4><p class="trn-muted">Редакторское пояснение: Проверяющий без подсказки указал обратные исправления: 85099B 783 → 782 и 85099F 435 → 436. Исполнитель принял их. Другие количества и смета сохранены.</p><details class="trn-repeat-original"><summary>Прочитать первое ревью дословно · оригинал, суммы в фунтах</summary><blockquote class="trn-task-quote">Черновик укладывается в бюджет и соблюдает лимиты, но неверно распределяет остаток. При доле 2680770/3617040 округление вниз даёт 781 для 85099B и 436 для 85099F. В единственном проходе добавляются единицы к 85123A, 85099B и 21977; для 85099F средств на дополнительную единицу нет. Поэтому исправьте 85099B с 783 на 782, а 85099F с 435 на 436. Изменения к первой заявке по этим строкам — −9 и −8 соответственно. Стоимость 2808660 mGBP и остаток 150 mGBP верны: цены этих двух SKU одинаковы.</blockquote><p><a href="review-pair/raw/case-42-review-answer.json">Скачать исходный JSON без изменений</a></p></details></div>
+<div class="trn-step trn-pair-stage" data-kind="final"><h4>Итоговый заказ</h4><p class="trn-muted">Ошибка распределения исправлена. Стоимость 280 866 ₽, остаток 15 ₽.</p><details class="trn-repeat-original"><summary>Прочитать итоговый ответ · оригинал, суммы в фунтах</summary><pre>{
+  &quot;lines&quot;: [
+    {&quot;sku&quot;: &quot;21212&quot;, &quot;qty&quot;: 388},
+    {&quot;sku&quot;: &quot;21977&quot;, &quot;qty&quot;: 962},
+    {&quot;sku&quot;: &quot;84991&quot;, &quot;qty&quot;: 0},
+    {&quot;sku&quot;: &quot;85099B&quot;, &quot;qty&quot;: 782},
+    {&quot;sku&quot;: &quot;85099F&quot;, &quot;qty&quot;: 436},
+    {&quot;sku&quot;: &quot;85123A&quot;, &quot;qty&quot;: 530}
+  ],
+  &quot;total_mGBP&quot;: 2808660,
+  &quot;evidence&quot;: &quot;Заказ утром 13 июня, приход 20 июня. Для приоритетного 21212 беру максимум 388, для 84991 — 0 по лимиту. Оставшиеся 2680770 mGBP распределяю пропорционально максимумам остальных позиций с долей 2680770/3617040. После округления вниз за один проход по убыванию дробного остатка добавляю по единице к 85123A и 85099B, пропускаю 85099F из-за нехватки средств и добавляю единицу к 21977. Неиспользованный остаток — 150 mGBP. Изменения к первой заявке: 21212 +103, 21977 −11, 84991 без изменений, 85099B −9, 85099F −8, 85123A −6.&quot;,
+  &quot;questions&quot;: []
+}
+</pre><p><a href="review-pair/raw/case-42-final-answer.json">Скачать исходный JSON без изменений</a></p></details></div>
+</article></div>
+<div class="trn-repeat-part"><h3>Одинаковый итог обоих случаев</h3>
+<table class="trn-repeat-order"><caption>Весь итоговый заказ в обоих случаях</caption><thead><tr><th scope="col">SKU</th><th scope="col" class="trn-number">Количество, ед.</th></tr></thead><tbody><tr><th scope="row">21212</th><td class="trn-number">388</td></tr><tr><th scope="row">21977</th><td class="trn-number">962</td></tr><tr><th scope="row">84991</th><td class="trn-number">0</td></tr><tr><th scope="row">85099B</th><td class="trn-number">782</td></tr><tr><th scope="row">85099F</th><td class="trn-number">436</td></tr><tr><th scope="row">85123A</th><td class="trn-number">530</td></tr></tbody></table>
+<p class="trn-statement">Стоимость 280 866 ₽, остаток 15 ₽. Условный бюджет — 280 881 ₽.</p></div>
+<div class="trn-repeat-part"><h3>Что было слепым, а что — нет</h3>
+<p>Каждый проверяющий видел только свой черновик и одинаковое задание с одной и той же прежней первой заявкой. Проверяющие не знали меток «верный/ошибочный» и наличия другого случая. Финальный исполнитель получал свой черновик и замечания своего проверяющего. Метки на этой странице открыты читателю после проверки.</p>
+<p>Организатор оценивал результаты с известными метками. Это одна контрольная пара с искусственной ошибкой, не оценка надёжности. Ветку исправления без ревью не запускали; доказанный причинный прирост качества отсюда не следует.</p>
+<p>Товары 85099B и 85099F стоят одинаково — условно 117 ₽ за единицу. Проверка только суммы и лимитов пропускает такую ошибку. Скрипт с полным правилом распределения тоже её находит: здесь нет свидетельства уникальной способности агента.</p>
+<p>Общие исходные материалы: <a href="repeat/conditions/after-stocks.txt">полное задание</a>, <a href="repeat/conditions/after-stock-clarification.txt">уточнение</a>, <a href="raw/stocks-T4-final-answer.json">прежняя первая заявка</a>. Оригиналы, суммы в фунтах.</p>
+<p><a href="review-pair/RESULTS.json">Публичная сводка пары · JSON</a> · <a href="#stocks-repeat">Предыдущий повтор</a> · <a href="#scoreboard">Предварительный итог первого сезона</a></p>
+</div></section>
+<!-- pair:end -->
 
   <section class="trn-closing trn-section" aria-labelledby="apply-title">
     <p id="season-takeaway" class="trn-statement"></p>
