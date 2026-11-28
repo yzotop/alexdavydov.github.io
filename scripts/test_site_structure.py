@@ -28,6 +28,17 @@ class PublicationChecks(unittest.TestCase):
         (target / "raw/private-request.json").write_text("{}")
         with self.assertRaisesRegex(AssertionError, "Unexpected or missing public files"):
             check(self.root)
+        (target / "raw/private-request.json").unlink()
+        newer = target / "repeat/raw/stocks-clarified-T1-final-answer.json"
+        saved = newer.read_bytes()
+        newer.write_bytes(saved + b"\n")
+        with self.assertRaisesRegex(AssertionError, "Changed repeat original"):
+            check(self.root)
+        newer.write_bytes(saved)
+        html = target / "index.html"
+        html.write_text(html.read_text().replace("Повтор: уточнили условие закупки", "Ручная правка блока", 1))
+        with self.assertRaisesRegex(AssertionError, "Generated repeat block drift"):
+            check(self.root)
 
     @classmethod
     def setUpClass(cls):
